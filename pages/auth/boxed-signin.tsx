@@ -101,14 +101,14 @@ const LoginBoxed = () => {
                         </div>
                         <div className="mx-auto w-full max-w-[440px]">
                             <div className="mb-10">
-                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-dark md:text-4xl">Sign in</h1>
-                                <p className="text-base font-bold leading-normal text-dark">Enter your email and password to login</p>
+                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-[#333434] md:text-4xl">Sign in</h1>
+                                <p className="text-base font-bold leading-normal text-[#676767]">Enter your email and password to login</p>
                             </div>
                             <form className="space-y-5 dark:text-white" onSubmit={submitForm}>
                                 <div>
-                                    <label htmlFor="Email">Email</label>
+                                    <label htmlFor="Email" className="text-[#0E1726]">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]" />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                                 <path
@@ -125,9 +125,9 @@ const LoginBoxed = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label htmlFor="Password">Password</label>
+                                    <label htmlFor="Password" className="text-[#0E1726]">Password</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]" />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                                 <path
@@ -158,7 +158,7 @@ const LoginBoxed = () => {
                                 <div>
                                     <label className="flex cursor-pointer items-center">
                                         <input type="checkbox" className="form-checkbox bg-white dark:bg-black" />
-                                        <span className="text-white-dark">Subscribe to weekly newsletter</span>
+                                        <span className="text-[#333434]">Subscribe to weekly newsletter</span>
                                     </label>
                                 </div>
                                 <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
