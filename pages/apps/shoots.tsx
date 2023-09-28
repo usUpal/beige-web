@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import CodeHighlight from '../../components/Highlight';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../../store';
+import {useDispatch, useSelector} from 'react-redux';
+import {IRootState} from '../../store';
 import Dropdown from '../../components/Dropdown';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import {setPageTitle} from '../../store/themeConfigSlice';
+import coverLogin from "@/pages/auth/cover-login";
+
 
 import Link from 'next/link';
 
@@ -61,6 +63,31 @@ const tableData = [
 ];
 
 const Shoots = () => {
+
+    const [myShoots, setMyShoots] = useState([]);
+    console.log(myShoots);
+    useEffect(() => {
+        getAllMyShoots();
+    }, []);
+    const getAllMyShoots = async () => {
+        try {
+            const response = await fetch(
+                `https://api.beigecorporation.io/v1/orders?sortBy=createdAt:desc&cp_id=648eceebf2cac1a3da9f72c7`,
+            );
+            const allShots = await response.json();
+            setMyShoots(prevShoots => {
+                const newShoots = allShots.results.filter(
+                    shoot => !prevShoots.some(prevShoot => prevShoot.id === shoot.id),
+                );
+                return [...prevShoots, ...newShoots];
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+
+    // previous code
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Tables'));
