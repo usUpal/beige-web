@@ -18,7 +18,7 @@ const Setting = () => {
                     (showCustomizer && 'ltr:!right-0 rtl:!left-0') || ''
                 } fixed top-0 bottom-0 z-[51] w-full max-w-[400px] bg-white p-4 shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-[right] duration-300 ltr:-right-[400px] rtl:-left-[400px] dark:bg-black`}
             >
-                <button
+                {/* <button
                     type="button"
                     className="absolute top-0 bottom-0 my-auto flex h-10 w-12 cursor-pointer items-center justify-center bg-primary text-white ltr:-left-12 ltr:rounded-tl-full ltr:rounded-bl-full rtl:-right-12 rtl:rounded-tr-full rtl:rounded-br-full"
                     onClick={() => setShowCustomizer(!showCustomizer)}
@@ -32,7 +32,7 @@ const Setting = () => {
                             strokeWidth="1.5"
                         ></path>
                     </svg>
-                </button>
+                </button> */}
 
                 <div className="perfect-scrollbar h-full overflow-y-auto overflow-x-hidden">
                     <div className="relative pb-5 text-center">
