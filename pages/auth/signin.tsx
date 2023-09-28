@@ -1,12 +1,13 @@
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../../store';
-import { useEffect, useState } from 'react';
-import { setPageTitle, toggleLocale, toggleRTL } from '../../store/themeConfigSlice';
-import { useRouter } from 'next/router';
+import {useDispatch, useSelector} from 'react-redux';
+import {IRootState} from '../../store';
+import {useEffect, useState} from 'react';
+import {setPageTitle, toggleLocale, toggleRTL} from '../../store/themeConfigSlice';
+import {useRouter} from 'next/router';
 import BlankLayout from '@/components/Layouts/BlankLayout';
 import Dropdown from '@/components/Dropdown';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
+import { toast } from 'react-toastify';
 
 const LoginBoxed = () => {
     const dispatch = useDispatch();
@@ -15,9 +16,43 @@ const LoginBoxed = () => {
     });
     const router = useRouter();
 
-    const submitForm = (e: any) => {
+    const submitForm = async (e: any) => {
         e.preventDefault();
-        router.push('/');
+        const formData = new FormData(e.target);
+        const loginEndPoint = 'https://api.beigecorporation.io/v1/auth/login';
+        // const loginEndPoint = 'http://localhost:5000/v1/auth/login';
+        try {
+            // Make a POST request to your login API endpoint
+            const response = await fetch(loginEndPoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(formData)),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if(data.user.role !== 'cp') {
+                    toast.error('You are not allowed to access this page', {
+                        position: toast.POSITION.TOP_CENTER,
+                    });
+                    return;
+                }
+                // Store user data or tokens in your application state or local storage
+                localStorage.setItem('tokenData', JSON.stringify(data.tokens));
+                localStorage.setItem('userData', JSON.stringify(data.user));
+                await router.push('/');
+            } else {
+                // Handle errors
+                toast.error(data.message, {
+                    position: toast.POSITION.TOP_CENTER,
+                });
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+        }
     };
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
@@ -36,21 +71,27 @@ const LoginBoxed = () => {
         setLocale(localStorage.getItem('i18nextLng') || themeConfig.locale);
     }, []);
 
-    const { t, i18n } = useTranslation();
+    const {t, i18n} = useTranslation();
 
     return (
         <div>
             <div className="absolute inset-0">
-                <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" />
+                <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover"/>
             </div>
 
-            <div className="relative flex min-h-screen items-center justify-center bg-[url(/assets/images/auth/map.png)] bg-cover bg-center bg-no-repeat px-6 py-10 dark:bg-[#060818] sm:px-16">
-                <img src="/assets/images/auth/coming-soon-object1.png" alt="image" className="absolute left-0 top-1/2 h-full max-h-[893px] -translate-y-1/2" />
-                <img src="/assets/images/auth/coming-soon-object2.png" alt="image" className="absolute left-24 top-0 h-40 md:left-[30%]" />
-                <img src="/assets/images/auth/coming-soon-object3.png" alt="image" className="absolute right-0 top-0 h-[300px]" />
-                <img src="/assets/images/auth/polygon-object.png" alt="image" className="absolute bottom-0 end-[28%]" />
-                <div className="relative w-full max-w-[870px] rounded-md bg-[linear-gradient(45deg,#fff9f9_0%,rgba(255,255,255,0)_25%,rgba(255,255,255,0)_75%,_#fff9f9_100%)] p-2 dark:bg-[linear-gradient(52.22deg,#0E1726_0%,rgba(14,23,38,0)_18.66%,rgba(14,23,38,0)_51.04%,rgba(14,23,38,0)_80.07%,#0E1726_100%)]">
-                    <div className="relative flex flex-col justify-center rounded-md bg-white/60 px-6 py-20 backdrop-blur-lg dark:bg-black/50 lg:min-h-[758px]">
+            <div
+                className="relative flex min-h-screen items-center justify-center bg-[url(/assets/images/auth/map.png)] bg-cover bg-center bg-no-repeat px-6 py-10 dark:bg-[#060818] sm:px-16">
+                <img src="/assets/images/auth/coming-soon-object1.png" alt="image"
+                     className="absolute left-0 top-1/2 h-full max-h-[893px] -translate-y-1/2"/>
+                <img src="/assets/images/auth/coming-soon-object2.png" alt="image"
+                     className="absolute left-24 top-0 h-40 md:left-[30%]"/>
+                <img src="/assets/images/auth/coming-soon-object3.png" alt="image"
+                     className="absolute right-0 top-0 h-[300px]"/>
+                <img src="/assets/images/auth/polygon-object.png" alt="image" className="absolute bottom-0 end-[28%]"/>
+                <div
+                    className="relative w-full max-w-[870px] rounded-md bg-[linear-gradient(45deg,#fff9f9_0%,rgba(255,255,255,0)_25%,rgba(255,255,255,0)_75%,_#fff9f9_100%)] p-2 dark:bg-[linear-gradient(52.22deg,#0E1726_0%,rgba(14,23,38,0)_18.66%,rgba(14,23,38,0)_51.04%,rgba(14,23,38,0)_80.07%,#0E1726_100%)]">
+                    <div
+                        className="relative flex flex-col justify-center rounded-md bg-white/60 px-6 py-20 backdrop-blur-lg dark:bg-black/50 lg:min-h-[758px]">
                         <div className="absolute end-6 top-6">
                             <div className="dropdown">
                                 {flag && (
@@ -61,11 +102,13 @@ const LoginBoxed = () => {
                                         button={
                                             <>
                                                 <div>
-                                                    <img src={`/assets/images/flags/${flag.toUpperCase()}.svg`} alt="image" className="h-5 w-5 rounded-full object-cover" />
+                                                    <img src={`/assets/images/flags/${flag.toUpperCase()}.svg`}
+                                                         alt="image" className="h-5 w-5 rounded-full object-cover"/>
                                                 </div>
                                                 <div className="text-base font-bold uppercase">{flag}</div>
                                                 <span className="shrink-0">
-                                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path
                                                             d="M6.99989 9.79988C6.59156 9.79988 6.18322 9.64238 5.87406 9.33321L2.07072 5.52988C1.90156 5.36071 1.90156 5.08071 2.07072 4.91154C2.23989 4.74238 2.51989 4.74238 2.68906 4.91154L6.49239 8.71488C6.77239 8.99488 7.22739 8.99488 7.50739 8.71488L11.3107 4.91154C11.4799 4.74238 11.7599 4.74238 11.9291 4.91154C12.0982 5.08071 12.0982 5.36071 11.9291 5.52988L8.12572 9.33321C7.81656 9.64238 7.40822 9.79988 6.99989 9.79988Z"
                                                             fill="currentColor"
@@ -88,7 +131,10 @@ const LoginBoxed = () => {
                                                                 setLocale(item.code);
                                                             }}
                                                         >
-                                                            <img src={`/assets/images/flags/${item.code.toUpperCase()}.svg`} alt="flag" className="h-5 w-5 rounded-full object-cover" />
+                                                            <img
+                                                                src={`/assets/images/flags/${item.code.toUpperCase()}.svg`}
+                                                                alt="flag"
+                                                                className="h-5 w-5 rounded-full object-cover"/>
                                                             <span className="ltr:ml-3 rtl:mr-3">{item.name}</span>
                                                         </button>
                                                     </li>
@@ -101,14 +147,17 @@ const LoginBoxed = () => {
                         </div>
                         <div className="mx-auto w-full max-w-[440px]">
                             <div className="mb-10">
-                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-[#333434] md:text-4xl">Sign in</h1>
-                                <p className="text-base font-bold leading-normal text-[#676767]">Enter your email and password to login</p>
+                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-[#333434] md:text-4xl">Sign
+                                    in</h1>
+                                <p className="text-base font-bold leading-normal text-[#676767]">Enter your email and
+                                    password to login</p>
                             </div>
                             <form className="space-y-5 dark:text-white" onSubmit={submitForm}>
                                 <div>
                                     <label htmlFor="Email" className="text-[#0E1726]">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]" />
+                                        <input id="Email" name="email" type="email" placeholder="Enter Email"
+                                               className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]"/>
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                                 <path
@@ -127,7 +176,9 @@ const LoginBoxed = () => {
                                 <div>
                                     <label htmlFor="Password" className="text-[#0E1726]">Password</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]" />
+                                        <input id="Password" name="password" type="password"
+                                               placeholder="Enter Password"
+                                               className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]"/>
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                                 <path
@@ -157,17 +208,20 @@ const LoginBoxed = () => {
                                 </div>
                                 <div>
                                     <label className="flex cursor-pointer items-center">
-                                        <input type="checkbox" className="form-checkbox bg-white dark:bg-black" />
+                                        <input type="checkbox" className="form-checkbox bg-white dark:bg-black"/>
                                         <span className="text-[#333434]">Subscribe to weekly newsletter</span>
                                     </label>
                                 </div>
-                                <button type="submit" className="btn text-white bg-gradient-to-r from-[#E2A03F] to-[#735C38] !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l">
+                                <button type="submit"
+                                        className="btn text-white bg-gradient-to-r from-[#E2A03F] to-[#735C38] !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l">
                                     Sign in
                                 </button>
                             </form>
                             <div className="relative my-7 text-center md:mb-9">
-                                <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
-                                <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-[#888EA8]">or</span>
+                                <span
+                                    className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
+                                <span
+                                    className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-[#888EA8]">or</span>
                             </div>
                             <div className="mb-10 md:mb-[60px]">
                                 <ul className="flex justify-center gap-3.5">
@@ -175,7 +229,7 @@ const LoginBoxed = () => {
                                         <Link
                                             href="#"
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)' }}
+                                            style={{background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)'}}
                                         >
                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                                 <path
@@ -197,7 +251,7 @@ const LoginBoxed = () => {
                                         <Link
                                             href="#"
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)' }}
+                                            style={{background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)'}}
                                         >
                                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                                                 <path
@@ -211,7 +265,7 @@ const LoginBoxed = () => {
                                         <Link
                                             href="#"
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)' }}
+                                            style={{background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)'}}
                                         >
                                             <svg width="14" height="12" viewBox="0 0 14 12" fill="none">
                                                 <path
@@ -225,7 +279,7 @@ const LoginBoxed = () => {
                                         <Link
                                             href="#"
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)' }}
+                                            style={{background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)'}}
                                         >
                                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                                                 <path
@@ -259,7 +313,8 @@ const LoginBoxed = () => {
                             </div>
                             <div className="text-center dark:text-white">
                                 Don't have an account ?&nbsp;
-                                <Link href="/auth/boxed-signup" className="uppercase text-[#C5965C] underline transition hover:text-black dark:hover:text-white">
+                                <Link href="/auth/boxed-signup"
+                                      className="uppercase text-[#C5965C] underline transition hover:text-black dark:hover:text-white">
                                     SIGN UP
                                 </Link>
                             </div>
