@@ -110,9 +110,9 @@ const Sidebar = () => {
                                         <li>
                                             <Link href="/">{t('sales')}</Link>
                                         </li>
-                                        <li>
-                                            <Link href="/analytics">{t('Files')}</Link>
-                                        </li>
+                                        {/*<li>*/}
+                                        {/*    <Link href="/analytics">{t('Files')}</Link>*/}
+                                        {/*</li>*/}
                                     </ul>
                                 </AnimateHeight>
                             </li>

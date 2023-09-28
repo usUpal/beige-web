@@ -65,27 +65,43 @@ const tableData = [
 const Shoots = () => {
 
     const [myShoots, setMyShoots] = useState([]);
+    const [userId, setUserId] = useState('');
+console.log(userId);
     console.log(myShoots);
     useEffect(() => {
         getAllMyShoots();
+    }, [userId]);
+    useEffect(() => {
+        getUserId();
     }, []);
     const getAllMyShoots = async () => {
         try {
-            const response = await fetch(
-                `https://api.beigecorporation.io/v1/orders?sortBy=createdAt:desc&cp_id=648eceebf2cac1a3da9f72c7`,
-            );
-            const allShots = await response.json();
-            setMyShoots(prevShoots => {
-                const newShoots = allShots.results.filter(
-                    shoot => !prevShoots.some(prevShoot => prevShoot.id === shoot.id),
+
+            if (userId) {
+                const response = await fetch(
+                    `https://api.beigecorporation.io/v1/orders?sortBy=createdAt:desc&limit=30&cp_id=${userId}`,
                 );
-                return [...prevShoots, ...newShoots];
-            });
+                const allShots = await response.json();
+                setMyShoots(prevShoots => {
+                    const newShoots = allShots.results.filter(
+                        shoot => !prevShoots.some(prevShoot => prevShoot.id === shoot.id),
+                    );
+                    return [...prevShoots, ...newShoots];
+                });
+            }
         } catch (error) {
             console.error(error);
         }
     };
-
+    const getUserId = async () => {
+        try {
+            if (typeof window !== 'undefined') {
+                setUserId(localStorage && (localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData') as string).id));
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     // previous code
     const dispatch = useDispatch();
@@ -113,110 +129,43 @@ const Shoots = () => {
                 <div className="table-responsive">
                     <table>
                         <thead>
-                            <tr>
-                                <th className="ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
-                                <th>Order ID</th>
-                                <th>Price</th>
-                                <th>File Status</th>
-                                <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                            </tr>
+                        <tr>
+                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
+                            <th>Order ID</th>
+                            <th>Price</th>
+                            <th>File Status</th>
+                            <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                        {
+                            myShoots?.map(shoot => <tr
+                                key={shoot.id}
+                                className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                                 <td className="min-w-[150px] text-black dark:text-white">
                                     <div className="flex items-center">
-                                        <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
+                                        <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3"
+                                             src="/assets/images/ps.svg" alt="avatar"/>
                                         <p className="whitespace-nowrap">
-                                            Video Shoot
-                                            <span className="block text-xs text-[#888EA8]">10 Jan 01:15 PM</span>
+                                            {shoot?.order_name}
+                                            <span className="block text-xs text-[#888EA8]">{new Date(
+                                                shoot?.shoot_datetimes[0]?.shoot_date_time,
+                                            ).toDateString()}</span>
                                         </p>
                                     </div>
                                 </td>
                                 <td>
-                                    <Link href="/apps/invoice/preview">#46894</Link>
+                                    <Link href="/apps/invoice/preview">{shoot.id}</Link>
                                 </td>
-                                <td>$56.07</td>
+                                <td>$ {shoot?.budget?.max}</td>
                                 <td className="text-success">Available</td>
                                 <td>
-                                    <span className="badge bg-success shadow-md dark:group-hover:bg-transparent">Completed</span>
+                                    <span
+                                        className="badge bg-success shadow-md dark:group-hover:bg-transparent">{shoot?.order_status}</span>
                                 </td>
-                            </tr>
-                            <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="text-black dark:text-white">
-                                    <div className="flex items-center">
-                                        <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/cs.svg" alt="avatar" />
-                                        <p className="whitespace-nowrap">
-                                            Commercial Shoot
-                                            <span className="block text-xs text-[#888EA8]">10 Jan 01:15 PM</span>
-                                        </p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <Link href="/apps/invoice/preview">#76894</Link>
-                                </td>
-                                <td>$126.04</td>
-                                <td className="text-success">Available</td>
-                                <td>
-                                    <span className="badge bg-primary shadow-md dark:group-hover:bg-transparent">Post Production</span>
-                                </td>
-                            </tr>
-                            <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="text-black dark:text-white">
-                                    <div className="flex items-center">
-                                        <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/is.svg" alt="avatar" />
-                                        <p className="whitespace-nowrap">
-                                            Photo Shoot
-                                            <span className="block text-xs text-[#888EA8]">10 Jan 01:15 PM</span>
-                                        </p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <Link href="/apps/invoice/preview">#66894</Link>
-                                </td>
-                                <td>$56.07</td>
-                                <td className="text-warning">Not Uploaded</td>
-                                <td>
-                                    <span className="badge bg-dark shadow-md dark:group-hover:bg-transparent">Canceled</span>
-                                </td>
-                            </tr>
-                            <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="text-black dark:text-white">
-                                    <div className="flex items-center">
-                                        <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ws.svg" alt="avatar" />
-                                        <p className="whitespace-nowrap">
-                                            Wedding Shoot
-                                            <span className="block text-xs text-[#888EA8]">10 Jan 01:15 PM</span>
-                                        </p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <button type="button">#75844</button>
-                                </td>
-                                <td>$110.00</td>
-                                <td className="text-success">Available</td>
-                                <td>
-                                    <span className="badge bg-danger shadow-md dark:group-hover:bg-transparent">In Dispute</span>
-                                </td>
-                            </tr>
-                            <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="text-black dark:text-white">
-                                    <div className="flex items-center">
-                                        <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/cs.svg" alt="avatar" />
-                                        <p className="whitespace-nowrap">
-                                            Commercial Shoot
-                                            <span className="block text-xs text-[#888EA8]">10 Jan 01:15 PM</span>
-                                        </p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <Link href="/apps/invoice/preview">#46894</Link>
-                                </td>
-                                <td>$56.07</td>
-                                <td className="text-warning">Not Uploaded</td>
-                                <td>
-                                    <span className="badge bg-[#C5965C] shadow-md dark:group-hover:bg-transparent">Pending</span>
-                                </td>
-                            </tr>
+                            </tr>)
+                        }
+
                         </tbody>
                     </table>
                 </div>
