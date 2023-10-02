@@ -10,6 +10,7 @@ import coverLogin from "@/pages/auth/cover-login";
 
 
 import Link from 'next/link';
+import StatusBg from '@/components/Status/StatusBg';
 
 const Shoots = () => {
 
@@ -78,49 +79,50 @@ console.log(userId);
                 <div className="table-responsive">
                     <table>
                         <thead>
-                        <tr>
-                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
-                            <th>Order ID</th>
-                            <th>Price</th>
-                            <th>File Status</th>
-                            <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                            <th>View</th>
-                        </tr>
+                            <tr>
+                                <th className="ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
+                                <th>Order ID</th>
+                                <th>Price</th>
+                                <th>File Status</th>
+                                <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
+                                <th>View</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {
-                            myShoots?.map(shoot =>
-                            <tr
-                                key={shoot.id}
-                                className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="min-w-[150px] text-black dark:text-white">
-                                    <div className="flex items-center">
-                                        <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3"
-                                             src="/assets/images/ps.svg" alt="avatar"/>
-                                        <p className="whitespace-nowrap">
-                                            {shoot?.order_name}
-                                            <span className="block text-xs text-[#888EA8]">{new Date(
-                                                shoot?.shoot_datetimes[0]?.shoot_date_time,
-                                            ).toDateString()}</span>
-                                        </p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <Link href="/apps/invoice/preview">{shoot.id}</Link>
-                                </td>
-                                <td>$ {shoot?.budget?.max}</td>
-                                <td className="text-success">Available</td>
-                                <td>
-                                    <span
-                                        className="badge bg-success shadow-md dark:group-hover:bg-transparent">{shoot?.order_status}</span>
-                                </td>
-                                <td>
-                                    <Link href={`/apps/shootDetails/${shoot.id}`}>
-                                        <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
-                                    </Link>
-                                </td>
-                            </tr>)
-                        }
+                            {
+                                myShoots?.map(shoot =>
+                                <tr
+                                    key={shoot.id}
+                                    className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                                    <td className="min-w-[150px] text-black dark:text-white">
+                                        <div className="flex items-center">
+                                            <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3"
+                                                src="/assets/images/ps.svg" alt="avatar"/>
+                                            <p className="whitespace-nowrap">
+                                                {shoot?.order_name}
+                                                <span className="block text-xs text-[#888EA8]">{new Date(
+                                                    shoot?.shoot_datetimes[0]?.shoot_date_time,
+                                                ).toDateString()}</span>
+                                            </p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <Link href="/apps/invoice/preview">{shoot.id}</Link>
+                                    </td>
+                                    <td>$ {shoot?.budget?.max}</td>
+                                    <td className="text-success">Available</td>
+                                    <td>
+                                        <div className=''>
+                                            <StatusBg>{shoot?.order_status}</StatusBg>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <Link href={`/apps/shootDetails/${shoot.id}`}>
+                                            <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
+                                        </Link>
+                                    </td>
+                                </tr>)
+                            }
                         </tbody>
                     </table>
                 </div>
