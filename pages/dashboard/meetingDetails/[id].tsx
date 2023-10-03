@@ -1,10 +1,4 @@
-import { useRouter } from "next/router";
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-import { baseURL } from "@/baseURL";
-
-import {View, Text} from 'react-native';
-import tailwind from 'twrnc';
 
 const shootDetailsPage = () => {
 

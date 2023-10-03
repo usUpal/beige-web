@@ -19,7 +19,7 @@ const Meeting = () => {
             {/* Recent Orders */}
             <div className="panel h-full w-full">
                 <div className="mb-5 flex items-center justify-between">
-                    <h5 className="text-lg font-semibold dark:text-white-light">Recent Orders</h5>
+                    <h5 className="text-lg font-semibold dark:text-white-light">Meeting List</h5>
                 </div>
                 <div className="table-responsive">
                     <table>
@@ -45,7 +45,7 @@ const Meeting = () => {
                                 <td>09:30 PM</td>
                                 <td className="text-success">Pending</td>
                                 <td>
-                                    <Link href={`/apps/meetingDetails/id`}>
+                                    <Link href={`/dashboard/meetingDetails/id`}>
                                         <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
                                     </Link>
                                 </td>
@@ -62,7 +62,7 @@ const Meeting = () => {
                                 <td>09:30 PM</td>
                                 <td className="text-success">Pending</td>
                                 <td>
-                                    <Link href={`/apps/meetingDetails/id`}>
+                                    <Link href={`/dashboard/meetingDetails/id`}>
                                         <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
                                     </Link>
                                 </td>
@@ -79,7 +79,7 @@ const Meeting = () => {
                                 <td>09:30 PM</td>
                                 <td className="text-success">Pending</td>
                                 <td>
-                                    <Link href={`/apps/meetingDetails/id`}>
+                                    <Link href={`/dashboard/meetingDetails/id`}>
                                         <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
                                     </Link>
                                 </td>

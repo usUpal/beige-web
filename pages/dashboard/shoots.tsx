@@ -106,9 +106,7 @@ console.log(userId);
                                             </p>
                                         </div>
                                     </td>
-                                    <td>
-                                        <Link href="/apps/invoice/preview">{shoot.id}</Link>
-                                    </td>
+                                    <td>{shoot.id}</td>
                                     <td>$ {shoot?.budget?.max}</td>
                                     <td className="text-success">Available</td>
                                     <td>
@@ -117,7 +115,7 @@ console.log(userId);
                                         </div>
                                     </td>
                                     <td>
-                                        <Link href={`/apps/shootDetails/${shoot.id}`}>
+                                        <Link href={`/dashboard/shootDetails/${shoot.id}`}>
                                             <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
                                         </Link>
                                     </td>

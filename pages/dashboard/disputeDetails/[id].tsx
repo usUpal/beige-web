@@ -1,9 +1,4 @@
-import { useRouter } from "next/router";
 import Link from 'next/link';
-import { Calendar } from '@mantine/dates';
-import React, { useEffect, useState } from 'react';
-import { baseURL } from "@/baseURL";
-
 
 function shootDetailsPage () {
 

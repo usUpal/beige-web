@@ -1,14 +1,4 @@
-import {useEffect, useState} from 'react';
-import CodeHighlight from '../../components/Highlight';
-import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import {useDispatch, useSelector} from 'react-redux';
-import {IRootState} from '../../store';
-import Dropdown from '../../components/Dropdown';
-import {setPageTitle} from '../../store/themeConfigSlice';
-import coverLogin from "@/pages/auth/cover-login";
-
-
 import Link from 'next/link';
 
 const Meeting = () => {
@@ -49,7 +39,7 @@ const Meeting = () => {
                                     <span className='text-[#C91E1E] text-[16px] font-medium leading-[20px] capitalize bg-[#FFEAEA] rounded-[30px] px-[15px] py-[5px]'>open</span>
                                 </td>
                                 <td>
-                                    <Link href={`/apps/disputeDetails/id`}>
+                                    <Link href={`/dashboard/disputeDetails/id`}>
                                         <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
                                     </Link>
                                 </td>
@@ -69,7 +59,7 @@ const Meeting = () => {
                                     <span className='text-[#000000] text-[16px] font-medium leading-[20px] capitalize bg-[#E0E0E0] rounded-[30px] px-[15px] py-[5px]'>Closed</span>
                                 </td>
                                 <td>
-                                    <Link href={`/apps/disputeDetails/id`}>
+                                    <Link href={`/dashboard/disputeDetails/id`}>
                                         <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
                                     </Link>
                                 </td>
@@ -89,7 +79,7 @@ const Meeting = () => {
                                     <span className='text-[#000000] text-[16px] font-medium leading-[20px] capitalize bg-[#E0E0E0] rounded-[30px] px-[15px] py-[5px]'>Closed</span>
                                 </td>
                                 <td>
-                                    <Link href={`/apps/disputeDetails/id`}>
+                                    <Link href={`/dashboard/disputeDetails/id`}>
                                         <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
                                     </Link>
                                 </td>
