@@ -58,61 +58,60 @@ function shootDetailsPage () {
             <div className="container">
 
                 <div className="panel h-full w-full mt-5">
-                    <div className="mb-5 flex items-center justify-between">
-                        <h5 className="text-lg font-semibold dark:text-white-light">Shoot Details</h5>
-                    </div>
-                    <div className="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Order Name</th>
-                                    <th>Payout</th>
-                                    <th>Date</th>
-                                    <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr className="group text-black dark:hover:text-white-light/90">
-                                    <td className="capitalize"> {shootInfo?.order_name}</td>
-                                    <td>
-                                        <span>$249.00</span>
-                                    </td>
-                                    <td>{shootInfo?.createdAt}</td>
-                                    <td className="text-success capitalize drop-shadow-[4px_4px_2px_rgba(0,171,85,0.25)]">{shootInfo?.order_status}</td>
-                                    <td className="flex">
-                                        <Link href="/">
-                                            <img className="text-center" src="/assets/images/upload.svg" alt="upload-icon" title="Upload"/>
-                                        </Link>
-                                        <Link href="/">
-                                            <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon" title="View File"/>
-                                        </Link>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div className="flex justify-between items-start mt-[60px]">
-                    <div className="basis-[49%]">
-                        <h2 className="text-[24px] font-bold leading-[33.6px] text-[#545454] capitalize mb-[10px]">description</h2>
-                        <p className="text-[16px] font-normal leading-[26px] text-[#111111]">{shootInfo?.description}</p>
-                    </div>
-                    <div className="basis-[49%]">
-                        <h2 className="text-[24px] font-bold leading-[33.6px] text-[#545454] capitalize mb-[10px]">Location</h2>
-                        <div className="border-2 border-[#ACA686] rounded-[10px] overflow-hidden">
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3649.8194623228624!2d90.36562207597385!3d23.82501808590643!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c131a95e3afd%3A0x78b320e2234f87bc!2sRd%20No.%2012%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1696151396090!5m2!1sen!2sbd"
-                            width="100%"
-                            height="300"
-                            style={{ border: '0' }}
-                            allowFullScreen=""
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                        ></iframe>
+                    <div className="flex justify-between items-center">
+                        {/* Shoot Details */}
+                        <div className="basis-[38%]">
+                            <div className="flex justify-between items-center border-b border-solid border-[#828282] py-4">
+                                <span className="font-bold text-[#545454] capitalize text-[20px]">Order name:</span>
+                                <span className="font-normal text-[#828282] capitalize text-[20px]">{shootInfo?.order_name}</span>
+                            </div>
+                            <div className="flex justify-between items-center border-b border-solid border-[#828282] py-4">
+                                <span className="font-bold text-[#545454] capitalize text-[20px]">Date:</span>
+                                <span className="font-normal text-[#828282] capitalize text-[20px]">{shootInfo?.createdAt}</span>
+                            </div>
+                        </div>
+                        {/* Location */}
+                        <div className="border-2 border-[#ACA686] rounded-[10px] overflow-hidden basis-[55%]">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3649.8194623228624!2d90.36562207597385!3d23.82501808590643!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c131a95e3afd%3A0x78b320e2234f87bc!2sRd%20No.%2012%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1696151396090!5m2!1sen!2sbd"
+                                width="100%"
+                                height="300"
+                                style={{ border: '0' }}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
                         </div>
                     </div>
                 </div>
+
+                <div className="mt-[60px] mb-[40px]">
+                    <h2 className="text-[24px] font-bold leading-[33.6px] text-[#545454] capitalize mb-[10px]">description</h2>
+                    <p className="text-[16px] font-normal leading-[26px] text-[#111111]">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates, libero magni? Animi ab unde eaque ex iste maiores omnis sequi accusantium repellat quo. Qui, repellendus sit? Necessitatibus repellendus tempore consectetur itaque nulla? Reiciendis, quas quibusdam! Labore veniam nihil totam quo, inventore et voluptate asperiores laboriosam, alias autem corrupti explicabo tempora? {shootInfo?.description}</p>
+                </div>
+
+                <div className="border-b-[3px] border-solid border-[#ACA686] pb-[40px] mb-[40px]">
+                    <div className="flex justify-center items-center">
+                        <div>
+                            <span className="text-[#545454] text-[24px] font-bold mr-[15px]">Payout:</span>
+                            <span className="text-[#000000] text-[32px] font-bold">$250.00</span>
+                        </div>
+                        <div className="ml-[260px] relative text-[#008864] bg-[#E6FBD9] text-[16px] font-medium py-[12px] px-[30px] border border-solid border-[#8FD0AD] rounded-[30px] capitalize">
+                            complete
+                            <span className="inline-block absolute top-[-7px] left-[20px] text-[10px] text-[#000000] bg-[#ffffff] px-[5px] py-[1px] border border-solid border-[#8FD0AD] rounded-[3px] leading-none">Status</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="text-center my-[60px]">
+                    <Link href={`/apps/shootDetails/`}>
+                        <span className="text-[#ffffff] bg-[#ACA686] text-[18px] font-medium py-[15px] px-[25px] rounded-[10px] border border-solid border-[#aca686] shadow-[3px 3px 3px 0 rgba(0 0 0 0.3)] mr-[60px] hover:bg-[#ffffff] hover:text-[#aca686]">Upload</span>
+                    </Link>
+                    <Link href={`/apps/shootDetails/`}>
+                        <span className="text-[#000000] bg-[#DEBF97] text-[18px] font-medium py-[15px] px-[25px] rounded-[10px] border border-solid border-[#DEBF97] shadow-[3px 3px 3px 0 rgba(0 0 0 0.3)] hover:bg-[#ffffff] hover:text-[#000000] hover:border-[#000000]">View File</span>
+                    </Link>
+                </div>
+
             </div>
         </>
 
