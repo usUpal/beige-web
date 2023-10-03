@@ -2,6 +2,9 @@ import { useRouter } from "next/router";
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { baseURL } from "@/baseURL";
+import StatusBg from '@/components/Status/StatusBg';
+import {useDispatch, useSelector} from 'react-redux';
+import {setPageTitle} from '../../../store/themeConfigSlice';
 
 
 function shootDetailsPage () {
@@ -37,6 +40,13 @@ function shootDetailsPage () {
       getShootDetails();
     }, []);
 
+    // previous code
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(setPageTitle('Shoot Details'));
+    });
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+
     return(
         <>
             <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -67,7 +77,9 @@ function shootDetailsPage () {
                             </div>
                             <div className="flex justify-between items-center border-b border-solid border-[#828282] py-4">
                                 <span className="font-bold text-[#545454] capitalize text-[20px]">Date:</span>
-                                <span className="font-normal text-[#828282] capitalize text-[20px]">{shootInfo?.createdAt}</span>
+                                <span className="font-normal text-[#828282] capitalize text-[20px]">
+                                    {new Date(shootInfo?.createdAt).toDateString()}
+                                </span>
                             </div>
                         </div>
                         {/* Location */}
@@ -96,8 +108,8 @@ function shootDetailsPage () {
                             <span className="text-[#545454] text-[24px] font-bold mr-[15px]">Payout:</span>
                             <span className="text-[#000000] text-[32px] font-bold">$250.00</span>
                         </div>
-                        <div className="ml-[260px] relative text-[#008864] bg-[#E6FBD9] text-[16px] font-medium py-[12px] px-[30px] border border-solid border-[#8FD0AD] rounded-[30px] capitalize">
-                            complete
+                        <div className="ml-[260px] relative text-[16px] font-medium capitalize py-[10px] border-[#000]">
+                            <StatusBg>{shootInfo?.order_status}</StatusBg>
                             <span className="inline-block absolute top-[-7px] left-[20px] text-[10px] text-[#000000] bg-[#ffffff] px-[5px] py-[1px] border border-solid border-[#8FD0AD] rounded-[3px] leading-none">Status</span>
                         </div>
                     </div>

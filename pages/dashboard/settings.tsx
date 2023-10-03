@@ -4,7 +4,6 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
-import Dropdown from '../../components/Dropdown';
 import { setPageTitle } from '../../store/themeConfigSlice';
 
 const tableData = [
@@ -61,7 +60,7 @@ const tableData = [
 const Settings = () => {
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setPageTitle('Tables'));
+        dispatch(setPageTitle('Settings'));
     });
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 

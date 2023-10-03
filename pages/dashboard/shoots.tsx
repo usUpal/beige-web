@@ -1,14 +1,8 @@
 import {useEffect, useState} from 'react';
-import CodeHighlight from '../../components/Highlight';
-import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import {useDispatch, useSelector} from 'react-redux';
 import {IRootState} from '../../store';
-import Dropdown from '../../components/Dropdown';
 import {setPageTitle} from '../../store/themeConfigSlice';
-import coverLogin from "@/pages/auth/cover-login";
-
-
 import Link from 'next/link';
 import StatusBg from '@/components/Status/StatusBg';
 
@@ -16,7 +10,7 @@ const Shoots = () => {
 
     const [myShoots, setMyShoots] = useState([]);
     const [userId, setUserId] = useState('');
-console.log(userId);
+    console.log(userId);
     console.log(myShoots);
     useEffect(() => {
         getAllMyShoots();
@@ -56,7 +50,7 @@ console.log(userId);
     // previous code
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setPageTitle('Tables'));
+        dispatch(setPageTitle('Shoots'));
     });
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 

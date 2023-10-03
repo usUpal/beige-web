@@ -1,6 +1,16 @@
 import Link from 'next/link';
+import {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {setPageTitle} from '../../../store/themeConfigSlice';
 
 const shootDetailsPage = () => {
+
+    // previous code
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(setPageTitle('Meeting Details'));
+    });
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
     return(
         <>

@@ -18,16 +18,15 @@ const StatusBg = ({children}) => {
     ) {
         backgroundColor = '#FFE9E9';
         textColor = '#B50000';
+        borderColor = '#B50000';
     } else if (children === 'cancelled' || children === 'upcoming') {
         backgroundColor = '#E8E8E8';
-        textColor = '#000000';
     } else if (children === 'rescheduled' || children === 'completed') {
         backgroundColor = '#E6FBD9';
-        textColor = '#008864';
     }
 
     return (
-        <div className="inline rounded-2xl px-3 py-1"  style={{backgroundColor:backgroundColor}}>
+        <div className="inline rounded-2xl px-3 py-2 border border-solid"  style={{backgroundColor:backgroundColor}}>
             <p className='inline capitalize' style={{color:textColor}}>{children}</p>
         </div>
     );

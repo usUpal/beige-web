@@ -1,17 +1,20 @@
 import {useEffect, useState} from 'react';
-import CodeHighlight from '../../components/Highlight';
-import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import {useDispatch, useSelector} from 'react-redux';
 import {IRootState} from '../../store';
-import Dropdown from '../../components/Dropdown';
 import {setPageTitle} from '../../store/themeConfigSlice';
-import coverLogin from "@/pages/auth/cover-login";
 
 
 import Link from 'next/link';
 
 const Meeting = () => {
+
+    // previous code
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(setPageTitle('Meetings'));
+    });
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
     return (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">

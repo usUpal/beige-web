@@ -61,7 +61,7 @@ const tableData = [
 const Transactions = () => {
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setPageTitle('Tables'));
+        dispatch(setPageTitle('Transactions'));
     });
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 

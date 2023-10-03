@@ -1,7 +1,19 @@
 import 'tippy.js/dist/tippy.css';
 import Link from 'next/link';
+import {useEffect, useState} from 'react';
+import 'tippy.js/dist/tippy.css';
+import {useDispatch, useSelector} from 'react-redux';
+import {IRootState} from '../../store';
+import {setPageTitle} from '../../store/themeConfigSlice';
 
 const Meeting = () => {
+
+    // previous code
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(setPageTitle('Disputes'));
+    });
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
     return (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
