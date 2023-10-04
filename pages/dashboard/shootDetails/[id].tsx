@@ -3,17 +3,15 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { baseURL } from "@/baseURL";
 import StatusBg from '@/components/Status/StatusBg';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {setPageTitle} from '../../../store/themeConfigSlice';
-
 
 function shootDetailsPage () {
     const router = useRouter();
     const { id } = router.query;
-
     const [shootInfo, setShootInfo] = useState({});
     const [showError, setShowError] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(true);
 
     console.log(shootInfo);
 
@@ -45,7 +43,6 @@ function shootDetailsPage () {
     useEffect(() => {
         dispatch(setPageTitle('Shoot Details'));
     });
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
     return(
         <>

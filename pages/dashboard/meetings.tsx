@@ -1,10 +1,88 @@
-import {useEffect, useState, Fragment} from 'react';
+import React, {useEffect, useState, Fragment} from 'react';
 import 'tippy.js/dist/tippy.css';
 import {useDispatch} from 'react-redux';
 import {setPageTitle} from '../../store/themeConfigSlice';
 import { Dialog, Transition } from '@headlessui/react';
+import { useRouter } from 'next/router';
+import { baseURL } from '@/baseURL';
 
 const Meeting = () => {
+
+    // All Meetings
+    const [myMeetings, setMyMeetings] = useState([]);
+    const [userId, setUserId] = useState('');
+
+    // console.log(userId);
+    // console.log(myMeetings);
+
+    useEffect(() => {
+        getAllMyMeetings();
+    }, [userId]);
+    useEffect(() => {
+        getUserId();
+    }, []);
+
+    const getAllMyMeetings = async () => {
+        try {
+
+            if (userId) {
+                const response = await fetch(
+                    `https://api.beigecorporation.io/v1/meetings?sortBy=createdAt:desc&limit=30&user=${userId}`,
+                );
+                const allShots = await response.json();
+                setMyMeetings(prevMeetings => {
+                    const newMeetings = allShots.results.filter(
+                        meeting => !prevMeetings.some(prevMeeting => prevMeeting.id === meeting.id),
+                    );
+                    return [...prevMeetings, ...newMeetings];
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const getUserId = async () => {
+        try {
+            if (typeof window !== 'undefined') {
+                setUserId(localStorage && (localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData') as string).id));
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // Meeting Single
+    const router = useRouter();
+
+    const [meetingInfo, setMeetingInfo] = useState({});
+    const [showError, setShowError] = useState(false);
+    const [isLoading, setLoading] = useState(true);
+console.log("HELLO", meetingInfo);
+
+    const getMeetingDetails = async (meetingId) => {
+        setLoading(true);
+        try {
+          const response = await fetch(`${baseURL}/meetings/${meetingId}`);
+          const meetingDetailsRes = await response.json();
+
+          if (!meetingDetailsRes) {
+            console.log('Error With order Id', id);
+            console.log(response);
+            setShowError(true);
+            setLoading(false);
+          } else {
+            setMeetingInfo(meetingDetailsRes);
+            setLoading(false);
+            setmeetingModal(true)
+
+          }
+        } catch (error) {
+          console.error(error);
+          setLoading(false);
+        }
+    };
+
 
     // previous code
     const dispatch = useDispatch();
@@ -35,56 +113,31 @@ const Meeting = () => {
                         </thead>
                         <tbody>
 
-                            <tr
-                                className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="min-w-[150px] text-black dark:text-white">
-                                    <div className="flex items-center">
-                                        <p className="whitespace-nowrap">13245</p>
-                                    </div>
-                                </td>
-                                <td>23/09/2022</td>
-                                <td>09:30 PM</td>
-                                <td className="text-success">Pending</td>
-                                <td>
-                                    <button type="button" className="p-0" onClick={() => setmeetingModal(true)}>
-                                        <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <tr
-                                className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="min-w-[150px] text-black dark:text-white">
-                                    <div className="flex items-center">
-                                        <p className="whitespace-nowrap">6789</p>
-                                    </div>
-                                </td>
-                                <td>25/09/2022</td>
-                                <td>09:30 PM</td>
-                                <td className="text-success">Pending</td>
-                                <td>
-                                    <button type="button" className="p-0" onClick={() => setmeetingModal(true)}>
-                                        <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <tr
-                                className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="min-w-[150px] text-black dark:text-white">
-                                    <div className="flex items-center">
-                                        <p className="whitespace-nowrap">98765</p>
-                                    </div>
-                                </td>
-                                <td>27/09/2022</td>
-                                <td>09:30 PM</td>
-                                <td className="text-success">Pending</td>
-                                <td>
-                                    <button type="button" className="p-0" onClick={() => setmeetingModal(true)}>
-                                        <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
-                                    </button>
-                                </td>
-                            </tr>
+                            {
+                                myMeetings?.map(meeting =>
+                                <tr
+                                    key={meeting.id}
+                                    className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                                    <td className="min-w-[150px] text-black dark:text-white">
+                                        <div className="flex items-center">
+                                            <p className="whitespace-nowrap">{meeting.order.id}</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {new Date( meeting?.meeting_date_time, ).toDateString()}
+                                    </td>
+                                    <td>
+                                        {new Date( meeting?.meeting_date_time, ).toTimeString()}
+                                    </td>
+                                    <td className="text-success">{meeting?.meeting_status}</td>
+                                    <td>
+                                        <button type="button" className="p-0" onClick={() => getMeetingDetails(meeting.id)}>
+                                            <img className="text-center ml-2" src="/assets/images/eye.svg" alt="view-icon"/>
+                                        </button>
+                                    </td>
+                                </tr>
+                                )
+                            }
 
                         </tbody>
                     </table>
@@ -118,11 +171,10 @@ const Meeting = () => {
                                         </button>
                                     </div>
                                     <div className="p-5">
-                                        <h2 className='text-[#ACA686] text-[22px] font-bold leading-[28.6px] capitalize mb-[20px]'>meeting with mr brian</h2>
+                                        <h2 className='text-[#ACA686] text-[22px] font-bold leading-[28.6px] capitalize mb-[20px]'>meeting with {meetingInfo?.client?.name}</h2>
                                         <div>
-                                            <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block'>Order ID: <strong>21345</strong></span>
-                                            <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block'>Meeting Date: <strong>23/09/2023</strong></span>
-                                            <span className='text-[14px] leading-[18.2px] text-[#000000] block'>Meeting Time: <strong>09:30 PM</strong></span>
+                                            <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block'>Meeting Date: <strong>{new Date( meetingInfo?.meeting_date_time, ).toDateString()}</strong></span>
+                                            <span className='text-[14px] leading-[18.2px] text-[#000000] block'>Meeting Time: <strong>{new Date( meetingInfo?.meeting_date_time, ).toTimeString()}</strong></span>
                                         </div>
                                         <div className="mt-[30px]">
                                             <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[10px]">meeting note</h2>
