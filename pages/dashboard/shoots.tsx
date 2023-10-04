@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react';
 import 'tippy.js/dist/tippy.css';
-import {useDispatch, useSelector} from 'react-redux';
-import {IRootState} from '../../store';
+import {useDispatch} from 'react-redux';
 import {setPageTitle} from '../../store/themeConfigSlice';
 import Link from 'next/link';
 import StatusBg from '@/components/Status/StatusBg';
@@ -52,16 +51,7 @@ const Shoots = () => {
     useEffect(() => {
         dispatch(setPageTitle('Shoots'));
     });
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
-    const [codeArr, setCodeArr] = useState<string[]>([]);
-    const toggleCode = (name: string) => {
-        if (codeArr.includes(name)) {
-            setCodeArr((value) => value.filter((d) => d !== name));
-        } else {
-            setCodeArr([...codeArr, name]);
-        }
-    };
     return (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
 

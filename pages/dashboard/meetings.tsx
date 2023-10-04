@@ -1,7 +1,6 @@
 import {useEffect, useState, Fragment} from 'react';
 import 'tippy.js/dist/tippy.css';
-import {useDispatch, useSelector} from 'react-redux';
-import {IRootState} from '../../store';
+import {useDispatch} from 'react-redux';
 import {setPageTitle} from '../../store/themeConfigSlice';
 import { Dialog, Transition } from '@headlessui/react';
 
@@ -12,7 +11,6 @@ const Meeting = () => {
     useEffect(() => {
         dispatch(setPageTitle('Meetings'));
     });
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
     const [meetingModal, setmeetingModal] = useState(false);
 
