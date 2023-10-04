@@ -237,10 +237,10 @@ const Sidebar = () => {
                                         <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
                                             <ul className="sub-menu text-gray-500">
                                                 <li>
-                                                    <Link href="/dashboard/pricingParams">{t('Set Pricing Params')}</Link>
+                                                    <Link href="/dashboard/searchingParams">{t('Set Searching Params')}</Link>
                                                 </li>
                                                 <li>
-                                                    <Link href="/dashboard/searchingParams">{t('Set Searching Params')}</Link>
+                                                    <Link href="/dashboard/pricingParams">{t('Set Pricing Params')}</Link>
                                                 </li>
                                             </ul>
                                         </AnimateHeight>
