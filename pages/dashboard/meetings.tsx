@@ -5,9 +5,6 @@ import {IRootState} from '../../store';
 import {setPageTitle} from '../../store/themeConfigSlice';
 import { Dialog, Transition } from '@headlessui/react';
 
-
-import Link from 'next/link';
-
 const Meeting = () => {
 
     // previous code
@@ -105,7 +102,7 @@ const Meeting = () => {
                         <div className="flex min-h-screen items-start justify-center px-4">
                                 <Dialog.Panel as="div" className="panel my-8 w-full max-w-lg overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                                     <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
-                                        <div className="text-lg font-bold">Modal Title</div>
+                                        <div className="text-[18px] font-bold leading-none capitalize text-[#000000]">Meeting Details</div>
                                         <button type="button" className="text-white-dark hover:text-dark" onClick={() => setmeetingModal(false)}>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -123,19 +120,18 @@ const Meeting = () => {
                                         </button>
                                     </div>
                                     <div className="p-5">
-                                        <p>
-                                            Mauris mi tellus, pharetra vel mattis sed, tempus ultrices eros. Phasellus egestas sit amet velit sed luctus. Orci varius natoque penatibus
-                                            et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse potenti. Vivamus ultrices sed urna ac pulvinar. Ut sit amet ullamcorper
-                                            mi.
-                                        </p>
-                                        <div className="mt-8 flex items-center justify-end">
-                                            <button type="button" className="btn btn-outline-danger" onClick={() => setmeetingModal(false)}>
-                                                Discard
-                                            </button>
-                                            <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={() => setmeetingModal(false)}>
-                                                Save
-                                            </button>
+                                        <h2 className='text-[#ACA686] text-[22px] font-bold leading-[28.6px] capitalize mb-[20px]'>meeting with mr brian</h2>
+                                        <div>
+                                            <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block'>Order ID: <strong>21345</strong></span>
+                                            <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block'>Meeting Date: <strong>23/09/2023</strong></span>
+                                            <span className='text-[14px] leading-[18.2px] text-[#000000] block'>Meeting Time: <strong>09:30 PM</strong></span>
                                         </div>
+                                        <div className="mt-[30px]">
+                                            <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[10px]">meeting note</h2>
+                                            <p className='text-[14px] font-regular leading-[28px] text-[#000000]'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum, molestias. Ipsa esse suscipit quos voluptatibus et soluta itaque consequatur! Rerum aperiam rem possimus amet aspernatur beatae maxime aliquam architecto repellendus dolorem. Officiis, similique quidem. Sed, at quis. Perferendis commodi excepturi explicabo! Nisi iure ad dolorum totam ducimus eaque necessitatibus ab?</p>
+                                        </div>
+                                        <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[15px] mt-[30px]">Reschedule Meeting</h2>
+                                        <input className='text-[#000000] text-[18px] font-medium leading-none py-[15px] px-[30px] border border-solid border-[#000000] rounded-[15px] bg-white' type="datetime-local" name="dateTime" id="datetime" />
                                     </div>
                                 </Dialog.Panel>
                         </div>
