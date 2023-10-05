@@ -10,7 +10,9 @@ import {useTranslation} from 'react-i18next';
 import { toast } from 'react-toastify';
 
 const LoginBoxed = () => {
+
     const dispatch = useDispatch();
+
     useEffect(() => {
         dispatch(setPageTitle('Login Boxed'));
     });

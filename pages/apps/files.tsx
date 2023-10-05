@@ -138,8 +138,8 @@ const Files = () => {
     };
 
     /*Start file upload functions*/
-    //const API_ENDPOINT = 'http://localhost:5000/v1/files/upload';
-    const API_ENDPOINT = 'https://api.beigecorporation.io/v1/files/upload';
+    const API_ENDPOINT = 'http://localhost:5000/v1/files/upload';
+    //const API_ENDPOINT = 'https://api.beigecorporation.io/v1/files/upload';
 
     const ENDPOINTS = {
         UPLOAD: {
@@ -491,7 +491,7 @@ const Files = () => {
                                     </div>
                                 </Tab.Panel>
                                 <Tab.Panel>
-                                    <FileBrowser/>
+                                    <FileBrowser shootsData={shootsData}/>
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
