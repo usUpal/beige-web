@@ -1,12 +1,12 @@
 import type { AppProps } from 'next/app';
-import { ReactElement, ReactNode, Suspense } from 'react';
+import { ReactElement, ReactNode, Suspense, useState } from 'react';
 import DefaultLayout from '../components/Layouts/DefaultLayout';
 import { Provider } from 'react-redux';
 import store from '../store/index';
 import Head from 'next/head';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 // import '@mantine/core/styles.css';
 
 import { appWithI18Next } from 'ni18n';
@@ -17,7 +17,9 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 
 import '../styles/tailwind.css';
 import { NextPage } from 'next';
-import {setPageTitle} from "@/store/themeConfigSlice";
+import { setPageTitle } from '@/store/themeConfigSlice';
+
+import LoginBoxed from '@/pages/auth/signin';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
     getLayout?: (page: ReactElement) => ReactNode;
@@ -28,10 +30,28 @@ type AppPropsWithLayout = AppProps & {
 };
 
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
+    const getToken = async () => {
+        const tokenData = localStorage.getItem('tokenData');
+    };
+
+    // const loggedIn = false;
+    // const [accessToken, setAccessToken] = useState(null);
+    // const [refreshToken, setRefreshToken] = useState(null);
+    // const [isLogedin, setIsLogedin] = useState(false);
+
+    let accessToken;
+    let refreshToken;
+
+    if (typeof window !== 'undefined') {
+        accessToken = localStorage && localStorage.getItem('tokenData') && JSON.parse(localStorage.getItem('tokenData') as string).access.token;
+        refreshToken = localStorage && localStorage.getItem('tokenData') && JSON.parse(localStorage.getItem('tokenData') as string).refresh.token;
+    }
+
+    const [domLoaded, setDomLoaded] = useState(false);
 
     useEffect(() => {
-        console.log('Hello World');
-    });
+        setDomLoaded(true);
+    }, []);
 
     const getLayout = Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);
 
@@ -48,7 +68,8 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
 
             <ToastContainer />
 
-            {getLayout(<Component {...pageProps} />)}
+            {domLoaded && accessToken && refreshToken && getLayout(<Component {...pageProps} />)}
+            {domLoaded && (!accessToken || !refreshToken) && <LoginBoxed />}
         </Provider>
     );
 };

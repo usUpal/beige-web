@@ -18,7 +18,6 @@ const StatusBg = ({children}) => {
     ) {
         backgroundColor = '#FFE9E9';
         textColor = '#B50000';
-        borderColor = '#B50000';
     } else if (children === 'cancelled' || children === 'upcoming') {
         backgroundColor = '#E8E8E8';
     } else if (children === 'rescheduled' || children === 'completed') {

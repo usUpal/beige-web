@@ -17,10 +17,13 @@ const LoginBoxed = () => {
     const router = useRouter();
 
     const submitForm = async (e: any) => {
+
         e.preventDefault();
         const formData = new FormData(e.target);
         const loginEndPoint = 'https://api.beigecorporation.io/v1/auth/login';
-        // const loginEndPoint = 'http://localhost:5000/v1/auth/login';
+
+        //const loginEndPoint = 'http://localhost:5000/v1/auth/login';
+
         try {
             // Make a POST request to your login API endpoint
             const response = await fetch(loginEndPoint, {
