@@ -8,6 +8,10 @@ import {faArrowUpFromBracket, faBan, faFolderOpen, faPause, faPlay} from '@forta
 import FileBrowser from '@/components/files/FileBrowser';
 
 let userId: any;
+
+//const endPoint = 'http://localhost:5000/v1/';
+const endPoint = 'https://api.beigecorporation.io/v1/';
+
 if (typeof window !== 'undefined') {
     // Code using localStorage should only run on the client side
     userId = localStorage && (localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData') as string).id);
@@ -78,7 +82,7 @@ const Files = () => {
     };
 
     const fetchOrdersForCP = () => {
-        const url = `http://localhost:5000/v1/orders?sortBy=createdAt:desc&cp_id=${userId}&limit=5`;
+        const url = `${endPoint}orders?sortBy=createdAt:desc&cp_id=${userId}&limit=5`;
         fetch(url, {
             method: 'GET',
             headers: {
@@ -138,8 +142,7 @@ const Files = () => {
     };
 
     /*Start file upload functions*/
-    const API_ENDPOINT = 'http://localhost:5000/v1/files/upload';
-    //const API_ENDPOINT = 'https://api.beigecorporation.io/v1/files/upload';
+    const API_ENDPOINT = `${endPoint}files/upload`;
 
     const ENDPOINTS = {
         UPLOAD: {
@@ -248,37 +251,39 @@ const Files = () => {
                     status: FILE_STATUS.FAILED
                 });
             }
+            setByteCount(1);
         }
 
         request.ontimeout = () => {
             updateFileMapData(file, {
                 status: FILE_STATUS.FAILED
             });
+            setByteCount(1);
         }
 
         request.onabort = () => {
             updateFileMapData(file, {
                 status: FILE_STATUS.PAUSED
             });
-            setByteCount(5)
+            setByteCount(5);
         }
 
         request.onerror = () => {
             updateFileMapData(file, {
                 status: FILE_STATUS.FAILED
             });
+            setByteCount(1);
         }
 
         request.upload.onprogress = (event) => {
             const byteLoaded = startingByte + event.loaded;
-            setByteCount(byteLoaded)
-
             // Add file upload data to the map
             updateFileMapData(file, {
                 status: FILE_STATUS.UPLOADING,
                 progress: Math.round((byteLoaded / file.size) * 100),
                 uploadedChunks: byteLoaded
             });
+            setByteCount(byteLoaded);
         }
 
         updateFileRequestMapData(file, {
