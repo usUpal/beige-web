@@ -99,7 +99,7 @@ function shootDetailsPage () {
                     <p className="text-[16px] font-normal leading-[26px] text-[#111111]">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates, libero magni? Animi ab unde eaque ex iste maiores omnis sequi accusantium repellat quo. Qui, repellendus sit? Necessitatibus repellendus tempore consectetur itaque nulla? Reiciendis, quas quibusdam! Labore veniam nihil totam quo, inventore et voluptate asperiores laboriosam, alias autem corrupti explicabo tempora? {shootInfo?.description}</p>
                 </div>
 
-                <div className="border-b-[3px] border-solid border-[#ACA686] pb-[40px] mb-[40px]">
+                <div className="mb-[40px]">
                     <div className="flex justify-center items-center">
                         <div>
                             <span className="text-[#545454] text-[24px] font-bold mr-[15px]">Payout:</span>
@@ -110,15 +110,6 @@ function shootDetailsPage () {
                             <span className="inline-block absolute top-[-7px] left-[20px] text-[10px] text-[#000000] bg-[#ffffff] px-[5px] py-[1px] border border-solid border-[#8FD0AD] rounded-[3px] leading-none">Status</span>
                         </div>
                     </div>
-                </div>
-
-                <div className="text-center my-[60px]">
-                    <Link href={`/apps/shootDetails/`}>
-                        <span className="text-[#ffffff] bg-[#ACA686] text-[18px] font-medium py-[15px] px-[25px] rounded-[10px] border border-solid border-[#aca686] shadow-[3px 3px 3px 0 rgba(0 0 0 0.3)] mr-[60px] hover:bg-[#ffffff] hover:text-[#aca686]">Upload</span>
-                    </Link>
-                    <Link href={`/apps/shootDetails/`}>
-                        <span className="text-[#000000] bg-[#DEBF97] text-[18px] font-medium py-[15px] px-[25px] rounded-[10px] border border-solid border-[#DEBF97] shadow-[3px 3px 3px 0 rgba(0 0 0 0.3)] hover:bg-[#ffffff] hover:text-[#000000] hover:border-[#000000]">View File</span>
-                    </Link>
                 </div>
 
             </div>

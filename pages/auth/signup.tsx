@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
-import { setPageTitle, toggleLocale, toggleRTL } from '../../store/themeConfigSlice';
 import Link from 'next/link';
+import { useDispatch, useSelector } from 'react-redux';
+import { IRootState } from '../../store';
+import { setPageTitle, toggleLocale, toggleRTL } from '../../store/themeConfigSlice';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import BlankLayout from '@/components/Layouts/BlankLayout';
-import { IRootState } from '@/store';
-import { useTranslation } from 'react-i18next';
 import Dropdown from '@/components/Dropdown';
+import { useTranslation } from 'react-i18next';
 
-const RegisterCover = () => {
+const RegisterBoxed = () => {
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setPageTitle('Register Cover'));
+        dispatch(setPageTitle('Register - BEIGE'));
     });
     const router = useRouter();
 
@@ -43,29 +43,16 @@ const RegisterCover = () => {
             <div className="absolute inset-0">
                 <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" />
             </div>
+
             <div className="relative flex min-h-screen items-center justify-center bg-[url(/assets/images/auth/map.png)] bg-cover bg-center bg-no-repeat px-6 py-10 dark:bg-[#060818] sm:px-16">
                 <img src="/assets/images/auth/coming-soon-object1.png" alt="image" className="absolute left-0 top-1/2 h-full max-h-[893px] -translate-y-1/2" />
                 <img src="/assets/images/auth/coming-soon-object2.png" alt="image" className="absolute left-24 top-0 h-40 md:left-[30%]" />
                 <img src="/assets/images/auth/coming-soon-object3.png" alt="image" className="absolute right-0 top-0 h-[300px]" />
-                <img src="/assets/images/auth/polygon-object.svg" alt="image" className="absolute bottom-0 end-[28%]" />
-                <div className="relative flex w-full max-w-[1502px] flex-col justify-between overflow-hidden rounded-md bg-white/60 backdrop-blur-lg dark:bg-black/50 lg:min-h-[758px] lg:flex-row lg:gap-10 xl:gap-0">
-                    <div className="relative hidden w-full items-center justify-center bg-[linear-gradient(225deg,rgba(239,18,98,1)_0%,rgba(67,97,238,1)_100%)] p-5 lg:inline-flex lg:max-w-[835px] xl:-ms-28 ltr:xl:skew-x-[14deg] rtl:xl:skew-x-[-14deg]">
-                        <div className="absolute inset-y-0 w-8 from-primary/10 via-transparent to-transparent ltr:-right-10 ltr:bg-gradient-to-r rtl:-left-10 rtl:bg-gradient-to-l xl:w-16 ltr:xl:-right-20 rtl:xl:-left-20"></div>
-                        <div className="ltr:xl:-skew-x-[14deg] rtl:xl:skew-x-[14deg]">
-                            <Link href="/" className="block w-48 lg:w-72 ms-10">
-                                <img src="/assets/images/auth/logo-white.svg" alt="Logo" className="w-full" />
-                            </Link>
-                            <div className="mt-24 hidden w-full max-w-[430px] lg:block">
-                                <img src="/assets/images/auth/register.svg" alt="Cover Image" className="w-full" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="relative flex w-full flex-col items-center justify-center gap-6 px-4 pb-16 pt-6 sm:px-6 lg:max-w-[667px]">
-                        <div className="flex w-full max-w-[440px] items-center gap-2 lg:absolute lg:end-6 lg:top-6 lg:max-w-full">
-                            <Link href="/" className="block w-8 lg:hidden">
-                                <img src="/assets/images/logo.svg" alt="Logo" className="mx-auto w-10" />
-                            </Link>
-                            <div className="dropdown ms-auto w-max">
+                <img src="/assets/images/auth/polygon-object.png" alt="image" className="absolute bottom-0 end-[28%]" />
+                <div className="relative w-full max-w-[870px] rounded-md bg-[linear-gradient(45deg,#fff9f9_0%,rgba(255,255,255,0)_25%,rgba(255,255,255,0)_75%,_#fff9f9_100%)] p-2 dark:bg-[linear-gradient(52.22deg,#0E1726_0%,rgba(14,23,38,0)_18.66%,rgba(14,23,38,0)_51.04%,rgba(14,23,38,0)_80.07%,#0E1726_100%)]">
+                    <div className="relative flex flex-col justify-center rounded-md bg-white/60 px-6 py-20 backdrop-blur-lg dark:bg-black/50 lg:min-h-[758px]">
+                        <div className="absolute end-6 top-6">
+                            <div className="dropdown">
                                 {flag && (
                                     <Dropdown
                                         offset={[0, 8]}
@@ -112,16 +99,16 @@ const RegisterCover = () => {
                                 )}
                             </div>
                         </div>
-                        <div className="w-full max-w-[440px] lg:mt-16">
+                        <div className="mx-auto w-full max-w-[440px]">
                             <div className="mb-10">
-                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign Up</h1>
-                                <p className="text-base font-bold leading-normal text-white-dark">Enter your email and password to register</p>
+                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-[#333434] md:text-4xl">Sign Up</h1>
+                                <p className="text-base font-bold leading-normal text-[#676767]">Enter your email and password to register</p>
                             </div>
                             <form className="space-y-5 dark:text-white" onSubmit={submitForm}>
                                 <div>
                                     <label htmlFor="Name">Name</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Name" type="text" placeholder="Enter Name" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input id="Name" type="text" placeholder="Enter Name" className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]" />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                                 <circle cx="9" cy="4.5" r="3" fill="#888EA8" />
@@ -137,7 +124,7 @@ const RegisterCover = () => {
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]" />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                                 <path
@@ -156,7 +143,7 @@ const RegisterCover = () => {
                                 <div>
                                     <label htmlFor="Password">Password</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]" />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                                 <path
@@ -187,14 +174,13 @@ const RegisterCover = () => {
                                 <div>
                                     <label className="flex cursor-pointer items-center">
                                         <input type="checkbox" className="form-checkbox bg-white dark:bg-black" />
-                                        <span className="text-white-dark">Subscribe to weekly newsletter</span>
+                                        <span className="text-[#333434]">Subscribe to weekly newsletter</span>
                                     </label>
                                 </div>
-                                <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
+                                <button type="submit" className="btn text-white bg-gradient-to-r from-[#E2A03F] to-[#735C38] !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l">
                                     Sign Up
                                 </button>
                             </form>
-
                             <div className="relative my-7 text-center md:mb-9">
                                 <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
                                 <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-white-light">or</span>
@@ -205,7 +191,7 @@ const RegisterCover = () => {
                                         <Link
                                             href="#"
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
+                                            style={{ background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)' }}
                                         >
                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                                 <path
@@ -227,7 +213,7 @@ const RegisterCover = () => {
                                         <Link
                                             href="#"
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
+                                            style={{ background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)' }}
                                         >
                                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                                                 <path
@@ -241,7 +227,7 @@ const RegisterCover = () => {
                                         <Link
                                             href="#"
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
+                                            style={{ background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)' }}
                                         >
                                             <svg width="14" height="12" viewBox="0 0 14 12" fill="none">
                                                 <path
@@ -255,7 +241,7 @@ const RegisterCover = () => {
                                         <Link
                                             href="#"
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
+                                            style={{ background: 'linear-gradient(135deg, rgba(226, 160, 63, 1) 0%, rgba(115, 92, 56, 1) 100%)' }}
                                         >
                                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                                                 <path
@@ -289,19 +275,18 @@ const RegisterCover = () => {
                             </div>
                             <div className="text-center dark:text-white">
                                 Already have an account ?&nbsp;
-                                <Link href="/auth/cover-login" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
+                                <Link href="/auth/signin" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
                                     SIGN IN
                                 </Link>
                             </div>
                         </div>
-                        <p className="absolute bottom-6 w-full text-center dark:text-white">© {new Date().getFullYear()}.VRISTO All Rights Reserved.</p>
                     </div>
                 </div>
             </div>
         </div>
     );
 };
-RegisterCover.getLayout = (page: any) => {
+RegisterBoxed.getLayout = (page: any) => {
     return <BlankLayout>{page}</BlankLayout>;
 };
-export default RegisterCover;
+export default RegisterBoxed;
