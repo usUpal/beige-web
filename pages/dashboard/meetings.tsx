@@ -12,9 +12,6 @@ const Meeting = () => {
     const [myMeetings, setMyMeetings] = useState([]);
     const [userId, setUserId] = useState('');
 
-    // console.log(userId);
-    // console.log(myMeetings);
-
     useEffect(() => {
         getAllMyMeetings();
     }, [userId]);
@@ -54,11 +51,9 @@ const Meeting = () => {
 
     // Meeting Single
     const router = useRouter();
-
     const [meetingInfo, setMeetingInfo] = useState({});
     const [showError, setShowError] = useState(false);
     const [isLoading, setLoading] = useState(true);
-console.log("HELLO", meetingInfo);
 
     const getMeetingDetails = async (meetingId) => {
         setLoading(true);
