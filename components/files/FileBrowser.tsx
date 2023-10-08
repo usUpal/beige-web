@@ -1,4 +1,3 @@
-import { Dialog, Transition, Tab } from '@headlessui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAngleLeft,
@@ -6,12 +5,15 @@ import {
   faCamera,
   faFileVideo,
   faFolder,
-  faFolderPlus
+  faFolderPlus,
+  faFileImage
 } from '@fortawesome/free-solid-svg-icons';
+
 import { toast } from 'react-toastify';
 import { Fragment, useState } from 'react';
 import Select from 'react-select';
 import { API_ENDPOINT } from '@/config';
+import FileInfo from '@/components/files/FileInfo';
 
 const FileBrowser = (props: { shootsData: object; }) => {
 
@@ -22,6 +24,49 @@ const FileBrowser = (props: { shootsData: object; }) => {
   const [shootSelected, setShootSelected] = useState(false);
   const [isFilesLoading, setIsFilesLoading] = useState(false);
   const [fileDetailsModal, setFileDetailsModal] = useState(false);
+  const [fileInfoData, setFileInfoData] = useState(null);
+
+  function getFileType(extension: string) {
+    const supportedExtensions = [
+      'jpg',
+      'jpeg',
+      'png',
+      'tiff',
+      'raw',
+      'nef',
+      'cr2',
+      'arw',
+      'orf',
+      'dng',
+      'bmp',
+      'mp4',
+      'mov',
+      'avi',
+      'mkv',
+      'webm',
+      'mpg',
+      'mpeg',
+      'wmv',
+      'flv',
+      'gif',
+      'ogg',
+      '3gp'
+    ];
+
+    // Convert the extension to lowercase for case-insensitive matching
+    const lowercaseExtension = extension.toLowerCase();
+
+    // Check if the extension is in the list of supported extensions
+    if (supportedExtensions.includes(lowercaseExtension)) {
+      // Check if it's a photo extension
+      if (lowercaseExtension.match(/(jpg|jpeg|png|tiff|raw|nef|cr2|arw|orf|dng|bmp|gif)/)) {
+        return 'photo';
+      } else if (lowercaseExtension.match(/(mp4|mov|avi|mkv|webm|mpg|mpeg|wmv|flv|ogg|3gp)/)) {
+        return 'video';
+      }
+    }
+    return 'unknown';
+  }
 
   const fetchFileData = async (shootId: string) => {
     const path = shootId + '/';
@@ -60,7 +105,9 @@ const FileBrowser = (props: { shootsData: object; }) => {
     }
   };
 
-  const renderFileOrFolder = (name: string, type: string, path: any) => {
+  const renderFileOrFolder = (name: string, itemObject: object) => {
+
+    const { type, path } = itemObject;
 
     // Truncate name if it is too long
     const truncatedName = name.length > 25 ? name.substring(0, 22) + '...' : name;
@@ -74,14 +121,15 @@ const FileBrowser = (props: { shootsData: object; }) => {
     // Function to handle file double click
     const handleFileClick = () => {
       const filePath = '/' + currentPath + '/' + name;
+      setFileInfoData(itemObject);
       setFileDetailsModal(true);
-      console.log(filePath);
+      console.log(itemObject);
     };
 
     if (type === 'directory') {
       return (
         <div title={name} className='flex flex-col w-min items-start' onDoubleClick={handleDirectoryClick}>
-          <FontAwesomeIcon icon={faFolder} size='5x' color='#C5965C' className='cursor-pointer' />
+          <FontAwesomeIcon icon={faFolder} size='5x' color='#ACA686' className='cursor-pointer' />
           <div
             className='flex justify-center w-full whitespace-no-wrap overflow-hidden overflow-ellipsis font-semibold'>
             <span className='break-all text-center'>{truncatedName}</span>
@@ -89,13 +137,19 @@ const FileBrowser = (props: { shootsData: object; }) => {
         </div>
       );
     } else if (type === 'file') {
+
+      const fileName = itemObject?.metaData?.file_name;
+      const fileType = getFileType(fileName.split('.').pop());
+
+      const truncatedFileName = fileName.length > 25 ? fileName.substring(0, 22) + '...' : fileName;
       // Assuming you have access to the file name
       return (
-        <div title={name} className='flex flex-col w-min items-start' onDoubleClick={handleFileClick}>
-          <FontAwesomeIcon icon={faFileVideo} size='5x' color='#333434' className='cursor-pointer' />
+        <div title={fileName} className='flex flex-col w-min items-start' onDoubleClick={handleFileClick}>
+          <FontAwesomeIcon icon={fileType === 'video' ? faFileVideo : faFileImage}
+                           size='5x' color='#333434' className='cursor-pointer' />
           <div
             className='flex justify-center w-full whitespace-no-wrap overflow-hidden overflow-ellipsis font-semibold'>
-            <span className='break-all text-center'>{truncatedName}</span>
+            <span className='break-all text-center'>{truncatedFileName}</span>
           </div>
         </div>
       );
@@ -152,63 +206,12 @@ const FileBrowser = (props: { shootsData: object; }) => {
   };
 
   return (
-    <div>
-      <Transition appear show={fileDetailsModal} as={Fragment}>
-        <Dialog as='div' open={fileDetailsModal} onClose={() => setFileDetailsModal(false)}>
-          <Transition.Child
-            as={Fragment}
-            enter='ease-out duration-300'
-            enterFrom='opacity-0'
-            enterTo='opacity-100'
-            leave='ease-in duration-200'
-            leaveFrom='opacity-100'
-            leaveTo='opacity-0'
-          >
-            <div className='fixed inset-0' />
-          </Transition.Child>
-          <div className='fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto'>
-            <div className='flex items-start justify-center min-h-screen px-4'>
-              <Transition.Child
-                as={Fragment}
-                enter='ease-out duration-300'
-                enterFrom='opacity-0 scale-95'
-                enterTo='opacity-100 scale-100'
-                leave='ease-in duration-200'
-                leaveFrom='opacity-100 scale-100'
-                leaveTo='opacity-0 scale-95'
-              >
-                <Dialog.Panel as='div'
-                              className='panel border-0 p-0 rounded-lg overflow-hidden my-8 w-full max-w-lg text-black dark:text-white-dark'>
-                  <div className='flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3'>
-                    <div className='text-lg font-bold'>Modal Title</div>
-                    <button type='button' className='text-white-dark hover:text-dark' onClick={() => setModal1(false)}>
-                      <svg>...</svg>
-                    </button>
-                  </div>
-                  <div className='p-5'>
-                    <p>
-                      Mauris mi tellus, pharetra vel mattis sed, tempus ultrices eros. Phasellus egestas sit amet velit
-                      sed luctus. Orci varius natoque
-                      penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse potenti. Vivamus
-                      ultrices sed urna ac pulvinar. Ut sit
-                      amet ullamcorper mi.
-                    </p>
-                    <div className='flex justify-end items-center mt-8'>
-                      <button type='button' className='btn btn-outline-danger' onClick={() => setModal1(false)}>
-                        Discard
-                      </button>
-                      <button type='button' className='btn btn-primary ltr:ml-4 rtl:mr-4'
-                              onClick={() => setModal1(false)}>
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition>
+    <div className={`h-[70vh] overflow-y-auto`}>
+      <FileInfo
+        fileDetailsModal={fileDetailsModal}
+        setFileDetailsModal={setFileDetailsModal}
+        fileInfoData={fileInfoData}
+      />
       <div className='pt-5'>
         <div className='flex flex-col flex-wrap items-center justify-between md:flex-row xl:w-auto'>
           {renderPathBreadcrumb(currentPath)}
@@ -273,7 +276,7 @@ const FileBrowser = (props: { shootsData: object; }) => {
               const item = currentFileData[itemKey];
               return (
                 <Fragment key={itemKey}>
-                  {renderFileOrFolder(itemKey, item.type || 'directory', item.path)}
+                  {renderFileOrFolder(itemKey, item)}
                 </Fragment>
               );
             })}

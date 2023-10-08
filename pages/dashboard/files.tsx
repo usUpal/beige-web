@@ -12,7 +12,7 @@ import {
   faPlay
 } from '@fortawesome/free-solid-svg-icons';
 import { API_ENDPOINT } from '@/config';
-import FileBrowser from '@/components/FileBrowser';
+import FileBrowser from '@/components/files/FileBrowser';
 
 let userId: any;
 
@@ -423,7 +423,7 @@ const Files = () => {
     const files = event.target.files;
     [...files].forEach(requestFileUpload);
     setSelectedFiles([...selectedFiles, ...files]);
-    event.target.value = ''; // Reset File Input
+    event.target.value = '';
   };
 
   //End file upload functions
