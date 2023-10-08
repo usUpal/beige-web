@@ -11,12 +11,11 @@ import {
 import { toast } from 'react-toastify';
 import { Fragment, useState } from 'react';
 import Select from 'react-select';
+import { API_ENDPOINT } from '@/config';
 
 const FileBrowser = (props: { shootsData: object; }) => {
 
   const { shootsData } = props;
-  //const endPoint = 'http://localhost:5000/v1/';
-  const endPoint = 'https://api.beigecorporation.io/v1/';
 
   const [currentFileData, setCurrentFileData] = useState(null);
   const [currentPath, setCurrentPath] = useState('');
@@ -31,7 +30,7 @@ const FileBrowser = (props: { shootsData: object; }) => {
     const fetchErrorMessage = 'An error occurred while fetching shoot data';
     try {
       const response = await fetch(
-        `${endPoint}files/directory?target_path=${encodeURIComponent(path)}`
+        `${API_ENDPOINT}files/directory?target_path=${encodeURIComponent(path)}`
       );
       if (response.ok) {
         const data = await response.json();

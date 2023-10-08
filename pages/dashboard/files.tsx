@@ -4,13 +4,17 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket, faBan, faFolderOpen, faPause, faPlay } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowUpFromBracket,
+  faBan,
+  faFolderOpen,
+  faPause,
+  faPlay
+} from '@fortawesome/free-solid-svg-icons';
+import { API_ENDPOINT } from '@/config';
 import FileBrowser from '@/components/FileBrowser';
 
 let userId: any;
-
-//const endPoint = 'http://localhost:5000/v1/';
-const endPoint = 'https://api.beigecorporation.io/v1/';
 
 if (typeof window !== 'undefined') {
   // Code using localStorage should only run on the client side
@@ -82,7 +86,7 @@ const Files = () => {
   };
 
   const fetchOrdersForCP = () => {
-    const url = `${endPoint}orders?sortBy=createdAt:desc&cp_id=${userId}&limit=5`;
+    const url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&cp_id=${userId}&limit=5`;
     fetch(url, {
       method: 'GET',
       headers: {
@@ -142,23 +146,23 @@ const Files = () => {
   };
 
   /*Start file upload functions*/
-  const API_ENDPOINT = `${endPoint}files/upload`;
+  const API_API_ENDPOINT = `${API_ENDPOINT}files/upload`;
 
-  const ENDPOINTS = {
+  const API_ENDPOINTS = {
     UPLOAD: {
-      URL: API_ENDPOINT,
+      URL: API_API_ENDPOINT,
       METHOD: 'PUT'
     },
     UPLOAD_STATUS: {
-      URL: API_ENDPOINT,
+      URL: API_API_ENDPOINT,
       METHOD: 'GET'
     },
     UPLOAD_REQUEST: {
-      URL: API_ENDPOINT,
+      URL: API_API_ENDPOINT,
       METHOD: 'POST'
     },
     UPLOAD_CANCEL: {
-      URL: API_ENDPOINT,
+      URL: API_API_ENDPOINT,
       METHOD: 'DELETE'
     }
   };
@@ -197,8 +201,8 @@ const Files = () => {
     updateFileMapData(file, fileMapData);
 
     try {
-      const response = await fetch(ENDPOINTS.UPLOAD_REQUEST.URL, {
-        method: ENDPOINTS.UPLOAD_REQUEST.METHOD,
+      const response = await fetch(API_ENDPOINTS.UPLOAD_REQUEST.URL, {
+        method: API_ENDPOINTS.UPLOAD_REQUEST.METHOD,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -237,7 +241,7 @@ const Files = () => {
     formData.append('fileId', fileId);
     formData.append('file', fileChunk);
 
-    request.open(ENDPOINTS.UPLOAD.METHOD, ENDPOINTS.UPLOAD.URL, true);
+    request.open(API_ENDPOINTS.UPLOAD.METHOD, API_ENDPOINTS.UPLOAD.URL, true);
     request.setRequestHeader('Content-Range',
       `bytes ${startingByte}-${startingByte + fileChunk.size}/${file.size}`);
     request.setRequestHeader('X-File-Id', fileId);
@@ -315,7 +319,7 @@ const Files = () => {
     console.log(fileId);
     try {
       const fileInfo = await fetch(
-        `${ENDPOINTS.UPLOAD_STATUS.URL}?fileId=${fileId}`
+        `${API_ENDPOINTS.UPLOAD_STATUS.URL}?fileId=${fileId}`
       );
       return await fileInfo.json();
     } catch (error) {
