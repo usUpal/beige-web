@@ -395,8 +395,8 @@ const Index = () => {
     };
 
     // Shoots
-    const [myShoots, setMyShoots] = useState([]);
-    const [userId, setUserId] = useState('');
+    const [myShoots, setMyShoots] = useState<any>([]);
+    const [userId, setUserId] = useState<any>('');
     console.log(userId);
     console.log(myShoots);
     useEffect(() => {
@@ -407,16 +407,11 @@ const Index = () => {
     }, []);
     const getAllMyShoots = async () => {
         try {
-
             if (userId) {
-                const response = await fetch(
-                    `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=5&cp_id=${userId}`,
-                );
+                const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=5&cp_id=${userId}`);
                 const allShots = await response.json();
-                setMyShoots(prevShoots => {
-                    const newShoots = allShots.results.filter(
-                        shoot => !prevShoots.some(prevShoot => prevShoot.id === shoot.id),
-                    );
+                setMyShoots((prevShoots: any) => {
+                    const newShoots = allShots.results.filter((shoot: any) => !prevShoots.some((prevShoot: any) => prevShoot.id === shoot.id));
                     return [...prevShoots, ...newShoots];
                 });
             }
@@ -427,7 +422,7 @@ const Index = () => {
     const getUserId = async () => {
         try {
             if (typeof window !== 'undefined') {
-                setUserId(localStorage && (localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData') as string).id));
+                setUserId(localStorage && localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData') as string).id);
             }
         } catch (error) {
             console.error(error);
@@ -567,7 +562,6 @@ const Index = () => {
 
                     {/* Summary and Total orders */}
                     <div className="mb-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-2">
-
                         {/* Monthly Orders */}
                         <div className="panel h-full sm:col-span-2 xl:col-span-1">
                             <div className="mb-5 flex items-center">
@@ -712,7 +706,6 @@ const Index = () => {
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     {/* Transactions */}
@@ -758,9 +751,7 @@ const Index = () => {
                                         <span className="whitespace-pre px-1 text-base text-success ltr:ml-auto rtl:mr-auto">+$36.11</span>
                                     </div>
                                     <div className="flex">
-                                        <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-warning-light text-warning dark:bg-warning dark:text-warning-light">
-                                            IS
-                                        </span>
+                                        <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-warning-light text-warning dark:bg-warning dark:text-warning-light">IS</span>
                                         <div className="flex-1 px-3">
                                             <div>Image Shoot</div>
                                             <div className="text-xs text-white-dark dark:text-gray-500">04 Jan 1:00PM</div>
@@ -768,9 +759,7 @@ const Index = () => {
                                         <span className="whitespace-pre px-1 text-base text-danger ltr:ml-auto rtl:mr-auto">-$16.44</span>
                                     </div>
                                     <div className="flex">
-                                        <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-danger-light text-danger dark:bg-danger dark:text-danger-light">
-                                            IS
-                                        </span>
+                                        <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-danger-light text-danger dark:bg-danger dark:text-danger-light">IS</span>
                                         <div className="flex-1 px-3">
                                             <div>Image Shoot</div>
                                             <div className="text-xs text-white-dark dark:text-gray-500">10 Jan 1:00PM</div>
@@ -778,9 +767,7 @@ const Index = () => {
                                         <span className="whitespace-pre px-1 text-base text-success ltr:ml-auto rtl:mr-auto">+$66.44</span>
                                     </div>
                                     <div className="flex">
-                                        <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-secondary-light text-secondary dark:bg-secondary dark:text-secondary-light">
-                                            WS
-                                        </span>
+                                        <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-secondary-light text-secondary dark:bg-secondary dark:text-secondary-light">WS</span>
                                         <div className="flex-1 px-3">
                                             <div>Wedding Shoot</div>
                                             <div className="text-xs text-white-dark dark:text-gray-500">04 Jan 1:00PM</div>
@@ -796,9 +783,7 @@ const Index = () => {
                                         <span className="whitespace-pre px-1 text-base text-success ltr:ml-auto rtl:mr-auto">+$10.08</span>
                                     </div>
                                     <div className="flex">
-                                        <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-primary-light text-primary dark:bg-primary dark:text-primary-light">
-                                            VS
-                                        </span>
+                                        <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-primary-light text-primary dark:bg-primary dark:text-primary-light">VS</span>
                                         <div className="flex-1 px-3">
                                             <div>Video Shoot</div>
                                             <div className="text-xs text-white-dark dark:text-gray-500">04 Jan 1:00PM</div>
@@ -883,7 +868,6 @@ const Index = () => {
 
                     {/* Recent Orders and Top Rated Producer */}
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-
                         {/* Recent Orders */}
                         <div className="panel h-full w-full">
                             <div className="mb-5 flex items-center justify-between">
@@ -900,29 +884,28 @@ const Index = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-
-                                        {myShoots?.map(shoot =>
-                                        <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                            <td className="min-w-[150px] text-black dark:text-white">
-                                                <div className="flex items-center">
-                                                    <span className='text-[12px] uppercase inline-block bg-[#BAE7FF] text-[#2196F3] leading-none rounded-[8px] ltr:mr-3 rtl:ml-3 w-[32px] h-[32px] leading-[32px] text-center'>{shoot?.order_name.slice(0,2)}</span>
-                                                    <p className="whitespace-nowrap">
-                                                        {shoot?.order_name}
-                                                        <span className="block text-xs text-[#888EA8]">
-                                                            {new Date( shoot?.shoot_datetimes[0]?.shoot_date_time, ).toDateString()}
+                                        {myShoots?.map((shoot:any) => (
+                                            <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                                                <td className="min-w-[150px] text-black dark:text-white">
+                                                    <div className="flex items-center">
+                                                        <span className="inline-block h-[32px] w-[32px] rounded-[8px] bg-[#BAE7FF] text-center text-[12px] uppercase leading-[32px] leading-none text-[#2196F3] ltr:mr-3 rtl:ml-3">
+                                                            {shoot?.order_name.slice(0, 2)}
                                                         </span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                            <td>$56.07</td>
-                                            <td className="text-success">Available</td>
-                                            <td>
-                                                <div className=''>
-                                                    <StatusBg>{shoot?.order_status}</StatusBg>
-                                                </div>
-                                            </td>
-                                        </tr>)}
-
+                                                        <p className="whitespace-nowrap">
+                                                            {shoot?.order_name}
+                                                            <span className="block text-xs text-[#888EA8]">{new Date(shoot?.shoot_datetimes[0]?.shoot_date_time).toDateString()}</span>
+                                                        </p>
+                                                    </div>
+                                                </td>
+                                                <td>$56.07</td>
+                                                <td className="text-success">Available</td>
+                                                <td>
+                                                    <div className="">
+                                                        <StatusBg>{shoot?.order_status}</StatusBg>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
@@ -1014,7 +997,6 @@ const Index = () => {
                                 </table>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
