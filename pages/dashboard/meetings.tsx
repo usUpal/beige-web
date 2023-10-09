@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import {setPageTitle} from '../../store/themeConfigSlice';
 import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
-import { baseURL } from '@/baseURL';
+import { API_ENDPOINT } from '@/config';
 
 const Meeting = () => {
 
@@ -24,7 +24,7 @@ const Meeting = () => {
 
             if (userId) {
                 const response = await fetch(
-                    `https://api.beigecorporation.io/v1/meetings?sortBy=createdAt:desc&limit=30&user=${userId}`,
+                    `${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=30&user=${userId}`,
                 );
                 const allShots = await response.json();
                 setMyMeetings(prevMeetings => {
@@ -58,7 +58,7 @@ const Meeting = () => {
     const getMeetingDetails = async (meetingId) => {
         setLoading(true);
         try {
-          const response = await fetch(`${baseURL}/meetings/${meetingId}`);
+          const response = await fetch(`${API_ENDPOINT}meetings/${meetingId}`);
           const meetingDetailsRes = await response.json();
 
           if (!meetingDetailsRes) {

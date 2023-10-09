@@ -4,9 +4,9 @@ import {useDispatch} from 'react-redux';
 import {setPageTitle} from '../../store/themeConfigSlice';
 import { Dialog, Transition } from '@headlessui/react';
 import StatusBg from '@/components/Status/StatusBg';
-import { baseURL } from '@/baseURL';
 import { useRouter } from 'next/router';
 import Pagination from '@/components/Pagination';
+import { API_ENDPOINT } from '@/config';
 
 const Shoots = () => {
 
@@ -25,10 +25,9 @@ const Shoots = () => {
 
     const getAllMyShoots = async () => {
         try {
-
             if (userId) {
                 const response = await fetch(
-                    `https://api.beigecorporation.io/v1/orders?sortBy=createdAt:desc&limit=30&cp_id=${userId}`,
+                    `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=30&cp_id=${userId}`,
                 );
                 const allShots = await response.json();
                 setMyShoots(prevShoots => {
@@ -60,7 +59,7 @@ const Shoots = () => {
     const getShootDetails = async (shootId) => {
         setLoading(true);
         try {
-          const response = await fetch(`${baseURL}/orders/${shootId}`);
+          const response = await fetch(`${API_ENDPOINT}orders/${shootId}`);
           const shootDetailsRes = await response.json();
 
           if (!shootDetailsRes) {

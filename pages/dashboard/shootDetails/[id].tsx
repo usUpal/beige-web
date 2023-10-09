@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { baseURL } from "@/baseURL";
 import StatusBg from '@/components/Status/StatusBg';
 import {useDispatch} from 'react-redux';
 import {setPageTitle} from '../../../store/themeConfigSlice';
+import { API_ENDPOINT } from '@/config';
 
 function shootDetailsPage () {
     const router = useRouter();
@@ -18,7 +18,7 @@ function shootDetailsPage () {
     const getShootDetails = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${baseURL}/orders/${id}`);
+        const response = await fetch(`${API_ENDPOINT}orders/${id}`);
         const shootDetailsRes = await response.json();
 
         if (!shootDetailsRes) {

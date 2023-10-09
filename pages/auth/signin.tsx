@@ -8,6 +8,7 @@ import BlankLayout from '@/components/Layouts/BlankLayout';
 import Dropdown from '@/components/Dropdown';
 import {useTranslation} from 'react-i18next';
 import { toast } from 'react-toastify';
+import { API_ENDPOINT } from '@/config';
 
 const LoginBoxed = () => {
     const dispatch = useDispatch();
@@ -20,9 +21,7 @@ const LoginBoxed = () => {
 
         e.preventDefault();
         const formData = new FormData(e.target);
-        const loginEndPoint = 'https://api.beigecorporation.io/v1/auth/login';
-
-        //const loginEndPoint = 'http://localhost:5000/v1/auth/login';
+        const loginEndPoint = `${API_ENDPOINT}auth/login`;
 
         try {
             // Make a POST request to your login API endpoint

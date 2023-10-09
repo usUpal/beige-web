@@ -4,9 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { useForm } from 'react-hook-form';
-import { log } from 'console';
-import { baseURL } from '@/baseURL';
 import { toast } from 'react-toastify';
+import { API_ENDPOINT } from '@/config';
 
 const SearchingParams = () => {
 
@@ -27,7 +26,7 @@ const SearchingParams = () => {
 
 
   const fetchDataAndPopulateForm = () => {
-    fetch(`${baseURL}/settings/algo/search`)
+    fetch(`${API_ENDPOINT}settings/algo/search`)
       .then((res) => res.json())
       .then((data) => {
         // Assuming 'data' is the response object with field values
@@ -54,7 +53,7 @@ const SearchingParams = () => {
 
   const handlePostSearchingParams = (searchingParams) => {
     // setIsLoading(true);
-    fetch(`${baseURL}/settings/algo/search`, {
+    fetch(`${API_ENDPOINT}settings/algo/search`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
