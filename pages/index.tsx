@@ -9,6 +9,7 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), {
 });
 import Link from 'next/link';
 import StatusBg from '@/components/Status/StatusBg';
+import { API_ENDPOINT } from '@/config';
 
 const Index = () => {
     const dispatch = useDispatch();
@@ -409,7 +410,7 @@ const Index = () => {
 
             if (userId) {
                 const response = await fetch(
-                    `https://api.beigecorporation.io/v1/orders?sortBy=createdAt:desc&limit=5&cp_id=${userId}`,
+                    `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=5&cp_id=${userId}`,
                 );
                 const allShots = await response.json();
                 setMyShoots(prevShoots => {
