@@ -17,6 +17,7 @@ const FileBrowser = (props: any) => {
     const [currentPath, setCurrentPath] = useState('');
     const [shootSelected, setShootSelected] = useState(false);
     const [isFilesLoading, setIsFilesLoading] = useState(false);
+    const [isNoContent, setIsNoContent] = useState(false);
     const [fileDetailsModal, setFileDetailsModal] = useState(false);
     const [fileInfoData, setFileInfoData] = useState(null);
 
@@ -69,9 +70,15 @@ const FileBrowser = (props: any) => {
         const fetchErrorMessage = 'An error occurred while fetching shoot data';
         try {
             const response = await fetch(`${API_ENDPOINT}files/directory?target_path=${encodeURIComponent(path)}`);
+
             if (response.ok) {
                 const data = await response.json();
-                setCurrentFileData(data[shootId].items);
+                if (data[shootId]) {
+                    setCurrentFileData(data[shootId].items);
+                    setIsNoContent(false);
+                } else {
+                    setIsNoContent(true);
+                }
                 setIsFilesLoading(false);
             } else {
                 toast.error(fetchErrorMessage, {
@@ -80,7 +87,8 @@ const FileBrowser = (props: any) => {
                 setIsFilesLoading(false);
             }
         } catch (error) {
-            toast.error(fetchErrorMessage, {
+            console.log(error);
+            toast.error('error ' + fetchErrorMessage, {
                 position: toast.POSITION.TOP_RIGHT,
             });
             setIsFilesLoading(false);
@@ -88,12 +96,12 @@ const FileBrowser = (props: any) => {
     };
 
     const handleShootSelect = async (selectedOption: SelectedOption | null) => {
-      if (selectedOption) {
-          const shootId = selectedOption.value;
-          setShootSelected(true);
-          await fetchFileData(shootId);
-      }
-  };
+        if (selectedOption) {
+            const shootId = selectedOption.value;
+            setShootSelected(true);
+            await fetchFileData(shootId);
+        }
+    };
 
     const renderFileOrFolder = (name: any, itemObject: any) => {
         const { type, path } = itemObject;
@@ -227,7 +235,7 @@ const FileBrowser = (props: any) => {
                     </div>
                 </div>
 
-                {currentFileData && (
+                {currentFileData && !isNoContent && !isFilesLoading && (
                     <div className="mt-5 flex flex-wrap justify-normal gap-6">
                         {Object.keys(currentFileData).map((itemKey) => {
                             const item = currentFileData[itemKey];
@@ -236,9 +244,15 @@ const FileBrowser = (props: any) => {
                     </div>
                 )}
 
-                {!isFilesLoading && !currentFileData && (
+                {!isFilesLoading && !currentFileData && !isNoContent && (
                     <div className={`mt-5 text-center`}>
                         <span>Select a shoot to browsing</span>
+                    </div>
+                )}
+
+                {!isFilesLoading && isNoContent && (
+                    <div className={`mt-5 text-center`}>
+                        <span>No content found in this directory</span>
                     </div>
                 )}
 

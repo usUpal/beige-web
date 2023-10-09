@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpFromBracket, faBan, faFolderOpen, faPause, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { API_ENDPOINT } from '@/config';
 import FileBrowser from '@/components/files/FileBrowser';
+import { toast } from 'react-toastify';
 
 let userId: any;
 
@@ -238,39 +239,47 @@ const Files = () => {
                     status: FILE_STATUS.FAILED,
                 });
             }
-            setByteCount(1);
+            setByteCount(Math.floor(Math.random() * 1000000));
         };
 
         request.ontimeout = () => {
             updateFileMapData(file, {
                 status: FILE_STATUS.FAILED,
             });
-            setByteCount(1);
+            setByteCount(Math.floor(Math.random() * 1000000));
         };
 
         request.onabort = () => {
             updateFileMapData(file, {
                 status: FILE_STATUS.PAUSED,
             });
-            setByteCount(5);
+            setByteCount(Math.floor(Math.random() * 1000000));
         };
 
         request.onerror = () => {
             updateFileMapData(file, {
                 status: FILE_STATUS.FAILED,
             });
-            setByteCount(1);
+            setByteCount(Math.floor(Math.random() * 1000000));
         };
 
         request.upload.onprogress = (event) => {
+            setByteCount(Math.floor(Math.random() * 1000000));
+
             const byteLoaded = startingByte + event.loaded;
+
+            // Ensure that byteLoaded does not exceed the file size
+            const loadedBytes = Math.min(byteLoaded, file.size);
+
+            // Calculate progress based on loadedBytes and file size
+            const progress = Math.round((loadedBytes / file.size) * 100);
+
             // Add file upload data to the map
             updateFileMapData(file, {
                 status: FILE_STATUS.UPLOADING,
-                progress: Math.round((byteLoaded / file.size) * 100),
-                uploadedChunks: byteLoaded,
+                progress,
+                uploadedChunks: loadedBytes,
             });
-            setByteCount(byteLoaded);
         };
 
         updateFileRequestMapData(file, {
@@ -278,19 +287,6 @@ const Files = () => {
         });
 
         request.send(formData);
-    };
-
-    const retryFileUpload = async (file: any) => {
-        console.log(file.name);
-    };
-
-    const pauseFileUpload = (file: any) => {
-        const fileRequest = fileUploadRequestsMap.get(file);
-        if (fileRequest && fileRequest.request) {
-            fileRequest.request.abort();
-            return true;
-        }
-        return false;
     };
 
     // Get uploaded file size
@@ -305,9 +301,17 @@ const Files = () => {
         }
     };
 
-    const resumeFileUpload = async (file: any) => {
+    const pauseFileUpload = (file: object) => {
+        const fileRequest = fileUploadRequestsMap.get(file);
+        if (fileRequest && fileRequest.request) {
+            fileRequest.request.abort();
+            return true;
+        }
+        return false;
+    };
+
+    const resumeFileUpload = async (file: object) => {
         const uploadedFileInfo = await getUploadedFileInfo(file);
-        console.log(uploadedFileInfo);
         const uploadedFileSize = uploadedFileInfo.size;
 
         if (!uploadedFileSize || uploadedFileSize === 0) {
@@ -317,62 +321,100 @@ const Files = () => {
         }
     };
 
-    const cancelFileUpload = async (file: any) => {
-        console.log(file.name);
+    const retryFileUpload = async (file: object) => {
+        const uploadedFileInfo = await getUploadedFileInfo(file);
+        const uploadedFileSize = uploadedFileInfo.size;
+        if (!uploadedFileSize) {
+            toast.error('Cannot retry file upload! Please try again', {
+                position: toast.POSITION.TOP_RIGHT,
+            });
+        }
+        uploadFileChunk(file, uploadedFileInfo.id, uploadedFileSize);
     };
 
-    const bytesToMegaBytes = (bytes: number) => {
-        const megabytes = bytes / 1024 / 1024;
-        return Math.round(megabytes);
+    const cancelFileUpload = async (file: object) => {
+        if (pauseFileUpload(file)) {
+            updateFileMapData(file, {
+                status: FILE_STATUS.CANCELLED,
+            });
+        }
+        fileUploadRequestsMap.delete(file);
+        selectedFilesMap.delete(file);
+    };
+
+    /**
+     * Converts bytes to kilobytes.
+     *
+     * @param {number} bytes - The number of bytes to convert.
+     * @returns {number} - The equivalent size in kilobytes.
+     */
+    const bytesToKilobytes = (bytes: any) => {
+        const kilobytes = bytes / 1024;
+        return Math.round(kilobytes);
     };
 
     const fileUploadElements = selectedFiles.map((file: any) => {
         let status = selectedFilesMap.get(file)?.status;
 
         return (
-            <div key={file.name} className="fileUploadElement">
-                <div className="align-center rounded-2 mb-3 flex flex-col flex-wrap justify-between gap-3 bg-white p-3 shadow-sm">
-                    <div className="flex flex-col">
-                        <div className="flex justify-between">
-                            <span className="font-semibold">{file?.name}</span>
-                            <span className="text-sm text-gray-500">{selectedFilesMap.get(file)?.progress}%</span>
+            status !== 'cancelled' && (
+                <div key={file.name} className="fileUploadElement">
+                    {status}
+                    <div className="align-center rounded-2 mb-3 flex flex-col flex-wrap justify-between gap-3 bg-white p-3 shadow-sm">
+                        <div className="flex flex-col">
+                            <div className="flex justify-between">
+                                <span className="font-semibold">{file?.name}</span>
+                                <span className="text-sm text-gray-500">{selectedFilesMap.get(file)?.progress}%</span>
+                            </div>
+                            <div className="mt-2 h-2 bg-gray-200">
+                                <div className="h-full bg-green-500 bg-success" style={{ width: `${selectedFilesMap.get(file)?.progress}%` }}></div>
+                            </div>
                         </div>
-                        <div className="mt-2 h-2 bg-gray-200">
-                            <div className="h-full bg-green-500 bg-success" style={{ width: `${selectedFilesMap.get(file)?.progress}%` }}></div>
-                        </div>
-                    </div>
-                    <div className="align-center flex flex-wrap justify-between">
-                        <div className="flex flex-col justify-center">
-                            <span className="font-thin">
-                                {bytesToMegaBytes(selectedFilesMap.get(file)?.uploadedChunks)} MB / {bytesToMegaBytes(file?.size)} MB
-                            </span>
-                        </div>
-                        <div className="flex flex-wrap items-center space-x-1">
-                            {selectedFilesMap.get(file)?.status === FILE_STATUS.UPLOADING && (
-                                <>
-                                    <button title="Pause Upload" onClick={() => pauseFileUpload(file)} className="btn btn-warning actionBtn flex h-8 w-8 items-center justify-center rounded-full p-0">
-                                        <FontAwesomeIcon icon={faPause} />
+                        <div className="align-center flex flex-wrap justify-between">
+                            <div className="flex flex-col justify-center">
+                                <span className="font-thin">
+                                    {bytesToKilobytes(selectedFilesMap.get(file)?.uploadedChunks)} KB / {bytesToKilobytes(file?.size)} KB
+                                </span>
+                            </div>
+                            <div className="flex flex-wrap items-center space-x-1">
+                                {selectedFilesMap.get(file)?.status === FILE_STATUS.UPLOADING && (
+                                    <>
+                                        <button
+                                            title="Pause Upload"
+                                            onClick={() => pauseFileUpload(file)}
+                                            className="btn btn-warning actionBtn flex h-8 w-8 items-center justify-center rounded-full p-0"
+                                        >
+                                            <FontAwesomeIcon icon={faPause} />
+                                        </button>
+                                        <button
+                                            title="Cancel Upload"
+                                            onClick={() => cancelFileUpload(file)}
+                                            className="btn btn-danger actionBtn flex h-8 w-8 items-center justify-center rounded-full p-0"
+                                        >
+                                            <FontAwesomeIcon icon={faBan} />
+                                            <i className="fa-solid fa-ban"></i>
+                                        </button>
+                                    </>
+                                )}
+                                {selectedFilesMap.get(file)?.status === FILE_STATUS.PAUSED && (
+                                    <button
+                                        title="Resume Upload"
+                                        onClick={() => resumeFileUpload(file)}
+                                        className="btn btn-primary actionBtn flex h-8 w-8 items-center justify-center rounded-full p-0"
+                                    >
+                                        <FontAwesomeIcon icon={faPlay} />
                                     </button>
-                                    <button title="Cancel Upload" onClick={() => cancelFileUpload(file)} className="btn btn-danger actionBtn flex h-8 w-8 items-center justify-center rounded-full p-0">
-                                        <FontAwesomeIcon icon={faBan} />
-                                        <i className="fa-solid fa-ban"></i>
+                                )}
+                                {selectedFilesMap.get(file)?.status === FILE_STATUS.FAILED && (
+                                    <button title="Retry Upload" onClick={() => retryFileUpload(file)} className="btn btn-success actionBtn flex h-8 w-8 items-center justify-center rounded-full p-0">
+                                        <FontAwesomeIcon icon={faArrowUpFromBracket} />
                                     </button>
-                                </>
-                            )}
-                            {selectedFilesMap.get(file)?.status === FILE_STATUS.PAUSED && (
-                                <button title="Resume Upload" onClick={() => resumeFileUpload(file)} className="btn btn-primary actionBtn flex h-8 w-8 items-center justify-center rounded-full p-0">
-                                    <FontAwesomeIcon icon={faPlay} />
-                                </button>
-                            )}
-                            {selectedFilesMap.get(file)?.status === FILE_STATUS.FAILED && (
-                                <button title="Retry Upload" onClick={() => retryFileUpload(file)} className="btn btn-success actionBtn flex h-8 w-8 items-center justify-center rounded-full p-0">
-                                    <FontAwesomeIcon icon={faArrowUpFromBracket} />
-                                </button>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )
         );
     });
 
@@ -440,9 +482,11 @@ const Files = () => {
                                                 <Select onChange={handleFileTypeChange} defaultValue={fileTypes[0]} options={fileTypes} isSearchable={true} />
                                             </div>
                                         </div>
+                                        {/*  */}
+
                                         <div className={`active pt-5 ${isFileSelectButtonDisabled ? 'disabled' : ''}`}>
                                             {isFileSelectButtonDisabled ? (
-                                                <div className="btn btn-info btn-lg m-auto w-48">
+                                                <div className="bg-slate-300 btn-lg m-auto w-48 rounded-lg text-slate-400 text-center">
                                                     <FontAwesomeIcon icon={faFolderOpen} />
                                                     &nbsp;Select Files
                                                 </div>
