@@ -10,17 +10,11 @@ import Pagination from '@/components/Pagination';
 
 const Shoots = () => {
 
-    // Pagination
-    const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 2;
-
-    const onPageChange = (page) => {
-    setCurrentPage(page);
-    };
-
     // All Shoots
     const [myShoots, setMyShoots] = useState([]);
     const [userId, setUserId] = useState('');
+
+    console.log("DATA", myShoots);
 
     useEffect(() => {
         getAllMyShoots();
@@ -151,12 +145,7 @@ const Shoots = () => {
                         </tbody>
                     </table>
 
-                    <Pagination
-                        items={myShoots.length}
-                        currentPage={currentPage}
-                        pageSize={pageSize}
-                        onPageChange={onPageChange}
-                    />
+                    <Pagination/>
 
                 </div>
             </div>
