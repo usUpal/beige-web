@@ -8,32 +8,36 @@ import { API_ENDPOINT } from '@/config';
 import { useForm } from 'react-hook-form';
 
 const Meeting = () => {
+    const [myMeetings, setMyMeetings] = useState<MeetingResponsTypes[]>([]);
+    const [userId, setUserId] = useState('');
+    const [rescheduleMeetingTime, setrescheduleMeetingTime] = useState('');
+
+    useEffect(() => {
+        getAllMyMeetings();
+    }, [userId]);
+    useEffect(() => {
+        getUserId();
+    }, []);
 
     // Getting dateTime value
-    const dateTimeRef = useRef(null);
+    const dateTimeRef:any = useRef(null);
 
     const handleButtonChange = () => {
         const dateTimeValue = dateTimeRef.current.value;
         const selectedDate = new Date(dateTimeValue);
         const scheduleDate = selectedDate.toISOString();
+        setrescheduleMeetingTime(scheduleDate);
     }
-
+    const requestData = {
+        requested_by: 'cp',
+        requested_time:rescheduleMeetingTime,
+    };
     // API
     const handleNext = async () => {
-        if (selectedDate) {
-            const dateTime = `${selectedDate}T${formatTime(selectedTime)}`;
-            const url = `${baseURL}/meetings/schedule/${route.params.meetingId}`;
-
-            const requestData = {
-                requested_by: 'cp',
-                requested_time: convertDateToDesiredFormat(dateTime),
-            };
-
-            console.log('SELECTED DATE ==> ', convertDateToDesiredFormat(dateTime));
-            console.log(describeDateTime(convertDateToDesiredFormat(dateTime)));
+        if (rescheduleMeetingTime) {
+            const url = `${API_ENDPOINT}meetings/schedule/${route.params.meetingId}`;
 
             try {
-                setIsLoading(true);
                 const response = await fetch(url, {
                     method: 'PATCH',
                     headers: {
@@ -43,32 +47,17 @@ const Meeting = () => {
                 });
 
                 if (!response.ok) {
-                    setIsLoading(false);
                     throw new Error('Network response was not ok');
                 }
 
                 const data = await response.json();
-                setIsLoading(false);
-                console.log('PATCH request successful:', data);
-                navigation.goBack();
             } catch (error) {
-                console.error('Error:', error);
-                setIsLoading(false);
+                console.log(error);
             }
         }
     };
 
     // All Meetings
-    const [myMeetings, setMyMeetings] = useState([]);
-    const [userId, setUserId] = useState('');
-
-    useEffect(() => {
-        getAllMyMeetings();
-    }, [userId]);
-    useEffect(() => {
-        getUserId();
-    }, []);
-
     const getAllMyMeetings = async () => {
         try {
 
@@ -79,7 +68,7 @@ const Meeting = () => {
                 const allShots = await response.json();
                 setMyMeetings(prevMeetings => {
                     const newMeetings = allShots.results.filter(
-                        meeting => !prevMeetings.some(prevMeeting => prevMeeting.id === meeting.id),
+                        (meeting:MeetingResponsTypes) => !prevMeetings.some(prevMeeting => prevMeeting.id === meeting.id),
                     );
                     return [...prevMeetings, ...newMeetings];
                 });
@@ -101,18 +90,17 @@ const Meeting = () => {
 
     // Meeting Single
     const router = useRouter();
-    const [meetingInfo, setMeetingInfo] = useState({});
-    const [showError, setShowError] = useState(false);
-    const [isLoading, setLoading] = useState(true);
+    const [meetingInfo, setMeetingInfo] = useState<any>({});
+    const [showError, setShowError] = useState<boolean>(false);
+    const [isLoading, setLoading] = useState<boolean>(true);
 
-    const getMeetingDetails = async (meetingId) => {
+    const getMeetingDetails = async (meetingId:string) => {
         setLoading(true);
         try {
             const response = await fetch(`${API_ENDPOINT}meetings/${meetingId}`);
             const meetingDetailsRes = await response.json();
 
             if (!meetingDetailsRes) {
-                console.log('Error With order Id', id);
                 console.log(response);
                 setShowError(true);
                 setLoading(false);
@@ -250,7 +238,9 @@ const Meeting = () => {
                                 <div className="p-5">
                                     <h2 className='text-[#ACA686] text-[22px] font-bold leading-[28.6px] capitalize mb-[20px]'>meeting with {meetingInfo?.client?.name}</h2>
                                     <div>
-                                        <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block'>Meeting Date: <strong>{new Date(meetingInfo?.meeting_date_time,).toDateString()}</strong></span>
+                                        <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block'>Meeting Date:
+                                            <strong>{new Date(meetingInfo?.meeting_date_time).toDateString()}</strong>
+                                        </span>
                                         <span className='text-[14px] leading-[18.2px] text-[#000000] block'>Meeting Time: <strong>{new Date(meetingInfo?.meeting_date_time,).toTimeString()}</strong></span>
                                     </div>
                                     <div className="mt-[30px]">
@@ -259,7 +249,7 @@ const Meeting = () => {
                                     </div>
                                     <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[15px] mt-[30px]">Reschedule Meeting</h2>
                                     <form action="">
-                                    <input className='text-[#000000] text-[14px] font-medium leading-none py-[10px] px-[15px] border border-solid border-[#dddddd] rounded-[10px] bg-white focus:border-[#dddddd]' type="datetime-local" name="dateTime" id="datetime" ref={dateTimeRef} onChange={handleButtonChange} />
+                                        <input className='text-[#000000] text-[14px] font-medium leading-none py-[10px] px-[15px] border border-solid border-[#dddddd] rounded-[10px] bg-white focus:border-[#dddddd]' type="datetime-local" name="dateTime" id="datetime" ref={dateTimeRef} onChange={handleButtonChange} />
                                     </form>
                                 </div>
                             </Dialog.Panel>

@@ -11,10 +11,8 @@ import { API_ENDPOINT } from '@/config';
 const Shoots = () => {
 
     // All Shoots
-    const [myShoots, setMyShoots] = useState([]);
+    const [myShoots, setMyShoots] = useState<ShootTypes[]>([]);
     const [userId, setUserId] = useState('');
-
-    console.log("DATA", myShoots);
 
     useEffect(() => {
         getAllMyShoots();
@@ -32,7 +30,7 @@ const Shoots = () => {
                 const allShots = await response.json();
                 setMyShoots(prevShoots => {
                     const newShoots = allShots.results.filter(
-                        shoot => !prevShoots.some(prevShoot => prevShoot.id === shoot.id),
+                        (shoot:ShootTypes) => !prevShoots.some(prevShoot => prevShoot.id === shoot.id),
                     );
                     return [...prevShoots, ...newShoots];
                 });
@@ -52,18 +50,17 @@ const Shoots = () => {
     };
 
     // Shoot Single
-    const [shootInfo, setShootInfo] = useState({});
-    const [showError, setShowError] = useState(false);
-    const [isLoading, setLoading] = useState(true);
+    const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
+    const [showError, setShowError] = useState<boolean>(false);
+    const [isLoading, setLoading] = useState<boolean>(true);
 
-    const getShootDetails = async (shootId) => {
+    const getShootDetails = async (shootId:string) => {
         setLoading(true);
         try {
           const response = await fetch(`${API_ENDPOINT}orders/${shootId}`);
           const shootDetailsRes = await response.json();
 
           if (!shootDetailsRes) {
-            console.log('Error With order Id', id);
             console.log(response);
             setShowError(true);
             setLoading(false);
@@ -175,15 +172,17 @@ const Shoots = () => {
                                             </svg>
                                         </button>
                                     </div>
-                                    <div className="p-5">
+                                    <div className="pb-5 pl-5 pr-5">
                                         <h2 className="text-[22px] font-bold leading-none capitalize text-[#000000] mb-[15px] mt-[30px]">{ shootInfo?.order_name }</h2>
                                         <div>
-                                            <span className='text-[16px] leading-[18.2px] text-[#000000] mb-[10px] block'><strong>Date: </strong>
-                                                {/* {new Date(
-                                                    shootInfo?.shoot_datetimes[0]?.start_date_time,
-                                                ).toDateString()} */} 12 march 2023
+                                            <span className='shootDate text-[16x] leading-[18.2px] text-[#000000] mb-[10px] block'><strong>Date: </strong>
+                                                {shootInfo?.shoot_datetimes?.map((ShootDatetime, idx) => (
+                                                    <span key={idx}>
+                                                        {new Date(ShootDatetime?.start_date_time).toDateString()}
+                                                    </span>
+                                                ))}
                                             </span>
-                                            <span className='text-[16px] leading-[18.2px] text-[#000000] mb-[10px] block capitalize'><strong>Name: </strong>{ shootInfo?.order_name }</span>
+                                            <span className='text-[16px] leading-[18.2px] text-[#000000] mb-[10px] block capitalize'><strong>Shoot Type: </strong>{ shootInfo?.content_type }</span>
                                             <span className='text-[16px] leading-[18.2px] text-[#000000] block capitalize'><strong>Location: </strong>{ shootInfo?.location }</span>
                                         </div>
                                         <div className="mt-[30px]">
@@ -192,7 +191,6 @@ const Shoots = () => {
                                                 width="100%"
                                                 height="300"
                                                 style={{ border: '0' }}
-                                                allowFullScreen=""
                                                 loading="lazy"
                                                 referrerPolicy="no-referrer-when-downgrade"
                                             >

@@ -16,7 +16,7 @@ import { ni18nConfig } from 'ni18n.config.ts';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 
 import '../styles/tailwind.css';
-import '../styles/responsive.css';
+import '../styles/custom.css';
 import { NextPage } from 'next';
 import { setPageTitle } from '@/store/themeConfigSlice';
 

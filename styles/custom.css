@@ -1,0 +1,9 @@
+.shootDate span{
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+/* Media query codes here... */
+@media screen and (max-width: 575px){
+
+}
