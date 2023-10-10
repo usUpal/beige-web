@@ -226,9 +226,6 @@ const Meeting = () => {
 
             <Transition appear show={meetingModal} as={Fragment}>
                 <Dialog as="div" open={meetingModal} onClose={() => setmeetingModal(false)}>
-
-                    <div className="fixed inset-0" />
-
                     <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
                         <div className="flex min-h-screen items-start justify-center px-4">
                             <Dialog.Panel as="div" className="panel my-8 w-2/3 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
