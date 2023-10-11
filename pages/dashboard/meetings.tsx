@@ -117,7 +117,6 @@ const Meeting = () => {
         }
     };
 
-
     // previous code
     const dispatch = useDispatch();
     useEffect(() => {
@@ -217,7 +216,7 @@ const Meeting = () => {
                         <div className="flex min-h-screen items-start justify-center px-4">
                             <Dialog.Panel as="div" className="panel my-8 w-2/3 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                                 <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
-                                    <div className="text-[18px] font-bold leading-none capitalize text-[#000000]">Meeting Details</div>
+                                    <div className="text-[24px] font-medium leading-none capitalize text-[#000000] cFont">Meeting Details</div>
                                     <button type="button" className="text-white-dark hover:text-dark" onClick={() => setmeetingModal(false)}>
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -234,22 +233,28 @@ const Meeting = () => {
                                         </svg>
                                     </button>
                                 </div>
-                                <div className="p-5">
-                                    <h2 className='text-[#ACA686] text-[22px] font-bold leading-[28.6px] capitalize mb-[20px]'>meeting with {meetingInfo?.client?.name}</h2>
-                                    <div>
-                                        <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block'>Meeting Date:
-                                            <strong>{new Date(meetingInfo?.meeting_date_time).toDateString()}</strong>
-                                        </span>
-                                        <span className='text-[14px] leading-[18.2px] text-[#000000] block'>Meeting Time: <strong>{new Date(meetingInfo?.meeting_date_time,).toTimeString()}</strong></span>
+                                <div className="p-5 flex justify-between items-center">
+                                    <div className='basis-[50%]'>
+                                        <h2 className='text-[#C5965C] text-[26px] font-bold leading-[28.6px] capitalize mb-[20px] font-mono'>meeting with {meetingInfo?.client?.name}</h2>
+                                        <div>
+                                            <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block font-sans'>Meeting Date:
+                                                <strong>{new Date(meetingInfo?.meeting_date_time).toDateString()}</strong>
+                                            </span>
+                                            <span className='font-sans text-[14px] leading-[18.2px] text-[#000000] block'>Meeting Time: <strong>{new Date(meetingInfo?.meeting_date_time,).toTimeString()}</strong></span>
+                                        </div>
+                                        <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[15px] mt-[30px] font-mono">Reschedule Meeting</h2>
+                                        <form action="">
+                                            <input className='text-[#000000] text-[14px] font-medium leading-none py-[10px] px-[15px] border border-solid border-[#dddddd] rounded-[10px] bg-white focus:border-[#dddddd] font-sans' type="datetime-local" name="dateTime" id="datetime" ref={dateTimeRef} onChange={handleButtonChange} />
+                                        </form>
                                     </div>
-                                    <div className="mt-[30px]">
-                                        <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[10px]">meeting note</h2>
-                                        <p className='text-[14px] font-regular leading-[28px] text-[#000000]'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum, molestias. Ipsa esse suscipit quos voluptatibus et soluta itaque consequatur! Rerum aperiam rem possimus amet aspernatur beatae maxime aliquam architecto repellendus dolorem. Officiis, similique quidem. Sed, at quis. Perferendis commodi excepturi explicabo! Nisi iure ad dolorum totam ducimus eaque necessitatibus ab?</p>
+                                    <div className='customWave basis-[50%] relative'>
+                                        <img src="/assets/images/lightbox4.jpeg" alt="bg-img" className='h-full object-cover rounded-[15px]' />
+                                        <div className='glass absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 h-[260px]'>
+                                            <p className='z-10 text-[15px] font-medium leading-[28px] text-[#ffffff] font-sans text-center p-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum, molestias. Ipsa esse suscipit quos voluptatibus et soluta itaque consequatur!</p>
+                                        </div>
+
+                                        <div className="ribbon"><span>Meeting Note</span></div>
                                     </div>
-                                    <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[15px] mt-[30px]">Reschedule Meeting</h2>
-                                    <form action="">
-                                        <input className='text-[#000000] text-[14px] font-medium leading-none py-[10px] px-[15px] border border-solid border-[#dddddd] rounded-[10px] bg-white focus:border-[#dddddd]' type="datetime-local" name="dateTime" id="datetime" ref={dateTimeRef} onChange={handleButtonChange} />
-                                    </form>
                                 </div>
                             </Dialog.Panel>
                         </div>
