@@ -11,6 +11,10 @@ const Meeting = () => {
     const [myMeetings, setMyMeetings] = useState<MeetingResponsTypes[]>([]);
     const [userId, setUserId] = useState('');
     const [rescheduleMeetingTime, setrescheduleMeetingTime] = useState('');
+    const [meetingInfo, setMeetingInfo] = useState<any>({});
+    const [showError, setShowError] = useState<boolean>(false);
+    const [isLoading, setLoading] = useState<boolean>(true);
+    const [meetingModal, setmeetingModal] = useState(false);
 
     useEffect(() => {
         getAllMyMeetings();
@@ -35,7 +39,7 @@ const Meeting = () => {
     // API
     const handleNext = async () => {
         if (rescheduleMeetingTime) {
-            const url = `${API_ENDPOINT}meetings/schedule/${route.params.meetingId}`;
+            const url = `${API_ENDPOINT}meetings/schedule/${meetingInfo?.id}`;
 
             try {
                 const response = await fetch(url, {
@@ -90,9 +94,6 @@ const Meeting = () => {
 
     // Meeting Single
     const router = useRouter();
-    const [meetingInfo, setMeetingInfo] = useState<any>({});
-    const [showError, setShowError] = useState<boolean>(false);
-    const [isLoading, setLoading] = useState<boolean>(true);
 
     const getMeetingDetails = async (meetingId:string) => {
         setLoading(true);
@@ -108,7 +109,7 @@ const Meeting = () => {
                 setMeetingInfo(meetingDetailsRes);
                 setLoading(false);
                 setmeetingModal(true)
-
+                handleNext();
             }
         } catch (error) {
             console.error(error);
@@ -122,8 +123,6 @@ const Meeting = () => {
     useEffect(() => {
         dispatch(setPageTitle('Meetings'));
     });
-
-    const [meetingModal, setmeetingModal] = useState(false);
 
     return (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
