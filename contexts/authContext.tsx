@@ -1,10 +1,10 @@
 import store from '../store/index';
 import { Provider } from 'react-redux';
 import { createContext, useContext, useEffect, useState, ReactNode, Fragment } from 'react';
-import { AuthContextType, AuthProviderProps, UserData, Token } from '@/types/authTypes';
+import { AuthContextType, AuthProviderProps, UserData, Token, UserRole } from '@/types/authTypes';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
-import LoginBoxed from '@/pages/auth/signin';
+import Auth from '@/components/Auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -17,7 +17,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
 
   const providerData = {
-    userData, setUserData, accessToken, setAccessToken, refreshToken, setRefreshToken
+    userData, setUserData,
+    accessToken, setAccessToken,
+    refreshToken, setRefreshToken,
   };
 
   const userDataCookie = Cookies.get('userData');
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     <AuthContext.Provider value={providerData}>
       {(!accessToken || !refreshToken) ? (
         <Provider store={store}>
-          <LoginBoxed></LoginBoxed>
+          <Auth/>
         </Provider>
       ) : (
         <Fragment>{children}</Fragment>

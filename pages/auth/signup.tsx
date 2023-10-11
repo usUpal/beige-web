@@ -275,7 +275,7 @@ const RegisterBoxed = () => {
                             </div>
                             <div className="text-center dark:text-white">
                                 Already have an account ?&nbsp;
-                                <Link href="/auth/signin" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
+                                <Link href="/components/Auth" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
                                     SIGN IN
                                 </Link>
                             </div>

@@ -16,7 +16,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import '../styles/tailwind.css';
 import { NextPage } from 'next';
 
-import LoginBoxed from '@/pages/auth/signin';
+import LoginBoxed from '@/components/Auth';
 import { AuthProvider } from '@/contexts/authContext';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {

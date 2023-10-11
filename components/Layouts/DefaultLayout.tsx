@@ -14,6 +14,7 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
 
 const DefaultLayout = ({ children }: PropsWithChildren) => {
+
     const router = useRouter();
     const [showLoader, setShowLoader] = useState(true);
     const [showTopButton, setShowTopButton] = useState(false);

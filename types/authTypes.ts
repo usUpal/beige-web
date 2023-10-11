@@ -16,6 +16,8 @@ export type Token = {
   expires: Date;
 };
 
+export type UserRole = String;
+
 export type AuthContextType = {
   userData: UserData | null;
   setUserData: (data: UserData | null) => void;

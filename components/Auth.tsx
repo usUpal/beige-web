@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../../store';
+import { IRootState } from '../store';
 import { useEffect, useState } from 'react';
-import { setPageTitle, toggleLocale, toggleRTL } from '../../store/themeConfigSlice';
+import { setPageTitle, toggleLocale, toggleRTL } from '../store/themeConfigSlice';
 import { useRouter } from 'next/router';
 import BlankLayout from '@/components/Layouts/BlankLayout';
 import Dropdown from '@/components/Dropdown';
@@ -12,13 +12,13 @@ import { API_ENDPOINT } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import Cookies from 'js-cookie';
 
-const LoginBoxed = () => {
+const Auth = () => {
 
   const dispatch = useDispatch();
   const { setUserData, setAccessToken, setRefreshToken } = useAuth();
 
   useEffect(() => {
-    dispatch(setPageTitle('Login Boxed'));
+    dispatch(setPageTitle('Login'));
   });
 
   const router = useRouter();
@@ -42,13 +42,6 @@ const LoginBoxed = () => {
       const data = await response.json();
 
       if (response.ok) {
-
-        if (data.user.role !== 'cp') {
-          toast.error('You are not allowed to access this page', {
-            position: toast.POSITION.TOP_CENTER
-          });
-          return;
-        }
 
         //Prepare token and user data
         const userData = data?.user;
@@ -78,8 +71,6 @@ const LoginBoxed = () => {
       console.error('Login error:', error);
     }
   };
-
-  const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
   const setLocale = (flag: string) => {
@@ -202,7 +193,4 @@ const LoginBoxed = () => {
     </div>
   );
 };
-LoginBoxed.getLayout = (page: any) => {
-  return <BlankLayout>{page}</BlankLayout>;
-};
-export default LoginBoxed;
+export default Auth;
