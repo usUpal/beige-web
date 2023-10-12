@@ -62,8 +62,8 @@ const IndexClient = () => {
                     </li>
                 </ul>
 
-                <div className="pt-5">
-                    <div className="grid grid-cols-1 gap-6 pt-5 lg:grid-cols-2">
+                <div className="pt-1">
+                    <div className="grid grid-cols-1 gap-6 pt-5 lg:grid-cols-1">
                         {/* Horizontal */}
                         <div className="panel" id="horizontal_form">
                             <div className="mb-5 flex items-center justify-between">
@@ -72,96 +72,110 @@ const IndexClient = () => {
                             <div className="mb-5">
                                 <form className="space-y-5">
 
-                                    {/* Shoot Type */}
-                                    <div className="flex flex-col sm:flex-row">
-                                        <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Shoot Type</label>
-                                        <div className="flex-1">
-                                            <div className="mb-2">
-                                                <label className="mt-1 inline-flex cursor-pointer">
-                                                    <input type="radio" name="segements" className="form-radio" />
-                                                    <span className="text-white-dark">Video</span>
-                                                </label>
+                                    <div className='flex justify-between items-center'>
+                                        {/* Shoot Type */}
+                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                            <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Shoot Type</label>
+                                            <div className="flex-1">
+                                                <div className="mb-2">
+                                                    <label className="flex items-center">
+                                                        <input type="checkbox" className="form-checkbox" />
+                                                        <span className="text-white-dark">Video</span>
+                                                    </label>
+                                                </div>
+                                                <div className="mb-2">
+                                                    <label className="flex items-center">
+                                                        <input type="checkbox" className="form-checkbox" />
+                                                        <span className="text-white-dark">Photo</span>
+                                                    </label>
+                                                </div>
                                             </div>
-                                            <div className="mb-2">
-                                                <label className="mt-1 inline-flex cursor-pointer">
-                                                    <input type="radio" name="segements" className="form-radio" />
-                                                    <span className="text-white-dark">Photo</span>
-                                                </label>
-                                            </div>
+                                        </div>
+
+                                        {/* Category */}
+                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                            <label htmlFor="horizontalPassword" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                                Category
+                                            </label>
+                                            <select className="form-select text-white-dark">
+                                                <option>Select Category</option>
+                                                <option>Business</option>
+                                                <option>Personal</option>
+                                                <option>Wedding</option>
+                                                <option>Others</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+                                    <div className='flex justify-between items-center'>
+                                        {/* Order Name */}
+                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                            <label htmlFor="orderName" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Order Name</label>
+                                            <input id="orderName" type="text" placeholder="Enter Full Name" defaultValue="Order One" className="form-input" />
+                                        </div>
+
+                                        {/* Location */}
+                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                            <label htmlFor="location" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Location</label>
+                                            <input id="location" type="text" placeholder="Enter Full Name" defaultValue="Order One" className="form-input" />
                                         </div>
                                     </div>
 
-                                    {/* Category */}
-                                    <div className="flex flex-col sm:flex-row">
-                                        <label htmlFor="horizontalPassword" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                            Category
-                                        </label>
-                                        <select className="form-select text-white-dark">
-                                            <option>Select Category</option>
-                                            <option>Business</option>
-                                            <option>Personal</option>
-                                            <option>Wedding</option>
-                                        </select>
+                                    <div className='flex justify-between items-center'>
+                                        {/* Date and Time */}
+                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                            <label htmlFor="location" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Date and Time</label>
+                                            <Flatpickr
+                                                data-enable-time
+                                                options={{
+                                                    enableTime: true,
+                                                    dateFormat: 'Y-m-d H:i',
+                                                }}
+                                                defaultValue={date2}
+                                                className="form-input"
+                                                onChange={(date2) => setDate2(date2)}
+                                            />
+                                        </div>
+
+                                        {/* Budget */}
+                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                            <label htmlFor="budget" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                                Budget
+                                            </label>
+                                            <select className="form-select text-white-dark">
+                                                <option>What is your budget?</option>
+                                                <option defaultValue="75">$750-$999</option>
+                                                <option defaultValue="85">$1,000-$1,499</option>
+                                                <option defaultValue="95">$1,500-$2,499</option>
+                                                <option defaultValue="65">$2,500-$3,499</option>
+                                                <option defaultValue="55">$3,500-$4,499</option>
+                                                <option defaultValue="Custom">Custom</option>
+                                            </select>
+                                        </div>
                                     </div>
 
-                                    {/* Order Name */}
-                                    <div className="flex flex-col sm:flex-row">
-                                        <label htmlFor="orderName" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Order Name</label>
-                                        <input id="orderName" type="text" placeholder="Enter Full Name" defaultValue="Order One" className="form-input" />
+                                    <div className='flex justify-between items-center'>
+                                        {/* References */}
+                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                            <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">References</label>
+                                            <input id="references" type="text" placeholder="Enter Full Name" defaultValue="Order One" className="form-input" />
+                                        </div>
+
+                                        {/* Add Image */}
+                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                            <label htmlFor="addImage" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Add Image</label>
+                                            <input id="addImage" type="file" className="form-input" />
+                                        </div>
                                     </div>
 
-                                    {/* Location */}
-                                    <div className="flex flex-col sm:flex-row">
-                                        <label htmlFor="location" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Location</label>
-                                        <input id="location" type="text" placeholder="Enter Full Name" defaultValue="Order One" className="form-input" />
-                                    </div>
-
-                                    {/* Date and Time */}
-                                    <div className="flex flex-col sm:flex-row">
-                                        <label htmlFor="location" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Date and Time</label>
-                                        <Flatpickr
-                                            data-enable-time
-                                            options={{
-                                                enableTime: true,
-                                                dateFormat: 'Y-m-d H:i',
-                                            }}
-                                            defaultValue={date2}
-                                            className="form-input"
-                                            onChange={(date2) => setDate2(date2)}
-                                        />
-                                    </div>
-
-                                    {/* Budget */}
-                                    <div className="flex flex-col sm:flex-row">
-                                        <label htmlFor="budget" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                            Budget
-                                        </label>
-                                        <select className="form-select text-white-dark">
-                                            <option>What is your budget?</option>
-                                            <option>$750-$999</option>
-                                            <option>$1,000-$1,499</option>
-                                            <option>$1,500-$2,499</option>
-                                            <option>$2,500-$3,499</option>
-                                            <option>$3,500-$4,499</option>
-                                        </select>
-                                    </div>
-
-                                    {/* References */}
-                                    <div className="flex flex-col sm:flex-row">
-                                        <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">References</label>
-                                        <input id="references" type="text" placeholder="Enter Full Name" defaultValue="Order One" className="form-input" />
-                                    </div>
-
-                                    {/* Add Image */}
-                                    <div className="flex flex-col sm:flex-row">
-                                        <label htmlFor="addImage" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Add Image</label>
-                                        <input id="addImage" type="file" className="form-input" />
-                                    </div>
-
-                                    {/* Special Note */}
-                                    <div className="flex flex-col sm:flex-row">
-                                        <label htmlFor="specialNote" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Special Note</label>
-                                        <textarea id="specialNote" rows={3} className="form-textarea" placeholder="Type your note here..." required></textarea>
+                                    <div className='flex justify-between items-center'>
+                                        {/* Special Note */}
+                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                            <label htmlFor="specialNote" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Special Note</label>
+                                            <textarea id="specialNote" rows={3} className="form-textarea" placeholder="Type your note here..." required></textarea>
+                                        </div>
+                                        <button type="submit" className="btn btn-warning mt-6">Book</button>
                                     </div>
 
                                 </form>
