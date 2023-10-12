@@ -1,20 +1,18 @@
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../store';
+import { IRootState } from '@/store';
 import { useEffect, useState } from 'react';
-import { setPageTitle, toggleLocale, toggleRTL } from '../store/themeConfigSlice';
+import { setPageTitle, toggleRTL } from '@/store/themeConfigSlice';
 import { useRouter } from 'next/router';
-import BlankLayout from '@/components/Layouts/BlankLayout';
-import Dropdown from '@/components/Dropdown';
-import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { API_ENDPOINT } from '@/config';
+import { API_ENDPOINT, HOSTNAME } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import Cookies from 'js-cookie';
 
 const Auth = () => {
 
   const dispatch = useDispatch();
+
   const { setUserData, setAccessToken, setRefreshToken } = useAuth();
 
   useEffect(() => {
@@ -26,6 +24,7 @@ const Auth = () => {
   const submitForm = async (e: any) => {
 
     e.preventDefault();
+
     const formData = new FormData(e.target);
     const loginEndPoint = `${API_ENDPOINT}auth/login`;
 
@@ -50,19 +49,31 @@ const Auth = () => {
 
         //Update context values
         setUserData(userData);
-        setAccessToken(accessToken);
-        setRefreshToken(refreshToken);
+        setAccessToken(accessToken?.token);
+        setRefreshToken(refreshToken?.token);
 
-        //Store user and token data to cookie storage
-        Cookies.set(userData, JSON.stringify(userData));
-        Cookies.set(accessToken, JSON.stringify(accessToken));
-        Cookies.set(refreshToken, JSON.stringify(refreshToken));
+        //Store user data to the cookie storage
+        Cookies.set('userData', JSON.stringify(userData), {
+          expires: new Date(accessToken?.expires),
+          domain: HOSTNAME
+        });
+
+        //Store access token to the cookie storage
+        Cookies.set('accessToken', JSON.stringify(accessToken), {
+          expires: new Date(accessToken?.expires),
+          domain: HOSTNAME
+        });
+
+        //Store refresh token to the cookie storage
+        Cookies.set('refreshToken', JSON.stringify(refreshToken), {
+          expires: new Date(refreshToken?.expires),
+          domain: HOSTNAME
+        });
 
         //Redirect user to the dashboard
         await router.push('/');
 
       } else {
-        // Handle errors
         toast.error(data.message, {
           position: toast.POSITION.TOP_CENTER
         });
@@ -85,8 +96,6 @@ const Auth = () => {
   useEffect(() => {
     setLocale(localStorage.getItem('i18nextLng') || themeConfig.locale);
   }, []);
-
-  const { t, i18n } = useTranslation();
 
   return (
     <div>

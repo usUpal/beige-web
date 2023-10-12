@@ -6,17 +6,11 @@ import store from '../store/index';
 import Head from 'next/head';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { appWithI18Next } from 'ni18n';
 import { ni18nConfig } from 'ni18n.config.ts';
-
-// Perfect Scrollbar
 import 'react-perfect-scrollbar/dist/css/styles.css';
-
 import '../styles/tailwind.css';
 import { NextPage } from 'next';
-
-import LoginBoxed from '@/components/Auth';
 import { AuthProvider } from '@/contexts/authContext';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {

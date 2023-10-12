@@ -2,7 +2,6 @@ import store from '../store/index';
 import { Provider } from 'react-redux';
 import { createContext, useContext, useEffect, useState, ReactNode, Fragment } from 'react';
 import { AuthContextType, AuthProviderProps, UserData, Token, UserRole } from '@/types/authTypes';
-import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Auth from '@/components/Auth';
 
@@ -13,40 +12,53 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [accessToken, setAccessToken] = useState<Token | null>(null);
   const [refreshToken, setRefreshToken] = useState<Token | null>(null);
+  const [ready, setReady] = useState<boolean>(false);
 
-  const router = useRouter();
+  useEffect(() => {
+
+    const userDataCookie = Cookies.get('userData');
+    const accessTokenCookie = Cookies.get('accessToken');
+    const refreshTokenCookie = Cookies.get('refreshToken');
+
+    if (!userData && userDataCookie) {
+      setUserData(JSON.parse(userDataCookie));
+    }
+
+    if (!accessToken && accessTokenCookie) {
+      setAccessToken(JSON.parse(accessTokenCookie)?.token);
+    }
+
+    if (!refreshToken && refreshTokenCookie) {
+      setRefreshToken(JSON.parse(refreshTokenCookie)?.token);
+    }
+
+    setReady(true);
+
+  }, []);
 
   const providerData = {
     userData, setUserData,
     accessToken, setAccessToken,
-    refreshToken, setRefreshToken,
+    refreshToken, setRefreshToken
   };
-
-  const userDataCookie = Cookies.get('userData');
-  const accessTokenCookie = Cookies.get('accessToken');
-  const refreshTokenCookie = Cookies.get('refreshToken');
-
-  if (userDataCookie) {
-    setUserData(JSON.parse(userDataCookie));
-  }
-  if (accessTokenCookie) {
-    setAccessToken(JSON.parse(accessTokenCookie));
-  }
-  if (refreshTokenCookie) {
-    setRefreshToken(JSON.parse(refreshTokenCookie));
-  }
 
   return (
     <AuthContext.Provider value={providerData}>
-      {(!accessToken || !refreshToken) ? (
-        <Provider store={store}>
-          <Auth/>
-        </Provider>
-      ) : (
-        <Fragment>{children}</Fragment>
+      {ready && (
+        <Fragment>
+          {(accessToken && refreshToken) ? (
+            <Fragment>{children}</Fragment>
+          ) : (
+            <Provider store={store}>
+              <Auth />
+            </Provider>
+          )}
+        </Fragment>
       )}
     </AuthContext.Provider>
   );
+
+
 };
 
 export const useAuth = () => {

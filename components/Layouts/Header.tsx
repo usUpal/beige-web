@@ -704,7 +704,7 @@ const Header = () => {
                   {/*    </Link>*/}
                   {/*</li>*/}
                   <li onClick={handleLogout} className='border-t border-white-light dark:border-white-light/10'>
-                    <Link href='/components/Auth' className='!py-3 text-danger'>
+                    <Link href='/' className='!py-3 text-danger'>
                       <svg className='rotate-90 ltr:mr-2 rtl:ml-2 shrink-0' width='18' height='18' viewBox='0 0 24 24'
                            fill='none' xmlns='http://www.w3.org/2000/svg'>
                         <path
