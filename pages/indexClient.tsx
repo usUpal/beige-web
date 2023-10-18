@@ -176,6 +176,50 @@ const IndexClient = () => {
         }
     };
 
+    const [items, setItems] = useState<any>([
+        {
+            id: 1,
+            title: '',
+            description: '',
+            rate: 0,
+            quantity: 0,
+            amount: 0,
+        },
+    ]);
+
+    const changeQuantityPrice = (type: string, value: string, id: number) => {
+        const list = items;
+        const item = list.find((d: any) => d.id === id);
+        if (type === 'quantity') {
+            item.quantity = Number(value);
+        }
+        if (type === 'price') {
+            item.amount = Number(value);
+        }
+        setItems([...list]);
+    };
+
+    const addItem = () => {
+        let maxId = 0;
+        maxId = items?.length ? items.reduce((max: number, character: any) => (character.id > max ? character.id : max), items[0].id) : 0;
+
+        setItems([
+            ...items,
+            {
+                id: maxId + 1,
+                title: '',
+                description: '',
+                rate: 0,
+                quantity: 0,
+                amount: 0,
+            },
+        ]);
+    };
+
+    const removeItem = (item: any = null) => {
+        setItems(items.filter((d: any) => d.id !== item.id));
+    };
+
     return (
         <>
             <div>
@@ -251,19 +295,45 @@ const IndexClient = () => {
                                             {errors.location && <p className="text-danger">{errors?.location.message}</p>}
                                         </div>
                                     </div>
-                                    <div className='flex justify-between items-center'>
-                                        {/* Starting Date and Time */}
-                                        <div className="flex flex-col sm:flex-row basis-[33%]">
-                                            <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Starting Date</label>
-                                            <input className="form-input" type="datetime-local" name="dateTime" id="datetime" ref={start_date_time_ref} onChange={start_date_time_handleButtonChange}/>
-                                        </div>
-                                        {/* Ending Date and Time */}
-                                        <div className="flex flex-col sm:flex-row basis-[33%]">
-                                            <label htmlFor="end_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Ending Date</label>
-                                            <input type="datetime-local" name="end_date_time" id="end_date_time" ref={end_date_time_ref} onChange={end_date_time_handleButtonChange} className="form-input"/>
-                                        </div>
-                                        <div className="flex flex-col sm:flex-row basis-[33%]">
-                                            <button className='btn btn-success'>Add More</button>
+                                    <div className="mt-8">
+                                        <div className="table-responsive">
+                                            <table>
+                                                <tbody>
+                                                    {items.map((item: any) => {
+                                                        return (
+                                                            <div className='flex justify-between items-center mb-5' key={item.id}>
+                                                                {/* Starting Date and Time */}
+                                                                <div className="flex flex-col sm:flex-row basis-[40%]">
+                                                                    <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Starting Date</label>
+                                                                    <input className="form-input" type="datetime-local" name="dateTime" id="datetime" ref={start_date_time_ref} onChange={start_date_time_handleButtonChange}/>
+                                                                </div>
+                                                                {/* Ending Date and Time */}
+                                                                <div className="flex flex-col sm:flex-row basis-[40%]">
+                                                                    <label htmlFor="end_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Ending Date</label>
+                                                                    <input type="datetime-local" name="end_date_time" id="end_date_time" ref={end_date_time_ref} onChange={end_date_time_handleButtonChange} className="form-input"/>
+                                                                </div>
+                                                                <button type="button" onClick={() => removeItem(item)}>
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        width="20"
+                                                                        height="20"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="1.5"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                    >
+                                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                                    </svg>
+                                                                </button>
+                                                                <button type="button" className="btn btn-success" onClick={() => addItem()}>Add More</button>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                     <div className='flex justify-between items-center'>
