@@ -13,6 +13,7 @@ import { API_ENDPOINT } from '@/config';
 import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { log } from 'console';
 
 interface FormData {
     content_type: number;
@@ -34,6 +35,8 @@ const IndexClient = () => {
     const [isMounted, setIsMounted] = useState(false);
     const [startDateTime, setstartDateTime] = useState('');
     const [endDateTime, setendDateTime] = useState('');
+    const [startDuration, setStartDuration] = useState<any>();
+    const [endDuration, setEndDuration] = useState<any>();
     const max_budgetNumber = 69;
 
     const {
@@ -59,9 +62,29 @@ const IndexClient = () => {
     const start_date_time_handleButtonChange = () => {
         const dateTimeValue = start_date_time_ref.current.value;
         const selectedDate = new Date(dateTimeValue);
+
+        // Adding 12 hours in PM
+        const isPm = selectedDate.getHours() >= 12;
+        if (isPm) {
+            selectedDate.setHours(selectedDate.getHours() + 12);
+        }else{
+            selectedDate.setHours(selectedDate.getHours() - 12);
+        }
+
+        // UTC time zone
+        selectedDate.setMinutes(selectedDate.getMinutes() + selectedDate.getTimezoneOffset());
+
         const scheduleDate = selectedDate.toISOString();
         setstartDateTime(scheduleDate);
-        // console.log("START DATE", startDateTime)
+        // console.log("START DATE", hours)
+
+        // Getting Duration
+        const startHours = selectedDate.getHours() - 6;
+        const startMinutes = (startHours*60) + selectedDate.getMinutes();
+        const startDuration = Math.floor(startMinutes/60);
+
+        setStartDuration(startDuration);
+
     }
 
     const end_date_time_ref:any = useRef(null);
@@ -69,10 +92,40 @@ const IndexClient = () => {
     const end_date_time_handleButtonChange = () => {
         const dateTimeValue = end_date_time_ref.current.value;
         const selectedDate = new Date(dateTimeValue);
+
+        // Adding 12 hours in PM
+        const isPm = selectedDate.getHours() >= 12;
+        if (isPm) {
+            selectedDate.setHours(selectedDate.getHours() + 12);
+        }else{
+            selectedDate.setHours(selectedDate.getHours() - 12);
+        }
+
+        // UTC time zone
+        selectedDate.setMinutes(selectedDate.getMinutes() + selectedDate.getTimezoneOffset());
+
         const scheduleDate = selectedDate.toISOString();
         setendDateTime(scheduleDate);
         // console.log("END DATE", endDateTime)
+
+        // Getting Duration
+        const endHours = selectedDate.getHours() - 6;
+        const endMinutes = (endHours*60) + selectedDate.getMinutes();
+        const endDuration = Math.floor(endMinutes/60);
+
+        setEndDuration(endDuration);
+
     }
+
+    const start: Date =  new Date(startDateTime);
+    const end: Date = new Date(endDuration);
+
+    const timeDifferenceInMilliseconds: number = end.getTime() - start.getTime(); // Time difference in milliseconds
+
+    // Convert milliseconds to hours
+    const hoursDifference: number = timeDifferenceInMilliseconds / (1000 * 60 * 60);
+
+    console.log("DURATION", hoursDifference)
 
     function onSubmit(data: any) {
 
@@ -92,7 +145,7 @@ const IndexClient = () => {
                 {
                     "start_date_time": startDateTime,
                     "end_date_time": endDateTime,
-                    "duration": 12,
+                    "duration": startDuration,
                     "date_status": "confirmed"
                 },
                 {
@@ -105,25 +158,7 @@ const IndexClient = () => {
         }
 
         console.log("BOOKING FORM DATA", orderData);
-        // {
 
-        //     "client_id": "648eceb5f2cac1a3da9f72c0",
-
-        //     "cp_id": "648eceebf2cac1a3da9f72c7",
-        // }
-
-
-
-        // content_type: data.content_type
-        // content_vertical: data.content_vertical
-        // description: data.description
-        // start_date_time: data.start_date_time
-        // end_date_time: data.end_date_time
-        // location: data.location
-        // max_budget: data.max_budget
-        // min_budget: data.min_budget
-        // order_name: data.order_name
-        // references: data.references
     }
 
     const [userId, setUserId] = useState<any>('');
@@ -218,14 +253,17 @@ const IndexClient = () => {
                                     </div>
                                     <div className='flex justify-between items-center'>
                                         {/* Starting Date and Time */}
-                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                        <div className="flex flex-col sm:flex-row basis-[33%]">
                                             <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Starting Date</label>
-                                            <input type="datetime-local" name="dateTime" id="datetime" ref={start_date_time_ref} onChange={start_date_time_handleButtonChange}/>
+                                            <input className="form-input" type="datetime-local" name="dateTime" id="datetime" ref={start_date_time_ref} onChange={start_date_time_handleButtonChange}/>
                                         </div>
                                         {/* Ending Date and Time */}
-                                        <div className="flex flex-col sm:flex-row basis-[45%]">
+                                        <div className="flex flex-col sm:flex-row basis-[33%]">
                                             <label htmlFor="end_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Ending Date</label>
-                                            <input type="datetime-local" name="end_date_time" id="end_date_time" ref={end_date_time_ref} onChange={end_date_time_handleButtonChange}/>
+                                            <input type="datetime-local" name="end_date_time" id="end_date_time" ref={end_date_time_ref} onChange={end_date_time_handleButtonChange} className="form-input"/>
+                                        </div>
+                                        <div className="flex flex-col sm:flex-row basis-[33%]">
+                                            <button className='btn btn-success'>Add More</button>
                                         </div>
                                     </div>
                                     <div className='flex justify-between items-center'>
@@ -261,7 +299,7 @@ const IndexClient = () => {
                                         {/* Special Note */}
                                         <div className="flex flex-col sm:flex-row basis-[45%]">
                                             <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Special Note</label>
-                                            <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." required {...register('description')}></textarea>
+                                            <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
                                             {errors.description && <p className="text-danger">{errors?.description.message}</p>}
                                         </div>
                                     </div>
