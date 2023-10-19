@@ -15,6 +15,7 @@ import { ni18nConfig } from 'ni18n.config.ts';
 // Perfect Scrollbar
 import 'react-perfect-scrollbar/dist/css/styles.css';
 
+import '../styles/font-awesome.min.css';
 import '../styles/tailwind.css';
 import '../styles/custom.css';
 import { NextPage } from 'next';
