@@ -1,6 +1,5 @@
 import { useEffect, useState, Fragment, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { format, parseISO } from 'date-fns';
 import { IRootState } from '../store';
 import Dropdown from '../components/Dropdown';
 import { setPageTitle } from '../store/themeConfigSlice';
@@ -33,7 +32,6 @@ interface FormData {
 
 const IndexClient = () => {
     const [date2, setDate2] = useState<any>('2022-07-05 12:00');
-    const [dateTimes, setDateTimes] = useState<number[]>([]);
     const [isMounted, setIsMounted] = useState(false);
     const [startDateTime, setstartDateTime] = useState('');
     const [endDateTime, setendDateTime] = useState('');
@@ -68,23 +66,78 @@ const IndexClient = () => {
         setIsMounted(true);
     });
 
+    // Getting dateTime value
+    const start_date_time_ref:any = useRef(null);
+
+    const start_date_time_handleButtonChange = () => {
+        const dateTimeValue = start_date_time_ref.current.value;
+        const selectedDate = new Date(dateTimeValue);
+
+        // Adding 12 hours in PM
+        const isPm = selectedDate.getHours() >= 12;
+        if (isPm) {
+            selectedDate.setHours(selectedDate.getHours() + 12);
+        }else{
+            selectedDate.setHours(selectedDate.getHours() - 12);
+        }
+
+        // UTC time zone
+        selectedDate.setMinutes(selectedDate.getMinutes() + selectedDate.getTimezoneOffset());
+
+        const scheduleDate = selectedDate.toISOString();
+        setstartDateTime(scheduleDate);
+        // console.log("START DATE", hours)
+
+        // Getting Duration
+        const startHours = selectedDate.getHours() - 6;
+        const startMinutes = (startHours*60) + selectedDate.getMinutes();
+        const startDuration = Math.floor(startMinutes/60);
+
+        setStartDuration(startDuration);
+
+    }
+
+    const end_date_time_ref:any = useRef(null);
+
+    const end_date_time_handleButtonChange = () => {
+        const dateTimeValue = end_date_time_ref.current.value;
+        const selectedDate = new Date(dateTimeValue);
+
+        // Adding 12 hours in PM
+        const isPm = selectedDate.getHours() >= 12;
+        if (isPm) {
+            selectedDate.setHours(selectedDate.getHours() + 12);
+        }else{
+            selectedDate.setHours(selectedDate.getHours() - 12);
+        }
+
+        // UTC time zone
+        selectedDate.setMinutes(selectedDate.getMinutes() + selectedDate.getTimezoneOffset());
+
+        const scheduleDate = selectedDate.toISOString();
+        setendDateTime(scheduleDate);
+        // console.log("END DATE", endDateTime)
+
+        // Getting Duration
+        const endHours = selectedDate.getHours() - 6;
+        const endMinutes = (endHours*60) + selectedDate.getMinutes();
+        const endDuration = Math.floor(endMinutes/60);
+
+        setEndDuration(endDuration);
+
+    }
+
+    const start: Date =  new Date(startDateTime);
+    const end: Date = new Date(endDuration);
+
+    const timeDifferenceInMilliseconds: number = end.getTime() - start.getTime(); // Time difference in milliseconds
+
+    // Convert milliseconds to hours
+    const hoursDifference: number = timeDifferenceInMilliseconds / (1000 * 60 * 60);
+
+    console.log("DURATION", hoursDifference)
 
     function onSubmit(data: any) {
-        const s_time  = parseISO(data.start_date_time)
-        const e_time  = parseISO(data.end_date_time)
-        const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-        const startingTime = new Date(starting_date);
-        const endingTime = new Date(ending_date);
-
-        // Calculate the time difference in milliseconds
-        const timeDifferenceInMilliseconds: number = endingTime.getTime() - startingTime.getTime();
-
-        // Calculate the time difference in hours
-        const durationSingle = timeDifferenceInMilliseconds / (1000 * 60 * 60);
-
-        setDateTimes(prevDateTimes => [...prevDateTimes, durationSingle]);
 
         const orderData= {
             "content_type": data.content_type,
@@ -100,23 +153,23 @@ const IndexClient = () => {
             "shoot_duration": 32,
             "shoot_datetimes": [
                 {
-                    "start_date_time": starting_date,
-                    "end_date_time": ending_date,
-                    "duration": durationSingle,
+                    "start_date_time": startDateTime,
+                    "end_date_time": endDateTime,
+                    "duration": startDuration,
                     "date_status": "confirmed"
                 },
                 {
-                    "start_date_time": starting_date,
-                    "end_date_time": ending_date,
-                    "duration": durationSingle,
+                    "start_date_time": startDateTime,
+                    "end_date_time": endDateTime,
+                    "duration": endDuration,
                     "date_status": "confirmed"
                 }
-
             ],
         }
-        console.log("DATA", orderData);
-    }
 
+        console.log("BOOKING FORM DATA", orderData);
+
+    }
 
     const [userId, setUserId] = useState<any>('');
     useEffect(() => {
@@ -251,12 +304,12 @@ const IndexClient = () => {
                                                                 {/* Starting Date and Time */}
                                                                 <div className="flex flex-col sm:flex-row basis-[40%]">
                                                                     <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Starting Date</label>
-                                                                    <input className="form-input" type="datetime-local" id="datetime" {...register('start_date_time')}/>
+                                                                    <input className="form-input" type="datetime-local" name="dateTime" id="datetime" ref={start_date_time_ref} onChange={start_date_time_handleButtonChange}/>
                                                                 </div>
                                                                 {/* Ending Date and Time */}
                                                                 <div className="flex flex-col sm:flex-row basis-[40%]">
                                                                     <label htmlFor="end_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Ending Date</label>
-                                                                    <input type="datetime-local" id="end_date_time"  className="form-input" {...register('end_date_time')}/>
+                                                                    <input type="datetime-local" name="end_date_time" id="end_date_time" ref={end_date_time_ref} onChange={end_date_time_handleButtonChange} className="form-input"/>
                                                                 </div>
                                                                 <button type="button" onClick={() => removeItem(item)}>
                                                                     <svg
