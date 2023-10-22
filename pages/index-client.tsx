@@ -385,9 +385,9 @@ const IndexClient = () => {
                                                     <label htmlFor="content_vertical" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                                         Category
                                                     </label>
-                                                    <select className="form-select text-white-dark" id='content_vertical' {...register('content_vertical')}>
+                                                    <select className="form-select text-white-dark" id='content_vertical' defaultValue="Business" {...register('content_vertical')}>
                                                         <option>Select Category</option>
-                                                        <option value="Business" selected>Business</option>
+                                                        <option value="Business">Business</option>
                                                         <option value="Personal">Personal</option>
                                                         <option value="Wedding">Wedding</option>
                                                     </select>
@@ -419,7 +419,7 @@ const IndexClient = () => {
                                                                         {/* Starting Date and Time */}
                                                                         <div className="flex flex-col sm:flex-row basis-[40%]">
                                                                             <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Starting Date</label>
-                                                                            <input className="form-input" type="datetime-local" id="datetime" {...register('start_date_time')} />
+                                                                            <input className="form-input" type="datetime-local" id="start_date_time" {...register('start_date_time')} />
                                                                         </div>
                                                                         {/* Ending Date and Time */}
                                                                         <div className="flex flex-col sm:flex-row basis-[40%]">
@@ -714,7 +714,7 @@ const IndexClient = () => {
                                                                                             ? 'h-3 w-3 bg-secondary'
                                                                                             : data.indicator === 3
                                                                                                 ? 'h-3 w-3 bg-info'
-                                                                                                    : 'h-3 w-3 bg-success'
+                                                                                                : 'h-3 w-3 bg-success'
                                                                                         }`}
                                                                                 >
                                                                                 </div>
