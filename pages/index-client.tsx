@@ -11,7 +11,6 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), {
     ssr: false,
 });
 import Link from 'next/link';
-import indicatorBg from '@/components/indicator/indicatorBg';
 import { API_ENDPOINT } from '@/config';
 import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
