@@ -154,7 +154,7 @@ const Shoots = () => {
                     <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
                         <div className="flex min-h-screen items-start justify-center px-4">
                             <Dialog.Panel as="div" className="panel my-8 w-2/3 overflow-hidden rounded-lg border-0 p-0 text-white dark:text-white-dark">
-                                <div className="flex items-center justify-between bg-[#C5965C] px-5 py-3 dark:bg-[#121c2c]">
+                                <div className="flex items-center justify-between bg-[#ACA686] px-5 py-3 dark:bg-[#121c2c]">
                                     <div className="text-[24px] font-medium leading-none capitalize text-[#ffffff] cFont">shoot Details</div>
                                     <button type="button" className="text-white hover:text-dark" onClick={() => setshootModal(false)}>
                                         <svg
@@ -177,18 +177,18 @@ const Shoots = () => {
                                         <div className='basis-[40%] pr-8'>
                                             <h2 className="text-[22px] font-bold leading-none capitalize text-[#000000] mb-[15px] mt-[30px] font-mono">{ shootInfo?.order_name }</h2>
                                             <div>
-                                                <span className='shootDate font-sans text-[16x] leading-[18.2px] text-[#000000] mb-[10px] block border-b-[1px] border-b-[#C5965C] pb-[10px]  border-t-[1px] border-t-[#C5965C] pt-[10px]'><strong>Date: </strong>
+                                                <span className='shootDate font-sans text-[16x] leading-[18.2px] text-[#000000] mb-[10px] block border-b-[1px] border-b-[#ACA686] pb-[10px]  border-t-[1px] border-t-[#ACA686] pt-[10px]'><strong>Date: </strong>
                                                     {shootInfo?.shoot_datetimes?.map((ShootDatetime, idx) => (
                                                         <span key={idx}>
                                                             {new Date(ShootDatetime?.start_date_time).toDateString()}
                                                         </span>
                                                     ))}
                                                 </span>
-                                                <span className='font-sans text-[16px] leading-[18.2px] text-[#000000] mb-[10px] block capitalize  border-b-[1px] border-b-[#C5965C] pb-[10px]'><strong>Shoot Type: </strong>{ shootInfo?.content_type }</span>
-                                                <span className='font-sans text-[16px] leading-[18.2px] text-[#000000] block capitalize  border-b-[1px] border-b-[#C5965C] pb-[10px]'><strong>Location: </strong>{ shootInfo?.location }</span>
+                                                <span className='font-sans text-[16px] leading-[18.2px] text-[#000000] mb-[10px] block capitalize  border-b-[1px] border-b-[#ACA686] pb-[10px]'><strong>Shoot Type: </strong>{ shootInfo?.content_type }</span>
+                                                <span className='font-sans text-[16px] leading-[18.2px] text-[#000000] block capitalize  border-b-[1px] border-b-[#ACA686] pb-[10px]'><strong>Location: </strong>{ shootInfo?.location }</span>
                                             </div>
                                         </div>
-                                        <div className="basis-[60%] rounded-[15px] border border-solid border-[#C5965C]">
+                                        <div className="basis-[60%] rounded-[15px] border border-solid border-[#ACA686]">
                                             <iframe
                                                 className='rounded-[15px]'
                                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3649.8194623228624!2d90.36562207597385!3d23.82501808590643!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c131a95e3afd%3A0x78b320e2234f87bc!2sRd%20No.%2012%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1696151396090!5m2!1sen!2sbd"
@@ -205,7 +205,7 @@ const Shoots = () => {
                                         <div className="flex justify-start items-center">
                                             <div className='flex justify-start items-center'>
                                                 <span className="text-[#545454] text-[20px] font-bold mr-3 leading-none inline-block font-mono">Payout:</span>
-                                                <span className="text-[#C5965C] text-[28px] font-bold font-mono">$23.33</span>
+                                                <span className="text-[#ACA686] text-[28px] font-bold font-mono">$23.33</span>
                                             </div>
                                             <div className="ml-[260px] relative text-[16px] font-medium capitalize py-[10px] border-[#000] font-sans">
                                                 <StatusBg>{ shootInfo?.order_status }</StatusBg>
@@ -228,12 +228,12 @@ const Shoots = () => {
                                                         <img src="/assets/images/timeline-checked.svg" alt="img" className="mx-auto h-[20px] w-[20px] rounded-full" />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <div className="mb-10 p-5 pl-7 border border-solid border-[#C5965C] rounded-[20px] relative z-3 bg-white top-[-10px]">
+                                                        <div className="mb-10 p-5 pl-7 border border-solid border-[#ACA686] rounded-[20px] relative z-3 bg-white top-[-10px]">
                                                             <style jsx global>{`
                                                                 .hello{
-                                                                    border-left-color: #C5965C;
+                                                                    border-left-color: #ACA686;
                                                                     border-right-color: transparent;
-                                                                    border-bottom-color: #C5965C;
+                                                                    border-bottom-color: #ACA686;
                                                                     border-top-color: transparent;
                                                                 }
                                                             `}</style>
@@ -251,12 +251,12 @@ const Shoots = () => {
                                                         <img src="/assets/images/timeline-checked.svg" alt="img" className="mx-auto h-[20px] w-[20px] rounded-full" />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <div className="mb-10 p-5 pl-7 border border-solid border-[#C5965C] rounded-[20px] relative z-3 bg-white top-[-10px]">
+                                                        <div className="mb-10 p-5 pl-7 border border-solid border-[#ACA686] rounded-[20px] relative z-3 bg-white top-[-10px]">
                                                             <style jsx global>{`
                                                                 .hello{
-                                                                    border-left-color: #C5965C;
+                                                                    border-left-color: #ACA686;
                                                                     border-right-color: transparent;
-                                                                    border-bottom-color: #C5965C;
+                                                                    border-bottom-color: #ACA686;
                                                                     border-top-color: transparent;
                                                                 }
                                                             `}</style>
@@ -274,12 +274,12 @@ const Shoots = () => {
                                                         <img src="/assets/images/timeline-checked.svg" alt="img" className="mx-auto h-[20px] w-[20px] rounded-full" />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <div className="p-5 pl-7 border border-solid border-[#C5965C] rounded-[20px] relative z-3 bg-white top-[-10px]">
+                                                        <div className="p-5 pl-7 border border-solid border-[#ACA686] rounded-[20px] relative z-3 bg-white top-[-10px]">
                                                             <style jsx global>{`
                                                                 .hello{
-                                                                    border-left-color: #C5965C;
+                                                                    border-left-color: #ACA686;
                                                                     border-right-color: transparent;
-                                                                    border-bottom-color: #C5965C;
+                                                                    border-bottom-color: #ACA686;
                                                                     border-top-color: transparent;
                                                                 }
                                                             `}</style>
@@ -304,9 +304,9 @@ const Shoots = () => {
                                             <span className='text-[16px] text-[#6b6b6b] leading-none capitalize font-sans'>last update: aug 20 2021</span>
                                             <ul className='mt-[10px] flex justify-start items-center'>
                                                 <li className='text-[16px] text-[#202020] capitalize font-regular font-sans'>folder: <strong>00</strong></li>
-                                                <span className='h-[8px] w-[8px] rounded-full bg-[#C5965C] mx-[10px] inline-block'></span>
+                                                <span className='h-[8px] w-[8px] rounded-full bg-[#ACA686] mx-[10px] inline-block'></span>
                                                 <li className='text-[16px] text-[#202020] capitalize font-regular font-sans'>items: <strong>00</strong></li>
-                                                <span className='h-[8px] w-[8px] rounded-full bg-[#C5965C] mx-[10px] inline-block'></span>
+                                                <span className='h-[8px] w-[8px] rounded-full bg-[#ACA686] mx-[10px] inline-block'></span>
                                                 <li className='text-[16px] text-[#202020] capitalize font-regular font-sans'>used: <strong>0 GB</strong></li>
                                             </ul>
                                         </div>

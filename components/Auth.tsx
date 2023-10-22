@@ -191,7 +191,7 @@ const Auth = () => {
               <div className='text-center dark:text-white'>
                 Don't have an account ?&nbsp;
                 <Link href='/auth/boxed-signup'
-                      className='uppercase text-[#C5965C] underline transition hover:text-black dark:hover:text-white'>
+                      className='uppercase text-[#ACA686] underline transition hover:text-black dark:hover:text-white'>
                   SIGN UP
                 </Link>
               </div>

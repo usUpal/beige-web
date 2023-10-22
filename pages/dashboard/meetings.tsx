@@ -175,7 +175,7 @@ const Meeting = () => {
 
                     <ul className="m-auto inline-flex items-center space-x-1 rtl:space-x-reverse mt-5">
                         <li>
-                            <button type="button" className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#C5965C] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#C5965C]">
+                            <button type="button" className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#ACA686] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#ACA686]">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rtl:rotate-180">
                                     <path d="M13 19L7 12L13 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                     <path opacity="0.5" d="M16.9998 19L10.9998 12L16.9998 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -183,22 +183,22 @@ const Meeting = () => {
                             </button>
                         </li>
                         <li>
-                            <button type="button" className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#C5965C] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#C5965C]">
+                            <button type="button" className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#ACA686] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#ACA686]">
                                 1
                             </button>
                         </li>
                         <li>
-                            <button type="button" className="flex justify-center rounded bg-[#C5965C] px-3.5 py-2 font-semibold text-white transition dark:bg-[#C5965C] dark:text-white-light">
+                            <button type="button" className="flex justify-center rounded bg-[#ACA686] px-3.5 py-2 font-semibold text-white transition dark:bg-[#ACA686] dark:text-white-light">
                                 2
                             </button>
                         </li>
                         <li>
-                            <button type="button" className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#C5965C] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#C5965C]">
+                            <button type="button" className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#ACA686] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#ACA686]">
                                 3
                             </button>
                         </li>
                         <li>
-                            <button type="button" className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#C5965C] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#C5965C]">
+                            <button type="button" className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#ACA686] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#ACA686]">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rtl:rotate-180">
                                     <path d="M11 19L17 12L11 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                     <path opacity="0.5" d="M6.99976 19L12.9998 12L6.99976 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -235,7 +235,7 @@ const Meeting = () => {
                                 </div>
                                 <div className="p-5 flex justify-between items-center">
                                     <div className='basis-[50%]'>
-                                        <h2 className='text-[#C5965C] text-[26px] font-bold leading-[28.6px] capitalize mb-[20px] font-mono'>meeting with {meetingInfo?.client?.name}</h2>
+                                        <h2 className='text-[#ACA686] text-[26px] font-bold leading-[28.6px] capitalize mb-[20px] font-mono'>meeting with {meetingInfo?.client?.name}</h2>
                                         <div>
                                             <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block font-sans'>Meeting Date:
                                                 <strong>{new Date(meetingInfo?.meeting_date_time).toDateString()}</strong>

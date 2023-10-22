@@ -35,8 +35,8 @@
     -webkit-transform: rotate(45deg);
     width: 100px;
     display: block;
-    background: #C5965C;
-    background: linear-gradient(#c7a276 0%, #C5965C 100%);
+    background: #ACA686;
+    background: linear-gradient(#c7a276 0%, #ACA686 100%);
     box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
     position: absolute;
     top: 19px; right: -21px;
@@ -45,19 +45,19 @@
     content: "";
     position: absolute; left: 0px; top: 100%;
     z-index: -1;
-    border-left: 3px solid #C5965C;
+    border-left: 3px solid #ACA686;
     border-right: 3px solid transparent;
     border-bottom: 3px solid transparent;
-    border-top: 3px solid #C5965C;
+    border-top: 3px solid #ACA686;
   }
   .ribbon span::after {
     content: "";
     position: absolute; right: 0px; top: 100%;
     z-index: -1;
     border-left: 3px solid transparent;
-    border-right: 3px solid #C5965C;
+    border-right: 3px solid #ACA686;
     border-bottom: 3px solid transparent;
-    border-top: 3px solid #C5965C;
+    border-top: 3px solid #ACA686;
   }
 
 /* Media query codes here... */

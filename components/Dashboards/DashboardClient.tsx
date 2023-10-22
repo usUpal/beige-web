@@ -443,7 +443,7 @@ const DashboardClient = (props: any) => {
               </div>
             </div>
             <p className='text-lg dark:text-white-light/90'>
-              Total Profit <span className='ml-2 text-[#C5965C]'>$10,840</span>
+              Total Profit <span className='ml-2 text-[#ACA686]'>$10,840</span>
             </p>
             <div className='relative'>
               <div className='rounded-lg bg-white dark:bg-black'>
