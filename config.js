@@ -1,2 +1,4 @@
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
-export { API_ENDPOINT };
+const HOSTNAME = process.env.NEXT_PUBLIC_HOSTNAME;
+
+export { API_ENDPOINT, HOSTNAME };

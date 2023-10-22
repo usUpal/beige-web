@@ -6,25 +6,27 @@ import { IRootState } from '../../store';
 import { toggleLocale, toggleTheme, toggleSidebar, toggleRTL } from '../../store/themeConfigSlice';
 import { useTranslation } from 'react-i18next';
 import Dropdown from '../Dropdown';
+import { useAuth } from '@/contexts/authContext';
+import Cookies from 'js-cookie';
 
 const Header = () => {
+
   const router = useRouter();
+  const { userData, setUserData, setAccessToken, setRefreshToken } = useAuth();
 
   const handleLogout = async () => {
-    localStorage.removeItem('userData');
-    localStorage.removeItem('tokenData');
-    await router.push('/auth/signin');
+
+    //Remove cookies
+    Cookies.remove('userData');
+    Cookies.remove('accessToken');
+    Cookies.remove('refreshToken');
+
+    //Reset context states
+    setUserData(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+
   };
-
-  let userName;
-  let userEmail;
-
-  if (typeof window !== 'undefined') {
-    // Code using localStorage should only run on the client side
-    userName = localStorage && (localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData') as string).name);
-    userEmail = localStorage && (localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData') as string).email);
-    // Rest of your code
-  }
 
   useEffect(() => {
     const selector = document.querySelector('ul.horizontal-menu a[href="' + window.location.pathname + '"]');
@@ -636,13 +638,11 @@ const Header = () => {
                            src='/assets/images/user-profile.jpeg' alt='userProfile' />
                       <div className='ltr:pl-4 rtl:pr-4 truncate'>
                         <h4 className='text-base'>
-                          {userName && userName}
-                          <span
-                            className='rounded bg-success-light px-1 text-xs text-success ltr:ml-2 rtl:ml-2'>Pro</span>
+                          {userData && userData?.name}
                         </h4>
                         <button type='button'
                                 className='text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white'>
-                          {userEmail && userEmail}
+                          {userData && userData?.email}
                         </button>
                       </div>
                     </div>
@@ -705,7 +705,7 @@ const Header = () => {
                   {/*    </Link>*/}
                   {/*</li>*/}
                   <li onClick={handleLogout} className='border-t border-white-light dark:border-white-light/10'>
-                    <Link href='/auth/signin' className='!py-3 text-danger'>
+                    <Link href='/' className='!py-3 text-danger'>
                       <svg className='rotate-90 ltr:mr-2 rtl:ml-2 shrink-0' width='18' height='18' viewBox='0 0 24 24'
                            fill='none' xmlns='http://www.w3.org/2000/svg'>
                         <path
@@ -1340,7 +1340,7 @@ const Header = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href='/auth/signin' target='_blank'>
+                    <Link href='/components/Auth' target='_blank'>
                       {t('login_boxed')}
                     </Link>
                   </li>
