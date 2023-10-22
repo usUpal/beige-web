@@ -24,6 +24,7 @@ const Shoots = () => {
     const getAllMyShoots = async () => {
         try {
             if (userId) {
+
                 const response = await fetch(
                     `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=30&cp_id=${userId}`,
                 );
@@ -320,6 +321,6 @@ const Shoots = () => {
 
         </div>
     );
-};
+}
 
 export default Shoots;

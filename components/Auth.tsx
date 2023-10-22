@@ -178,7 +178,7 @@ const Auth = () => {
                   </div>
                 </div>
                 <button type='submit'
-                        className='btn text-white bg-gradient-to-r from-[#E2A03F] to-[#735C38] !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l'>
+                        className='btn text-white bg-gradient-to-r from-[#ACA686] to-[#735C38] !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l'>
                   Sign in
                 </button>
               </form>

@@ -1,1032 +1,755 @@
-import Link from 'next/link';
-import Dropdown from '@/components/Dropdown';
-import StatusBg from '@/components/Status/StatusBg';
-import { API_ENDPOINT } from '@/config';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { format, parseISO } from 'date-fns';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
+import { IRootState } from '../../store';
+import Dropdown from '../../components/Dropdown';
+import { setPageTitle } from '../../store/themeConfigSlice';
 import dynamic from 'next/dynamic';
-import { useAuth } from '@/contexts/authContext';
-
 const ReactApexChart = dynamic(() => import('react-apexcharts'), {
-  ssr: false
+    ssr: false,
 });
+import Link from 'next/link';
+import { API_ENDPOINT } from '@/config';
+import 'flatpickr/dist/flatpickr.css';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { log } from 'console';
 
-const DashboardClient = (props: any) => {
+interface FormData {
+    content_type: number;
+    content_vertical: string;
+    order_name: string;
+    location: string;
+    shoot_datetimes: string;
+    start_date_time: string;
+    end_date_time: string;
+    references: string;
+    budget: string;
+    description: string;
+    min_budget: number;
+    max_budget: number;
+}
 
-  const { isDark, isRtl, isMounted } = props;
-  const { userData } = useAuth();
-
-  //Revenue Chart
-  const revenueChart: any = {
-    series: [
-      {
-        name: 'Income',
-        data: [16800, 16800, 15500, 17800, 15500, 17000, 19000, 16000, 15000, 17000, 14000, 17000]
-      },
-      {
-        name: 'Expenses',
-        data: [16500, 17500, 16200, 17300, 16000, 19500, 16000, 17000, 16000, 19000, 18000, 19000]
-      }
-    ],
-    options: {
-      chart: {
-        height: 325,
-        type: 'area',
-        fontFamily: 'Nunito, sans-serif',
-        zoom: {
-          enabled: false
-        },
-        toolbar: {
-          show: false
-        }
-      },
-
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        show: true,
-        curve: 'smooth',
-        width: 2,
-        lineCap: 'square'
-      },
-      dropShadow: {
-        enabled: true,
-        opacity: 0.2,
-        blur: 10,
-        left: -7,
-        top: 22
-      },
-      colors: isDark ? ['#2196F3', '#E7515A'] : ['#1B55E2', '#E7515A'],
-      markers: {
-        discrete: [
-          {
-            seriesIndex: 0,
-            dataPointIndex: 6,
-            fillColor: '#1B55E2',
-            strokeColor: 'transparent',
-            size: 7
-          },
-          {
-            seriesIndex: 1,
-            dataPointIndex: 5,
-            fillColor: '#E7515A',
-            strokeColor: 'transparent',
-            size: 7
-          }
-        ]
-      },
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      xaxis: {
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        },
-        crosshairs: {
-          show: true
-        },
-        labels: {
-          offsetX: isRtl ? 2 : 0,
-          offsetY: 5,
-          style: {
-            fontSize: '12px',
-            cssClass: 'apexcharts-xaxis-title'
-          }
-        }
-      },
-      yaxis: {
-        tickAmount: 7,
-        labels: {
-          offsetX: isRtl ? -30 : -10,
-          offsetY: 0,
-          style: {
-            fontSize: '12px',
-            cssClass: 'apexcharts-yaxis-title'
-          }
-        },
-        opposite: !!isRtl
-      },
-      grid: {
-        borderColor: isDark ? '#191E3A' : '#E0E6ED',
-        strokeDashArray: 5,
-        xaxis: {
-          lines: {
-            show: false
-          }
-        },
-        yaxis: {
-          lines: {
-            show: true
-          }
-        },
-        padding: {
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0
-        }
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'right',
-        fontSize: '16px',
-        markers: {
-          width: 10,
-          height: 10,
-          offsetX: -2
-        },
-        itemMargin: {
-          horizontal: 10,
-          vertical: 5
-        }
-      },
-      tooltip: {
-        marker: {
-          show: true
-        },
-        x: {
-          show: false
-        }
-      },
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shadeIntensity: 1,
-          inverseColors: !1,
-          opacityFrom: isDark ? 0.19 : 0.28,
-          opacityTo: 0.05,
-          stops: isDark ? [100, 100] : [45, 100]
-        }
-      }
-    }
-  };
-
-  //Sales By Category
-  const salesByCategory: any = {
-    series: [985, 737, 270],
-    options: {
-      chart: {
-        type: 'donut',
-        height: 460,
-        fontFamily: 'Nunito, sans-serif'
-      },
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        show: true,
-        width: 25,
-        colors: isDark ? '#0e1726' : '#fff'
-      },
-      colors: isDark ? ['#5c1ac3', '#e2a03f', '#e7515a', '#e2a03f'] : ['#e2a03f', '#5c1ac3', '#e7515a'],
-      legend: {
-        position: 'bottom',
-        horizontalAlign: 'center',
-        fontSize: '14px',
-        markers: {
-          width: 10,
-          height: 10,
-          offsetX: -2
-        },
-        height: 50,
-        offsetY: 20
-      },
-      plotOptions: {
-        pie: {
-          donut: {
-            size: '65%',
-            background: 'transparent',
-            labels: {
-              show: true,
-              name: {
-                show: true,
-                fontSize: '29px',
-                offsetY: -10
-              },
-              value: {
-                show: true,
-                fontSize: '26px',
-                color: isDark ? '#bfc9d4' : undefined,
-                offsetY: 16
-              },
-              total: {
-                show: true,
-                label: 'Total',
-                color: '#888ea8',
-                fontSize: '29px'
-              }
-            }
-          }
-        }
-      },
-      labels: ['Commercial', 'Wedding', 'Personal'],
-      states: {
-        hover: {
-          filter: {
-            type: 'none',
-            value: 0.15
-          }
-        },
-        active: {
-          filter: {
-            type: 'none',
-            value: 0.15
-          }
-        }
-      }
-    }
-  };
-
-  //Monthly Sales
-  const dailySales: any = {
-    series: [
-      {
-        name: 'Sales',
-        data: [44, 55, 41, 67, 22, 43, 21, 56, 97, 88, 12, 67]
-      },
-      {
-        name: 'Last Week',
-        data: [13, 23, 20, 8, 13, 27, 33, 44, 55, 41, 67, 22]
-      }
-    ],
-    options: {
-      chart: {
-        height: 160,
-        type: 'bar',
-        fontFamily: 'Nunito, sans-serif',
-        toolbar: {
-          show: false
-        },
-        stacked: true,
-        stackType: '100%'
-      },
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        show: true,
-        width: 1
-      },
-      colors: ['#e2a03f', '#e0e6ed'],
-      responsive: [
+const IndexClient = () => {
+    const [date2, setDate2] = useState<any>('2022-07-05 12:00');
+    const [activeTab3, setActiveTab3] = useState<any>(1);
+    const [dateTimes, setDateTimes] = useState<number[]>([]);
+    const [isMounted, setIsMounted] = useState(false);
+    const [startDateTime, setstartDateTime] = useState('');
+    const [endDateTime, setendDateTime] = useState('');
+    const [startDuration, setStartDuration] = useState<any>();
+    const [endDuration, setEndDuration] = useState<any>();
+    const [items, setItems] = useState<any>([
         {
-          breakpoint: 480,
-          options: {
-            legend: {
-              position: 'bottom',
-              offsetX: -10,
-              offsetY: 0
+            id: 1,
+            title: '',
+            description: '',
+            rate: 0,
+            quantity: 0,
+            amount: 0,
+        },
+    ]);
+    const max_budgetNumber = 69;
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors },
+    } = useForm<FormData>();
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(setPageTitle('Client Dashboard'));
+    });
+
+    useEffect(() => {
+        setIsMounted(true);
+    });
+
+
+    function onSubmit(data: any) {
+        const s_time = parseISO(data.start_date_time)
+        const e_time = parseISO(data.end_date_time)
+        const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        const startingTime = new Date(starting_date);
+        const endingTime = new Date(ending_date);
+
+        // Calculate the time difference in milliseconds
+        const timeDifferenceInMilliseconds: number = endingTime.getTime() - startingTime.getTime();
+
+        // Calculate the time difference in hours
+        const durationSingle = timeDifferenceInMilliseconds / (1000 * 60 * 60);
+
+        setDateTimes(prevDateTimes => [...prevDateTimes, durationSingle]);
+
+        const orderData = {
+            "content_type": data.content_type,
+            "content_vertical": data.content_vertical,
+            "order_name": data.order_name,
+            "location": data.location,
+            "references": data.references,
+            "budget": {
+                "max": data.max_budget,
+                "min": data.min_budget
+            },
+            "description": data.description,
+            "shoot_duration": 32,
+            "shoot_datetimes": [
+                {
+                    "start_date_time": starting_date,
+                    "end_date_time": ending_date,
+                    "duration": durationSingle,
+                    "date_indicator": "confirmed"
+                },
+                {
+                    "start_date_time": starting_date,
+                    "end_date_time": ending_date,
+                    "duration": durationSingle,
+                    "date_indicator": "confirmed"
+                }
+
+            ],
+        }
+        console.log("DATA", orderData);
+    }
+
+
+    const [userId, setUserId] = useState<any>('');
+    useEffect(() => {
+        getUserId();
+    }, []);
+
+    const getUserId = async () => {
+        try {
+            if (typeof window !== 'undefined') {
+                setUserId(localStorage && localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData') as string).id);
             }
-          }
+        } catch (error) {
+            console.error(error);
         }
-      ],
-      xaxis: {
-        labels: {
-          show: false
+    };
+
+    const changeQuantityPrice = (type: string, value: string, id: number) => {
+        const list = items;
+        const item = list.find((d: any) => d.id === id);
+        if (type === 'quantity') {
+            item.quantity = Number(value);
+        }
+        if (type === 'price') {
+            item.amount = Number(value);
+        }
+        setItems([...list]);
+    };
+
+    const addItem = () => {
+        let maxId = 0;
+        maxId = items?.length ? items.reduce((max: number, character: any) => (character.id > max ? character.id : max), items[0].id) : 0;
+
+        setItems([
+            ...items,
+            {
+                id: maxId + 1,
+                title: '',
+                description: '',
+                rate: 0,
+                quantity: 0,
+                amount: 0,
+            },
+        ]);
+    };
+
+    const removeItem = (item: any = null) => {
+        setItems(items.filter((d: any) => d.id !== item.id));
+    };
+
+    //Cost Breakdown
+    const costingssByCategory: any = {
+        series: [985, 737, 270],
+        options: {
+            chart: {
+                type: 'donut',
+                height: 460,
+                fontFamily: 'Nunito, sans-serif',
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            stroke: {
+                show: true,
+                width: 25,
+                colors: '#fff',
+            },
+            colors: ['#ACA686', '#5c1ac3', '#e7515a'],
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+                fontSize: '14px',
+                markers: {
+                    width: 10,
+                    height: 10,
+                    offsetX: -2,
+                },
+                height: 50,
+                offsetY: 20,
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '65%',
+                        background: 'transparent',
+                        labels: {
+                            show: true,
+                            name: {
+                                show: true,
+                                fontSize: '29px',
+                                offsetY: -10,
+                            },
+                            value: {
+                                show: true,
+                                fontSize: '26px',
+                                color: undefined,
+                                offsetY: 16,
+                                formatter: (val: any) => {
+                                    return val;
+                                },
+                            },
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                color: '#888ea8',
+                                fontSize: '29px',
+                                formatter: (w: any) => {
+                                    return w.globals.seriesTotals.reduce(function (a: any, b: any) {
+                                        return a + b;
+                                    }, 0);
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            labels: ['Team Crew Bill', 'Camera Cost', 'Transport'],
+            states: {
+                hover: {
+                    filter: {
+                        type: 'none',
+                        value: 0.15,
+                    },
+                },
+                active: {
+                    filter: {
+                        type: 'none',
+                        value: 0.15,
+                    },
+                },
+            },
         },
-        categories: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-      },
-      yaxis: {
-        show: false
-      },
-      fill: {
-        opacity: 1
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '25%'
-        }
-      },
-      legend: {
-        show: false
-      },
-      grid: {
-        show: false,
-        xaxis: {
-          lines: {
-            show: false
-          }
+    };
+
+    const tableData = [
+        {
+            id: 1,
+            costings: 'Team Crew Bill',
+            indicator: 1,
+            price: 234,
         },
-        padding: {
-          top: 10,
-          right: -20,
-          bottom: -20,
-          left: -20
-        }
-      }
-    }
-  };
+        {
+            id: 2,
+            costings: 'Camera Cost',
+            indicator: 2,
+            price: 789,
+        },
+        {
+            id: 3,
+            costings: 'Transport',
+            indicator: 3,
+            price: 29876,
+        },
+    ];
 
-  //Total Orders
-  const totalOrders: any = {
-    series: [
-      {
-        name: 'Sales',
-        data: [28, 40, 36, 52, 38, 60, 38, 52, 36, 40, 28, 40, 36, 52, 38, 60, 38, 52, 36, 40]
-      }
-    ],
-    options: {
-      chart: {
-        height: 290,
-        type: 'area',
-        fontFamily: 'Nunito, sans-serif',
-        sparkline: {
-          enabled: true
-        }
-      },
-      stroke: {
-        curve: 'smooth',
-        width: 2
-      },
-      colors: isDark ? ['#00ab55'] : ['#00ab55'],
-      labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'],
-      yaxis: {
-        min: 0,
-        show: false
-      },
-      grid: {
-        padding: {
-          top: 125,
-          right: 0,
-          bottom: 0,
-          left: 0
-        }
-      },
-      fill: {
-        opacity: 1,
-        type: 'gradient',
-        gradient: {
-          type: 'vertical',
-          shadeIntensity: 1,
-          inverseColors: !1,
-          opacityFrom: 0.3,
-          opacityTo: 0.05,
-          stops: [100, 100]
-        }
-      },
-      tooltip: {
-        x: {
-          show: false
-        }
-      }
-    }
-  };
-
-  // Shoots
-  const [myShoots, setMyShoots] = useState<any>([]);
-  const [userId] = useState<any>('');
-
-  useEffect(() => {
-    getAllMyShoots();
-  }, []);
-
-  const getAllMyShoots = async () => {
-    try {
-      if (userId) {
-        const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=5&client_id=${userData?.id}`);
-        const allShots = await response.json();
-        setMyShoots((prevShoots: any) => {
-          const newShoots = allShots.results.filter((shoot: any) => !prevShoots.some((prevShoot: any) => prevShoot.id === shoot.id));
-          return [...prevShoots, ...newShoots];
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  return (
-    <div>
-      <ul className='flex space-x-2 rtl:space-x-reverse'>
-        <li>
-          <Link href='/' className='text-primary hover:underline'>
-            Dashboard
-          </Link>
-        </li>
-        <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span>Client</span>
-        </li>
-      </ul>
-
-      <div className='pt-5'>
-        <div className='mb-6 grid gap-6 xl:grid-cols-3'>
-          <div className='panel h-full xl:col-span-2'>
-            <div className='mb-5 flex items-center justify-between dark:text-white-light'>
-              <h5 className='text-lg font-semibold'>Revenue</h5>
-              <div className='dropdown'>
-                <Dropdown
-                  offset={[0, 1]}
-                  placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                  button={
-                    <svg className='h-5 w-5 text-black/70 hover:!text-primary dark:text-white/70' viewBox='0 0 24 24'
-                         fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <circle cx='5' cy='12' r='2' stroke='currentColor' strokeWidth='1.5' />
-                      <circle opacity='0.5' cx='12' cy='12' r='2' stroke='currentColor' strokeWidth='1.5' />
-                      <circle cx='19' cy='12' r='2' stroke='currentColor' strokeWidth='1.5' />
-                    </svg>
-                  }
-                >
-                  <ul>
-                    <li>
-                      <button type='button'>Weekly</button>
-                    </li>
-                    <li>
-                      <button type='button'>Monthly</button>
-                    </li>
-                    <li>
-                      <button type='button'>Yearly</button>
-                    </li>
-                  </ul>
-                </Dropdown>
-              </div>
-            </div>
-            <p className='text-lg dark:text-white-light/90'>
-              Total Profit <span className='ml-2 text-[#ACA686]'>$10,840</span>
-            </p>
-            <div className='relative'>
-              <div className='rounded-lg bg-white dark:bg-black'>
-                {isMounted ? (
-                  <ReactApexChart series={revenueChart.series} options={revenueChart.options} type='area' height={325}
-                                  width={'100%'} />
-                ) : (
-                  <div
-                    className='grid min-h-[325px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] '>
-                    <span
-                      className='inline-flex h-5 w-5 animate-spin rounded-full  border-2 border-black !border-l-transparent dark:border-white'></span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className='panel h-full'>
-            <div className='mb-5 flex items-center'>
-              <h5 className='text-lg font-semibold dark:text-white-light'>Orders By Category</h5>
-            </div>
+    return (
+        <>
             <div>
-              <div className='rounded-lg bg-white dark:bg-black'>
-                {isMounted ? (
-                  <ReactApexChart series={salesByCategory.series} options={salesByCategory.options} type='donut'
-                                  height={460} width={'100%'} />
-                ) : (
-                  <div
-                    className='grid min-h-[325px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] '>
-                    <span
-                      className='inline-flex h-5 w-5 animate-spin rounded-full  border-2 border-black !border-l-transparent dark:border-white'></span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Total Orders */}
-        <div className='mb-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-1'>
-          <div className='panel h-full p-0'>
-            <div className='absolute flex w-full items-center justify-between p-5'>
-              <div className='relative'>
-                <div
-                  className='flex h-11 w-11 items-center justify-center rounded-lg bg-success-light text-success dark:bg-success dark:text-success-light'>
-                  <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <path
-                      d='M2 3L2.26491 3.0883C3.58495 3.52832 4.24497 3.74832 4.62248 4.2721C5 4.79587 5 5.49159 5 6.88304V9.5C5 12.3284 5 13.7426 5.87868 14.6213C6.75736 15.5 8.17157 15.5 11 15.5H19'
-                      stroke='currentColor'
-                      strokeWidth='1.5'
-                      strokeLinecap='round'
-                    />
-                    <path
-                      opacity='0.5'
-                      d='M7.5 18C8.32843 18 9 18.6716 9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18Z'
-                      stroke='currentColor'
-                      strokeWidth='1.5'
-                    />
-                    <path
-                      opacity='0.5'
-                      d='M16.5 18.0001C17.3284 18.0001 18 18.6716 18 19.5001C18 20.3285 17.3284 21.0001 16.5 21.0001C15.6716 21.0001 15 20.3285 15 19.5001C15 18.6716 15.6716 18.0001 16.5 18.0001Z'
-                      stroke='currentColor'
-                      strokeWidth='1.5'
-                    />
-                    <path opacity='0.5' d='M11 9H8' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' />
-                    <path
-                      d='M5 6H16.4504C18.5054 6 19.5328 6 19.9775 6.67426C20.4221 7.34853 20.0173 8.29294 19.2078 10.1818L18.7792 11.1818C18.4013 12.0636 18.2123 12.5045 17.8366 12.7523C17.4609 13 16.9812 13 16.0218 13H5'
-                      stroke='currentColor'
-                      strokeWidth='1.5'
-                    />
-                  </svg>
-                </div>
-              </div>
-              <h5 className='text-2xl font-semibold ltr:text-right rtl:text-left dark:text-white-light'>
-                3,192
-                <span className='block text-sm font-normal'>Total Orders</span>
-              </h5>
-            </div>
-            <div className='rounded-lg bg-transparent'>
-              {/* loader */}
-              {isMounted ? (
-                <ReactApexChart series={totalOrders.series} options={totalOrders.options} type='area' height={290}
-                                width={'100%'} />
-              ) : (
-                <div
-                  className='grid min-h-[325px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] '>
-                  <span
-                    className='inline-flex h-5 w-5 animate-spin rounded-full  border-2 border-black !border-l-transparent dark:border-white'></span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Summary and Total orders */}
-        <div className='mb-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-2'>
-          {/* Monthly Orders */}
-          <div className='panel h-full sm:col-span-2 xl:col-span-1'>
-            <div className='mb-5 flex items-center'>
-              <h5 className='text-lg font-semibold dark:text-white-light'>
-                Monthly Orders
-                <span className='block text-sm font-normal text-white-dark'>Go to columns for details.</span>
-              </h5>
-              <div className='relative ltr:ml-auto rtl:mr-auto'>
-                <div
-                  className='grid h-11 w-11 place-content-center rounded-full bg-[#ffeccb] text-warning dark:bg-warning dark:text-[#ffeccb]'>
-                  <svg width='40' height='40' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <path d='M12 6V18' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' />
-                    <path
-                      d='M15 9.5C15 8.11929 13.6569 7 12 7C10.3431 7 9 8.11929 9 9.5C9 10.8807 10.3431 12 12 12C13.6569 12 15 13.1193 15 14.5C15 15.8807 13.6569 17 12 17C10.3431 17 9 15.8807 9 14.5'
-                      stroke='currentColor'
-                      strokeWidth='1.5'
-                      strokeLinecap='round'
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className='rounded-lg bg-white dark:bg-black'>
-                {isMounted ? (
-                  <ReactApexChart series={dailySales.series} options={dailySales.options} type='bar' height={160}
-                                  width={'100%'} />
-                ) : (
-                  <div
-                    className='grid min-h-[325px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] '>
-                    <span
-                      className='inline-flex h-5 w-5 animate-spin rounded-full  border-2 border-black !border-l-transparent dark:border-white'></span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div className='panel h-full sm:col-span-2 xl:col-span-1'>
-            <div className='mb-5 flex items-center justify-between dark:text-white-light'>
-              <h5 className='text-lg font-semibold'>Summary</h5>
-              <div className='dropdown'>
-                <Dropdown
-                  placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                  button={
-                    <svg className='h-5 w-5 text-black/70 hover:!text-primary dark:text-white/70' viewBox='0 0 24 24'
-                         fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <circle cx='5' cy='12' r='2' stroke='currentColor' strokeWidth='1.5' />
-                      <circle opacity='0.5' cx='12' cy='12' r='2' stroke='currentColor' strokeWidth='1.5' />
-                      <circle cx='19' cy='12' r='2' stroke='currentColor' strokeWidth='1.5' />
-                    </svg>
-                  }
-                >
-                  <ul>
+                <ul className="flex space-x-2 rtl:space-x-reverse">
                     <li>
-                      <button type='button'>View Report</button>
+                        <Link href="/" className="text-warning hover:underline">
+                            Dashboard
+                        </Link>
                     </li>
-                    <li>
-                      <button type='button'>Edit Report</button>
+                    <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
+                        <span>Book Now</span>
                     </li>
-                    <li>
-                      <button type='button'>Mark as Done</button>
-                    </li>
-                  </ul>
-                </Dropdown>
-              </div>
-            </div>
-            <div className='space-y-9'>
-              <div className='flex items-center'>
-                <div className='h-9 w-9 ltr:mr-3 rtl:ml-3'>
-                  <div
-                    className='grid h-9 w-9 place-content-center  rounded-full bg-secondary-light text-secondary dark:bg-secondary dark:text-secondary-light'>
-                    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <path
-                        d='M3.74157 18.5545C4.94119 20 7.17389 20 11.6393 20H12.3605C16.8259 20 19.0586 20 20.2582 18.5545M3.74157 18.5545C2.54194 17.1091 2.9534 14.9146 3.77633 10.5257C4.36155 7.40452 4.65416 5.84393 5.76506 4.92196M3.74157 18.5545C3.74156 18.5545 3.74157 18.5545 3.74157 18.5545ZM20.2582 18.5545C21.4578 17.1091 21.0464 14.9146 20.2235 10.5257C19.6382 7.40452 19.3456 5.84393 18.2347 4.92196M20.2582 18.5545C20.2582 18.5545 20.2582 18.5545 20.2582 18.5545ZM18.2347 4.92196C17.1238 4 15.5361 4 12.3605 4H11.6393C8.46374 4 6.87596 4 5.76506 4.92196M18.2347 4.92196C18.2347 4.92196 18.2347 4.92196 18.2347 4.92196ZM5.76506 4.92196C5.76506 4.92196 5.76506 4.92196 5.76506 4.92196Z'
-                        stroke='currentColor'
-                        strokeWidth='1.5'
-                      />
-                      <path
-                        opacity='0.5'
-                        d='M9.1709 8C9.58273 9.16519 10.694 10 12.0002 10C13.3064 10 14.4177 9.16519 14.8295 8'
-                        stroke='currentColor'
-                        strokeWidth='1.5'
-                        strokeLinecap='round'
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div className='flex-1'>
-                  <div className='mb-2 flex font-semibold text-white-dark'>
-                    <h6>Income</h6>
-                    <p className='ltr:ml-auto rtl:mr-auto'>$92,600</p>
-                  </div>
-                  <div className='h-2 rounded-full bg-dark-light shadow dark:bg-[#1b2e4b]'>
-                    <div className='h-full w-11/12 rounded-full bg-gradient-to-r from-[#7579ff] to-[#b224ef]'></div>
-                  </div>
-                </div>
-              </div>
-              <div className='flex items-center'>
-                <div className='h-9 w-9 ltr:mr-3 rtl:ml-3'>
-                  <div
-                    className='grid h-9 w-9 place-content-center rounded-full bg-success-light text-success dark:bg-success dark:text-success-light'>
-                    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <path
-                        d='M4.72848 16.1369C3.18295 14.5914 2.41018 13.8186 2.12264 12.816C1.83509 11.8134 2.08083 10.7485 2.57231 8.61875L2.85574 7.39057C3.26922 5.59881 3.47597 4.70292 4.08944 4.08944C4.70292 3.47597 5.59881 3.26922 7.39057 2.85574L8.61875 2.57231C10.7485 2.08083 11.8134 1.83509 12.816 2.12264C13.8186 2.41018 14.5914 3.18295 16.1369 4.72848L17.9665 6.55812C20.6555 9.24711 22 10.5916 22 12.2623C22 13.933 20.6555 15.2775 17.9665 17.9665C15.2775 20.6555 13.933 22 12.2623 22C10.5916 22 9.24711 20.6555 6.55812 17.9665L4.72848 16.1369Z'
-                        stroke='currentColor'
-                        strokeWidth='1.5'
-                      />
-                      <circle opacity='0.5' cx='8.60699' cy='8.87891' r='2' transform='rotate(-45 8.60699 8.87891)'
-                              stroke='currentColor' strokeWidth='1.5' />
-                      <path opacity='0.5' d='M11.5417 18.5L18.5208 11.5208' stroke='currentColor' strokeWidth='1.5'
-                            strokeLinecap='round' />
-                    </svg>
-                  </div>
-                </div>
-                <div className='flex-1'>
-                  <div className='mb-2 flex font-semibold text-white-dark'>
-                    <h6>Profit</h6>
-                    <p className='ltr:ml-auto rtl:mr-auto'>$37,515</p>
-                  </div>
-                  <div className='h-2 w-full rounded-full bg-dark-light shadow dark:bg-[#1b2e4b]'>
-                    <div className='h-full w-full rounded-full bg-gradient-to-r from-[#3cba92] to-[#0ba360]'
-                         style={{ width: '65%' }}></div>
-                  </div>
-                </div>
-              </div>
-              <div className='flex items-center'>
-                <div className='h-9 w-9 ltr:mr-3 rtl:ml-3'>
-                  <div
-                    className='grid h-9 w-9 place-content-center rounded-full bg-warning-light text-warning dark:bg-warning dark:text-warning-light'>
-                    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <path
-                        d='M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z'
-                        stroke='currentColor'
-                        strokeWidth='1.5'
-                      />
-                      <path opacity='0.5' d='M10 16H6' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' />
-                      <path opacity='0.5' d='M14 16H12.5' stroke='currentColor' strokeWidth='1.5'
-                            strokeLinecap='round' />
-                      <path opacity='0.5' d='M2 10L22 10' stroke='currentColor' strokeWidth='1.5'
-                            strokeLinecap='round' />
-                    </svg>
-                  </div>
-                </div>
-                <div className='flex-1'>
-                  <div className='mb-2 flex font-semibold text-white-dark'>
-                    <h6>Expenses</h6>
-                    <p className='ltr:ml-auto rtl:mr-auto'>$55,085</p>
-                  </div>
-                  <div className='h-2 w-full rounded-full bg-dark-light shadow dark:bg-[#1b2e4b]'>
-                    <div className='h-full w-full rounded-full bg-gradient-to-r from-[#f09819] to-[#ff5858]'
-                         style={{ width: '80%' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                </ul>
 
-        {/* Transactions */}
-        <div className='mb-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-2'>
-          <div className='panel h-full'>
-            <div className='mb-5 flex items-center justify-between dark:text-white-light'>
-              <h5 className='text-lg font-semibold'>Transactions</h5>
-              <div className='dropdown'>
-                <Dropdown
-                  placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                  button={
-                    <svg className='h-5 w-5 text-black/70 hover:!text-primary dark:text-white/70' viewBox='0 0 24 24'
-                         fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <circle cx='5' cy='12' r='2' stroke='currentColor' strokeWidth='1.5' />
-                      <circle opacity='0.5' cx='12' cy='12' r='2' stroke='currentColor' strokeWidth='1.5' />
-                      <circle cx='19' cy='12' r='2' stroke='currentColor' strokeWidth='1.5' />
-                    </svg>
-                  }
-                >
-                  <ul>
-                    <li>
-                      <button type='button'>View Report</button>
-                    </li>
-                    <li>
-                      <button type='button'>Edit Report</button>
-                    </li>
-                    <li>
-                      <button type='button'>Mark as Done</button>
-                    </li>
-                  </ul>
-                </Dropdown>
-              </div>
-            </div>
-            <div>
-              <div className='space-y-6'>
-                <div className='flex'>
-                                        <span
-                                          className='grid h-9 w-9 shrink-0 place-content-center rounded-md bg-success-light text-base text-success dark:bg-success dark:text-success-light'>
-                                            VS
-                                        </span>
-                  <div className='flex-1 px-3'>
-                    <div>Video Shoot</div>
-                    <div className='text-xs text-white-dark dark:text-gray-500'>10 Jan 1:00PM</div>
-                  </div>
-                  <span className='whitespace-pre px-1 text-base text-success ltr:ml-auto rtl:mr-auto'>+$36.11</span>
-                </div>
-                <div className='flex'>
-                  <span
-                    className='grid h-9 w-9 shrink-0 place-content-center rounded-md bg-warning-light text-warning dark:bg-warning dark:text-warning-light'>IS</span>
-                  <div className='flex-1 px-3'>
-                    <div>Image Shoot</div>
-                    <div className='text-xs text-white-dark dark:text-gray-500'>04 Jan 1:00PM</div>
-                  </div>
-                  <span className='whitespace-pre px-1 text-base text-danger ltr:ml-auto rtl:mr-auto'>-$16.44</span>
-                </div>
-                <div className='flex'>
-                  <span
-                    className='grid h-9 w-9 shrink-0 place-content-center rounded-md bg-danger-light text-danger dark:bg-danger dark:text-danger-light'>IS</span>
-                  <div className='flex-1 px-3'>
-                    <div>Image Shoot</div>
-                    <div className='text-xs text-white-dark dark:text-gray-500'>10 Jan 1:00PM</div>
-                  </div>
-                  <span className='whitespace-pre px-1 text-base text-success ltr:ml-auto rtl:mr-auto'>+$66.44</span>
-                </div>
-                <div className='flex'>
-                  <span
-                    className='grid h-9 w-9 shrink-0 place-content-center rounded-md bg-secondary-light text-secondary dark:bg-secondary dark:text-secondary-light'>WS</span>
-                  <div className='flex-1 px-3'>
-                    <div>Wedding Shoot</div>
-                    <div className='text-xs text-white-dark dark:text-gray-500'>04 Jan 1:00PM</div>
-                  </div>
-                  <span className='whitespace-pre px-1 text-base text-danger ltr:ml-auto rtl:mr-auto'>-$32.00</span>
-                </div>
-                <div className='flex'>
-                  <span
-                    className='grid h-9 w-9 shrink-0 place-content-center rounded-md bg-info-light text-base text-info dark:bg-info dark:text-info-light'>CS</span>
-                  <div className='flex-1 px-3'>
-                    <div>Commercial Shoot</div>
-                    <div className='text-xs text-white-dark dark:text-gray-500'>10 Jan 1:00PM</div>
-                  </div>
-                  <span className='whitespace-pre px-1 text-base text-success ltr:ml-auto rtl:mr-auto'>+$10.08</span>
-                </div>
-                <div className='flex'>
-                  <span
-                    className='grid h-9 w-9 shrink-0 place-content-center rounded-md bg-primary-light text-primary dark:bg-primary dark:text-primary-light'>VS</span>
-                  <div className='flex-1 px-3'>
-                    <div>Video Shoot</div>
-                    <div className='text-xs text-white-dark dark:text-gray-500'>04 Jan 1:00PM</div>
-                  </div>
-                  <span className='whitespace-pre px-1 text-base text-danger ltr:ml-auto rtl:mr-auto'>-$22.00</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='panel h-full overflow-hidden border-0 p-0'>
-            <div className='min-h-[190px] bg-gradient-to-r from-[#EEBE43] to-[#6B510F] p-6'>
-              <div className='mb-6 flex items-center justify-between'>
-                <div
-                  className='flex items-center rounded-full bg-black/50 p-1 font-semibold text-white ltr:pr-3 rtl:pl-3'>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img className='block h-8 w-8 rounded-full border-2 border-white/50 object-cover ltr:mr-1 rtl:ml-1'
-                       src='/assets/images/profile-34.jpeg' alt='avatar' />
-                  Alan Green
-                </div>
-                <button type='button'
-                        className='flex h-9 w-9 items-center justify-between rounded-md bg-[#164F57] text-white hover:opacity-80 ltr:ml-auto rtl:mr-auto'>
-                  <svg className='m-auto h-6 w-6' viewBox='0 0 24 24' stroke='currentColor' strokeWidth='1.5'
-                       fill='none' strokeLinecap='round' strokeLinejoin='round'>
-                    <line x1='12' y1='5' x2='12' y2='19'></line>
-                    <line x1='5' y1='12' x2='19' y2='12'></line>
-                  </svg>
-                </button>
-              </div>
-              <div className='flex items-center justify-between text-white'>
-                <p className='text-xl'>Wallet Balance</p>
-                <h5 className='text-2xl ltr:ml-auto rtl:mr-auto'>
-                  <span className='text-white-light'>$</span>2953
-                </h5>
-              </div>
-            </div>
-            <div className='-mt-12 grid grid-cols-2 gap-2 px-8'>
-              <div className='rounded-md bg-white px-4 py-2.5 shadow dark:bg-[#060818]'>
-                                    <span className='mb-4 flex items-center justify-between dark:text-white'>
-                                        Received
-                                        <svg className='h-4 w-4 text-success' viewBox='0 0 24 24' fill='none'
-                                             xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M19 15L12 9L5 15' stroke='currentColor' strokeWidth='1.5'
-                                                  strokeLinecap='round' strokeLinejoin='round' />
-                                        </svg>
-                                    </span>
-                <div
-                  className='btn w-full  border-0 bg-[#ebedf2] py-1 text-base text-[#515365] shadow-none dark:bg-black dark:text-[#bfc9d4]'>$97.99
-                </div>
-              </div>
-              <div className='rounded-md bg-white px-4 py-2.5 shadow dark:bg-[#060818]'>
-                                    <span className='mb-4 flex items-center justify-between dark:text-white'>
-                                        Spent
-                                        <svg className='h-4 w-4 text-danger' viewBox='0 0 24 24' fill='none'
-                                             xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M19 9L12 15L5 9' stroke='currentColor' strokeWidth='1.5'
-                                                  strokeLinecap='round' strokeLinejoin='round' />
-                                        </svg>
-                                    </span>
-                <div
-                  className='btn w-full  border-0 bg-[#ebedf2] py-1 text-base text-[#515365] shadow-none dark:bg-black dark:text-[#bfc9d4]'>$53.00
-                </div>
-              </div>
-            </div>
-            <div className='p-5'>
-              <div className='mb-5'>
-                                    <span
-                                      className='rounded-full bg-[#1b2e4b] px-4 py-1.5 text-xs text-white before:inline-block before:h-1.5 before:w-1.5 before:rounded-full before:bg-white ltr:before:mr-2 rtl:before:ml-2'>
-                                        Pending
-                                    </span>
-              </div>
-              <div className='mb-5 space-y-1'>
-                <div className='flex items-center justify-between'>
-                  <p className='font-semibold text-[#515365]'>Photo Shoot</p>
-                  <p className='text-base'>
-                    <span>$</span> <span className='font-semibold'>13.85</span>
-                  </p>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <p className='font-semibold text-[#515365]'>Video Shoot</p>
-                  <p className='text-base'>
-                    <span>$</span> <span className='font-semibold '>15.66</span>
-                  </p>
-                </div>
-              </div>
-              <div className='flex justify-around px-2 text-center'>
-                <button type='button' className='btn btn-secondary ltr:mr-2 rtl:ml-2'>
-                  View Details
-                </button>
-                <button type='button' className='btn btn-success'>
-                  Pay Now $29.51
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+                <div className="grid grid-cols-1 lg:grid-cols-1 mt-5">
+                    {/* icon only */}
+                    <div className="panel">
+                        <div className="mb-5 flex items-center justify-between">
+                            <h5 className="text-lg font-semibold dark:text-white-light">Book Now</h5>
+                        </div>
+                        <div className="mb-5">
+                            <div className="inline-block w-full">
+                                <div className="relative z-[1]">
+                                    <div
+                                        className={`${activeTab3 === 1 ? 'w-[15%]' : activeTab3 === 2 ? 'w-[48%]' : activeTab3 === 3 ? 'w-[81%]' : ''}
+                                            absolute top-[30px] -z-[1] m-auto h-1 w-[15%] bg-warning transition-[width] ltr:left-0 rtl:right-0`}
+                                    ></div>
+                                    <ul className="mb-5 grid grid-cols-3">
+                                        <li className="mx-auto">
+                                            <button
+                                                type="button"
+                                                className={`${activeTab3 === 1 ? '!border-warning !bg-warning text-white' : ''}
+                                            flex h-16 w-16 items-center justify-center rounded-full border-[3px] border-[#f3f2ee] bg-white dark:border-[#1b2e4b] dark:bg-[#253b5c]`}
+                                                onClick={() => setActiveTab3(1)}
+                                            >
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5">
+                                                    <path
+                                                        opacity="0.5"
+                                                        d="M2 12.2039C2 9.91549 2 8.77128 2.5192 7.82274C3.0384 6.87421 3.98695 6.28551 5.88403 5.10813L7.88403 3.86687C9.88939 2.62229 10.8921 2 12 2C13.1079 2 14.1106 2.62229 16.116 3.86687L18.116 5.10812C20.0131 6.28551 20.9616 6.87421 21.4808 7.82274C22 8.77128 22 9.91549 22 12.2039V13.725C22 17.6258 22 19.5763 20.8284 20.7881C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.7881C2 19.5763 2 17.6258 2 13.725V12.2039Z"
+                                                        stroke="currentColor"
+                                                        strokeWidth="1.5"
+                                                    />
+                                                    <path d="M12 15L12 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                                </svg>
+                                            </button>
+                                        </li>
+                                        <li className="mx-auto">
+                                            <button
+                                                type="button"
+                                                className={`${activeTab3 === 2 ? '!border-warning !bg-warning text-white' : ''}
+                                            flex h-16 w-16 items-center justify-center rounded-full border-[3px] border-[#f3f2ee] bg-white dark:border-[#1b2e4b] dark:bg-[#253b5c]`}
+                                                onClick={() => setActiveTab3(2)}
+                                            >
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <circle cx="12" cy="6" r="4" stroke="currentColor" strokeWidth="1.5" />
+                                                    <ellipse opacity="0.5" cx="12" cy="17" rx="7" ry="4" stroke="currentColor" strokeWidth="1.5" />
+                                                </svg>
+                                            </button>
+                                        </li>
+                                        <li className="mx-auto">
+                                            <button
+                                                type="button"
+                                                className={`${activeTab3 === 3 ? '!border-warning !bg-warning text-white' : ''}
+                                            flex h-16 w-16 items-center justify-center rounded-full border-[3px] border-[#f3f2ee] bg-white dark:border-[#1b2e4b] dark:bg-[#253b5c]`}
+                                                onClick={() => setActiveTab3(3)}
+                                            >
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M20.9751 12.1852L20.2361 12.0574L20.9751 12.1852ZM20.2696 16.265L19.5306 16.1371L20.2696 16.265ZM6.93776 20.4771L6.19055 20.5417H6.19055L6.93776 20.4771ZM6.1256 11.0844L6.87281 11.0198L6.1256 11.0844ZM13.9949 5.22142L14.7351 5.34269V5.34269L13.9949 5.22142ZM13.3323 9.26598L14.0724 9.38725V9.38725L13.3323 9.26598ZM6.69813 9.67749L6.20854 9.10933H6.20854L6.69813 9.67749ZM8.13687 8.43769L8.62646 9.00585H8.62646L8.13687 8.43769ZM10.518 4.78374L9.79207 4.59542L10.518 4.78374ZM10.9938 2.94989L11.7197 3.13821L11.7197 3.13821L10.9938 2.94989ZM12.6676 2.06435L12.4382 2.77841L12.4382 2.77841L12.6676 2.06435ZM12.8126 2.11093L13.0419 1.39687L13.0419 1.39687L12.8126 2.11093ZM9.86194 6.46262L10.5235 6.81599V6.81599L9.86194 6.46262ZM13.9047 3.24752L13.1787 3.43584V3.43584L13.9047 3.24752ZM11.6742 2.13239L11.3486 1.45675L11.3486 1.45675L11.6742 2.13239ZM20.2361 12.0574L19.5306 16.1371L21.0086 16.3928L21.7142 12.313L20.2361 12.0574ZM13.245 21.25H8.59634V22.75H13.245V21.25ZM7.68497 20.4125L6.87281 11.0198L5.37839 11.149L6.19055 20.5417L7.68497 20.4125ZM19.5306 16.1371C19.0238 19.0677 16.3813 21.25 13.245 21.25V22.75C17.0712 22.75 20.3708 20.081 21.0086 16.3928L19.5306 16.1371ZM13.2548 5.10015L12.5921 9.14472L14.0724 9.38725L14.7351 5.34269L13.2548 5.10015ZM7.18772 10.2456L8.62646 9.00585L7.64728 7.86954L6.20854 9.10933L7.18772 10.2456ZM11.244 4.97206L11.7197 3.13821L10.2678 2.76157L9.79207 4.59542L11.244 4.97206ZM12.4382 2.77841L12.5832 2.82498L13.0419 1.39687L12.897 1.3503L12.4382 2.77841ZM10.5235 6.81599C10.8354 6.23198 11.0777 5.61339 11.244 4.97206L9.79207 4.59542C9.65572 5.12107 9.45698 5.62893 9.20041 6.10924L10.5235 6.81599ZM12.5832 2.82498C12.8896 2.92342 13.1072 3.16009 13.1787 3.43584L14.6306 3.05921C14.4252 2.26719 13.819 1.64648 13.0419 1.39687L12.5832 2.82498ZM11.7197 3.13821C11.7547 3.0032 11.8522 2.87913 11.9998 2.80804L11.3486 1.45675C10.8166 1.71309 10.417 2.18627 10.2678 2.76157L11.7197 3.13821ZM11.9998 2.80804C12.1345 2.74311 12.2931 2.73181 12.4382 2.77841L12.897 1.3503C12.3872 1.18655 11.8312 1.2242 11.3486 1.45675L11.9998 2.80804ZM14.1537 10.9842H19.3348V9.4842H14.1537V10.9842ZM14.7351 5.34269C14.8596 4.58256 14.824 3.80477 14.6306 3.0592L13.1787 3.43584C13.3197 3.97923 13.3456 4.54613 13.2548 5.10016L14.7351 5.34269ZM8.59634 21.25C8.12243 21.25 7.726 20.887 7.68497 20.4125L6.19055 20.5417C6.29851 21.7902 7.34269 22.75 8.59634 22.75V21.25ZM8.62646 9.00585C9.30632 8.42 10.0391 7.72267 10.5235 6.81599L9.20041 6.10924C8.85403 6.75767 8.30249 7.30493 7.64728 7.86954L8.62646 9.00585ZM21.7142 12.313C21.9695 10.8365 20.8341 9.4842 19.3348 9.4842V10.9842C19.9014 10.9842 20.3332 11.4959 20.2361 12.0574L21.7142 12.313ZM12.5921 9.14471C12.4344 10.1076 13.1766 10.9842 14.1537 10.9842V9.4842C14.1038 9.4842 14.0639 9.43901 14.0724 9.38725L12.5921 9.14471ZM6.87281 11.0198C6.84739 10.7258 6.96474 10.4378 7.18772 10.2456L6.20854 9.10933C5.62021 9.61631 5.31148 10.3753 5.37839 11.149L6.87281 11.0198Z"
+                                                        fill="currentColor"
+                                                    />
+                                                    <path
+                                                        opacity="0.5"
+                                                        d="M3.9716 21.4709L3.22439 21.5355L3.9716 21.4709ZM3 10.2344L3.74721 10.1698C3.71261 9.76962 3.36893 9.46776 2.96767 9.48507C2.5664 9.50239 2.25 9.83274 2.25 10.2344L3 10.2344ZM4.71881 21.4063L3.74721 10.1698L2.25279 10.299L3.22439 21.5355L4.71881 21.4063ZM3.75 21.5129V10.2344H2.25V21.5129H3.75ZM3.22439 21.5355C3.2112 21.383 3.33146 21.2502 3.48671 21.2502V22.7502C4.21268 22.7502 4.78122 22.1281 4.71881 21.4063L3.22439 21.5355ZM3.48671 21.2502C3.63292 21.2502 3.75 21.3686 3.75 21.5129H2.25C2.25 22.1954 2.80289 22.7502 3.48671 22.7502V21.2502Z"
+                                                        fill="currentColor"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    {activeTab3 === 1 &&
+                                        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
 
-        {/* Recent Orders and Top Rated Producer */}
-        <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-          {/* Recent Orders */}
-          <div className='panel h-full w-full'>
-            <div className='mb-5 flex items-center justify-between'>
-              <h5 className='text-lg font-semibold dark:text-white-light'>Recent Orders</h5>
-            </div>
-            <div className='table-responsive'>
-              <table>
-                <thead>
-                <tr>
-                  <th className='ltr:rounded-l-md rtl:rounded-r-md'>Order Name</th>
-                  <th>Price</th>
-                  <th>Flie Status</th>
-                  <th className='ltr:rounded-r-md rtl:rounded-l-md'>Status</th>
-                </tr>
-                </thead>
-                <tbody>
-                {myShoots?.map((shoot: any) => (
-                  <tr key={shoot.id} className='group text-white-dark hover:text-black dark:hover:text-white-light/90'>
-                    <td className='min-w-[150px] text-black dark:text-white'>
-                      <div className='flex items-center'>
-                                                        <span
-                                                          className='inline-block h-[32px] w-[32px] rounded-[8px] bg-[#BAE7FF] text-center text-[12px] uppercase leading-[32px] leading-none text-[#2196F3] ltr:mr-3 rtl:ml-3'>
-                                                            {shoot?.order_name.slice(0, 2)}
-                                                        </span>
-                        <p className='whitespace-nowrap'>
-                          {shoot?.order_name}
-                          <span
-                            className='block text-xs text-[#888EA8]'>{new Date(shoot?.shoot_datetimes[0]?.shoot_date_time).toDateString()}</span>
-                        </p>
-                      </div>
-                    </td>
-                    <td>$56.07</td>
-                    <td className='text-success'>Available</td>
-                    <td>
-                      <div className=''>
-                        <StatusBg>{shoot?.order_status}</StatusBg>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                                            <div className='flex justify-between items-center'>
+                                                {/* Shoot Type */}
+                                                <div className="flex flex-col sm:flex-row basis-[45%]">
+                                                    <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Shoot Type</label>
+                                                    <div className="flex-1">
+                                                        {/* Video */}
+                                                        <div className="mb-2">
+                                                            <label className="flex items-center">
+                                                                <input type="checkbox" className="form-checkbox" defaultValue="Video" id='videoShootType' {...register('content_type')} />
+                                                                <span className="text-white-dark">Video</span>
+                                                            </label>
+                                                        </div>
+                                                        {/* Photo */}
+                                                        <div className="mb-2">
+                                                            <label className="flex items-center">
+                                                                <input type="checkbox" className="form-checkbox" defaultValue="Photo" id='photoShootType' {...register('content_type')} />
+                                                                <span className="text-white-dark">Photo</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-          {/* Top Rated Producer */}
-          <div className='panel h-full w-full'>
-            <div className='mb-5 flex items-center justify-between'>
-              <h5 className='text-lg font-semibold dark:text-white-light'>Top Rated Producer</h5>
-            </div>
-            <div className='table-responsive'>
-              <table>
-                <thead>
-                <tr className='border-b-0'>
-                  <th className='ltr:rounded-l-md rtl:rounded-r-md'>Name</th>
-                  <th>Ratings</th>
-                  <th>Complition Rate</th>
-                  <th>Completed</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr className='group text-white-dark hover:text-black dark:hover:text-white-light/90'>
-                  <td className='min-w-[150px] text-black dark:text-white'>
-                    <div className='flex'>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img className='h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3' src='/assets/images/is.svg'
-                           alt='avatar' />
-                      <p className='whitespace-nowrap'>
-                        Photo Shoot
-                        <span className='block text-xs text-primary'>Digital</span>
-                      </p>
+                                                {/* Category */}
+                                                <div className="flex flex-col sm:flex-row basis-[45%]">
+                                                    <label htmlFor="content_vertical" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                                        Category
+                                                    </label>
+                                                    <select className="form-select text-white-dark" id='content_vertical' defaultValue="Business" {...register('content_vertical')}>
+                                                        <option>Select Category</option>
+                                                        <option value="Business">Business</option>
+                                                        <option value="Personal">Personal</option>
+                                                        <option value="Wedding">Wedding</option>
+                                                    </select>
+                                                    {errors.content_vertical && <p className="text-danger">{errors?.content_vertical.message}</p>}
+                                                </div>
+                                            </div>
+                                            <div className='flex justify-between items-center'>
+                                                {/* Order Name */}
+                                                <div className="flex flex-col sm:flex-row basis-[45%]">
+                                                    <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Order Name</label>
+                                                    <input id="order_name" type="text" defaultValue="Order One" className="form-input" {...register('order_name')} />
+                                                    {errors.order_name && <p className="text-danger">{errors?.order_name.message}</p>}
+                                                </div>
+
+                                                {/* Location */}
+                                                <div className="flex flex-col sm:flex-row basis-[45%]">
+                                                    <label htmlFor="location" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Location</label>
+                                                    <input id="location" type="text" placeholder="Enter location" defaultValue="LA" className="form-input" {...register('location')} />
+                                                    {errors.location && <p className="text-danger">{errors?.location.message}</p>}
+                                                </div>
+                                            </div>
+                                            <div className="mt-8">
+                                                <div className="table-responsive">
+                                                    <table>
+                                                        <tbody>
+                                                            {items.map((item: any) => {
+                                                                return (
+                                                                    <div className='flex justify-between items-center mb-5' key={item.id}>
+                                                                        {/* Starting Date and Time */}
+                                                                        <div className="flex flex-col sm:flex-row basis-[40%]">
+                                                                            <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Starting Date</label>
+                                                                            <input className="form-input" type="datetime-local" id="start_date_time" {...register('start_date_time')} />
+                                                                        </div>
+                                                                        {/* Ending Date and Time */}
+                                                                        <div className="flex flex-col sm:flex-row basis-[40%]">
+                                                                            <label htmlFor="end_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Ending Date</label>
+                                                                            <input type="datetime-local" id="end_date_time" className="form-input" {...register('end_date_time')} />
+                                                                        </div>
+                                                                        <button type="button" onClick={() => removeItem(item)}>
+                                                                            <svg
+                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                width="20"
+                                                                                height="20"
+                                                                                viewBox="0 0 24 24"
+                                                                                fill="none"
+                                                                                stroke="currentColor"
+                                                                                strokeWidth="1.5"
+                                                                                strokeLinecap="round"
+                                                                                strokeLinejoin="round"
+                                                                            >
+                                                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                                            </svg>
+                                                                        </button>
+                                                                        <button type="button" className="btn btn-success" onClick={() => addItem()}>Add More</button>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div className='flex justify-between items-center'>
+                                                {/* references */}
+                                                <div className="flex flex-col sm:flex-row basis-[45%]">
+                                                    <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">References</label>
+                                                    <input id="references" type="text" placeholder="https://sitename.com" defaultValue="https://sitename.com" className="form-input" {...register('references')} />
+                                                    {errors.references && <p className="text-danger">{errors?.references.message}</p>}
+                                                </div>
+
+                                                {/* Add Image */}
+                                                <div className="flex flex-col sm:flex-row basis-[45%]">
+                                                    <label htmlFor="images" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Add Image</label>
+                                                    <input id="images" type="file" className="form-input" multiple />
+                                                </div>
+                                            </div>
+                                            <div className='flex justify-between items-center'>
+                                                {/* min_budget budget */}
+                                                <div className="flex flex-col sm:flex-row basis-[45%]">
+                                                    <label htmlFor="min_budget" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Min Budget</label>
+                                                    <input id="min_budget" type="number" placeholder="$75" defaultValue="$75" className="form-input" {...register('min_budget')} />
+                                                    {errors.min_budget && <p className="text-danger">{errors?.min_budget.message}</p>}
+                                                </div>
+
+                                                {/* max_budget budget */}
+                                                <div className="flex flex-col sm:flex-row basis-[45%]">
+                                                    <label htmlFor="max_budget" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Max Budget</label>
+                                                    <input id="max_budget" type="number" placeholder="$500" defaultValue="$500" className="form-input" {...register('max_budget')} />
+                                                    {errors.max_budget && <p className="text-danger">{errors?.max_budget.message}</p>}
+                                                </div>
+                                            </div>
+                                            <div className='flex justify-between items-center'>
+                                                {/* Special Note */}
+                                                <div className="flex flex-col sm:flex-row basis-[45%]">
+                                                    <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Special Note</label>
+                                                    <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
+                                                    {errors.description && <p className="text-danger">{errors?.description.message}</p>}
+                                                </div>
+                                            </div>
+                                            <button type="submit" className="btn bg-black text-white mt-6 font-sans">Enter</button>
+
+                                        </form>
+                                    }
+
+                                    <div className="mb-5">
+                                        {activeTab3 === 2 &&
+                                            <div>
+                                                <h2 className='font-mono text-[24px] capitalize text-black mb-[30px]'>matching producer</h2>
+
+                                                <div className='mb-[30px]'>
+                                                    <h3 className='text-[18px] text-black capitalize font-sans leading-none mb-2'>found few matches</h3>
+                                                    <p className='text-[14px] text-[#838383] capitalize leading-none'>choose your beige photographer/videographer</p>
+                                                </div>
+
+                                                <div className='flex justify-between items-start flex-wrap'>
+
+                                                    {/* match single */}
+                                                    <div className='single-match  border border-[#ACA686] border-solid rounded-[10px] mb-5 px-7 pt-4 pb-7 basis-[49%]'>
+                                                        <div className='flex justify-start items-start'>
+                                                            <div className='media relative'>
+                                                                <img src="assets/images/producer-profile.png" alt="profile" className='w-14 h-14 rounded-full mr-3' />
+                                                                <span className='absolute bottom-0 right-4 bg-success border border-solid border-white w-3 h-3 block rounded-full'></span>
+                                                            </div>
+                                                            <div className='content'>
+                                                                <h4 className='text-[16px] text-black capitalize font-sans leading-none'>michel backford</h4>
+                                                                <span className='profession text-[12px] text-[#838383] capitalize leading-none'>beige producer</span>
+                                                                <div className='location flex justify-start items-center mt-2'>
+                                                                    <img src="assets/images/location.svg" alt="location" className='mr-1' />
+                                                                    <span className='text-[16px] text-[#1f1f1f] capitalize leading-none'>los angeles, CA</span>
+                                                                </div>
+                                                                <div className='mt-2 ratings'>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mt-[30px]'>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-black py-[15px] px-[30px] rounded-[10px] text-white text-[16px] capitalize font-medium font-sans mr-[15px] cursor-pointer inline-block leading-none'>view profile</span>
+                                                            </Link>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-white py-[15px] px-[30px] rounded-[10px] text-black text-[16px] capitalize font-medium font-sans cursor-pointer border border-solid border-[#C4C4C4] inline-block leading-none'>shoot</span>
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* match single */}
+                                                    <div className='single-match  border border-[#ACA686] border-solid rounded-[10px] mb-5 px-7 pt-4 pb-7 basis-[49%]'>
+                                                        <div className='flex justify-start items-start'>
+                                                            <div className='media'>
+                                                                <img src="assets/images/producer-profile.png" alt="profile" className='rounded-full mr-3' />
+                                                                <span></span>
+                                                            </div>
+                                                            <div className='content'>
+                                                                <h4 className='text-[16px] text-black capitalize font-sans leading-none'>michel backford</h4>
+                                                                <span className='profession text-[12px] text-[#838383] capitalize leading-none'>beige producer</span>
+                                                                <div className='location flex justify-start items-center mt-2'>
+                                                                    <img src="assets/images/location.svg" alt="location" className='mr-1' />
+                                                                    <span className='text-[16px] text-[#1f1f1f] capitalize leading-none'>los angeles, CA</span>
+                                                                </div>
+                                                                <div className='mt-2 ratings'>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mt-[30px]'>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-black py-[15px] px-[30px] rounded-[10px] text-white text-[16px] capitalize font-medium font-sans mr-[15px] cursor-pointer inline-block leading-none'>view profile</span>
+                                                            </Link>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-white py-[15px] px-[30px] rounded-[10px] text-black text-[16px] capitalize font-medium font-sans cursor-pointer border border-solid border-[#C4C4C4] inline-block leading-none'>shoot</span>
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* match single */}
+                                                    <div className='single-match  border border-[#ACA686] border-solid rounded-[10px] mb-5 px-7 pt-4 pb-7 basis-[49%]'>
+                                                        <div className='flex justify-start items-start'>
+                                                            <div className='media'>
+                                                                <img src="assets/images/producer-profile.png" alt="profile" className='rounded-full mr-3' />
+                                                                <span></span>
+                                                            </div>
+                                                            <div className='content'>
+                                                                <h4 className='text-[16px] text-black capitalize font-sans leading-none'>michel backford</h4>
+                                                                <span className='profession text-[12px] text-[#838383] capitalize leading-none'>beige producer</span>
+                                                                <div className='location flex justify-start items-center mt-2'>
+                                                                    <img src="assets/images/location.svg" alt="location" className='mr-1' />
+                                                                    <span className='text-[16px] text-[#1f1f1f] capitalize leading-none'>los angeles, CA</span>
+                                                                </div>
+                                                                <div className='mt-2 ratings'>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mt-[30px]'>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-black py-[15px] px-[30px] rounded-[10px] text-white text-[16px] capitalize font-medium font-sans mr-[15px] cursor-pointer inline-block leading-none'>view profile</span>
+                                                            </Link>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-white py-[15px] px-[30px] rounded-[10px] text-black text-[16px] capitalize font-medium font-sans cursor-pointer border border-solid border-[#C4C4C4] inline-block leading-none'>shoot</span>
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* match single */}
+                                                    <div className='single-match  border border-[#ACA686] border-solid rounded-[10px] mb-5 px-7 pt-4 pb-7 basis-[49%]'>
+                                                        <div className='flex justify-start items-start'>
+                                                            <div className='media'>
+                                                                <img src="assets/images/producer-profile.png" alt="profile" className='rounded-full mr-3' />
+                                                                <span></span>
+                                                            </div>
+                                                            <div className='content'>
+                                                                <h4 className='text-[16px] text-black capitalize font-sans leading-none'>michel backford</h4>
+                                                                <span className='profession text-[12px] text-[#838383] capitalize leading-none'>beige producer</span>
+                                                                <div className='location flex justify-start items-center mt-2'>
+                                                                    <img src="assets/images/location.svg" alt="location" className='mr-1' />
+                                                                    <span className='text-[16px] text-[#1f1f1f] capitalize leading-none'>los angeles, CA</span>
+                                                                </div>
+                                                                <div className='mt-2 ratings'>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mt-[30px]'>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-black py-[15px] px-[30px] rounded-[10px] text-white text-[16px] capitalize font-medium font-sans mr-[15px] cursor-pointer inline-block leading-none'>view profile</span>
+                                                            </Link>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-white py-[15px] px-[30px] rounded-[10px] text-black text-[16px] capitalize font-medium font-sans cursor-pointer border border-solid border-[#C4C4C4] inline-block leading-none'>shoot</span>
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* match single */}
+                                                    <div className='single-match  border border-[#ACA686] border-solid rounded-[10px] mb-5 px-7 pt-4 pb-7 basis-[49%]'>
+                                                        <div className='flex justify-start items-start'>
+                                                            <div className='media'>
+                                                                <img src="assets/images/producer-profile.png" alt="profile" className='rounded-full mr-3' />
+                                                                <span></span>
+                                                            </div>
+                                                            <div className='content'>
+                                                                <h4 className='text-[16px] text-black capitalize font-sans leading-none'>michel backford</h4>
+                                                                <span className='profession text-[12px] text-[#838383] capitalize leading-none'>beige producer</span>
+                                                                <div className='location flex justify-start items-center mt-2'>
+                                                                    <img src="assets/images/location.svg" alt="location" className='mr-1' />
+                                                                    <span className='text-[16px] text-[#1f1f1f] capitalize leading-none'>los angeles, CA</span>
+                                                                </div>
+                                                                <div className='mt-2 ratings'>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                    <i className="fa-solid fa-star text-[#FFC700] mr-1"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mt-[30px]'>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-black py-[15px] px-[30px] rounded-[10px] text-white text-[16px] capitalize font-medium font-sans mr-[15px] cursor-pointer inline-block leading-none'>view profile</span>
+                                                            </Link>
+                                                            <Link href={'/'}>
+                                                                <span className='single-match-btn bg-white py-[15px] px-[30px] rounded-[10px] text-black text-[16px] capitalize font-medium font-sans cursor-pointer border border-solid border-[#C4C4C4] inline-block leading-none'>shoot</span>
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div className="mb-5">
+                                        {activeTab3 === 3 &&
+                                            <div className="h-full">
+                                                <div className="mb-5 flex items-center">
+                                                    <h5 className="text-lg font-semibold dark:text-white-light">Cost Breakdown</h5>
+                                                </div>
+                                                <div>
+                                                    <div className="rounded-lg bg-white dark:bg-black">
+                                                        {isMounted ? (
+                                                            <ReactApexChart series={costingssByCategory.series} options={costingssByCategory.options} type="donut" height={460} width={'100%'} />
+                                                        ) : (
+                                                            <div className="grid min-h-[325px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] ">
+                                                                <span className="inline-flex h-5 w-5 animate-spin rounded-full  border-2 border-black !border-l-transparent dark:border-white"></span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="panel mt-5">
+                                                    <div className="table-responsive mb-5">
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Indicator</th>
+                                                                    <th>Costings</th>
+                                                                    <th className="text-center">Price</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {tableData.map((data) => {
+                                                                    return (
+                                                                        <tr key={data.id}>
+                                                                            <td>
+                                                                                <div
+                                                                                    className={`whitespace-nowrap ${data.indicator === 1
+                                                                                        ? 'text-success h-3 w-3 bg-success'
+                                                                                        : data.indicator === 2
+                                                                                            ? 'h-3 w-3 bg-secondary'
+                                                                                            : data.indicator === 3
+                                                                                                ? 'h-3 w-3 bg-info'
+                                                                                                : 'h-3 w-3 bg-success'
+                                                                                        }`}
+                                                                                >
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>{data.costings}</td>
+                                                                            <td className="text-center">
+                                                                                ${data.price}
+                                                                            </td>
+                                                                        </tr>
+                                                                    );
+                                                                })}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="flex justify-between">
+                                    <button type="button" className={`btn btn-warning font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}>
+                                        Back
+                                    </button>
+                                    <button type="button" className="btn btn-warning ltr:ml-auto rtl:mr-auto font-sans" onClick={() => setActiveTab3(activeTab3 === 1 ? 2 : 3)}>
+                                        {activeTab3 === 3 ? 'Finish' : 'Next'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </td>
-                  <td>$168.09</td>
-                  <td>$60.09</td>
-                  <td>170</td>
-                </tr>
-                <tr className='group text-white-dark hover:text-black dark:hover:text-white-light/90'>
-                  <td className='text-black dark:text-white'>
-                    <div className='flex'>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img className='h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3' src='/assets/images/ps.svg'
-                           alt='avatar' />
-                      <p className='whitespace-nowrap'>
-                        Video Shoot <span className='block text-xs text-warning'>Faishon</span>
-                      </p>
-                    </div>
-                  </td>
-                  <td>$126.04</td>
-                  <td>$47.09</td>
-                  <td>130</td>
-                </tr>
-                <tr className='group text-white-dark hover:text-black dark:hover:text-white-light/90'>
-                  <td className='text-black dark:text-white'>
-                    <div className='flex'>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img className='h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3' src='/assets/images/ws.svg'
-                           alt='avatar' />
-                      <p className='whitespace-nowrap'>
-                        Wedding Shoot <span className='block text-xs text-danger'>Accessories</span>
-                      </p>
-                    </div>
-                  </td>
-                  <td>$56.07</td>
-                  <td>$20.00</td>
-                  <td>66</td>
-                </tr>
-                <tr className='group text-white-dark hover:text-black dark:hover:text-white-light/90'>
-                  <td className='text-black dark:text-white'>
-                    <div className='flex'>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img className='h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3' src='/assets/images/cs.svg'
-                           alt='avatar' />
-                      <p className='whitespace-nowrap'>
-                        Commercial Shoot <span className='block text-xs text-primary'>Digital</span>
-                      </p>
-                    </div>
-                  </td>
-                  <td>$110.00</td>
-                  <td>$33.00</td>
-                  <td>35</td>
-                </tr>
-                <tr className='group text-white-dark hover:text-black dark:hover:text-white-light/90'>
-                  <td className='text-black dark:text-white'>
-                    <div className='flex'>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img className='h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3' src='/assets/images/is.svg'
-                           alt='avatar' />
-                      <p className='whitespace-nowrap'>
-                        Photo Shoot <span className='block text-xs text-primary'>Digital</span>
-                      </p>
-                    </div>
-                  </td>
-                  <td>$56.07</td>
-                  <td>$26.04</td>
-                  <td>30</td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+                </div>
 
+            </div>
+        </>
+    );
 };
 
-export default DashboardClient;
+export default IndexClient;

@@ -185,7 +185,7 @@ const IndexClient = () => {
                 width: 25,
                 colors: '#fff',
             },
-            colors: ['#e2a03f', '#5c1ac3', '#e7515a'],
+            colors: ['#ACA686', '#5c1ac3', '#e7515a'],
             legend: {
                 position: 'bottom',
                 horizontalAlign: 'center',

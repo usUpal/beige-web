@@ -31,11 +31,11 @@
 }
 
 .tippy-box[data-theme~='warning'] {
-    background-color: #e2a03f;
+    background-color: #ACA686;
 }
 
 .tippy-box[data-theme~='warning'][data-placement^='top'] > .tippy-arrow::before {
-    border-top-color: #e2a03f;
+    border-top-color: #ACA686;
 }
 
 .tippy-box[data-theme~='secondary'] {

@@ -176,7 +176,7 @@ const DashboardManager = (props: any) => {
         width: 25,
         colors: isDark ? '#0e1726' : '#fff',
       },
-      colors: isDark ? ['#5c1ac3', '#e2a03f', '#e7515a', '#e2a03f'] : ['#e2a03f', '#5c1ac3', '#e7515a'],
+      colors: isDark ? ['#5c1ac3', '#ACA686', '#e7515a', '#ACA686'] : ['#ACA686', '#5c1ac3', '#e7515a'],
       legend: {
         position: 'bottom',
         horizontalAlign: 'center',
@@ -265,7 +265,7 @@ const DashboardManager = (props: any) => {
         show: true,
         width: 1,
       },
-      colors: ['#e2a03f', '#e0e6ed'],
+      colors: ['#ACA686', '#e0e6ed'],
       responsive: [
         {
           breakpoint: 480,
