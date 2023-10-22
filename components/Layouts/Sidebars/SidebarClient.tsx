@@ -7,52 +7,37 @@ const SidebarClient = (props: any) => {
 
   return (
     <ul className='relative space-y-0.5 p-4 py-0 font-semibold'>
-      <li className='menu nav-item'>
-        <button type='button' className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`}
-                onClick={() => toggleMenu('dashboard')}>
-          <div className='flex items-center'>
-            <svg className='group-hover:!text-primary shrink-0' width='20' height='20' viewBox='0 0 24 24'
-                 fill='none' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                opacity='0.5'
-                d='M2 12.2039C2 9.91549 2 8.77128 2.5192 7.82274C3.0384 6.87421 3.98695 6.28551 5.88403 5.10813L7.88403 3.86687C9.88939 2.62229 10.8921 2 12 2C13.1079 2 14.1106 2.62229 16.116 3.86687L18.116 5.10812C20.0131 6.28551 20.9616 6.87421 21.4808 7.82274C22 8.77128 22 9.91549 22 12.2039V13.725C22 17.6258 22 19.5763 20.8284 20.7881C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.7881C2 19.5763 2 17.6258 2 13.725V12.2039Z'
-                fill='currentColor'
-              />
-              <path
-                d='M9 17.25C8.58579 17.25 8.25 17.5858 8.25 18C8.25 18.4142 8.58579 18.75 9 18.75H15C15.4142 18.75 15.75 18.4142 15.75 18C15.75 17.5858 15.4142 17.25 15 17.25H9Z'
-                fill='currentColor'
-              />
-            </svg>
-            <span
-              className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Dashboard</span>
-          </div>
-
-          <div className={currentMenu === 'dashboard' ? 'rotate-90' : 'rtl:rotate-180'}>
-            <svg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-              <path d='M9 5L15 12L9 19' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round'
-                    strokeLinejoin='round' />
-            </svg>
-          </div>
-        </button>
-
-        <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
-          <ul className='sub-menu text-gray-500'>
-            <li>
-              <Link href='/'>Client Dashboard</Link>
-            </li>
-          </ul>
-        </AnimateHeight>
-      </li>
 
       <li className='nav-item'>
         <ul>
+          <li className='nav-item'>
+            <Link href='/' className='group'>
+              <div className='flex items-center'>
+                <svg className='group-hover:!text-primary shrink-0' width='20' height='20' viewBox='0 0 24 24'
+                  fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    opacity='0.5'
+                    d='M2 12.2039C2 9.91549 2 8.77128 2.5192 7.82274C3.0384 6.87421 3.98695 6.28551 5.88403 5.10813L7.88403 3.86687C9.88939 2.62229 10.8921 2 12 2C13.1079 2 14.1106 2.62229 16.116 3.86687L18.116 5.10812C20.0131 6.28551 20.9616 6.87421 21.4808 7.82274C22 8.77128 22 9.91549 22 12.2039V13.725C22 17.6258 22 19.5763 20.8284 20.7881C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.7881C2 19.5763 2 17.6258 2 13.725V12.2039Z'
+                    fill='currentColor'
+                  />
+                  <path
+                    d='M9 17.25C8.58579 17.25 8.25 17.5858 8.25 18C8.25 18.4142 8.58579 18.75 9 18.75H15C15.4142 18.75 15.75 18.4142 15.75 18C15.75 17.5858 15.4142 17.25 15 17.25H9Z'
+                    fill='currentColor'
+                  />
+                </svg>
+                <span
+                  className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Book Now</span>
+              </div>
+            </Link>
+          </li>
+
           <li className='nav-item'>
             <Link href='/dashboard/shoots' className='group'>
               <div className='flex items-center'>
                 <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path opacity='0.5'
-                        d='M3.77772 18.3259C4.78661 19 6.19108 19 9 19L15 19C17.8089 19 19.2134 19 20.2223 18.3259C20.659 18.034 21.034 17.659 21.3259 17.2223C22 16.2134 22 14.8089 22 12C22 9.19107 22 7.78661 21.3259 6.77772C21.034 6.34096 20.659 5.96595 20.2223 5.67412C19.2134 5 17.8089 5 15 5H9C6.19108 5 4.78661 5 3.77772 5.67412C3.34096 5.96596 2.96596 6.34096 2.67412 6.77772C2 7.78661 2 9.19108 2 12C2 14.8089 2 16.2134 2.67412 17.2223C2.96596 17.659 3.34096 18.034 3.77772 18.3259Z'
-                        fill='currentColor'></path>
+                    d='M3.77772 18.3259C4.78661 19 6.19108 19 9 19L15 19C17.8089 19 19.2134 19 20.2223 18.3259C20.659 18.034 21.034 17.659 21.3259 17.2223C22 16.2134 22 14.8089 22 12C22 9.19107 22 7.78661 21.3259 6.77772C21.034 6.34096 20.659 5.96595 20.2223 5.67412C19.2134 5 17.8089 5 15 5H9C6.19108 5 4.78661 5 3.77772 5.67412C3.34096 5.96596 2.96596 6.34096 2.67412 6.77772C2 7.78661 2 9.19108 2 12C2 14.8089 2 16.2134 2.67412 17.2223C2.96596 17.659 3.34096 18.034 3.77772 18.3259Z'
+                    fill='currentColor'></path>
                   <path
                     d='M5.5 15.75C5.08579 15.75 4.75 15.4142 4.75 15L4.75 9C4.75 8.58579 5.08579 8.25 5.5 8.25C5.91421 8.25 6.25 8.58579 6.25 9L6.25 15C6.25 15.4142 5.91421 15.75 5.5 15.75Z'
                     fill='currentColor'></path>
@@ -60,8 +45,8 @@ const SidebarClient = (props: any) => {
                     d='M17.75 15C17.75 15.4142 18.0858 15.75 18.5 15.75C18.9142 15.75 19.25 15.4142 19.25 15V9C19.25 8.58579 18.9142 8.25 18.5 8.25C18.0858 8.25 17.75 8.58579 17.75 9V15Z'
                     fill='currentColor'></path>
                   <path fillRule='evenodd' clipRule='evenodd'
-                        d='M8.25 12C8.25 14.0711 9.92893 15.75 12 15.75C14.0711 15.75 15.75 14.0711 15.75 12C15.75 9.92893 14.0711 8.25 12 8.25C9.92893 8.25 8.25 9.92893 8.25 12ZM9.75 12C9.75 13.2426 10.7574 14.25 12 14.25C13.2426 14.25 14.25 13.2426 14.25 12C14.25 10.7574 13.2426 9.75 12 9.75C10.7574 9.75 9.75 10.7574 9.75 12Z'
-                        fill='currentColor'></path>
+                    d='M8.25 12C8.25 14.0711 9.92893 15.75 12 15.75C14.0711 15.75 15.75 14.0711 15.75 12C15.75 9.92893 14.0711 8.25 12 8.25C9.92893 8.25 8.25 9.92893 8.25 12ZM9.75 12C9.75 13.2426 10.7574 14.25 12 14.25C13.2426 14.25 14.25 13.2426 14.25 12C14.25 10.7574 13.2426 9.75 12 9.75C10.7574 9.75 9.75 10.7574 9.75 12Z'
+                    fill='currentColor'></path>
                 </svg>
                 <span
                   className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Shoots</span>
@@ -72,7 +57,7 @@ const SidebarClient = (props: any) => {
             <Link href='/dashboard/meetings' className='group'>
               <div className='flex items-center'>
                 <svg className='group-hover:!text-primary shrink-0' width='20' height='20' viewBox='0 0 24 24'
-                     fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     fillRule='evenodd'
                     clipRule='evenodd'
@@ -94,7 +79,7 @@ const SidebarClient = (props: any) => {
             <Link href='/dashboard/chat' className='group'>
               <div className='flex items-center'>
                 <svg className='group-hover:!text-primary shrink-0' width='20' height='20' viewBox='0 0 24 24'
-                     fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     fillRule='evenodd'
                     clipRule='evenodd'
@@ -113,27 +98,10 @@ const SidebarClient = (props: any) => {
             </Link>
           </li>
           <li className='nav-item'>
-            <Link href='/dashboard/files' className='group'>
-              <div className='flex items-center'>
-                <svg width='24' height='24' viewBox='0 0 24 24' fill='none'
-                     xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M22 14V11.7979C22 11.4227 21.9978 10.75 21.9978 10.75L22 10H2V10.75V14C2 17.7712 2 19.6569 3.17157 20.8284C4.34315 22 6.22876 22 10 22H14C17.7712 22 19.6569 22 20.8284 20.8284C22 19.6569 22 17.7712 22 14Z'
-                    fill='currentColor'></path>
-                  <path opacity='0.5'
-                        d='M11 4L10.4497 3.44975C10.1763 3.17633 10.0396 3.03961 9.89594 2.92051C9.27652 2.40704 8.51665 2.09229 7.71557 2.01738C7.52976 2 7.33642 2 6.94975 2C6.06722 2 5.62595 2 5.25839 2.06935C3.64031 2.37464 2.37464 3.64031 2.06935 5.25839C2 5.62595 2 6.06722 2 6.94975V9.25V10H22L21.9531 9.25C21.8809 8.20117 21.6973 7.51276 21.2305 6.99383C21.1598 6.91514 21.0849 6.84024 21.0062 6.76946C20.1506 6 18.8345 6 16.2021 6H15.8284C14.6747 6 14.0979 6 13.5604 5.84678C13.2651 5.7626 12.9804 5.64471 12.7121 5.49543C12.2237 5.22367 11.8158 4.81578 11 4Z'
-                        fill='currentColor'></path>
-                </svg>
-                <span
-                  className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Files</span>
-              </div>
-            </Link>
-          </li>
-          <li className='nav-item'>
             <Link href='/dashboard/transactions' className='group'>
               <div className='flex items-center'>
                 <svg className='group-hover:!text-primary shrink-0' width='20' height='20' viewBox='0 0 24 24'
-                     fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     opacity='0.5'
                     fillRule='evenodd'
@@ -158,8 +126,8 @@ const SidebarClient = (props: any) => {
               <div className='flex items-center'>
                 <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path opacity='0.5' fillRule='evenodd' clipRule='evenodd'
-                        d='M10 2H9C6.17157 2 4.75736 2 3.87868 2.87868C3 3.75736 3 5.17157 3 8V21.25H16V17.75V16.25V8C16 5.17157 16 3.75736 15.1213 2.87868C14.2426 2 12.8284 2 10 2Z'
-                        fill='currentColor'></path>
+                    d='M10 2H9C6.17157 2 4.75736 2 3.87868 2.87868C3 3.75736 3 5.17157 3 8V21.25H16V17.75V16.25V8C16 5.17157 16 3.75736 15.1213 2.87868C14.2426 2 12.8284 2 10 2Z'
+                    fill='currentColor'></path>
                   <path
                     d='M3 21.25H2C1.58579 21.25 1.25 21.5858 1.25 22C1.25 22.4142 1.58579 22.75 2 22.75H17.25C17.6642 22.75 18 22.4142 18 22C18 21.5858 17.6642 21.25 17.25 21.25H16H3Z'
                     fill='currentColor'></path>
@@ -179,7 +147,7 @@ const SidebarClient = (props: any) => {
             <button type='button' className='nav-link group w-full' onClick={() => toggleMenu('settings')}>
               <div className='flex items-center'>
                 <svg className='group-hover:!text-primary shrink-0' width='20' height='20' viewBox='0 0 24 24'
-                     fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     opacity='0.5'
                     d='M3 10C3 6.22876 3 4.34315 4.17157 3.17157C5.34315 2 7.22876 2 11 2H13C16.7712 2 18.6569 2 19.8284 3.17157C21 4.34315 21 6.22876 21 10V14C21 17.7712 21 19.6569 19.8284 20.8284C18.6569 22 16.7712 22 13 22H11C7.22876 22 5.34315 22 4.17157 20.8284C3 19.6569 3 17.7712 3 14V10Z'
@@ -199,7 +167,7 @@ const SidebarClient = (props: any) => {
               <div className={currentMenu === 'settings' ? 'rotate-90' : 'rtl:rotate-180'}>
                 <svg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path d='M9 5L15 12L9 19' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round'
-                        strokeLinejoin='round' />
+                    strokeLinejoin='round' />
                 </svg>
               </div>
             </button>
@@ -207,41 +175,22 @@ const SidebarClient = (props: any) => {
             <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
               <ul className='sub-menu text-gray-500'>
                 <li>
-                  <Link href='/dashboard/searchingParams'>Set Searching Params</Link>
+                  <Link href='/'>Payment Setting</Link>
                 </li>
                 <li>
-                  <Link href='/dashboard/pricingParams'>Set Pricing Params</Link>
+                  <Link href='/'>Notifications</Link>
+                </li>
+                <li>
+                  <Link href='/'>Privacy</Link>
                 </li>
               </ul>
             </AnimateHeight>
           </li>
           <li className='nav-item'>
-            <Link href='/dashboard/contacts' className='group'>
+            <Link href='/' className='group'>
               <div className='flex items-center'>
                 <svg className='group-hover:!text-primary shrink-0' width='20' height='20' viewBox='0 0 24 24'
-                     fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    opacity='0.5'
-                    d='M19.7165 20.3624C21.143 19.5846 22 18.5873 22 17.5C22 16.3475 21.0372 15.2961 19.4537 14.5C17.6226 13.5794 14.9617 13 12 13C9.03833 13 6.37738 13.5794 4.54631 14.5C2.96285 15.2961 2 16.3475 2 17.5C2 18.6525 2.96285 19.7039 4.54631 20.5C6.37738 21.4206 9.03833 22 12 22C15.1066 22 17.8823 21.3625 19.7165 20.3624Z'
-                    fill='currentColor'
-                  />
-                  <path
-                    fillRule='evenodd'
-                    clipRule='evenodd'
-                    d='M5 8.51464C5 4.9167 8.13401 2 12 2C15.866 2 19 4.9167 19 8.51464C19 12.0844 16.7658 16.2499 13.2801 17.7396C12.4675 18.0868 11.5325 18.0868 10.7199 17.7396C7.23416 16.2499 5 12.0844 5 8.51464ZM12 11C13.1046 11 14 10.1046 14 9C14 7.89543 13.1046 7 12 7C10.8954 7 10 7.89543 10 9C10 10.1046 10.8954 11 12 11Z'
-                    fill='currentColor'
-                  />
-                </svg>
-                <span
-                  className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>contacts</span>
-              </div>
-            </Link>
-          </li>
-          <li className='nav-item'>
-            <Link href='/dashboard/calendar' className='group'>
-              <div className='flex items-center'>
-                <svg className='group-hover:!text-primary shrink-0' width='20' height='20' viewBox='0 0 24 24'
-                     fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     d='M6.94028 2C7.35614 2 7.69326 2.32421 7.69326 2.72414V4.18487C8.36117 4.17241 9.10983 4.17241 9.95219 4.17241H13.9681C14.8104 4.17241 15.5591 4.17241 16.227 4.18487V2.72414C16.227 2.32421 16.5641 2 16.98 2C17.3958 2 17.733 2.32421 17.733 2.72414V4.24894C19.178 4.36022 20.1267 4.63333 20.8236 5.30359C21.5206 5.97385 21.8046 6.88616 21.9203 8.27586L22 9H2.92456H2V8.27586C2.11571 6.88616 2.3997 5.97385 3.09665 5.30359C3.79361 4.63333 4.74226 4.36022 6.1873 4.24894V2.72414C6.1873 2.32421 6.52442 2 6.94028 2Z'
                     fill='currentColor'
@@ -253,7 +202,7 @@ const SidebarClient = (props: any) => {
                   />
                 </svg>
                 <span
-                  className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>calendar</span>
+                  className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Help</span>
               </div>
             </Link>
           </li>

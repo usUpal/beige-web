@@ -9,6 +9,7 @@ import Pagination from '@/components/Pagination';
 import { API_ENDPOINT } from '@/config';
 import Cookies from 'js-cookie';
 import { useAuth } from '@/contexts/authContext';
+import Link from 'next/link';
 
 const Shoots = () => {
   // All Shoots
@@ -84,7 +85,7 @@ const Shoots = () => {
                 <th className="ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
                 <th>Order ID</th>
                 <th>Price</th>
-                <th>File Status</th>
+                <th>Files</th>
                 <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
                 <th>View</th>
               </tr>
@@ -104,7 +105,7 @@ const Shoots = () => {
                   <td>{shoot.id}</td>
                   <td>$ {shoot?.budget?.max}</td>
 
-                  <td className="text-success">Available</td>
+                  <td className="text-success"><Link href="/dashboard/files" className='border border-solid border-[#ddd] py-1 px-2 rounded-[10px] ring-1 ring-success'>Available</Link></td>
                   <td>
                     <div className="">
                       <StatusBg>{shoot?.order_status}</StatusBg>
@@ -155,9 +156,13 @@ const Shoots = () => {
                           <strong>Shoot Type: </strong>
                           {shootInfo?.content_type}
                         </span>
-                        <span className="block border-b-[1px] border-b-[#ACA686] pb-[10px] font-sans text-[16px]  capitalize leading-[18.2px] text-[#000000]">
+                        <span className="mb-[10px] block border-b-[1px] border-b-[#ACA686] pb-[10px] font-sans text-[16px]  capitalize leading-[18.2px] text-[#000000]">
                           <strong>Location: </strong>
                           {shootInfo?.location}
+                        </span>
+                        <span className="mb-[10px] block border-b-[1px] border-b-[#ACA686] pb-[10px] font-sans text-[16px]  capitalize leading-[18.2px] text-[#000000]">
+                          <strong>Files: </strong>
+                          <Link href="/dashboard/files" className='border border-solid border-[#111] py-1 px-2 rounded-[10px] leading-none uppercase'>Available</Link>
                         </span>
                       </div>
                     </div>
