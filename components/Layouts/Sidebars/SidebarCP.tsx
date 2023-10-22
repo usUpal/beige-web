@@ -38,7 +38,7 @@ const SidebarCP = (props: any) => {
         <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
           <ul className='sub-menu text-gray-500'>
             <li>
-              <Link href='/'>CP Dashboard</Link>
+              <Link href='/'>Statistics</Link>
             </li>
           </ul>
         </AnimateHeight>
