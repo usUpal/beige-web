@@ -1,21 +1,15 @@
-import { useEffect, useState, Fragment, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { format, parseISO } from 'date-fns';
-import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { IRootState } from '../../store';
-import Dropdown from '../../components/Dropdown';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import dynamic from 'next/dynamic';
 const ReactApexChart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
 });
 import Link from 'next/link';
-import { API_ENDPOINT } from '@/config';
 import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
-import { log } from 'console';
 
 interface FormData {
   content_type: number;
@@ -33,14 +27,11 @@ interface FormData {
 }
 
 const IndexClient = () => {
-  const [date2, setDate2] = useState<any>('2022-07-05 12:00');
   const [activeTab3, setActiveTab3] = useState<any>(1);
-  const [dateTimes, setDateTimes] = useState<number[]>([]);
   const [isMounted, setIsMounted] = useState(false);
-  const [startDateTime, setstartDateTime] = useState('');
-  const [endDateTime, setendDateTime] = useState('');
-  const [startDuration, setStartDuration] = useState<any>();
-  const [endDuration, setEndDuration] = useState<any>();
+  const [minBudget, setMinBudget] = useState('');
+  const [minBudgetError, setMinBudgetError] = useState('');
+  const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
   const [items, setItems] = useState<any>([
     {
       id: 1,
@@ -51,13 +42,10 @@ const IndexClient = () => {
       amount: 0,
     },
   ]);
-  const max_budgetNumber = 69;
 
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<FormData>();
 
@@ -71,21 +59,28 @@ const IndexClient = () => {
   });
 
   function onSubmit(data: any) {
-    const s_time = parseISO(data.start_date_time);
-    const e_time = parseISO(data.end_date_time);
-    const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    const shootDatetimes = items.map((item: any) => {
+      const s_time = parseISO(data.start_date_time);
+      const e_time = parseISO(data.end_date_time);
+      const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    const startingTime = new Date(starting_date);
-    const endingTime = new Date(ending_date);
+      const startingTime = new Date(starting_date);
+      const endingTime = new Date(ending_date);
 
-    // Calculate the time difference in milliseconds
-    const timeDifferenceInMilliseconds: number = endingTime.getTime() - startingTime.getTime();
+      // Calculate the time difference in milliseconds
+      const timeDifferenceInMilliseconds: number = endingTime.getTime() - startingTime.getTime();
 
-    // Calculate the time difference in hours
-    const durationSingle = timeDifferenceInMilliseconds / (1000 * 60 * 60);
+      // Calculate the time difference in hours
+      const durationSingle = timeDifferenceInMilliseconds / (1000 * 60 * 60);
 
-    setDateTimes((prevDateTimes) => [...prevDateTimes, durationSingle]);
+      return {
+        start_date_time: starting_date,
+        end_date_time: ending_date,
+        duration: durationSingle,
+      };
+    });
+
     //TODO Need to add cp id and client ID FOR POST ORDER
     const orderData = {
       content_type: data.content_type,
@@ -98,21 +93,8 @@ const IndexClient = () => {
         min: data.min_budget,
       },
       description: data.description,
-      shoot_duration: 32,
-      shoot_datetimes: [
-        {
-          start_date_time: starting_date,
-          end_date_time: ending_date,
-          duration: durationSingle,
-          date_indicator: 'confirmed',
-        },
-        {
-          start_date_time: starting_date,
-          end_date_time: ending_date,
-          duration: durationSingle,
-          date_indicator: 'confirmed',
-        },
-      ],
+      shoot_duration: shootDatetimes.reduce((total, shoot) => total + shoot.duration, 0),
+      shoot_datetimes: shootDatetimes,
     };
     console.log('DATA', orderData);
   }
@@ -147,6 +129,10 @@ const IndexClient = () => {
   };
 
   const removeItem = (item: any = null) => {
+    // Check if there's only one item left, and if so, don't remove it
+    if (items.length === 1) {
+      return;
+    }
     setItems(items.filter((d: any) => d.id !== item.id));
   };
 
@@ -254,6 +240,19 @@ const IndexClient = () => {
       price: 29876,
     },
   ];
+
+  const handleChangeMinBudget = (e: any) => {
+    const value = e.target.value;
+    setMinBudget(value);
+    if (minBudget < 1000) {
+      setMinBudgetError("border-[#ff0000] focus:border-[#ff0000]");
+      setMinBudgetErrorText("Minimum budget must be greater than $1000");
+      console.log(value);
+    } else {
+      setMinBudgetError("");
+      setMinBudgetErrorText("");
+    }
+  };
 
   return (
     <>
@@ -465,7 +464,7 @@ const IndexClient = () => {
                           <label htmlFor="min_budget" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Min Budget
                           </label>
-                          <input id="min_budget" type="number" placeholder="$75" defaultValue="$75" className="form-input" {...register('min_budget')} />
+                          <input id="min_budget" type="number" className={`form-input block ${minBudgetError}`} {...register('min_budget')} onChange={handleChangeMinBudget} />
                           {errors.min_budget && <p className="text-danger">{errors?.min_budget.message}</p>}
                         </div>
 
@@ -474,10 +473,11 @@ const IndexClient = () => {
                           <label htmlFor="max_budget" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Max Budget
                           </label>
-                          <input id="max_budget" type="number" placeholder="$500" defaultValue="$500" className="form-input" {...register('max_budget')} />
+                          <input id="max_budget" type="number" className="form-input" {...register('max_budget')} />
                           {errors.max_budget && <p className="text-danger">{errors?.max_budget.message}</p>}
                         </div>
                       </div>
+                      <div className='text-[#ff0000] ml-[120px] leading-none font-sans'>{minBudgetErrorText}</div>
                       <div className="flex items-center justify-between">
                         {/* Special Note */}
                         <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -728,15 +728,14 @@ const IndexClient = () => {
                                     <tr key={data.id}>
                                       <td>
                                         <div
-                                          className={`whitespace-nowrap ${
-                                            data.indicator === 1
-                                              ? 'h-3 w-3 bg-success text-success'
-                                              : data.indicator === 2
+                                          className={`whitespace-nowrap ${data.indicator === 1
+                                            ? 'h-3 w-3 bg-success text-success'
+                                            : data.indicator === 2
                                               ? 'h-3 w-3 bg-secondary'
                                               : data.indicator === 3
-                                              ? 'h-3 w-3 bg-info'
-                                              : 'h-3 w-3 bg-success'
-                                          }`}
+                                                ? 'h-3 w-3 bg-info'
+                                                : 'h-3 w-3 bg-success'
+                                            }`}
                                         ></div>
                                       </td>
                                       <td>{data.costings}</td>
