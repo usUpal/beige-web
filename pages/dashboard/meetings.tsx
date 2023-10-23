@@ -7,19 +7,26 @@ import { useRouter } from 'next/router';
 import { API_ENDPOINT } from '@/config';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@/contexts/authContext';
+import Pagination from '@/components/Pagination';
 
 const Meeting = () => {
+  const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [myMeetings, setMyMeetings] = useState<MeetingResponsTypes[]>([]);
   const [rescheduleMeetingTime, setrescheduleMeetingTime] = useState('');
   const [meetingInfo, setMeetingInfo] = useState<any>({});
   const [showError, setShowError] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [meetingModal, setmeetingModal] = useState(false);
-
   const { userData } = useAuth();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getAllMyMeetings();
+  }, [currentPage]);
+
+  useEffect(() => {
+    dispatch(setPageTitle('Meetings'));
   }, []);
 
   // Getting dateTime value
@@ -63,12 +70,10 @@ const Meeting = () => {
   // All Meetings
   const getAllMyMeetings = async () => {
     try {
-      const response = await fetch(`${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=18`);
+      const response = await fetch(`${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=15&page=${currentPage}`);
       const allMeetings = await response.json();
-      setMyMeetings((prevMeetings) => {
-        const newMeetings = allMeetings.results.filter((meeting: MeetingResponsTypes) => !prevMeetings.some((prevMeeting) => prevMeeting.id === meeting.id));
-        return [...prevMeetings, ...newMeetings];
-      });
+      setTotalPagesCount(allMeetings?.totalPages);
+      setMyMeetings(allMeetings.results);
     } catch (error) {
       console.error(error);
     }
@@ -100,10 +105,9 @@ const Meeting = () => {
   };
 
   // previous code
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(setPageTitle('Meetings'));
-  });
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
@@ -116,7 +120,7 @@ const Meeting = () => {
           <table>
             <thead>
               <tr>
-                <th>Order ID</th>
+                <th>Meeting ID</th>
                 <th>Meeting Date</th>
                 <th>Meeting Time</th>
                 <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
@@ -128,7 +132,7 @@ const Meeting = () => {
                 <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                   <td className="min-w-[150px] text-black dark:text-white">
                     <div className="flex items-center">
-                      <p className="whitespace-nowrap">{meeting.order.id}</p>
+                      <p className="whitespace-nowrap">{meeting?.id}</p>
                     </div>
                   </td>
                   <td>{new Date(meeting?.meeting_date_time).toDateString()}</td>
@@ -143,52 +147,7 @@ const Meeting = () => {
               ))}
             </tbody>
           </table>
-
-          <ul className="m-auto mt-5 inline-flex items-center space-x-1 rtl:space-x-reverse">
-            <li>
-              <button
-                type="button"
-                className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#ACA686] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#ACA686]"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rtl:rotate-180">
-                  <path d="M13 19L7 12L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                  <path opacity="0.5" d="M16.9998 19L10.9998 12L16.9998 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                </svg>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#ACA686] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#ACA686]"
-              >
-                1
-              </button>
-            </li>
-            <li>
-              <button type="button" className="flex justify-center rounded bg-[#ACA686] px-3.5 py-2 font-semibold text-white transition dark:bg-[#ACA686] dark:text-white-light">
-                2
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#ACA686] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#ACA686]"
-              >
-                3
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="flex justify-center rounded bg-white-light px-3.5 py-2 font-semibold text-dark transition hover:bg-[#ACA686] hover:text-white dark:bg-[#191e3a] dark:text-white-light dark:hover:bg-[#ACA686]"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rtl:rotate-180">
-                  <path d="M11 19L17 12L11 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                  <path opacity="0.5" d="M6.99976 19L12.9998 12L6.99976 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                </svg>
-              </button>
-            </li>
-          </ul>
+          <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} />
         </div>
       </div>
 
