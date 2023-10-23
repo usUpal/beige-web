@@ -4,43 +4,41 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { Dialog, Transition } from '@headlessui/react';
 import StatusBg from '@/components/Status/StatusBg';
-import { useRouter } from 'next/router';
 import Pagination from '@/components/Pagination';
 import { API_ENDPOINT } from '@/config';
-import Cookies from 'js-cookie';
 import { useAuth } from '@/contexts/authContext';
 import Link from 'next/link';
 
 const Shoots = () => {
-  // All Shoots
+
+  const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [myShoots, setMyShoots] = useState<ShootTypes[]>([]);
+  const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(true);
+
+  // All Shoots
   const { userData } = useAuth();
-
   const userRole = userData?.role === 'user' ? 'client' : 'cp';
-
-
 
   useEffect(() => {
     getAllMyShoots();
-  }, [userData?.id]);
+  }, [currentPage]);
 
+  // All Shoots
   const getAllMyShoots = async () => {
     try {
-      const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=30&${userRole}_id=${userData?.id}`);
+      const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=1&page=${currentPage}&${userRole}_id=${userData?.id}`);
       const allShots = await response.json();
-      setMyShoots((prevShoots) => {
-        const newShoots = allShots.results.filter((shoot: ShootTypes) => !prevShoots.some((prevShoot) => prevShoot.id === shoot.id));
-        return [...prevShoots, ...newShoots];
-      });
+      setTotalPagesCount(allShots?.totalPages);
+      setMyShoots(allShots.results);
     } catch (error) {
       console.error(error);
     }
   };
 
   // Shoot Single
-  const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
-  const [showError, setShowError] = useState<boolean>(false);
-  const [isLoading, setLoading] = useState<boolean>(true);
 
   const getShootDetails = async (shootId: string) => {
     setLoading(true);
@@ -61,6 +59,11 @@ const Shoots = () => {
       console.error(error);
       setLoading(false);
     }
+  };
+
+  // previous code
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   // previous code
@@ -121,7 +124,7 @@ const Shoots = () => {
             </tbody>
           </table>
 
-          <Pagination />
+          <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange}/>
         </div>
       </div>
 
