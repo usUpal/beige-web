@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import dynamic from 'next/dynamic';
-const ReactApexChart = dynamic(() => import('react-apexcharts'), {
-  ssr: false,
-});
 import Link from 'next/link';
 import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
@@ -81,60 +78,11 @@ const IndexClient = () => {
       };
     });
 
-    //TODO Need to add cp id and client ID FOR POST ORDER
-    const orderData = {
-      content_type: data.content_type,
-      content_vertical: data.content_vertical,
-      order_name: data.order_name,
-      location: data.location,
-      references: data.references,
-      budget: {
-        max: data.max_budget,
-        min: data.min_budget,
-      },
-      description: data.description,
-      shoot_duration: shootDatetimes.reduce((total, shoot) => total + shoot.duration, 0),
-      shoot_datetimes: shootDatetimes,
-    };
-    console.log('DATA', orderData);
   }
 
-  const changeQuantityPrice = (type: string, value: string, id: number) => {
-    const list = items;
-    const item = list.find((d: any) => d.id === id);
-    if (type === 'quantity') {
-      item.quantity = Number(value);
-    }
-    if (type === 'price') {
-      item.amount = Number(value);
-    }
-    setItems([...list]);
-  };
-
-  const addItem = () => {
-    let maxId = 0;
-    maxId = items?.length ? items.reduce((max: number, character: any) => (character.id > max ? character.id : max), items[0].id) : 0;
-
-    setItems([
-      ...items,
-      {
-        id: maxId + 1,
-        title: '',
-        description: '',
-        rate: 0,
-        quantity: 0,
-        amount: 0,
-      },
-    ]);
-  };
-
-  const removeItem = (item: any = null) => {
-    // Check if there's only one item left, and if so, don't remove it
-    if (items.length === 1) {
-      return;
-    }
-    setItems(items.filter((d: any) => d.id !== item.id));
-  };
+  function onSubmitDateTime(date: any) {
+    console.log("DATETIME DATA", date);
+  }
 
   //Cost Breakdown
   const costingssByCategory: any = {
@@ -254,6 +202,7 @@ const IndexClient = () => {
     }
   };
 
+
   return (
     <>
       <div>
@@ -337,6 +286,7 @@ const IndexClient = () => {
                 </div>
                 <div>
                   {activeTab3 === 1 && (
+                    // onSubmit={handleSubmit(onSubmit)}
                     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                       <div className="flex items-center justify-between">
                         {/* Shoot Type */}
@@ -395,49 +345,49 @@ const IndexClient = () => {
                       </div>
                       <div className="mt-8">
                         <div className="table-responsive">
-                          <table>
-                            <tbody>
-                              {items.map((item: any) => {
-                                return (
-                                  <div className="mb-5 flex items-center justify-between" key={item.id}>
-                                    {/* Starting Date and Time */}
-                                    <div className="flex basis-[40%] flex-col sm:flex-row">
-                                      <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                        Starting Date
-                                      </label>
-                                      <input className="form-input" type="datetime-local" id="start_date_time" {...register('start_date_time')} />
-                                    </div>
-                                    {/* Ending Date and Time */}
-                                    <div className="flex basis-[40%] flex-col sm:flex-row">
-                                      <label htmlFor="end_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                        Ending Date
-                                      </label>
-                                      <input type="datetime-local" id="end_date_time" className="form-input" {...register('end_date_time')} />
-                                    </div>
-                                    <button type="button" onClick={() => removeItem(item)}>
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      >
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                      </svg>
-                                    </button>
-                                    <button type="button" className="btn btn-success" onClick={() => addItem()}>
-                                      Add More
-                                    </button>
-                                  </div>
-                                );
-                              })}
-                            </tbody>
-                          </table>
+
+                          <div className="flex items-center justify-between">
+                            {/* Starting Date and Time */}
+                            <div className="flex basis-[45%] flex-col sm:flex-row">
+                              <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                Starting Date
+                              </label>
+                              <input id="start_date_time" type="datetime-local" className="form-input" {...register('start_date_time')} />
+                              {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                            </div>
+
+                            {/* Ending Date and Time */}
+                            <div className="flex basis-[45%] flex-col sm:flex-row">
+                              <label htmlFor="end_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                Ending Date
+                              </label>
+                              <input id="end_date_time" type="datetime-local" className="form-input" {...register('end_date_time')} />
+                              {errors.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
+                            </div>
+                          </div>
+                          <button type="submit" id='dateTimeBtn' className="btn btn-success mt-5 ml-auto">
+                            Add
+                          </button>
+
+                          {/* DateTime Output Table */}
+                          <div className="my-5">
+                            <table className="table-auto">
+                              <thead>
+                                <tr>
+                                  <th>#</th>
+                                  <th>Starting DateTime</th>
+                                  <th>Ending DateTime</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+                                  <td>Malcolm Lockyer</td>
+                                  <td>1961</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
@@ -488,7 +438,7 @@ const IndexClient = () => {
                           {errors.description && <p className="text-danger">{errors?.description.message}</p>}
                         </div>
                       </div>
-                      <button type="submit" className="btn mt-6 bg-black font-sans text-white">
+                      <button type="submit" className="btn mt-6 bg-black font-sans text-white" id='submitBtn'>
                         Enter
                       </button>
                     </form>
