@@ -3,7 +3,11 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import Link from 'next/link';
 
+
 const PricingCalculation = () => {
+
+  const [isStatus, setStatus] = useState<number>(1);
+  const [bgColor, setBgColor] = useState<string>("success");
 
   const dispatch = useDispatch();
 
@@ -12,428 +16,224 @@ const PricingCalculation = () => {
     dispatch(setPageTitle('Pricing Calculation - Client Web App - Beige'));
   });
 
-  function calculation(e: any) {
-    const data = e.target.value;
+  const calculation = () => {
 
-    // PHOTOGRAPHY
-    const photographyDurationType = document.getElementById("photography_unit")?.value;
-    const photographyDurationTypeLabel = document.querySelector(".photography_rates");
-    if (photographyDurationTypeLabel) {
-      photographyDurationTypeLabel.textContent = photographyDurationType;
-    }
-    const photographyRate = document.getElementById("photography_rates")?.value;
+    const categories = [
+      "photography",
+      "videography",
+      "weddingOrCorporation",
+      "musicVideos",
+      "concerts",
+      "birthdayParties",
+      "memorial",
+    ];
 
-    // VIDEOGRAPHY
-    const videographyDurationType = document.getElementById("videography_unit")?.value;
-    const videographyDurationTypeLabel = document.querySelector(".videography_rates");
-    if (videographyDurationTypeLabel) {
-      videographyDurationTypeLabel.textContent = videographyDurationType;
-    }
-    const videographyRate = document.getElementById("videography_rates")?.value;
+    const allData = categories.map(category => {
+      const rateInput = document.getElementById(category);
+      const statusButton = document.getElementById(`${category}_status`);
 
-    // WEDDING
-    const weddingDurationType = document.getElementById("wedding_unit")?.value;
-    const weddingRate = document.getElementById("wedding_rates")?.value;
+      if (rateInput && statusButton) {
+        const rate = rateInput.value;
+        const status = statusButton.value;
+        return {
+          [category]: {
+            rate,
+            status,
+          },
+        };
+      }
+    }).filter(Boolean);
 
-    // MUSICVIDEO
-    const musicvideoDurationType = document.getElementById("musicvideo_unit")?.value;
-    const musicvideoDurationTypeLabel = document.querySelector(".musicvideo_rates");
-    if (musicvideoDurationTypeLabel) {
-      musicvideoDurationTypeLabel.textContent = musicvideoDurationType;
-    }
-    const musicvideoRate = document.getElementById("musicvideo_rates")?.value;
-
-    // CONCERTS
-    const concertsDurationType = document.getElementById("concerts_unit")?.value;
-    const concertsDurationTypeLabel = document.querySelector(".concerts_rates");
-    if (concertsDurationTypeLabel) {
-      concertsDurationTypeLabel.textContent = concertsDurationType;
-    }
-    const concertsRate = document.getElementById("concerts_rates")?.value;
-
-    // BIRTHDAY PARTIES
-    const bdpartiesDurationType = document.getElementById("bdparties_unit")?.value;
-    const bdpartiesDurationTypeLabel = document.querySelector(".bdparties_rates");
-    if (bdpartiesDurationTypeLabel) {
-      bdpartiesDurationTypeLabel.textContent = bdpartiesDurationType;
-    }
-    const bdpartiesRate = document.getElementById("bdparties_rates")?.value;
-
-    // MEMORIAL
-    const memorialDurationType = document.getElementById("memorial_unit")?.value;
-    const memorialDurationTypeLabel = document.querySelector(".memorial_rates");
-    if (memorialDurationTypeLabel) {
-      memorialDurationTypeLabel.textContent = memorialDurationType;
-    }
-    const memorialRate = document.getElementById("memorial_rates")?.value;
-
+    console.log(Object.assign({}, ...allData));
 
   }
 
-  function statusUpdate(e: any) {
-    const btn_text = e.target.innerHTML;
-    const btn_value = e.target.value;
-
-    if (btn_value == 0) {
-      e.target.classList.remove("bg-black");
-      e.target.classList.add("bg-success");
-    } else if (btn_value == 1) {
-      e.target.classList.remove("bg-success");
-      e.target.classList.add("bg-black");
+  const statusUpdate = (e: any) => {
+    setStatus(Number(!isStatus));
+    let idName = e.target.id;
+    let status = isStatus;
+    localStorage.setItem(idName, status);
+    let localStorageStatus = localStorage.getItem(idName);
+    let allClass = e.target.classList;
+    if( localStorageStatus == "0" ){
+      allClass.remove("bg-success");
+      allClass.add("bg-black");
+    }else if( localStorageStatus == "1" ){
+      allClass.remove("bg-black");
+      allClass.add("bg-success");
+    }else{
+      allClass.add("bg-success");
     }
-
-    // const add_class = e.target.classList.add("bg-black");
-    // const remove_class = e.target.classList.remove("bg-success");
-    const classes = e.target.classList;
-    console.log("BUTTON", classes);
   }
+
+
 
   return (
-    <>
-      <div>
-        <ul className="flex space-x-2 rtl:space-x-reverse">
-          <li>
-            <Link href="/" className="text-warning hover:underline">
-              Dashboard
-            </Link>
-          </li>
-          <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-            <span>Pricing Calculator</span>
-          </li>
-        </ul>
+    <div>
+      <ul className="flex space-x-2 rtl:space-x-reverse">
+        <li>
+          <Link href="/" className="text-warning hover:underline">
+            Dashboard
+          </Link>
+        </li>
+        <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
+          <span>Pricing Calculator</span>
+        </li>
+      </ul>
 
-        <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
-          {/* icon only */}
-          <div className="panel">
-            <div className="mb-5 flex items-center justify-between">
-              <h5 className="text-lg font-semibold dark:text-white-light">Pricing Calculator</h5>
-            </div>
-            <div className="mb-5">
-              <div className="inline-block w-full">
-                <div>
-                  <form className="space-y-5">
-
-                    {/* Photography */}
-                    <div className="flex items-center justify-between">
-
-                      {/* Label */}
-                      <div className="flex basis-[10%] flex-col sm:flex-row">
-                        <label className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans text-success uppercase text-md">Photography</label>
-                      </div>
-
-                      {/* Duration Type */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="photography_unit" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Duration Type
-                        </label>
-                        <select className="form-select form-select-md text-white-dark" id="photography_unit" onChange={calculation}>
-                          <option>Hour</option>
-                          <option>Day</option>
-                        </select>
-                      </div>
-
-                      {/* Rates */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="photography_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Rate/<span className='photography_rates'>Hour</span> ($)
-                        </label>
-                        <input id="photography_rates" type="number" defaultValue="250" className="form-input" onChange={calculation} />
-                      </div>
-
-                      {/* Status */}
-                      <div className="flex basis-[15%] flex-col sm:flex-row">
-                        <label htmlFor="photography_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Status
-                        </label>
-                        <button type='button' className='bg-success text-white px-5 py-2 rounded-full' value="1" onClick={statusUpdate}>Active</button>
-                      </div>
-
-                    </div>
-
-                    {/* Videography */}
-                    <div className="flex items-center justify-between">
-
-                      {/* Label */}
-                      <div className="flex basis-[10%] flex-col sm:flex-row">
-                        <label className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans text-success uppercase text-md">Videography</label>
-                      </div>
-
-                      {/* Duration Type */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="videography_unit" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Duration Type
-                        </label>
-                        <select className="form-select form-select-md text-white-dark" id="videography_unit" onChange={calculation}>
-                          <option>Hour</option>
-                          <option>Day</option>
-                        </select>
-                      </div>
-
-                      {/* Rates */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="videography_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Rate/<span className='videography_rates'>Hour</span> ($)
-                        </label>
-                        <input id="videography_rates" type="number" defaultValue="250" className="form-input" onChange={calculation} />
-                      </div>
-
-                      {/* Status */}
-                      <div className="flex basis-[15%] flex-col sm:flex-row">
-                        <label htmlFor="photography_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Status
-                        </label>
-                        <button type='button' className='bg-black text-white px-5 py-2 rounded-full' value="0" onClick={statusUpdate}>Deactive</button>
-                      </div>
-
-                    </div>
-
-                    {/* Wedding for Corporation */}
-                    <div className="flex items-center justify-between">
-
-                      {/* Label */}
-                      <div className="flex basis-[10%] flex-col sm:flex-row">
-                        <label className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans text-success uppercase text-md">Wedding</label>
-                      </div>
-
-                      {/* Duration Type */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="wedding_unit" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Duration Type
-                        </label>
-                        <select className="form-select form-select-md text-white-dark" id="wedding_unit" onChange={calculation}>
-                          <option>Day</option>
-                        </select>
-                      </div>
-
-                      {/* Rates */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="wedding_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Rate/Day ($)
-                        </label>
-                        <input id="wedding_rates" type="number" defaultValue="1000" className="form-input" onChange={calculation} />
-                      </div>
-
-                      {/* Status */}
-                      <div className="flex basis-[15%] flex-col sm:flex-row">
-                        <label htmlFor="photography_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Status
-                        </label>
-                        <button type='button' className='bg-success text-white px-5 py-2 rounded-full' value="1" onClick={statusUpdate}>Active</button>
-                      </div>
-
-                    </div>
-
-                    {/* Music Videos */}
-                    <div className="flex items-center justify-between">
-
-                      {/* Label */}
-                      <div className="flex basis-[10%] flex-col sm:flex-row">
-                        <label className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans text-success uppercase text-md">Music Videos</label>
-                      </div>
-
-                      {/* Duration Type */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="mVideos_unit" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Duration Type
-                        </label>
-                        <select className="form-select form-select-md text-white-dark" id="musicvideo_unit" onChange={calculation}>
-                          <option>Hour</option>
-                          <option>Day</option>
-                        </select>
-                      </div>
-
-                      {/* Rates */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="musicvideo_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Rate/<span className='musicvideo_rates'>Hour</span> ($)
-                        </label>
-                        <input id="musicvideo_rates" type="number" defaultValue="1000" className="form-input" onChange={calculation} />
-                      </div>
-
-                      {/* Status */}
-                      <div className="flex basis-[15%] flex-col sm:flex-row">
-                        <label htmlFor="photography_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Status
-                        </label>
-                        <button type='button' className='bg-success text-white px-5 py-2 rounded-full' value="1" onClick={statusUpdate}>Active</button>
-                      </div>
-
-                    </div>
-
-                    {/* Concerts */}
-                    <div className="flex items-center justify-between">
-
-                      {/* Label */}
-                      <div className="flex basis-[10%] flex-col sm:flex-row">
-                        <label className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans text-success uppercase text-md">Concerts</label>
-                      </div>
-
-                      {/* Duration Type */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="concerts_unit" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Duration Type
-                        </label>
-                        <select className="form-select form-select-md text-white-dark" id="concerts_unit" onChange={calculation}>
-                          <option>Hour</option>
-                          <option>Day</option>
-                        </select>
-                      </div>
-
-                      {/* Rates */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="concerts_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Rate/<span className='concerts_rates'>Hour</span> ($)
-                        </label>
-                        <input id="concerts_rates" type="number" defaultValue="1000" className="form-input" onChange={calculation} />
-                      </div>
-
-                      {/* Status */}
-                      <div className="flex basis-[15%] flex-col sm:flex-row">
-                        <label htmlFor="photography_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Status
-                        </label>
-                        <button type='button' className='bg-success text-white px-5 py-2 rounded-full' value="1" onClick={statusUpdate}>Active</button>
-                      </div>
-
-                    </div>
-
-                    {/* Birthday Parties */}
-                    <div className="flex items-center justify-between">
-
-                      {/* Label */}
-                      <div className="flex basis-[10%] flex-col sm:flex-row">
-                        <label className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans text-success uppercase text-md">Birthday Parties</label>
-                      </div>
-
-                      {/* Duration Type */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="bdparties_unit" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Duration Type
-                        </label>
-                        <select className="form-select form-select-md text-white-dark" id="bdparties_unit" onChange={calculation}>
-                          <option>Hour</option>
-                          <option>Day</option>
-                        </select>
-                      </div>
-
-                      {/* Rates */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="bdparties_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Rate/<span className='bdparties_rates'>Hour</span> ($)
-                        </label>
-                        <input id="bdparties_rates" type="number" defaultValue="500" className="form-input" onChange={calculation} />
-                      </div>
-
-                      {/* Status */}
-                      <div className="flex basis-[15%] flex-col sm:flex-row">
-                        <label htmlFor="photography_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Status
-                        </label>
-                        <button type='button' className='bg-success text-white px-5 py-2 rounded-full' value="1" onClick={statusUpdate}>Active</button>
-                      </div>
-
-                    </div>
-
-                    {/* Memorial */}
-                    <div className="flex items-center justify-between">
-
-                      {/* Label */}
-                      <div className="flex basis-[10%] flex-col sm:flex-row">
-                        <label className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans text-success uppercase text-md">Memorial</label>
-                      </div>
-
-                      {/* Duration Type */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="memorial_unit" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Duration Type
-                        </label>
-                        <select className="form-select form-select-md text-white-dark" id="memorial_unit" onChange={calculation}>
-                          <option>Hour</option>
-                          <option>Day</option>
-                        </select>
-                      </div>
-
-                      {/* Rates */}
-                      <div className="flex basis-[30%] flex-col sm:flex-row">
-                        <label htmlFor="memorial" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Rate/<span className='memorial_rates'>Hour</span> ($)
-                        </label>
-                        <input id="memorial" type="number" defaultValue="500" className="form-input" onChange={calculation} />
-                      </div>
-
-                      {/* Status */}
-                      <div className="flex basis-[15%] flex-col sm:flex-row">
-                        <label htmlFor="photography_rates" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                          Status
-                        </label>
-                        <button type='button' className='bg-black text-white px-5 py-2 rounded-full' value="0" onClick={statusUpdate}>Deactive</button>
-                      </div>
-
-                    </div>
-
-                    {/* <button type="submit" className="btn mt-6 bg-black font-sans text-white" id='submitBtn'>Calculate</button> */}
-
-                  </form>
-                </div>
-              </div>
-            </div>
-
-            {/* Calculation Table */}
-            <div className="my-5">
-              <h2 className='text-[26px] font-mono font-bold leading-none text-center bg-black rounded-[10px] py-5 text-white my-5'>Total Price</h2>
-              <table className="table-auto">
-
-                <tbody>
-
-                  <tr className='font-sans'>
-                    <th>Pre Production Cost</th>
-                    <td>$500</td>
-                  </tr>
-                  <tr className='font-sans'>
-                    <th>Post Production Cost</th>
-                    <td>$500</td>
-                  </tr>
-                  <tr className='font-sans'>
-                    <th>Total Additional Cost</th>
-                    <td>$3,500</td>
-                  </tr>
-                  <tr className='font-sans'>
-                    <th>Total Price Before Discount</th>
-                    <td>$3,500</td>
-                  </tr>
-                  <tr className='font-sans'>
-                    <th>Max Discount Available (25% Max Discount)</th>
-                    <td>$6,637.50</td>
-                  </tr>
-                  <tr className='font-sans'>
-                    <th>Suggested Quote</th>
-                    <td>$7,547.50</td>
-                  </tr>
-                  <tr className='font-sans'>
-                    <th>Commission Calculator (6% Flat Rate)</th>
-                    <td>$452.85</td>
-                  </tr>
-                  <tr className='font-sans'>
-                    <th>Total Price Before Discount</th>
-                    <td>$8,850.00</td>
-                  </tr>
-                  <tr className='font-sans'>
-                    <th>Sold Package Price (Enter How Much Agreed)</th>
-                    <td>$800.00</td>
-                  </tr>
-                  <tr className='font-sans'>
-                    <th>Discount Amount</th>
-                    <td>$8,050.00</td>
-                  </tr>
-
-                </tbody>
-              </table>
-            </div>
-
+      <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
+        {/* icon only */}
+        <div className="panel">
+          <div className="mb-5 flex items-center justify-between">
+            <h5 className="text-lg font-semibold dark:text-white-light">Set Prices</h5>
           </div>
+          <div className="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
+                  <th>Rate/Hour ($)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                {/*  Photography  */}
+                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                  <td>Photography</td>
+                  <td>
+                    <input id="photography" name='photography' type="number" defaultValue="250" className="form-input w-3/6" />
+                  </td>
+                  <td>
+                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='photographyStatus' onClick={statusUpdate}>Active</button>
+                  </td>
+                </tr>
+                {/*  Videography  */}
+                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                  <td>Videography</td>
+                  <td>
+                    <input id="videography" name='videography' type="number" defaultValue="250" className="form-input w-3/6" />
+                  </td>
+                  <td>
+                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='videographyStatus' onClick={statusUpdate}>Active</button>
+                  </td>
+                </tr>
+                {/*  Wedding for Corporation  */}
+                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                  <td>Wedding for Corporation</td>
+                  <td>
+                    <input id="weddingOrCorporation" name='weddingOrCorporation' type="number" defaultValue="1000" className="form-input w-3/6" />
+                  </td>
+                  <td>
+                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='weddingOrCorporationStatus' onClick={statusUpdate}>Active</button>
+                  </td>
+                </tr>
+                {/*  Music Videos  */}
+                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                  <td>Music Videos</td>
+                  <td>
+                    <input id="musicVideos" name='musicVideos' type="number" defaultValue="1000" className="form-input w-3/6" />
+                  </td>
+                  <td>
+                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='musicVideosStatus' onClick={statusUpdate}>Active</button>
+                  </td>
+                </tr>
+                {/* Concerts */}
+                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                  <td>Concerts</td>
+                  <td>
+                    <input id="concerts" name='concerts' type="number" defaultValue="1000" className="form-input w-3/6" />
+                  </td>
+                  <td>
+                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='concertsStatus' onClick={statusUpdate}>Active</button>
+                  </td>
+                </tr>
+                {/* Birthday Parties */}
+                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                  <td>Birthday Parties</td>
+                  <td>
+                    <input id="birthdayParties" name='birthdayParties' type="number" defaultValue="500" className="form-input w-3/6" />
+                  </td>
+                  <td>
+                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='birthdayPartiesStatus' onClick={statusUpdate}>Active</button>
+                  </td>
+                </tr>
+                {/* Memorial */}
+                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                  <td>Memorial</td>
+                  <td>
+                    <input id="memorial" name='v' type="number" defaultValue="500" className="form-input w-3/6" />
+                  </td>
+                  <td>
+                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='memorialStatus' onClick={statusUpdate}>Active</button>
+                  </td>
+                </tr>
+                {/* Calculate */}
+                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                  <td>
+                    <button type="submit" className="btn bg-black font-sans text-white" id='submitBtn' onClick={calculation}>Save</button>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          {/* Calculation Table */}
+          <div className="my-5">
+            <h2 className='text-[26px] font-mono font-bold leading-none text-center bg-black rounded-[10px] py-5 text-white my-5'>Total Price</h2>
+            <table className="table-auto">
+
+              <tbody>
+
+                <tr className='font-sans'>
+                  <th>Pre Production Cost</th>
+                  <td>$500</td>
+                </tr>
+                <tr className='font-sans'>
+                  <th>Post Production Cost</th>
+                  <td>$500</td>
+                </tr>
+                <tr className='font-sans'>
+                  <th>Total Additional Cost</th>
+                  <td>$3,500</td>
+                </tr>
+                <tr className='font-sans'>
+                  <th>Total Price Before Discount</th>
+                  <td>$3,500</td>
+                </tr>
+                <tr className='font-sans'>
+                  <th>Max Discount Available (25% Max Discount)</th>
+                  <td>$6,637.50</td>
+                </tr>
+                <tr className='font-sans'>
+                  <th>Suggested Quote</th>
+                  <td>$7,547.50</td>
+                </tr>
+                <tr className='font-sans'>
+                  <th>Commission Calculator (6% Flat Rate)</th>
+                  <td>$452.85</td>
+                </tr>
+                <tr className='font-sans'>
+                  <th>Total Price Before Discount</th>
+                  <td>$8,850.00</td>
+                </tr>
+                <tr className='font-sans'>
+                  <th>Sold Package Price (Enter How Much Agreed)</th>
+                  <td>$800.00</td>
+                </tr>
+                <tr className='font-sans'>
+                  <th>Discount Amount</th>
+                  <td>$8,050.00</td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
-    </>
+    </div>
   );
 
 };
