@@ -6,8 +6,6 @@ import Link from 'next/link';
 
 const PricingCalculation = () => {
 
-  const [isStatus, setStatus] = useState<number>(1);
-  const [bgColor, setBgColor] = useState<string>("success");
 
   const dispatch = useDispatch();
 
@@ -16,57 +14,72 @@ const PricingCalculation = () => {
     dispatch(setPageTitle('Pricing Calculation - Client Web App - Beige'));
   });
 
-  const calculation = () => {
+  const [isData, setData] = useState(
+    {
+      "photography": {
+        "rate": 250,
+        "status": 1,
+      },
 
-    const categories = [
-      "photography",
-      "videography",
-      "weddingOrCorporation",
-      "musicVideos",
-      "concerts",
-      "birthdayParties",
-      "memorial",
-    ];
+      "videography": {
+        "rate": 250,
+        "status": 1,
+      },
 
-    const allData = categories.map(category => {
-      const rateInput = document.getElementById(category);
-      const statusButton = document.getElementById(`${category}_status`);
+      "weddingOrCorporation": {
+        "rate": 1000,
+        "status": 1
+      },
 
-      if (rateInput && statusButton) {
-        const rate = rateInput.value;
-        const status = statusButton.value;
-        return {
-          [category]: {
-            rate,
-            status,
-          },
-        };
-      }
-    }).filter(Boolean);
+      "musicVideos": {
+        "rate": 1000,
+        "status": 1
+      },
 
-    console.log(Object.assign({}, ...allData));
+      "concerts": {
+        "rate": 1000,
+        "status": 1
+      },
 
-  }
+      "birthdayParties": {
+        "rate": 500,
+        "status": 1
+      },
 
-  const statusUpdate = (e: any) => {
-    setStatus(Number(!isStatus));
-    let idName = e.target.id;
-    let status = isStatus;
-    localStorage.setItem(idName, status);
-    let localStorageStatus = localStorage.getItem(idName);
-    let allClass = e.target.classList;
-    if( localStorageStatus == "0" ){
-      allClass.remove("bg-success");
-      allClass.add("bg-black");
-    }else if( localStorageStatus == "1" ){
-      allClass.remove("bg-black");
-      allClass.add("bg-success");
-    }else{
-      allClass.add("bg-success");
+      "memorial": {
+        "rate": 500,
+        "status": 0
+      },
     }
+  );
+
+
+  const handleStatusChange = (key: string) => {
+    if (isData[key]) {
+      const updatedData = { ...isData };
+      updatedData[key].status = updatedData[key].status === 0 ? 1 : 0;
+      setData(updatedData);
+    }
+  };
+
+  const handleRateChange = (key, newValue) => {
+    // Assuming you have a state or data structure to update
+    const updatedData = { ...isData };
+    updatedData[key].rate = newValue;
+    setData(updatedData);
+  };
+
+
+  const getValue = () => {
+    const updatedData = JSON.parse(JSON.stringify(isData));
+    for (const key in isData) {
+      if (updatedData.hasOwnProperty(key)) {
+        updatedData[key] = isData[key];
+      }
+    }
+    setData(updatedData);
+    console.log(updatedData);
   }
-
-
 
   return (
     <div>
@@ -96,86 +109,48 @@ const PricingCalculation = () => {
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
 
-                {/*  Photography  */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>Photography</td>
-                  <td>
-                    <input id="photography" name='photography' type="number" defaultValue="250" className="form-input w-3/6" />
-                  </td>
-                  <td>
-                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='photographyStatus' onClick={statusUpdate}>Active</button>
-                  </td>
-                </tr>
-                {/*  Videography  */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>Videography</td>
-                  <td>
-                    <input id="videography" name='videography' type="number" defaultValue="250" className="form-input w-3/6" />
-                  </td>
-                  <td>
-                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='videographyStatus' onClick={statusUpdate}>Active</button>
-                  </td>
-                </tr>
-                {/*  Wedding for Corporation  */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>Wedding for Corporation</td>
-                  <td>
-                    <input id="weddingOrCorporation" name='weddingOrCorporation' type="number" defaultValue="1000" className="form-input w-3/6" />
-                  </td>
-                  <td>
-                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='weddingOrCorporationStatus' onClick={statusUpdate}>Active</button>
-                  </td>
-                </tr>
-                {/*  Music Videos  */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>Music Videos</td>
-                  <td>
-                    <input id="musicVideos" name='musicVideos' type="number" defaultValue="1000" className="form-input w-3/6" />
-                  </td>
-                  <td>
-                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='musicVideosStatus' onClick={statusUpdate}>Active</button>
-                  </td>
-                </tr>
-                {/* Concerts */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>Concerts</td>
-                  <td>
-                    <input id="concerts" name='concerts' type="number" defaultValue="1000" className="form-input w-3/6" />
-                  </td>
-                  <td>
-                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='concertsStatus' onClick={statusUpdate}>Active</button>
-                  </td>
-                </tr>
-                {/* Birthday Parties */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>Birthday Parties</td>
-                  <td>
-                    <input id="birthdayParties" name='birthdayParties' type="number" defaultValue="500" className="form-input w-3/6" />
-                  </td>
-                  <td>
-                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='birthdayPartiesStatus' onClick={statusUpdate}>Active</button>
-                  </td>
-                </tr>
-                {/* Memorial */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>Memorial</td>
-                  <td>
-                    <input id="memorial" name='v' type="number" defaultValue="500" className="form-input w-3/6" />
-                  </td>
-                  <td>
-                    <button type='button' className={(`text-white px-5 py-2 rounded-full bg-success`)} value={isStatus} id='memorialStatus' onClick={statusUpdate}>Active</button>
-                  </td>
-                </tr>
-                {/* Calculate */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>
-                    <button type="submit" className="btn bg-black font-sans text-white" id='submitBtn' onClick={calculation}>Save</button>
-                  </td>
-                </tr>
+                {/* {isData.map((item, index) => { */}
 
-              </tbody>
+                <tbody>
+                  {Object.keys(isData).map((key, index) => {
+                    const { rate, status } = isData[key];
+                    return (
+                      <tr key={index}>
+                        <td className="capitalize">{key}</td>
+                        <td>
+                          <input
+                            name={key}
+                            type="number"
+                            value={rate}
+                            className="form-input w-3/6"
+                            onChange={(e) => handleRateChange(key, e.target.value)}
+                          />
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className={`text-white px-5 py-2 rounded-full ${status === 1 ? 'bg-success' : 'bg-danger'}`}
+                            onClick={() => handleStatusChange(key)}
+                          >
+                            {status === 1 ? 'Active' : 'Inactive'}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {/* })} */}
+
+                  {/* Calculate */}
+                  <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                    <td>
+                      <button type="submit" className="btn bg-black font-sans text-white" onClick={getValue}>Save</button>
+                    </td>
+                  </tr>
+
+
+
+                </tbody>
             </table>
           </div>
 

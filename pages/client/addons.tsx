@@ -3,21 +3,20 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import Link from 'next/link';
 
-
 const Addons = () => {
 
   const [fields, setFields] = useState([
-    { item: "Live Stream", hour: null, rate: null, additionalNotes: "$250/HR" },
-    { item: "Add 1 CP (Photo/Video)", hour: null, rate: null, additionalNotes: "$250/HR FOR CREATOR (4HR MIN)" },
-    { item: "Green Screen", hour: null, rate: null, additionalNotes: "SET UP COST" },
-    { item: "Production Assist", hour: null, rate: null, additionalNotes: "$150/HR (4HR MIN)" },
-    { item: "Prejects Cost More", hour: null, rate: null, additionalNotes: "$250/HR (WAIVE $1500 AND TELL CLIENT)" },
-    { item: "Prejects Cost Less", hour: null, rate: null, additionalNotes: "$250/HR" },
-    { item: "Physical Album", hour: null, rate: null, additionalNotes: "$250/HR" },
-    { item: "Ins. Cov. $1M Liability", hour: null, rate: null, additionalNotes: "$250/HR" },
-    { item: "Travel After 1 Hour", hour: null, rate: null, additionalNotes: "AFTER THE FIRST FREE HOUR" },
-    { item: "Drone", hour: null, rate: null, additionalNotes: "VIDEOGRAPHER THAT HAS DRONE" },
-    { item: "Telepromp Ter", hour: null, rate: null, additionalNotes: "PRICING PER DAY" },
+    { id: "liveStream", item: "Live Stream", hour: null, rate: null, additionalNotes: "$250/HR" },
+    { id: "cpPhotoVideo", item: "Add 1 CP (Photo/Video)", hour: null, rate: null, additionalNotes: "$250/HR FOR CREATOR (4HR MIN)" },
+    { id: "greenScreen", item: "Green Screen", hour: null, rate: null, additionalNotes: "SET UP COST" },
+    { id: "productionAssist", item: "Production Assist", hour: null, rate: null, additionalNotes: "$150/HR (4HR MIN)" },
+    { id: "projectCostMore", item: "Prejects Cost More", hour: null, rate: null, additionalNotes: "$250/HR (WAIVE $1500 AND TELL CLIENT)" },
+    { id: "projectCostLess", item: "Prejects Cost Less", hour: null, rate: null, additionalNotes: "$250/HR" },
+    { id: "physicalAlbum", item: "Physical Album", hour: null, rate: null, additionalNotes: "$250/HR" },
+    { id: "liability", item: "Ins. Cov. $1M Liability", hour: null, rate: null, additionalNotes: "$250/HR" },
+    { id: "travel", item: "Travel After 1 Hour", hour: null, rate: null, additionalNotes: "AFTER THE FIRST FREE HOUR" },
+    { id: "drone", item: "Drone", hour: null, rate: null, additionalNotes: "VIDEOGRAPHER THAT HAS DRONE" },
+    { id: "telePrompTer", item: "Telepromp Ter", hour: null, rate: null, additionalNotes: "PRICING PER DAY" },
   ]);
 
   const handleFieldChange = (e: any, index: any, fieldKey: Number) => {
@@ -29,11 +28,8 @@ const Addons = () => {
     });
   };
 
-
   const [hour, setHour] = useState(1);
   const [rate, setRate] = useState(1000);
-
-
 
   const dispatch = useDispatch();
 
@@ -41,7 +37,6 @@ const Addons = () => {
   useEffect(() => {
     dispatch(setPageTitle('Pricing Calculator - Client Web App - Beige'));
   });
-
 
   const handleHourChange = (e: any) => {
     const newHour = e.target.value;
@@ -55,6 +50,7 @@ const Addons = () => {
 
   const total = hour * rate;
 
+  const [isData, setData] = useState([]);
 
   const calculation = (e: any) => {
 
@@ -73,15 +69,21 @@ const Addons = () => {
     ];
 
     const data = fields.map((field) => ({
-      [`${field}Hour`]: document.getElementById(`${field}Hour`).value,
-      [`${field}Rate`]: document.getElementById(`${field}Rate`).value,
-      [`${field}Total`]: (document.getElementById(`${field}Hour`).value) * (document.getElementById(`${field}Rate`).value),
-      [`${field}Anotes`]: document.getElementById(`${field}Anotes`).value,
+      [`${field}Hour`]: document.getElementById(`${field}Hour`)?.value,
+      [`${field}Rate`]: document.getElementById(`${field}Rate`)?.value,
+      [`${field}Total`]: (document.getElementById(`${field}Hour`)?.value) * (document.getElementById(`${field}Rate`)?.value),
+      [`${field}Anotes`]: document.getElementById(`${field}Anotes`)?.value,
     }));
 
-    console.log(data);
+
+
+    setData(data);
 
   }
+
+  useEffect(() => {
+    console.log(isData);
+  }, [isData]);
 
   return (
     <div>
@@ -117,10 +119,10 @@ const Addons = () => {
                 {fields.map((field, index) => (
                   <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                     <td>{field.item}</td>
-                    <td><input id="droneHour" name='droneHour' type="number" defaultValue={field.hour} onChange={(e) => handleFieldChange(e, index, 'hour')} className="form-input w-3/6" /></td>
-                    <td><input id="droneRate" name='droneRate' type="number" defaultValue={field.rate} onChange={(e) => handleFieldChange(e, index, 'rate')} className="form-input w-3/6" /></td>
-                    <td><input id="droneTotal" name='droneTotal' type="text" value={field.hour * field.rate} className="form-input w-3/6" readOnly /></td>
-                    <td><input id="droneAnotes" name='droneAnotes' type="text" defaultValue={field.additionalNotes} className="form-input" /></td>
+                    <td><input id={`${field.id}Hour`} type="number" defaultValue={field.hour} onChange={(e) => handleFieldChange(e, index, 'hour')} className="form-input w-3/6" /></td>
+                    <td><input id={`${field.id}Rate`} type="number" defaultValue={field.rate} onChange={(e) => handleFieldChange(e, index, 'rate')} className="form-input w-3/6" /></td>
+                    <td><input id={`${field.id}Total`} type="text" value={field.hour * field.rate} className="form-input w-3/6" readOnly /></td>
+                    <td><input id={`${field.id}Anotes`} type="text" defaultValue={field.additionalNotes} className="form-input" /></td>
                   </tr>
                 ))}
                 {/* Calculate */}
