@@ -7,24 +7,42 @@ import { Tab } from '@headlessui/react';
 
 const Addons = () => {
 
-  const [general, setGeneralAddons] = useState(null);
-  const cleanedGeneralData = { ...general };
-
-  useEffect(() => {
-    const fetchGeneralData = async () => {
-      try {
-        const res = await fetch(`https://api.beigecorporation.io/v1/addOns`);
-        if (!res.ok) {
-          throw new Error(`Error: ${res.status}`);
-        }
-        const jsonData = await res.json();
-        setGeneralAddons(jsonData);
-      } catch (error) {
-        console.error(`Error fetching data`);
+  const [general, setGeneralAddons] = useState(
+    {
+      "liveStream": {
+        "rate": 500,
+        "status": 1
+      },
+      "addOneCp": {
+        "rate": 1000,
+        "status": 1
+      },
+      "greenScreen": {
+        "rate": 500,
+        "status": 1
+      },
+      "backdrop": {
+        "rate": 500,
+        "status": 1
+      },
+      "productionAssist": {
+        "rate": 1000,
+        "status": 1
+      },
+      "physicalAlbum": {
+        "rate": 500,
+        "status": 1
+      },
+      "drone": {
+        "rate": 1000,
+        "status": 1
+      },
+      "teleprompter": {
+        "rate": 500,
+        "status": 1
       }
-    };
-    fetchGeneralData();
-  }, []);
+    }
+  );
 
   const handleGeneralStatusChange = (key: string) => {
     if (general[key]) {
@@ -40,31 +58,15 @@ const Addons = () => {
     setGeneralAddons(updatedGeneralData);
   };
 
-  const getGeneralValue = () => {
-    const updatedGeneralData = JSON.parse(JSON.stringify(cleanedGeneralData));
-    const url = 'https://api.beigecorporation.io/v1/addOns';
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedGeneralData),
-    };
-
-    fetch(url, requestOptions)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  };
+  const getGeneralValue = async () => {
+    const updatedGeneralData = JSON.parse(JSON.stringify(general));
+    for (const key in general) {
+      if (updatedGeneralData.hasOwnProperty(key)) {
+        updatedGeneralData[key] = general[key];
+      }
+    }
+    setGeneralAddons(updatedGeneralData);
+  }
 
   const [models, setModelAddons] = useState(
     {
@@ -114,6 +116,16 @@ const Addons = () => {
       models
     }
   );
+
+  const makeReaquest = async () => {
+    const res = await fetch(`${API_ENDPOINT}addOns`);
+    if (!res.ok) {
+      const message = `Error: ${res.status}`;
+      throw new Error(message);
+    }
+    const data = await res.json();
+    return data;
+  }
 
   const dispatch = useDispatch();
 
@@ -193,7 +205,7 @@ const Addons = () => {
                       <span className='block text-[18px] leading-none font-sans uppercase'>Status</span>
                     </div>
 
-                    {general && Object.keys(cleanedGeneralData).map((key, index) => {
+                    {Object.keys(general).map((key, index) => {
                       const { rate, status } = general[key];
                       return (
                         <div key={index} className='flex justify-between items-center p-5 border-b my-2'>

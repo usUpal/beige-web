@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 const PricingCalculation = () => {
 
-
   const dispatch = useDispatch();
 
   //Start theme functionality
@@ -14,45 +13,27 @@ const PricingCalculation = () => {
     dispatch(setPageTitle('Pricing Calculation - Client Web App - Beige'));
   });
 
-  const [isData, setData] = useState(
-    {
-      "photography": {
-        "rate": 250,
-        "status": 1,
-      },
+  const [isData, setData] = useState(null);
+  const cleanedData = { ...isData };
+  delete cleanedData.__v;
+  delete cleanedData._id;
 
-      "videography": {
-        "rate": 250,
-        "status": 1,
-      },
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`https://api.beigecorporation.io/v1/prices`);
+        if (!res.ok) {
+          throw new Error(`Error: ${res.status}`);
+        }
+        const jsonData = await res.json();
+        setData(jsonData);
+      } catch (error) {
+        console.error(`Error fetching data`);
+      }
+    };
 
-      "weddingOrCorporation": {
-        "rate": 1000,
-        "status": 1
-      },
-
-      "musicVideos": {
-        "rate": 1000,
-        "status": 1
-      },
-
-      "concerts": {
-        "rate": 1000,
-        "status": 1
-      },
-
-      "birthdayParties": {
-        "rate": 500,
-        "status": 1
-      },
-
-      "memorial": {
-        "rate": 500,
-        "status": 0
-      },
-    }
-  );
-
+    fetchData();
+  }, []);
 
   const handleStatusChange = (key: string) => {
     if (isData[key]) {
@@ -63,23 +44,38 @@ const PricingCalculation = () => {
   };
 
   const handleRateChange = (key, newValue) => {
-    // Assuming you have a state or data structure to update
     const updatedData = { ...isData };
     updatedData[key].rate = newValue;
     setData(updatedData);
   };
 
-
   const getValue = () => {
-    const updatedData = JSON.parse(JSON.stringify(isData));
-    for (const key in isData) {
-      if (updatedData.hasOwnProperty(key)) {
-        updatedData[key] = isData[key];
-      }
-    }
-    setData(updatedData);
-    console.log(updatedData);
-  }
+    const updatedData = JSON.parse(JSON.stringify(cleanedData));
+    const url = 'https://api.beigecorporation.io/v1/prices';
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedData),
+    };
+
+    fetch(url, requestOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
+
 
   return (
     <div>
@@ -110,47 +106,46 @@ const PricingCalculation = () => {
                 </tr>
               </thead>
 
-                {/* {isData.map((item, index) => { */}
+              <tbody>
+                {isData && Object.keys(cleanedData).map((key, index) => {
+                  const { rate, status } = isData[key];
+                  return (
+                    <tr key={index}>
+                      <td className="capitalize">{key}</td>
+                      <td>
+                        <input
+                          name={key}
+                          type="number"
+                          value={rate}
+                          className="form-input w-3/6"
+                          onChange={(e) => handleRateChange(key, e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className={`text-white px-5 py-2 rounded-full ${status === 1 ? 'bg-success' : 'bg-danger'}`}
+                          onClick={() => handleStatusChange(key)}
+                        >
+                          {status === 1 ? 'Active' : 'Inactive'}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
 
-                <tbody>
-                  {Object.keys(isData).map((key, index) => {
-                    const { rate, status } = isData[key];
-                    return (
-                      <tr key={index}>
-                        <td className="capitalize">{key}</td>
-                        <td>
-                          <input
-                            name={key}
-                            type="number"
-                            value={rate}
-                            className="form-input w-3/6"
-                            onChange={(e) => handleRateChange(key, e.target.value)}
-                          />
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            className={`text-white px-5 py-2 rounded-full ${status === 1 ? 'bg-success' : 'bg-danger'}`}
-                            onClick={() => handleStatusChange(key)}
-                          >
-                            {status === 1 ? 'Active' : 'Inactive'}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {/* })} */}
+                {/* })} */}
 
-                  {/* Calculate */}
-                  <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                    <td>
-                      <button type="submit" className="btn bg-black font-sans text-white" onClick={getValue}>Save</button>
-                    </td>
-                  </tr>
-
+                {/* Calculate */}
+                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                  <td>
+                    <button type="submit" className="btn bg-black font-sans text-white" onClick={getValue}>Save</button>
+                  </td>
+                </tr>
 
 
-                </tbody>
+
+              </tbody>
             </table>
           </div>
 
@@ -214,3 +209,5 @@ const PricingCalculation = () => {
 };
 
 export default PricingCalculation;
+
+
