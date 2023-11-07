@@ -134,55 +134,6 @@ const PricingCalculation = () => {
               </tbody>
             </table>
           </div>
-
-          {/* Calculation Table */}
-          <div className="my-5">
-            <h2 className="my-5 rounded-[10px] bg-black py-5 text-center font-mono text-[26px] font-bold leading-none text-white">Total Price</h2>
-            <table className="table-auto">
-              <tbody>
-                <tr className="font-sans">
-                  <th>Pre Production Cost</th>
-                  <td>$500</td>
-                </tr>
-                <tr className="font-sans">
-                  <th>Post Production Cost</th>
-                  <td>$500</td>
-                </tr>
-                <tr className="font-sans">
-                  <th>Total Additional Cost</th>
-                  <td>$3,500</td>
-                </tr>
-                <tr className="font-sans">
-                  <th>Total Price Before Discount</th>
-                  <td>$3,500</td>
-                </tr>
-                <tr className="font-sans">
-                  <th>Max Discount Available (25% Max Discount)</th>
-                  <td>$6,637.50</td>
-                </tr>
-                <tr className="font-sans">
-                  <th>Suggested Quote</th>
-                  <td>$7,547.50</td>
-                </tr>
-                <tr className="font-sans">
-                  <th>Commission Calculator (6% Flat Rate)</th>
-                  <td>$452.85</td>
-                </tr>
-                <tr className="font-sans">
-                  <th>Total Price Before Discount</th>
-                  <td>$8,850.00</td>
-                </tr>
-                <tr className="font-sans">
-                  <th>Sold Package Price (Enter How Much Agreed)</th>
-                  <td>$800.00</td>
-                </tr>
-                <tr className="font-sans">
-                  <th>Discount Amount</th>
-                  <td>$8,050.00</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
     </div>
