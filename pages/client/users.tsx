@@ -23,7 +23,7 @@ const Users = () => {
   // All Users
   const getAllUsers = async () => {
     try {
-      const response = await fetch(`https://api.beigecorporation.io/v1/cp`);
+      const response = await fetch(`https://api.beigecorporation.io/v1/users`);
       const users = await response.json();
       setTotalPagesCount(users?.totalPages);
       setAllUsers(users.results);
@@ -65,23 +65,36 @@ const Users = () => {
     setIsMounted(true);
   });
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    // const result = isData.results;
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
 
-    // You can access the form data from the 'isData' state
-    // console.log(result)
+    try {
+      const response = await fetch(`https://api.beigecorporation.io/v1/cp/${shootInfo.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          // Include only the fields you want to update
+          successful_beige_shoots: shootInfo.successful_beige_shoots,
+          trust_score: shootInfo.trust_score,
+          // Add more fields as needed
+        }),
+      });
+
+      const updatedUserDetails = await response.json();
+
+      // Handle the response as needed
+      console.log(updatedUserDetails);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const handleChange = (e: any) => {
     const { name, value, type } = e.target;
     const newValue = type === 'checkbox' ? e.target.checked : value;
-    console.log(
-      {
-        "VALUE": value,
-        "NEW VALUE": newValue
-      }
-    );
+    console.log("HELLO", value);
   }
 
   return (
@@ -120,23 +133,24 @@ const Users = () => {
                       </thead>
                       <tbody>
 
-                        {allUsers?.map((user) => (
+                        {allUsers?.filter(user => user.role === 'cp').map((user) => (
+
                           <tr key={user.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                             <td className="min-w-[150px] text-black dark:text-white font-sans">
                               <div className="flex items-center">
-                                <p className="whitespace-nowrap">{user?.userId?.id}</p>
+                                <p className="whitespace-nowrap">{user?.id}</p>
                               </div>
                             </td>
-                            <td>{user?.userId?.name}</td>
-                            <td>{user?.userId?.email}</td>
-                            <td className="text-success font-sans">{user?.userId?.role}</td>
+                            <td>{user?.name}</td>
+                            <td>{user?.email}</td>
+                            <td className="text-success font-sans">{user?.role}</td>
                             <td>
                               <div className="font-sans">
-                              {user?.userId?.isEmailVerified === true ? "Verified" : "Unverified"}
+                                {user?.isEmailVerified === true ? "Verified" : "Unverified"}
                               </div>
                             </td>
                             <td>
-                              <button type="button" className="p-0" onClick={() => getUserDetails(user.userId.id)}>
+                              <button type="button" className="p-0" onClick={() => getUserDetails(user.id)}>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M11.4001 18.1612L11.4001 18.1612L18.796 10.7653C17.7894 10.3464 16.5972 9.6582 15.4697 8.53068C14.342 7.40298 13.6537 6.21058 13.2348 5.2039L5.83882 12.5999L5.83879 12.5999C5.26166 13.1771 4.97307 13.4657 4.7249 13.7838C4.43213 14.1592 4.18114 14.5653 3.97634 14.995C3.80273 15.3593 3.67368 15.7465 3.41556 16.5208L2.05445 20.6042C1.92743 20.9852 2.0266 21.4053 2.31063 21.6894C2.59466 21.9734 3.01478 22.0726 3.39584 21.9456L7.47918 20.5844C8.25351 20.3263 8.6407 20.1973 9.00498 20.0237C9.43469 19.8189 9.84082 19.5679 10.2162 19.2751C10.5343 19.0269 10.823 18.7383 11.4001 18.1612Z" fill="currentColor"></path>
                                   <path d="M20.8482 8.71306C22.3839 7.17735 22.3839 4.68748 20.8482 3.15178C19.3125 1.61607 16.8226 1.61607 15.2869 3.15178L14.3999 4.03882C14.4121 4.0755 14.4246 4.11268 14.4377 4.15035C14.7628 5.0875 15.3763 6.31601 16.5303 7.47002C17.6843 8.62403 18.9128 9.23749 19.85 9.56262C19.8875 9.57563 19.9245 9.58817 19.961 9.60026L20.8482 8.71306Z" fill="currentColor"></path>
@@ -144,7 +158,8 @@ const Users = () => {
                               </button>
                             </td>
                           </tr>
-                        ))}
+                        ))
+                        }
 
                       </tbody>
                     </table>
@@ -181,9 +196,12 @@ const Users = () => {
                                     <label htmlFor="content_verticals" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       content vertical
                                     </label>
-                                    <select name="content_verticals" className="form-select text-white-dark" id="content_verticals" defaultValue="Modern" onChange={handleChange}>
-                                      <option defaultValue="Modern">Modern</option>
-                                      <option defaultValue="Romantic">Romantic</option>
+                                    <select name="content_verticals" className="form-select text-white-dark capitalize font-sans" id="content_verticals" defaultValue="Modern" onChange={handleChange}>
+                                      {shootInfo?.content_verticals && shootInfo.content_verticals.map((content_vertical) => (
+                                        <option key={content_vertical} value={content_vertical} className='capitalize font-sans'>
+                                          {content_vertical}
+                                        </option>
+                                      ))}
                                     </select>
                                   </div>
                                 </div>
@@ -242,9 +260,11 @@ const Users = () => {
                                       equipment
                                     </label>
                                     <select className="form-select text-white-dark font-sans capitalize" id="equipment" defaultValue="Camera" name='equipment' onChange={handleChange}>
-                                      <option defaultValue="Camera">Camera</option>
-                                      <option defaultValue="Lens">Lens</option>
-                                      <option defaultValue="Tripod">Tripod</option>
+                                      {shootInfo?.equipment && shootInfo.equipment.map((equipmentItem) => (
+                                        <option key={equipmentItem} value={equipmentItem}>
+                                          {equipmentItem}
+                                        </option>
+                                      ))}
                                     </select>
                                   </div>
                                   {/* Portfolio */}
@@ -252,24 +272,16 @@ const Users = () => {
                                     <label htmlFor="portfolio" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       portfolio
                                     </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="portfolio" defaultValue="https://example.com/portfolio5" name='portfolio' onChange={handleChange}>
-                                      <option defaultValue="https://example.com/portfolio5">https://example.com/portfolio5</option>
-                                      <option defaultValue="https://example.com/portfolio6">https://example.com/portfolio6</option>
-                                      <option defaultValue="https://example.com/portfolio7">https://example.com/portfolio7</option>
+                                    <select className="form-select text-white-dark font-sans" id="portfolio" defaultValue="https://example.com/portfolio5" name='portfolio' onChange={handleChange}>
+                                      {shootInfo?.portfolio && shootInfo.portfolio.map((portfolioItem) => (
+                                        <option key={portfolioItem} value={portfolioItem}>
+                                          {portfolioItem}
+                                        </option>
+                                      ))}
                                     </select>
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                  {/* Transportation Methods */}
-                                  <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="transportation_methods" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      transportation methods
-                                    </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="transportation_methods" defaultValue="Yes" name='transportation_methods' onChange={handleChange}>
-                                      <option defaultValue="true">Yes</option>
-                                      <option defaultValue="false">No</option>
-                                    </select>
-                                  </div>
                                   {/* Travel to diostant */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label htmlFor="travel_to_distant_shoots" className="text-[14px] capitalize mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
@@ -349,7 +361,7 @@ const Users = () => {
                                   {/* Email Verified */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label htmlFor="isEmailVerified" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                    Email Verified
+                                      Email Verified
                                     </label>
                                     <input id="isEmailVerified" type="text" defaultValue={shootInfo?.userId.role} className="form-input block font-sans" name='isEmailVerified' onChange={handleChange} />
                                   </div>
@@ -383,9 +395,12 @@ const Users = () => {
                                     <label htmlFor="content_type" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       content type
                                     </label>
-                                    <select className="form-select text-white-dark font-sans" id="content_type" defaultValue="Wedding" name='content_type' onChange={handleChange}>
-                                      <option defaultValue="Wedding">Wedding</option>
-                                      <option defaultValue="Personal">Portrait</option>
+                                    <select className="form-select text-white-dark font-sans capitalize" id="content_type" defaultValue="Wedding" name='content_type' onChange={handleChange}>
+                                      {shootInfo?.content_type && shootInfo.content_type.map((c_type) => (
+                                        <option key={c_type} value={c_type} className='capitalize font-sans'>
+                                          {c_type}
+                                        </option>
+                                      ))}
                                     </select>
                                   </div>
                                 </div>
@@ -396,8 +411,11 @@ const Users = () => {
                                       vst
                                     </label>
                                     <select className="form-select text-white-dark font-sans" id="vst" defaultValue="Business" name='vst' onChange={handleChange}>
-                                      <option defaultValue="Modern Wedding">Modern Wedding</option>
-                                      <option defaultValue="Romantic Wedding">Romantic Wedding</option>
+                                      {shootInfo?.vst && shootInfo.vst.map((vst_item) => (
+                                        <option key={vst_item} value={vst_item} className='capitalize font-sans'>
+                                          {vst_item}
+                                        </option>
+                                      ))}
                                     </select>
                                   </div>
                                   {/* Shoot availability */}
@@ -405,9 +423,12 @@ const Users = () => {
                                     <label htmlFor="shoot_availability" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       shoot availability
                                     </label>
-                                    <select className="form-select text-white-dark font-sans" id="shoot_availability" defaultValue="Business" name='shoot_availability' onChange={handleChange}>
-                                      <option value="Modern">Weekends</option>
-                                      <option value="Afternoons">Afternoons</option>
+                                    <select className="form-select text-white-dark font-sans capitalize" id="shoot_availability" defaultValue="Business" name='shoot_availability' onChange={handleChange}>
+                                      {shootInfo?.shoot_availability && shootInfo.shoot_availability.map((available_shoot) => (
+                                        <option key={available_shoot} value={available_shoot} className='capitalize font-sans'>
+                                          {available_shoot}
+                                        </option>
+                                      ))}
                                     </select>
                                   </div>
                                 </div>
@@ -418,8 +439,11 @@ const Users = () => {
                                       equipment specific
                                     </label>
                                     <select className="form-select text-white-dark font-sans" id="equipment_specific" defaultValue="Wedding" name='equipment_specific' onChange={handleChange}>
-                                      <option defaultValue="Personal">Personal</option>
-                                      <option defaultValue="Wedding">Wedding</option>
+                                      {shootInfo?.equipment_specific && shootInfo.equipment_specific.map((equipment) => (
+                                        <option key={equipment} value={equipment} className='capitalize font-sans'>
+                                          {equipment}
+                                        </option>
+                                      ))}
                                     </select>
                                   </div>
                                   {/* Last Beige Shoot */}
@@ -437,19 +461,16 @@ const Users = () => {
                                       backup footage
                                     </label>
                                     <div className="flex-1">
-                                      <div className="mb-2">
-                                        <label className="flex items-center">
-                                          <input type="checkbox" className="form-checkbox" defaultValue="https://example.com/backup5" id="backup_footage" name="backup_footage" onChange={handleChange} />
-                                          <span className="text-white-dark font-sans">https://example.com/backup5</span>
-                                        </label>
-                                      </div>
 
-                                      <div className="mb-2">
-                                        <label className="flex items-center">
-                                          <input type="checkbox" name='backup_footage' className="form-checkbox" defaultValue="https://example.com/backup6" id="backup_footage" onChange={handleChange} />
-                                          <span className="text-white-dark font-sans">https://example.com/backup6</span>
-                                        </label>
-                                      </div>
+                                      {shootInfo?.backup_footage && shootInfo.backup_footage.map((footage) => (
+                                        <div className="mb-2">
+                                          <label className="flex items-center" key={footage}>
+                                            <input type="checkbox" className="form-checkbox" value={footage} id="backup_footage" name="backup_footage" onChange={handleChange} />
+                                            <span className="text-white-dark font-sans">{footage}</span>
+                                          </label>
+                                        </div>
+                                      ))}
+
                                     </div>
                                   </div>
                                   {/* Timezone */}
@@ -476,11 +497,7 @@ const Users = () => {
                                     <label htmlFor="review_status" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       review status
                                     </label>
-                                    <select className="form-select text-white-dark font-sans" id="review_status" defaultValue="Rejected" name='review_status' onChange={handleChange}>
-                                      <option defaultValue="Accepted">Accepted</option>
-                                      <option defaultValue="Rejected">Rejected</option>
-                                      <option defaultValue="Pending">Pending</option>
-                                    </select>
+                                    <input id="review_status" type="text" defaultValue={shootInfo?.review_status} className="form-input block capitalize" name='review_status' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -489,7 +506,7 @@ const Users = () => {
                                     <label htmlFor="geo_location_type" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       geo location type
                                     </label>
-                                    <input id="geo_location_type" type="text" defaultValue={shootInfo?.geo_location_type} className="form-input block" name='geo_location_type' onChange={handleChange} />
+                                    <input id="geo_location_type" type="text" defaultValue={shootInfo?.geo_location?.type} className="form-input block" name='geo_location_type' onChange={handleChange} />
                                   </div>
                                   {/* GEo Location Coordinates */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
