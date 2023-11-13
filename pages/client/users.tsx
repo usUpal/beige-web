@@ -4,30 +4,33 @@ import { useDispatch } from 'react-redux';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import Link from 'next/link';
-// https://api.beigecorporation.io/v1/cp
+import { API_ENDPOINT } from '@/config';
+import Swal from 'sweetalert2';
 
 const Users = () => {
   const [isMounted, setIsMounted] = useState(false);
-  const [shootModal, setshootModal] = useState(false);
-  const [allUsers, setAllUsers] = useState<ShootTypes[]>([]);
+  const [userModal, setUserModal] = useState(false);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [showError, setShowError] = useState<boolean>(false);
-  const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
+  const [userInfo, setUserInfo] = useState<any | null>(null);
+  const [isData, setData] = useState<any>(null);
+  const [formData, setFormData] = useState<any>({});
 
   useEffect(() => {
     getAllUsers();
+
   }, [currentPage]);
 
   // All Users
   const getAllUsers = async () => {
     try {
-      const response = await fetch(`https://api.beigecorporation.io/v1/users`);
+      const response = await fetch(`${API_ENDPOINT}users`);
       const users = await response.json();
       setTotalPagesCount(users?.totalPages);
       setAllUsers(users.results);
-      console.log(allUsers);
     } catch (error) {
       console.error(error);
     }
@@ -37,17 +40,16 @@ const Users = () => {
   const getUserDetails = async (singleUserId: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://api.beigecorporation.io/v1/cp/${singleUserId}`);
+      const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
       const userDetailsRes = await response.json();
 
       if (!userDetailsRes) {
         setShowError(true);
         setLoading(false);
       } else {
-        setShootInfo(userDetailsRes);
+        setUserInfo(userDetailsRes);
         setLoading(false);
-        setshootModal(true);
-        console.log(shootInfo);
+        setUserModal(true);
       }
     } catch (error) {
       console.error(error);
@@ -69,33 +71,49 @@ const Users = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`https://api.beigecorporation.io/v1/cp/${shootInfo.id}`, {
+      const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          // Include only the fields you want to update
-          successful_beige_shoots: shootInfo.successful_beige_shoots,
-          trust_score: shootInfo.trust_score,
-          // Add more fields as needed
-        }),
+        body: JSON.stringify(formData),
       });
 
       const updatedUserDetails = await response.json();
+      console.log("userInfo", formData);
 
       // Handle the response as needed
-      console.log(updatedUserDetails);
+      coloredToast('success')
     } catch (error) {
       console.error(error);
     }
+
   }
 
   const handleChange = (e: any) => {
-    const { name, value, type } = e.target;
-    const newValue = type === 'checkbox' ? e.target.checked : value;
-    console.log("HELLO", value);
+    const { name, value } = e.target;
+    setFormData((prevFormData: any) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   }
+
+  // Success Toast
+  const coloredToast = (color: any) => {
+    const toast = Swal.mixin({
+      toast: true,
+      position: 'top-start',
+      showConfirmButton: false,
+      timer: 3000,
+      showCloseButton: true,
+      customClass: {
+        popup: `color-${color}`,
+      },
+    });
+    toast.fire({
+      title: 'User updated successfully!',
+    });
+  };
 
   return (
     <>
@@ -134,7 +152,6 @@ const Users = () => {
                       <tbody>
 
                         {allUsers?.filter(user => user.role === 'cp').map((user) => (
-
                           <tr key={user.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                             <td className="min-w-[150px] text-black dark:text-white font-sans">
                               <div className="flex items-center">
@@ -164,15 +181,15 @@ const Users = () => {
                       </tbody>
                     </table>
                   </div>
-                  <Transition appear show={shootModal} as={Fragment}>
-                    <Dialog as="div" open={shootModal} onClose={() => setshootModal(false)}>
+                  <Transition appear show={userModal} as={Fragment}>
+                    <Dialog as="div" open={userModal} onClose={() => setUserModal(false)}>
                       <div className="fixed inset-0 w-full" />
                       <div className="w-full fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
                         <div className="flex min-h-screen items-start justify-center px-4 w-full">
                           <Dialog.Panel as="div" className="panel my-8 w-full max-w-5xl overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                             <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                               <div className="text-lg font-bold">Edit User</div>
-                              <button type="button" className="text-white-dark hover:text-dark" onClick={() => setshootModal(false)}>
+                              <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModal(false)}>
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="20"
@@ -197,7 +214,7 @@ const Users = () => {
                                       content vertical
                                     </label>
                                     <select name="content_verticals" className="form-select text-white-dark capitalize font-sans" id="content_verticals" defaultValue="Modern" onChange={handleChange}>
-                                      {shootInfo?.content_verticals && shootInfo.content_verticals.map((content_vertical) => (
+                                      {userInfo?.content_verticals && userInfo.content_verticals.map((content_vertical : string) => (
                                         <option key={content_vertical} value={content_vertical} className='capitalize font-sans'>
                                           {content_vertical}
                                         </option>
@@ -211,30 +228,30 @@ const Users = () => {
                                     <label htmlFor="successful_beige_shoots" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       Successful Shoots
                                     </label>
-                                    <input id="successful_beige_shoots" type="number" defaultValue={shootInfo?.successful_beige_shoots} className="form-input" name="successful_beige_shoots" onChange={handleChange} />
+                                    <input id="successful_beige_shoots" type="number" defaultValue={userInfo?.successful_beige_shoots} className="form-input" name="successful_beige_shoots" onChange={handleChange} />
                                   </div>
                                   {/* Trust Score */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label htmlFor="trust_score" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       trust score
                                     </label>
-                                    <input id="trust_score" type="number" defaultValue={shootInfo?.trust_score} className="form-input" name="trust_score" onChange={handleChange} />
+                                    <input id="trust_score" type="number" defaultValue={userInfo?.trust_score} className="form-input" name="trust_score" onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
                                   {/* References */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="references" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
-                                      References
+                                    <label htmlFor="reference" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
+                                      Reference
                                     </label>
-                                    <input id="references" type="text" placeholder="John Doe" defaultValue={shootInfo?.reference} className="form-input capitalize" name="references" onChange={handleChange} />
+                                    <input id="reference" type="text" placeholder="John Doe" defaultValue={userInfo?.reference} className="form-input capitalize" name="reference" onChange={handleChange} />
                                   </div>
                                   {/* Average Rating */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label htmlFor="trust_score" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       average rating
                                     </label>
-                                    <input id="average_rating" type="number" defaultValue={shootInfo?.average_rating} className="form-input" name="average_rating" onChange={handleChange} />
+                                    <input id="average_rating" type="number" defaultValue={userInfo?.average_rating} className="form-input" name="average_rating" onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -243,14 +260,14 @@ const Users = () => {
                                     <label htmlFor="avg_response_time" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize font-sans">
                                       avg response time
                                     </label>
-                                    <input id="avg_response_time" type="number" defaultValue={shootInfo?.avg_response_time} className="form-input block" name='avg_response_time' onChange={handleChange} />
+                                    <input id="avg_response_time" type="number" defaultValue={userInfo?.avg_response_time} className="form-input block" name='avg_response_time' onChange={handleChange} />
                                   </div>
                                   {/* Total Earnings */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label htmlFor="total_earnings" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize font-sans">
                                       total earnings ($)
                                     </label>
-                                    <input id="total_earnings" type="number" defaultValue={shootInfo?.total_earnings} className="form-input" name='total_earnings' onChange={handleChange} />
+                                    <input id="total_earnings" type="number" defaultValue={userInfo?.total_earnings} className="form-input" name='total_earnings' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -260,7 +277,7 @@ const Users = () => {
                                       equipment
                                     </label>
                                     <select className="form-select text-white-dark font-sans capitalize" id="equipment" defaultValue="Camera" name='equipment' onChange={handleChange}>
-                                      {shootInfo?.equipment && shootInfo.equipment.map((equipmentItem) => (
+                                      {userInfo?.equipment && userInfo.equipment.map((equipmentItem : string) => (
                                         <option key={equipmentItem} value={equipmentItem}>
                                           {equipmentItem}
                                         </option>
@@ -273,7 +290,7 @@ const Users = () => {
                                       portfolio
                                     </label>
                                     <select className="form-select text-white-dark font-sans" id="portfolio" defaultValue="https://example.com/portfolio5" name='portfolio' onChange={handleChange}>
-                                      {shootInfo?.portfolio && shootInfo.portfolio.map((portfolioItem) => (
+                                      {userInfo?.portfolio && userInfo.portfolio.map((portfolioItem : string) => (
                                         <option key={portfolioItem} value={portfolioItem}>
                                           {portfolioItem}
                                         </option>
@@ -287,21 +304,21 @@ const Users = () => {
                                     <label htmlFor="travel_to_distant_shoots" className="text-[14px] capitalize mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans">
                                       travel to distant shoots
                                     </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="travel_to_distant_shoots" defaultValue="true" name='travel_to_distant_shoots' onChange={handleChange}>
-                                      <option defaultValue="true">Yes</option>
-                                      <option defaultValue="false">No</option>
+                                    <select className="form-select text-white-dark font-sans capitalize" id="travel_to_distant_shoots" defaultValue={formData.travel_to_distant_shoots} name='travel_to_distant_shoots' onChange={handleChange}>
+                                      <option value="true">Yes</option>
+                                      <option value="false">No</option>
                                     </select>
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
                                   {/* Experience with Post Production */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="experience_with_post_production" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                    <label htmlFor="experience_with_post_production_edit" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       experience with post production
                                     </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="experience_with_post_production" defaultValue="true" name='experience_with_post_production' onChange={handleChange}>
-                                      <option defaultValue="true">Yes</option>
-                                      <option defaultValue="false">No</option>
+                                    <select className="form-select text-white-dark font-sans capitalize" id="experience_with_post_production_edit" defaultValue={formData.experience_with_post_production_edit} name='experience_with_post_production_edit' onChange={handleChange}>
+                                      <option value="true">Yes</option>
+                                      <option value="false">No</option>
                                     </select>
                                   </div>
                                   {/* Customer Service Skills Experience */}
@@ -309,9 +326,9 @@ const Users = () => {
                                     <label htmlFor="customer_service_skills_experience" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       customer service skills experience
                                     </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="customer_service_skills_experience" defaultValue="true" name='customer_service_skills_experience' onChange={handleChange}>
-                                      <option defaultValue="true">Yes</option>
-                                      <option defaultValue="false">No</option>
+                                    <select className="form-select text-white-dark font-sans capitalize" id="customer_service_skills_experience" defaultValue={formData.customer_service_skills_experience}  name='customer_service_skills_experience' onChange={handleChange}>
+                                      <option value="true">Yes</option>
+                                      <option value="false">No</option>
                                     </select>
                                   </div>
                                 </div>
@@ -321,9 +338,9 @@ const Users = () => {
                                     <label htmlFor="team_player" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       team player
                                     </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="team_player" defaultValue="true" name='team_player' onChange={handleChange}>
-                                      <option defaultValue="true">Yes</option>
-                                      <option defaultValue="false">No</option>
+                                    <select className="form-select text-white-dark font-sans capitalize" id="team_player" defaultValue={formData.team_player}   name='team_player' onChange={handleChange}>
+                                      <option value="true">Yes</option>
+                                      <option value="false">No</option>
                                     </select>
                                   </div>
                                   {/* Avg Res Time to New Shoot Inquiry */}
@@ -331,7 +348,7 @@ const Users = () => {
                                     <label htmlFor="avg_response_time_to_new_shoot_inquiry" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       avg response time to new shoot inquiry
                                     </label>
-                                    <input id="avg_response_time_to_new_shoot_inquiry" type="number" defaultValue={shootInfo?.avg_response_time_to_new_shoot_inquiry} className="form-input block font-sans" name='avg_response_time_to_new_shoot_inquiry' onChange={handleChange} />
+                                    <input id="avg_response_time_to_new_shoot_inquiry" type="number" defaultValue={userInfo?.avg_response_time_to_new_shoot_inquiry} className="form-input block font-sans" name='avg_response_time_to_new_shoot_inquiry' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -340,14 +357,14 @@ const Users = () => {
                                     <label htmlFor="num_declined_shoots" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       num declined shoots
                                     </label>
-                                    <input id="num_declined_shoots" type="number" defaultValue={shootInfo?.num_declined_shoots} className="form-input block" name='num_declined_shoots' onChange={handleChange} />
+                                    <input id="num_declined_shoots" type="number" defaultValue={userInfo?.num_declined_shoots} className="form-input block" name='num_declined_shoots' onChange={handleChange} />
                                   </div>
                                   {/* Num accepted Shoots */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label htmlFor="num_accepted_shoots" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       num accepted shoots
                                     </label>
-                                    <input id="num_accepted_shoots" type="number" defaultValue={shootInfo?.num_accepted_shoots} className="form-input block" name='num_accepted_shoots' onChange={handleChange} />
+                                    <input id="num_accepted_shoots" type="number" defaultValue={userInfo?.num_accepted_shoots} className="form-input block" name='num_accepted_shoots' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -356,14 +373,14 @@ const Users = () => {
                                     <label htmlFor="num_dnum_no_showseclined_shoots" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       num no shows
                                     </label>
-                                    <input id="num_no_shows" type="number" defaultValue={shootInfo?.num_no_shows} className="form-input block font-sans" name='num_no_shows' onChange={handleChange} />
+                                    <input id="num_no_shows" type="number" defaultValue={userInfo?.num_no_shows} className="form-input block font-sans" name='num_no_shows' onChange={handleChange} />
                                   </div>
                                   {/* Email Verified */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label htmlFor="isEmailVerified" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       Email Verified
                                     </label>
-                                    <input id="isEmailVerified" type="text" defaultValue={shootInfo?.userId.role} className="form-input block font-sans" name='isEmailVerified' onChange={handleChange} />
+                                    <input id="isEmailVerified" type="text" defaultValue={userInfo?.userId.role} className="form-input block font-sans" name='isEmailVerified' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -372,14 +389,14 @@ const Users = () => {
                                     <label htmlFor="city" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       city
                                     </label>
-                                    <input id="city" type="text" defaultValue={shootInfo?.city} className="form-input block" name='city' onChange={handleChange} />
+                                    <input id="city" type="text" defaultValue={userInfo?.city} className="form-input block" name='city' onChange={handleChange} />
                                   </div>
                                   {/* Neighbourhood */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label htmlFor="neighborhood" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       neighborhood
                                     </label>
-                                    <input id="neighborhood" defaultValue={shootInfo?.neighborhood} type="text" className="form-input block font-sans" name='neighborhood' onChange={handleChange} />
+                                    <input id="neighborhood" defaultValue={userInfo?.neighborhood} type="text" className="form-input block font-sans" name='neighborhood' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -388,7 +405,7 @@ const Users = () => {
                                     <label htmlFor="zip_code" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       zip code
                                     </label>
-                                    <input id="zip_code" type="text" defaultValue={shootInfo?.zip_code} className="form-input block" name='zip_code' onChange={handleChange} />
+                                    <input id="zip_code" type="text" defaultValue={userInfo?.zip_code} className="form-input block" name='zip_code' onChange={handleChange} />
                                   </div>
                                   {/* Content Type */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -396,7 +413,7 @@ const Users = () => {
                                       content type
                                     </label>
                                     <select className="form-select text-white-dark font-sans capitalize" id="content_type" defaultValue="Wedding" name='content_type' onChange={handleChange}>
-                                      {shootInfo?.content_type && shootInfo.content_type.map((c_type) => (
+                                      {userInfo?.content_type && userInfo.content_type.map((c_type : string) => (
                                         <option key={c_type} value={c_type} className='capitalize font-sans'>
                                           {c_type}
                                         </option>
@@ -411,7 +428,7 @@ const Users = () => {
                                       vst
                                     </label>
                                     <select className="form-select text-white-dark font-sans" id="vst" defaultValue="Business" name='vst' onChange={handleChange}>
-                                      {shootInfo?.vst && shootInfo.vst.map((vst_item) => (
+                                      {userInfo?.vst && userInfo.vst.map((vst_item : string) => (
                                         <option key={vst_item} value={vst_item} className='capitalize font-sans'>
                                           {vst_item}
                                         </option>
@@ -424,7 +441,7 @@ const Users = () => {
                                       shoot availability
                                     </label>
                                     <select className="form-select text-white-dark font-sans capitalize" id="shoot_availability" defaultValue="Business" name='shoot_availability' onChange={handleChange}>
-                                      {shootInfo?.shoot_availability && shootInfo.shoot_availability.map((available_shoot) => (
+                                      {userInfo?.shoot_availability && userInfo.shoot_availability.map((available_shoot : string) => (
                                         <option key={available_shoot} value={available_shoot} className='capitalize font-sans'>
                                           {available_shoot}
                                         </option>
@@ -439,7 +456,7 @@ const Users = () => {
                                       equipment specific
                                     </label>
                                     <select className="form-select text-white-dark font-sans" id="equipment_specific" defaultValue="Wedding" name='equipment_specific' onChange={handleChange}>
-                                      {shootInfo?.equipment_specific && shootInfo.equipment_specific.map((equipment) => (
+                                      {userInfo?.equipment_specific && userInfo.equipment_specific.map((equipment : string) => (
                                         <option key={equipment} value={equipment} className='capitalize font-sans'>
                                           {equipment}
                                         </option>
@@ -451,7 +468,7 @@ const Users = () => {
                                     <label htmlFor="last_beige_shoot" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       last beige shoot
                                     </label>
-                                    <input id="last_beige_shoot" type="text" defaultValue={shootInfo?.last_beige_shoot} className="form-input block" name='last_beige_shoot' onChange={handleChange} />
+                                    <input id="last_beige_shoot" type="text" defaultValue={userInfo?.last_beige_shoot} className="form-input block" name='last_beige_shoot' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -462,7 +479,7 @@ const Users = () => {
                                     </label>
                                     <div className="flex-1">
 
-                                      {shootInfo?.backup_footage && shootInfo.backup_footage.map((footage) => (
+                                      {userInfo?.backup_footage && userInfo.backup_footage.map((footage : string) => (
                                         <div className="mb-2">
                                           <label className="flex items-center" key={footage}>
                                             <input type="checkbox" className="form-checkbox" value={footage} id="backup_footage" name="backup_footage" onChange={handleChange} />
@@ -478,7 +495,7 @@ const Users = () => {
                                     <label htmlFor="timezone" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       timezone
                                     </label>
-                                    <input id="timezone" type="text" defaultValue={shootInfo?.timezone} className="form-input block" name='timezone' onChange={handleChange} />
+                                    <input id="timezone" type="text" defaultValue={userInfo?.timezone} className="form-input block" name='timezone' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -487,9 +504,9 @@ const Users = () => {
                                     <label htmlFor="own_transportation_method" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       own transportation method
                                     </label>
-                                    <select className="form-select text-white-dark font-sans" id="own_transportation_method" defaultValue="true" name='own_transportation_method' onChange={handleChange}>
-                                      <option defaultValue="true">Yes</option>
-                                      <option defaultValue="false">No</option>
+                                    <select className="form-select text-white-dark font-sans" id="own_transportation_method" defaultValue={formData.own_transportation_method} name='own_transportation_method' onChange={handleChange}>
+                                      <option value="true">Yes</option>
+                                      <option value="false">No</option>
                                     </select>
                                   </div>
                                   {/* Review Status */}
@@ -497,35 +514,14 @@ const Users = () => {
                                     <label htmlFor="review_status" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       review status
                                     </label>
-                                    <input id="review_status" type="text" defaultValue={shootInfo?.review_status} className="form-input block capitalize" name='review_status' onChange={handleChange} />
-                                  </div>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  {/* GEO Location Type */}
-                                  <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="geo_location_type" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      geo location type
-                                    </label>
-                                    <input id="geo_location_type" type="text" defaultValue={shootInfo?.geo_location?.type} className="form-input block" name='geo_location_type' onChange={handleChange} />
-                                  </div>
-                                  {/* GEo Location Coordinates */}
-                                  <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="geo_location_coordinates" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      geo location coordinates
-                                    </label>
-                                    <select className="form-select text-white-dark font-sans" id="geo_location_coordinates" defaultValue="-144.4194, 38.7599" name='geo_location_coordinates' onChange={handleChange}>
-                                      <option defaultValue="-122.4194, 37.7599">-122.4194, 37.7599</option>
-                                      <option defaultValue="-144.4194, 38.7599">-144.4194, 38.7599</option>
-                                      <option defaultValue="-199.4194, 344.7599">-199.4194, 344.7599</option>
-                                      <option defaultValue="-239.4194, 980.7599">-239.4194, 980.7599</option>
-                                    </select>
+                                    <input id="review_status" type="text" defaultValue={userInfo?.review_status} className="form-input block capitalize" name='review_status' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="mt-8 flex items-center justify-end">
-                                  <button type="button" className="btn btn-outline-danger font-sans" onClick={() => setshootModal(false)}>
-                                    Discard
+                                  <button type="button" className="btn btn-dark font-sans" onClick={() => setUserModal(false)}>
+                                    Close
                                   </button>
-                                  <button type="submit" className="btn btn-primary ltr:ml-4 rtl:mr-4 font-sans">
+                                  <button type="submit" className="btn btn-success ltr:ml-4 rtl:mr-4 font-sans">
                                     Save
                                   </button>
                                 </div>
