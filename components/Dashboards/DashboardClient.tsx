@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
+import ReactApexChart from 'react-apexcharts';
 
 interface FormData {
   content_type: number;

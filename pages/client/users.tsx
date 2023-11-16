@@ -17,7 +17,77 @@ const Users = () => {
   const [showError, setShowError] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<any | null>(null);
   const [isData, setData] = useState<any>(null);
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<any>(
+    {
+      "geo_location": {
+        "type": "Point",
+        "coordinates": [
+          -122.4711,
+          37.7745
+        ]
+      },
+      "content_type": [
+        "wedding",
+        "portrait"
+      ],
+      "content_verticals": [
+        "modern",
+        "romantic"
+      ],
+      "vst": [
+        "modern wedding",
+        "romantic wedding"
+      ],
+      "shoot_availability": [
+        "weekends",
+        "afternoons"
+      ],
+      "successful_beige_shoots": 8,
+      "trust_score": 4.7,
+      "average_rating": 4.9,
+      "avg_response_time": 1.5,
+      "equipment": [
+        "camera",
+        "lens",
+        "tripod"
+      ],
+      "equipment_specific": [
+        "Sony a7 III",
+        "Sony FE 85mm f/1.8"
+      ],
+      "portfolio": [
+        "https://example.com/portfolio5",
+        "https://example.com/portfolio6"
+      ],
+      "total_earnings": 8000,
+      "backup_footage": [
+        "https://example.com/backup5",
+        "https://example.com/backup6"
+      ],
+      "travel_to_distant_shoots": true,
+      "experience_with_post_production_edit": true,
+      "customer_service_skills_experience": true,
+      "team_player": false,
+      "avg_response_time_to_new_shoot_inquiry": 1,
+      "num_declined_shoots": 0,
+      "num_accepted_shoots": 8,
+      "num_no_shows": 1,
+      "review_status": "rejected",
+      "userId": "6527c39992e911feecc30b18",
+      "city": "Texas",
+      "neighborhood": "Mission District",
+      "zip_code": "94110",
+      "last_beige_shoot": "61d8f4b4c8d9e6a4a8c3f7d5",
+      "timezone": "PST",
+      "own_transportation_method": true,
+      "reference": "Bob Johnson",
+      "created_at": "2023-10-12T10:12:23.602Z",
+      "createdAt": "2023-10-12T10:12:23.605Z",
+      "updatedAt": "2023-11-14T10:56:45.303Z",
+      "id": "6527c687756ec2096cac7ab2"
+    }
+  );
+  const [backupFootage, setBackupFootage] = useState<string>();
 
   useEffect(() => {
     getAllUsers();
@@ -80,7 +150,7 @@ const Users = () => {
       });
 
       const updatedUserDetails = await response.json();
-      console.log("userInfo", formData);
+      console.log("UPDATE", formData);
 
       // Handle the response as needed
       coloredToast('success')
@@ -90,13 +160,80 @@ const Users = () => {
 
   }
 
+  // Old function
+  // const handleChange = (e: any) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prevFormData: any) => ({
+  //     ...prevFormData,
+  //     [name]: value,
+  //   }));
+  // }
+
+  // Working but duplicating
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((prevFormData: any) => ({
       ...prevFormData,
-      [name]: value,
+      [name]: Array.isArray(prevFormData[name]) ? [...prevFormData[name], value] : value,
     }));
-  }
+  };
+
+  // Not Working
+  // const handleChange = (e: any) => {
+  //   const { name, value } = e.target;
+
+  //   // Use Set to remove duplicates
+  //   const uniquePortfolio = new Set([...userInfo?.portfolio, value]);
+
+  //   setUserInfo((prevUserInfo: any) => ({
+  //     ...prevUserInfo,
+  //     portfolio: Array.from(uniquePortfolio),
+  //   }));
+
+  //   setFormData((prevFormData: any) => ({
+  //     ...prevFormData,
+  //     [name]: value,
+  //   }));
+  // };
+
+  // Not Working
+  // const handleChange = (e: any) => {
+  //   const { name, value } = e.target;
+
+  //   // Check if the field is "portfolio" and the value is not already in the array
+  //   if (name === "portfolio" && formData[name].indexOf(value) === -1) {
+  //     setFormData((prevFormData: any) => ({
+  //       ...prevFormData,
+  //       [name]: [...prevFormData[name], value], // Add the new value to the array
+  //     }));
+  //   } else {
+  //     setFormData((prevFormData: any) => ({
+  //       ...prevFormData,
+  //       [name]: value,
+  //     }));
+  //   }
+  // };
+
+  // const handleChange = (e: any) => {
+  //   const { name, value } = e.target;
+
+  //   setFormData((prevFormData: any) => ({
+  //     ...prevFormData,
+  //     [name]: value,
+  //   }));
+
+  //   if (name === 'portfolio') {
+  //     setUserInfo((prevUserInfo: any) => ({
+  //       ...prevUserInfo,
+  //       portfolio: Array.from(new Set([...prevUserInfo.portfolio, value])),
+  //     }));
+  //   }
+  // }
+
+
+
+  // Inserting data
+
 
   // Success Toast
   const coloredToast = (color: any) => {
@@ -114,6 +251,40 @@ const Users = () => {
       title: 'User updated successfully!',
     });
   };
+
+  // Insert Footage
+  const [newData, insertNewData] = useState<any>({});
+
+  const addHandler = (e: any) => {
+    let inputName = e.target.name;
+    let val = e.target.value;
+
+    insertNewData((prevData: any) => ({
+      ...prevData,
+      [inputName]: [val],
+    }));
+    return newData;
+  }
+
+  const submitData = async (e: any) => {
+    // console.log("ADDING", addHandler(e));
+    try {
+      const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(addHandler(e)),
+      });
+
+      const updateNew = await response.json();
+
+      // Handle the response as needed
+      coloredToast('success')
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <>
@@ -208,19 +379,33 @@ const Users = () => {
                             <div className="p-5">
                               <form className="space-y-5" onSubmit={handleSubmit}>
                                 <div className="flex items-center justify-between">
+
+                                  {/* Add Content Vertical */}
+                                  <div className="flex basis-[45%] flex-col sm:flex-row">
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Add Content.V
+                                    </label>
+                                    <input type="text" className="form-input ml-2" name='content_verticals' onChange={addHandler} />
+                                    <button type="button" className="btn btn-success ml-2" onClick={submitData}>Add</button>
+                                  </div>
+
                                   {/* Content Vertical */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="content_verticals" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      content vertical
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Content Vertical
                                     </label>
-                                    <select name="content_verticals" className="form-select text-white-dark capitalize font-sans" id="content_verticals" defaultValue="Modern" onChange={handleChange}>
-                                      {userInfo?.content_verticals && userInfo.content_verticals.map((content_vertical : string) => (
-                                        <option key={content_vertical} value={content_vertical} className='capitalize font-sans'>
-                                          {content_vertical}
-                                        </option>
+                                    <div className="flex-1">
+                                      {userInfo?.content_verticals && userInfo.content_verticals.map((content_vertical: string) => (
+                                        <div className="mb-2">
+                                          <label className="flex items-center" key={content_vertical}>
+                                            <input type="checkbox" className="form-checkbox" value={content_vertical} id="content_verticals" name="content_verticals" onChange={handleChange} />
+                                            <span className="text-white-dark font-sans capitalize">{content_vertical}</span>
+                                          </label>
+                                        </div>
                                       ))}
-                                    </select>
+                                    </div>
                                   </div>
+
                                 </div>
                                 <div className="flex items-center justify-between">
                                   {/* Successful Shoots */}
@@ -271,32 +456,58 @@ const Users = () => {
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
+                                  {/* Add Equipment */}
+                                  <div className="flex basis-[45%] flex-col sm:flex-row">
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Add Equipment
+                                    </label>
+                                    <input type="text" className="form-input ml-2" name="equipment" onChange={addHandler} />
+                                    <button type="button" className="btn btn-success ml-2" onClick={submitData}>Add</button>
+                                  </div>
                                   {/* Equipement */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="equipment" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      equipment
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Equipement
                                     </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="equipment" defaultValue="Camera" name='equipment' onChange={handleChange}>
-                                      {userInfo?.equipment && userInfo.equipment.map((equipmentItem : string) => (
-                                        <option key={equipmentItem} value={equipmentItem}>
-                                          {equipmentItem}
-                                        </option>
+                                    <div className="flex-1">
+                                      {userInfo?.equipment && userInfo.equipment.map((equipmentItem: string) => (
+                                        <div className="mb-2">
+                                          <label className="flex items-center" key={equipmentItem}>
+                                            <input type="checkbox" className="form-checkbox" value={equipmentItem} id="equipment" name="equipment" onChange={handleChange} />
+                                            <span className="text-white-dark font-sans capitalize">{equipmentItem}</span>
+                                          </label>
+                                        </div>
                                       ))}
-                                    </select>
+                                    </div>
+                                  </div>
+
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  {/* Add Portfolio */}
+                                  <div className="flex basis-[45%] flex-col sm:flex-row">
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Add Potfolio
+                                    </label>
+                                    <input type="text" className="form-input ml-2" name='portfolio' onChange={addHandler} />
+                                    <button type="button" className="btn btn-success ml-2" onClick={submitData}>Add</button>
                                   </div>
                                   {/* Portfolio */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="portfolio" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      portfolio
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Portfolio
                                     </label>
-                                    <select className="form-select text-white-dark font-sans" id="portfolio" defaultValue="https://example.com/portfolio5" name='portfolio' onChange={handleChange}>
-                                      {userInfo?.portfolio && userInfo.portfolio.map((portfolioItem : string) => (
-                                        <option key={portfolioItem} value={portfolioItem}>
-                                          {portfolioItem}
-                                        </option>
+                                    <div className="flex-1">
+                                      {userInfo?.portfolio && userInfo.portfolio.map((portfolioItem: string) => (
+                                        <div className="mb-2">
+                                          <label className="flex items-center" key={portfolioItem}>
+                                            <input type="checkbox" className="form-checkbox" value={portfolioItem} id="portfolio" name="portfolio" onChange={handleChange} />
+                                            <span className="text-white-dark font-sans capitalize">{portfolioItem}</span>
+                                          </label>
+                                        </div>
                                       ))}
-                                    </select>
+                                    </div>
                                   </div>
+
                                 </div>
                                 <div className="flex items-center justify-between">
                                   {/* Travel to diostant */}
@@ -326,7 +537,7 @@ const Users = () => {
                                     <label htmlFor="customer_service_skills_experience" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       customer service skills experience
                                     </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="customer_service_skills_experience" defaultValue={formData.customer_service_skills_experience}  name='customer_service_skills_experience' onChange={handleChange}>
+                                    <select className="form-select text-white-dark font-sans capitalize" id="customer_service_skills_experience" defaultValue={formData.customer_service_skills_experience} name='customer_service_skills_experience' onChange={handleChange}>
                                       <option value="true">Yes</option>
                                       <option value="false">No</option>
                                     </select>
@@ -338,7 +549,7 @@ const Users = () => {
                                     <label htmlFor="team_player" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       team player
                                     </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="team_player" defaultValue={formData.team_player}   name='team_player' onChange={handleChange}>
+                                    <select className="form-select text-white-dark font-sans capitalize" id="team_player" defaultValue={formData.team_player} name='team_player' onChange={handleChange}>
                                       <option value="true">Yes</option>
                                       <option value="false">No</option>
                                     </select>
@@ -375,12 +586,12 @@ const Users = () => {
                                     </label>
                                     <input id="num_no_shows" type="number" defaultValue={userInfo?.num_no_shows} className="form-input block font-sans" name='num_no_shows' onChange={handleChange} />
                                   </div>
-                                  {/* Email Verified */}
+                                  {/* Timezone */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="isEmailVerified" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      Email Verified
+                                    <label htmlFor="timezone" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      timezone
                                     </label>
-                                    <input id="isEmailVerified" type="text" defaultValue={userInfo?.userId.role} className="form-input block font-sans" name='isEmailVerified' onChange={handleChange} />
+                                    <input id="timezone" type="text" defaultValue={userInfo?.timezone} className="form-input block" name='timezone' onChange={handleChange} />
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -407,62 +618,118 @@ const Users = () => {
                                     </label>
                                     <input id="zip_code" type="text" defaultValue={userInfo?.zip_code} className="form-input block" name='zip_code' onChange={handleChange} />
                                   </div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  {/* Add Content Type */}
+                                  <div className="flex basis-[45%] flex-col sm:flex-row">
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Add Content.T
+                                    </label>
+                                    <input type="text" className="form-input ml-2" name='content_type' onChange={addHandler} />
+                                    <button type="button" className="btn btn-success ml-2" onClick={submitData}>Add</button>
+                                  </div>
                                   {/* Content Type */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="content_type" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      content type
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Content Type
                                     </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="content_type" defaultValue="Wedding" name='content_type' onChange={handleChange}>
-                                      {userInfo?.content_type && userInfo.content_type.map((c_type : string) => (
-                                        <option key={c_type} value={c_type} className='capitalize font-sans'>
-                                          {c_type}
-                                        </option>
+                                    <div className="flex-1">
+                                      {userInfo?.content_type && userInfo.content_type.map((c_type: string) => (
+                                        <div className="mb-2">
+                                          <label className="flex items-center" key={c_type}>
+                                            <input type="checkbox" className="form-checkbox" value={c_type} id="content_type" name="content_type" onChange={handleChange} />
+                                            <span className="text-white-dark font-sans capitalize">{c_type}</span>
+                                          </label>
+                                        </div>
                                       ))}
-                                    </select>
+                                    </div>
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
+                                  {/* Add VST */}
+                                  <div className="flex basis-[45%] flex-col sm:flex-row">
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Add VST
+                                    </label>
+                                    <input type="text" className="form-input ml-2" name='vst' onChange={addHandler} />
+                                    <button type="button" className="btn btn-success ml-2" onClick={submitData}>Add</button>
+                                  </div>
+
                                   {/* VST */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="vst" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      vst
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      VST
                                     </label>
-                                    <select className="form-select text-white-dark font-sans" id="vst" defaultValue="Business" name='vst' onChange={handleChange}>
-                                      {userInfo?.vst && userInfo.vst.map((vst_item : string) => (
-                                        <option key={vst_item} value={vst_item} className='capitalize font-sans'>
-                                          {vst_item}
-                                        </option>
+                                    <div className="flex-1">
+                                      {userInfo?.vst && userInfo.vst.map((vst_item: string) => (
+                                        <div className="mb-2">
+                                          <label className="flex items-center" key={vst_item}>
+                                            <input type="checkbox" className="form-checkbox" value={vst_item} id="vst" name="vst" onChange={handleChange} />
+                                            <span className="text-white-dark font-sans capitalize">{vst_item}</span>
+                                          </label>
+                                        </div>
                                       ))}
-                                    </select>
-                                  </div>
-                                  {/* Shoot availability */}
-                                  <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="shoot_availability" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      shoot availability
-                                    </label>
-                                    <select className="form-select text-white-dark font-sans capitalize" id="shoot_availability" defaultValue="Business" name='shoot_availability' onChange={handleChange}>
-                                      {userInfo?.shoot_availability && userInfo.shoot_availability.map((available_shoot : string) => (
-                                        <option key={available_shoot} value={available_shoot} className='capitalize font-sans'>
-                                          {available_shoot}
-                                        </option>
-                                      ))}
-                                    </select>
+                                    </div>
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
+
+                                  {/* Add Shoot Availability */}
+                                  <div className="flex basis-[45%] flex-col sm:flex-row">
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Add Shoot.A
+                                    </label>
+                                    <input type="text" className="form-input ml-2" name='shoot_availability' onChange={addHandler} />
+                                    <button type="button" className="btn btn-success ml-2" onClick={submitData}>Add</button>
+                                  </div>
+
+                                  {/* Shoot availability */}
+                                  <div className="flex basis-[45%] flex-col sm:flex-row">
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      shoot availability
+                                    </label>
+                                    <div className="flex-1">
+                                      {userInfo?.shoot_availability && userInfo.shoot_availability.map((available_shoot: string) => (
+                                        <div className="mb-2">
+                                          <label className="flex items-center" key={available_shoot}>
+                                            <input type="checkbox" className="form-checkbox" value={available_shoot} id="shoot_availability" name="shoot_availability" onChange={handleChange} />
+                                            <span className="text-white-dark font-sans capitalize">{available_shoot}</span>
+                                          </label>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  {/* Add Equipment Specific */}
+                                  <div className="flex basis-[45%] flex-col sm:flex-row">
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Add Equipment
+                                    </label>
+                                    <input type="text" className="form-input ml-2" name='equipment_specific' onChange={addHandler} />
+                                    <button type="button" className="btn btn-success ml-2" onClick={submitData}>Add</button>
+                                  </div>
+
                                   {/* Equipment Specific */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="equipment_specific" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      equipment specific
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Equipment Specific
                                     </label>
-                                    <select className="form-select text-white-dark font-sans" id="equipment_specific" defaultValue="Wedding" name='equipment_specific' onChange={handleChange}>
-                                      {userInfo?.equipment_specific && userInfo.equipment_specific.map((equipment : string) => (
-                                        <option key={equipment} value={equipment} className='capitalize font-sans'>
-                                          {equipment}
-                                        </option>
+                                    <div className="flex-1">
+                                      {userInfo?.equipment_specific && userInfo.equipment_specific.map((equipment: string) => (
+                                        <div className="mb-2">
+                                          <label className="flex items-center" key={equipment}>
+                                            <input type="checkbox" className="form-checkbox" value={equipment} id="equipment_specific" name="equipment_specific" onChange={handleChange} />
+                                            <span className="text-white-dark font-sans capitalize">{equipment}</span>
+                                          </label>
+                                        </div>
                                       ))}
-                                    </select>
+                                    </div>
                                   </div>
+
+                                </div>
+                                <div className="flex items-center justify-between">
                                   {/* Last Beige Shoot */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label htmlFor="last_beige_shoot" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
@@ -472,14 +739,23 @@ const Users = () => {
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
+
+                                  {/* Add Footage */}
+                                  <div className="flex basis-[45%] flex-col sm:flex-row">
+                                    <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
+                                      Add footage
+                                    </label>
+                                    <input type="text" className="form-input ml-2" name='backup_footage' onChange={addHandler} />
+                                    <button type="button" className="btn btn-success ml-2" onClick={submitData}>Add</button>
+                                  </div>
+
                                   {/* Backup Footage */}
                                   <div className="flex basis-[45%] flex-col sm:flex-row">
                                     <label className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
                                       backup footage
                                     </label>
                                     <div className="flex-1">
-
-                                      {userInfo?.backup_footage && userInfo.backup_footage.map((footage : string) => (
+                                      {userInfo?.backup_footage && userInfo.backup_footage.map((footage: string) => (
                                         <div className="mb-2">
                                           <label className="flex items-center" key={footage}>
                                             <input type="checkbox" className="form-checkbox" value={footage} id="backup_footage" name="backup_footage" onChange={handleChange} />
@@ -487,16 +763,9 @@ const Users = () => {
                                           </label>
                                         </div>
                                       ))}
-
                                     </div>
                                   </div>
-                                  {/* Timezone */}
-                                  <div className="flex basis-[45%] flex-col sm:flex-row">
-                                    <label htmlFor="timezone" className="text-[14px] mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 font-sans capitalize">
-                                      timezone
-                                    </label>
-                                    <input id="timezone" type="text" defaultValue={userInfo?.timezone} className="form-input block" name='timezone' onChange={handleChange} />
-                                  </div>
+
                                 </div>
                                 <div className="flex items-center justify-between">
                                   {/* Own Transportation Method */}
@@ -518,12 +787,8 @@ const Users = () => {
                                   </div>
                                 </div>
                                 <div className="mt-8 flex items-center justify-end">
-                                  <button type="button" className="btn btn-dark font-sans" onClick={() => setUserModal(false)}>
-                                    Close
-                                  </button>
-                                  <button type="submit" className="btn btn-success ltr:ml-4 rtl:mr-4 font-sans">
-                                    Save
-                                  </button>
+                                  <button type="button" className="btn btn-dark font-sans" onClick={() => setUserModal(false)}>Close</button>
+                                  <button type="submit" className="btn btn-success ltr:ml-4 rtl:mr-4 font-sans">Save</button>
                                 </div>
                               </form>
                             </div>
