@@ -8,6 +8,7 @@ import Link from 'next/link';
 import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
 import ReactApexChart from 'react-apexcharts';
+import Map from '@/components/Map';
 
 interface FormData {
   content_type: number;
@@ -340,7 +341,7 @@ const IndexClient = () => {
                           <label htmlFor="location" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Location
                           </label>
-                          <input id="location" type="text" placeholder="Enter location" defaultValue="LA" className="form-input" {...register('location')} />
+                          <Map />
                           {errors.location && <p className="text-danger">{errors?.location.message}</p>}
                         </div>
                       </div>
