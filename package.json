@@ -73,6 +73,7 @@
     "swiper": "^8.4.7",
     "twrnc": "^3.6.4",
     "typescript": "4.9.4",
+    "use-places-autocomplete": "^4.0.1",
     "yup": "^0.32.11"
   },
   "devDependencies": {

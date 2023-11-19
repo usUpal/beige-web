@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { GoogleMap, useLoadScript, Marker, Autocomplete, } from "@react-google-maps/api";
 
 const Map = () => {
@@ -9,16 +9,18 @@ const Map = () => {
   const autocompleteRef = useRef(null);
   const [address, setAddress] = useState("");
 
+  const libraries = useMemo(() => ['places'], []);
+
   // laod script for google map
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    libraries: ["places"],
+    libraries: libraries as any,
   });
 
   if (!isLoaded) return <div>Loading....</div>;
 
   // static lat and lng
-  const center = { lat: 'YOUR-LATITUDE', lng: 'YOUR-LONGITUDE' };
+  const center = { lat: 28.7041, lng: 77.1025 };
 
   // handle place change on search
   const handlePlaceChanged = () => {
@@ -50,7 +52,7 @@ const Map = () => {
     }
   };
 
-  const onMapLoad = (map) => {
+  const onMapLoad = (map: any) => {
     const controlDiv = document.createElement("div");
     const controlUI = document.createElement("div");
     controlUI.innerHTML = "Get Location";
@@ -94,15 +96,15 @@ const Map = () => {
         onPlaceChanged={handlePlaceChanged}
         options={{ fields: ["address_components", "geometry", "name"] }}
       >
-        <input type="text" id='location' placeholder="Enter location" className='form-input'/>
+        <input type="text" id='location' placeholder="Enter location" className='form-input' />
       </Autocomplete>
 
       {/* map component  */}
       {/* <GoogleMap
-        zoom={currentLocation || selectedPlace ? 18 : 12}
+        zoom={13}
         center={currentLocation || searchLngLat || center}
         mapContainerClassName="map"
-        mapContainerStyle={{ width: "80%", height: "600px", margin: "auto" }}
+        mapContainerStyle={{ width: "100%", height: "300px", margin: "auto" }}
         onLoad={onMapLoad}
       >
         {selectedPlace && <Marker position={searchLngLat} />}
