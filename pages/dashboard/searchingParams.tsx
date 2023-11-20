@@ -46,10 +46,23 @@ const SearchingParams = () => {
   // Event handler for form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setTableData({
-      ...tableData,
-      [name]: value,
-    });
+    // Handle nested properties like accepted_shoots
+    if (name.includes('.')) {
+      const [mainProperty, subProperty] = name.split('.');
+      setTableData({
+        ...tableData,
+        [mainProperty]: {
+          ...tableData[mainProperty],
+          [subProperty]: value,
+        },
+      });
+    } else {
+      // Handle regular properties
+      setTableData({
+        ...tableData,
+        [name]: value,
+      });
+    }
   };
 
   // Event handler for form submission
@@ -144,15 +157,20 @@ const SearchingParams = () => {
                   <td className="px-3 py-1 text-left">
                     <input
                       onChange={handleInputChange}
-                      // defaultValue={params?.accepted_shoots?.weight}
-                      name="accepted_shoots"
+                      name="accepted_shoots.weight"
                       value={tableData.accepted_shoots.weight}
                       type="number"
                       className="form-input basis-[40%] font-sans text-[16px] leading-none"
                     />
                   </td>
                   <td className="px-3 py-1 text-left">
-                    <input defaultValue={params?.accepted_shoots?.score} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
+                    <input
+                      onChange={handleInputChange}
+                      name="accepted_shoots.score"
+                      value={tableData.accepted_shoots.score}
+                      type="number"
+                      className="form-input basis-[40%] font-sans text-[16px] leading-none"
+                    />
                   </td>
                 </tr>
                 <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
@@ -160,10 +178,22 @@ const SearchingParams = () => {
                     <span>average_rating</span>
                   </td>
                   <td className="px-3 py-2 text-left">
-                    <input defaultValue={params?.average_rating?.weight} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
+                    <input
+                      onChange={handleInputChange}
+                      name="average_rating.weight"
+                      value={tableData.average_rating?.weight}
+                      type="number"
+                      className="form-input basis-[40%] font-sans text-[16px] leading-none"
+                    />
                   </td>
                   <td className="px-3 py-2">
-                    <input defaultValue={params?.average_rating?.score} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
+                    <input
+                      onChange={handleInputChange}
+                      name="average_rating.score"
+                      value={tableData.average_rating.score}
+                      type="number"
+                      className="form-input basis-[40%] font-sans text-[16px] leading-none"
+                    />
                   </td>
                 </tr>
                 <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
@@ -171,10 +201,22 @@ const SearchingParams = () => {
                     <span>avg_response_time</span>
                   </td>
                   <td className="px-3 py-2 text-left">
-                    <input defaultValue={params?.avg_response_time?.weight} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
+                    <input
+                      onChange={handleInputChange}
+                      name="avg_response_time.weight"
+                      value={tableData.avg_response_time.weight}
+                      type="number"
+                      className="form-input basis-[40%] font-sans text-[16px] leading-none"
+                    />
                   </td>
                   <td className="px-3 py-2">
-                    <input defaultValue={params?.avg_response_time?.score} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
+                    <input
+                      onChange={handleInputChange}
+                      name="avg_response_time.score"
+                      value={tableData.avg_response_time.score}
+                      type="number"
+                      className="form-input basis-[40%] font-sans text-[16px] leading-none"
+                    />
                   </td>
                 </tr>
                 <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
@@ -182,10 +224,22 @@ const SearchingParams = () => {
                     <span>backup_footage</span>
                   </td>
                   <td className="px-3 py-2 text-left">
-                    <input defaultValue={params?.backup_footage?.weight} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
+                    <input
+                      onChange={handleInputChange}
+                      name="backup_footage.weight"
+                      value={tableData.backup_footage.weight}
+                      type="number"
+                      className="form-input basis-[40%] font-sans text-[16px] leading-none"
+                    />
                   </td>
                   <td className="px-3 py-2">
-                    <input defaultValue={params?.backup_footage?.score} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
+                    <input
+                      onChange={handleInputChange}
+                      name="backup_footage.score"
+                      value={tableData.backup_footage.score}
+                      type="number"
+                      className="form-input basis-[40%] font-sans text-[16px] leading-none"
+                    />
                   </td>
                 </tr>
                 <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
@@ -193,10 +247,10 @@ const SearchingParams = () => {
                     <span>city</span>
                   </td>
                   <td className="px-3 py-2 text-left">
-                    <input defaultValue={params?.city?.weight} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
+                    <input onChange={handleInputChange} name="city.weight" value={tableData.city.weight} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
                   </td>
                   <td className="px-3 py-2">
-                    <input defaultValue={params?.city?.score} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
+                    <input onChange={handleInputChange} name="city.score" value={tableData.city.score} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
                   </td>
                 </tr>
                 <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
