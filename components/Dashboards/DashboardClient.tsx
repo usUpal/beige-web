@@ -9,7 +9,6 @@ import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
 import ReactApexChart from 'react-apexcharts';
 import Map from '@/components/Map';
-import Home from '@/components/Test';
 
 interface FormData {
   content_type: number;
@@ -30,6 +29,7 @@ const IndexClient = () => {
   const [activeTab3, setActiveTab3] = useState<any>(1);
   const [isMounted, setIsMounted] = useState(false);
   const [minBudget, setMinBudget] = useState('');
+  const [formData, setFormData] = useState({});
   const [minBudgetError, setMinBudgetError] = useState('');
   const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
   const [items, setItems] = useState<any>([
@@ -42,6 +42,8 @@ const IndexClient = () => {
       amount: 0,
     },
   ]);
+
+  console.log("formData", formData);
 
   const {
     register,
@@ -62,6 +64,7 @@ const IndexClient = () => {
     const shootDatetimes = items.map((item: any) => {
       const s_time = parseISO(data.start_date_time);
       const e_time = parseISO(data.end_date_time);
+
       const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
@@ -74,13 +77,33 @@ const IndexClient = () => {
       // Calculate the time difference in hours
       const durationSingle = timeDifferenceInMilliseconds / (1000 * 60 * 60);
 
-      return {
-        start_date_time: starting_date,
-        end_date_time: ending_date,
-        duration: durationSingle,
-      };
-    });
+      setFormData(
+        {
+          "content_type": data.content_type,
+          "content_vertical": data.content_vertical,
+          "order_name": data.order_name,
+          "location": "LA",
+          "references": data.references,
+          "budget": {
+            "max": data.min_budget,
+            "min": data.max_budget
+          },
+          "description": data.description,
+          "shoot_duration": durationSingle,
+          "shoot_datetimes": [
+            {
+              "start_date_time": starting_date,
+              "end_date_time": ending_date,
+              "duration": durationSingle,
+              "date_indicator": "confirmed"
+            },
+          ]
+        }
+      );
 
+
+
+    });
   }
 
   function onSubmitDateTime(date: any) {
@@ -289,7 +312,6 @@ const IndexClient = () => {
                 </div>
                 <div>
                   {activeTab3 === 1 && (
-                    // onSubmit={handleSubmit(onSubmit)}
                     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                       <div className="flex items-center justify-between">
                         {/* Shoot Type */}
@@ -342,7 +364,7 @@ const IndexClient = () => {
                           <label htmlFor="location" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Location
                           </label>
-                          <Home />
+                          <Map title="Hello"/>
                           {errors.location && <p className="text-danger">{errors?.location.message}</p>}
                         </div>
                       </div>

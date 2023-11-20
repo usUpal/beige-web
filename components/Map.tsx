@@ -1,115 +1,134 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { GoogleMap, useLoadScript, Marker, Autocomplete, } from "@react-google-maps/api";
+import type { NextPage } from 'next';
+import { useMemo, useState } from 'react';
+import { useLoadScript, GoogleMap, MarkerF, CircleF, } from '@react-google-maps/api';
+import usePlacesAutocomplete, { getGeocode, getLatLng, } from 'use-places-autocomplete';
 
-const Map = () => {
-
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [searchLngLat, setSearchLngLat] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState(null);
-  const autocompleteRef = useRef(null);
-  const [address, setAddress] = useState("");
+const Map: NextPage = (props) => {
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
 
   const libraries = useMemo(() => ['places'], []);
+  const mapCenter = useMemo(() => ({ lat: lat, lng: lng }), [lat, lng]);
 
-  // laod script for google map
+  const mapOptions = useMemo<google.maps.MapOptions>(
+    () => ({
+      disableDefaultUI: true,
+      clickableIcons: true,
+      scrollwheel: false,
+    }),
+    []
+  );
+
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
     libraries: libraries as any,
   });
 
-  if (!isLoaded) return <div>Loading....</div>;
+  if (!isLoaded) {
+    return <p>Loading...</p>;
+  }
 
-  // static lat and lng
-  const center = { lat: 28.7041, lng: 77.1025 };
+  return (
+    <div>
+      <div>
+        {/* render Places Auto Complete and pass custom handler which updates the state */}
+        <PlacesAutocomplete
+          onAddressSelect={(address) => {
+            getGeocode({ address: address }).then((results) => {
+              const { lat, lng } = getLatLng(results[0]);
 
-  // handle place change on search
-  const handlePlaceChanged = () => {
-    const place = autocompleteRef.current.getPlace();
-    setSelectedPlace(place);
-    setSearchLngLat({
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
-    });
-    setCurrentLocation(null);
-  };
+              setLat(lat);
+              setLng(lng);
+            });
+          }}
+        />
+      </div>
+      {/* <GoogleMap
+        options={mapOptions}
+        zoom={14}
+        center={mapCenter}
+        mapTypeId={google.maps.MapTypeId.ROADMAP}
+        mapContainerStyle={{ width: '800px', height: '800px' }}
+        onLoad={(map) => console.log('Map Loaded')}
+      >
+        <MarkerF
+          position={mapCenter}
+          onLoad={() => console.log('Marker Loaded')}
+        />
 
-  // get current location
-  const handleGetLocationClick = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setSelectedPlace(null);
-          setSearchLngLat(null);
-          setCurrentLocation({ lat: latitude, lng: longitude });
-        },
-        (error) => {
-          console.log(error);
-        }
+        {[1000, 2500].map((radius, idx) => {
+          return (
+            <CircleF
+              key={idx}
+              center={mapCenter}
+              radius={radius}
+              onLoad={() => console.log('Circle Load...')}
+              options={{
+                fillColor: radius > 1000 ? 'red' : 'green',
+                strokeColor: radius > 1000 ? 'red' : 'green',
+                strokeOpacity: 0.8,
+              }}
+            />
+          );
+        })}
+      </GoogleMap> */}
+    </div>
+  );
+};
+
+const PlacesAutocomplete = ({
+  onAddressSelect,
+}: {
+  onAddressSelect?: (address: string) => void;
+}) => {
+  const {
+    ready,
+    value,
+    suggestions: { status, data },
+    setValue,
+    clearSuggestions,
+  } = usePlacesAutocomplete({
+    requestOptions: { componentRestrictions: { country: ["us", "pr", "vi", "gu", "mp", "bn", "fr", "ch", "be", "in"] } },
+    debounce: 300,
+    cache: 86400,
+  });
+
+  const renderSuggestions = () => {
+    return data.map((suggestion) => {
+      const {
+        place_id,
+        structured_formatting: { main_text, secondary_text },
+        description,
+      } = suggestion;
+
+      return (
+        <li
+          key={place_id}
+          onClick={() => {
+            setValue(description, false);
+            clearSuggestions();
+            onAddressSelect && onAddressSelect(description);
+          }}
+        >
+          <strong>{main_text}</strong> <small>{secondary_text}</small>
+        </li>
       );
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
-  };
-
-  const onMapLoad = (map: any) => {
-    const controlDiv = document.createElement("div");
-    const controlUI = document.createElement("div");
-    controlUI.innerHTML = "Get Location";
-    controlUI.style.backgroundColor = "white";
-    controlUI.style.color = "black";
-    controlUI.style.border = "2px solid #ccc";
-    controlUI.style.borderRadius = "3px";
-    controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
-    controlUI.style.cursor = "pointer";
-    controlUI.style.marginBottom = "22px";
-    controlUI.style.textAlign = "center";
-    controlUI.style.width = "100%";
-    controlUI.style.padding = "8px 0";
-    controlUI.addEventListener("click", handleGetLocationClick);
-    controlDiv.appendChild(controlUI);
-
-    // const centerControl = new window.google.maps.ControlPosition(
-    //   window.google.maps.ControlPosition.TOP_CENTER,
-    //   0,
-    //   10
-    // );
-
-    map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
-      controlDiv
-    );
+    });
   };
 
   return (
-    <div
-      style={{
-        display: "block",
-        width: "100%",
-      }}
-    >
+    <div className='block w-full'>
+      <input
+        value={value}
+        disabled={!ready}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="123 Stariway To Heaven"
+        className="form-input"
+      />
 
-      <Autocomplete
-        onLoad={(autocomplete) => {
-          console.log("Autocomplete loaded:", autocomplete);
-          autocompleteRef.current = autocomplete;
-        }}
-        onPlaceChanged={handlePlaceChanged}
-        options={{ fields: ["address_components", "geometry", "name"] }}
-      >
-        <input type="text" id='location' placeholder="Enter location" className='form-input' />
-      </Autocomplete>
-
-      {/* map component  */}
-      {/* <GoogleMap
-        zoom={13}
-        center={currentLocation || searchLngLat || center}
-        mapContainerClassName="map"
-        mapContainerStyle={{ width: "100%", height: "300px", margin: "auto" }}
-        onLoad={onMapLoad}
-      >
-        {selectedPlace && <Marker position={searchLngLat} />}
-        {currentLocation && <Marker position={currentLocation} />}
-      </GoogleMap> */}
+      {status === 'OK' && (
+        <ul>{renderSuggestions()}</ul>
+      )}
     </div>
   );
 };

@@ -1,19 +1,11 @@
-import {
-  useLoadScript,
-  GoogleMap,
-  MarkerF,
-  CircleF,
-} from '@react-google-maps/api';
 import type { NextPage } from 'next';
 import { useMemo, useState } from 'react';
-import usePlacesAutocomplete, {
-  getGeocode,
-  getLatLng,
-} from 'use-places-autocomplete';
+import { useLoadScript, GoogleMap, MarkerF, CircleF, } from '@react-google-maps/api';
+import usePlacesAutocomplete, { getGeocode, getLatLng, } from 'use-places-autocomplete';
 
 const Home: NextPage = () => {
-  const [lat, setLat] = useState(27.672932021393862);
-  const [lng, setLng] = useState(85.31184012689732);
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
 
   const libraries = useMemo(() => ['places'], []);
   const mapCenter = useMemo(() => ({ lat: lat, lng: lng }), [lat, lng]);
@@ -48,11 +40,10 @@ const Home: NextPage = () => {
               setLat(lat);
               setLng(lng);
             });
-            console.log("LAT", lat);
           }}
         />
       </div>
-      <GoogleMap
+      {/* <GoogleMap
         options={mapOptions}
         zoom={14}
         center={mapCenter}
@@ -80,7 +71,7 @@ const Home: NextPage = () => {
             />
           );
         })}
-      </GoogleMap>
+      </GoogleMap> */}
     </div>
   );
 };
@@ -97,7 +88,7 @@ const PlacesAutocomplete = ({
     setValue,
     clearSuggestions,
   } = usePlacesAutocomplete({
-    requestOptions: { componentRestrictions: { country: 'us' } },
+    requestOptions: { componentRestrictions: { country: ["us", "pr", "vi", "gu", "mp", "bn", "fr", "ch", "be", "in"] } },
     debounce: 300,
     cache: 86400,
   });
@@ -126,12 +117,13 @@ const PlacesAutocomplete = ({
   };
 
   return (
-    <div>
+    <div className='block w-full'>
       <input
         value={value}
         disabled={!ready}
         onChange={(e) => setValue(e.target.value)}
         placeholder="123 Stariway To Heaven"
+        className="form-input"
       />
 
       {status === 'OK' && (
