@@ -4,237 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useRef } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { API_ENDPOINT, SOCKET_API } from '@/config';
+import { API_ENDPOINT, HOSTNAME, SOCKET_URL } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import { io } from 'socket.io-client';
+import transformMessages from '@/utils/transformMessage';
 
-const contactList = [
-  {
-    userId: 1,
-    name: 'Nia Hillyer',
-    path: 'profile-16.jpeg',
-    time: '2:09 PM',
-    preview: 'How do you do?',
-    messages: [
-      {
-        fromUserId: 0,
-        toUserId: 1,
-        text: 'Hi, I am back from vacation',
-      },
-      {
-        fromUserId: 0,
-        toUserId: 1,
-        text: 'How are you?',
-      },
-      {
-        fromUserId: 1,
-        toUserId: 0,
-        text: 'Welcom Back',
-      },
-      {
-        fromUserId: 1,
-        toUserId: 0,
-        text: 'I am all well',
-      },
-      {
-        fromUserId: 0,
-        toUserId: 1,
-        text: 'Coffee?',
-      },
-    ],
-    active: true,
-  },
-  {
-    userId: 2,
-    name: 'Sean Freeman',
-    path: 'profile-1.jpeg',
-    time: '12:09 PM',
-    preview: 'I was wondering...',
-    messages: [
-      {
-        fromUserId: 0,
-        toUserId: 2,
-        text: 'Hello',
-      },
-      {
-        fromUserId: 0,
-        toUserId: 2,
-        text: "It's me",
-      },
-      {
-        fromUserId: 0,
-        toUserId: 2,
-        text: 'I have a question regarding project.',
-      },
-    ],
-    active: false,
-  },
-  {
-    userId: 3,
-    name: 'Alma Clarke',
-    path: 'profile-2.jpeg',
-    time: '1:44 PM',
-    preview: 'I’ve forgotten how it felt before',
-    messages: [
-      {
-        fromUserId: 0,
-        toUserId: 3,
-        text: 'Hey Buddy.',
-      },
-      {
-        fromUserId: 0,
-        toUserId: 3,
-        text: "What's up",
-      },
-      {
-        fromUserId: 3,
-        toUserId: 0,
-        text: 'I am sick',
-      },
-      {
-        fromUserId: 0,
-        toUserId: 3,
-        text: 'Not comming to office today.',
-      },
-    ],
-    active: true,
-  },
-  {
-    userId: 4,
-    name: 'Alan Green',
-    path: 'profile-3.jpeg',
-    time: '2:06 PM',
-    preview: 'But we’re probably gonna need a new carpet.',
-    messages: [
-      {
-        fromUserId: 0,
-        toUserId: 4,
-        text: 'Hi, collect your check',
-      },
-      {
-        fromUserId: 4,
-        toUserId: 0,
-        text: 'Ok, I will be there in 10 mins',
-      },
-    ],
-    active: true,
-  },
-  {
-    userId: 5,
-    name: 'Shaun Park',
-    path: 'profile-4.jpeg',
-    time: '2:05 PM',
-    preview: 'It’s not that bad...',
-    messages: [
-      {
-        fromUserId: 0,
-        toUserId: 3,
-        text: 'Hi, I am back from vacation',
-      },
-      {
-        fromUserId: 0,
-        toUserId: 3,
-        text: 'How are you?',
-      },
-      {
-        fromUserId: 0,
-        toUserId: 5,
-        text: 'Welcom Back',
-      },
-      {
-        fromUserId: 0,
-        toUserId: 5,
-        text: 'I am all well',
-      },
-      {
-        fromUserId: 5,
-        toUserId: 0,
-        text: 'Coffee?',
-      },
-    ],
-    active: false,
-  },
-  {
-    userId: 6,
-    name: 'Roxanne',
-    path: 'profile-5.jpeg',
-    time: '2:00 PM',
-    preview: 'Wasup for the third time like is you bling bitch',
-    messages: [
-      {
-        fromUserId: 0,
-        toUserId: 6,
-        text: 'Hi',
-      },
-      {
-        fromUserId: 0,
-        toUserId: 6,
-        text: 'Uploaded files to server.',
-      },
-    ],
-    active: false,
-  },
-  {
-    userId: 7,
-    name: 'Ernest Reeves',
-    path: 'profile-6.jpeg',
-    time: '2:09 PM',
-    preview: 'Wasup for the third time like is you bling bitch',
-    messages: [],
-    active: true,
-  },
-  {
-    userId: 8,
-    name: 'Laurie Fox',
-    path: 'profile-7.jpeg',
-    time: '12:09 PM',
-    preview: 'Wasup for the third time like is you bling bitch',
-    messages: [],
-    active: true,
-  },
-  {
-    userId: 9,
-    name: 'Xavier',
-    path: 'profile-8.jpeg',
-    time: '4:09 PM',
-    preview: 'Wasup for the third time like is you bling bitch',
-    messages: [],
-    active: false,
-  },
-  {
-    userId: 10,
-    name: 'Susan Phillips',
-    path: 'profile-9.jpeg',
-    time: '9:00 PM',
-    preview: 'Wasup for the third time like is you bling bitch',
-    messages: [],
-    active: true,
-  },
-  {
-    userId: 11,
-    name: 'Dale Butler',
-    path: 'profile-10.jpeg',
-    time: '5:09 PM',
-    preview: 'Wasup for the third time like is you bling bitch',
-    messages: [],
-    active: false,
-  },
-  {
-    userId: 12,
-    name: 'Grace Roberts',
-    path: 'user-profile.jpeg',
-    time: '8:01 PM',
-    preview: 'Wasup for the third time like is you bling bitch',
-    messages: [],
-    active: true,
-  },
-];
-const loginUser = {
-  id: 0,
-  name: 'Alon Smith',
-  path: 'profile-34.jpeg',
-  designation: 'Software Developer',
-};
 const Chat = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -248,13 +22,15 @@ const Chat = () => {
   const [isShowUserChat, setIsShowUserChat] = useState(false);
   const [selectedChatRoom, setSelectedChatRoom] = useState<any>(null);
   const [textMessage, setTextMessage] = useState('');
-  const [filteredItems, setFilteredItems] = useState<any>(contactList);
   //   New states
   const [showError, setShowError] = useState(false);
   const [chats, setChats] = useState([]);
   const [newMessages, setNewMessages] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchData, setFetchData] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typtingUser, setTyptingUser] = useState<MessageTypingProps>({});
+
   const { userData } = useAuth();
   const socket = useRef<any>(null);
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
@@ -263,7 +39,7 @@ const Chat = () => {
     try {
       setIsLoading(true);
       //   const response = await fetch(`${API_ENDPOINT}/chats?sortBy=updatedAt:desc&limit=20&page=${currentPage}&cp_id=${userDetails.id}&populate=cp_id,client_id,order_id,last_message`);
-      const response = await fetch(`${API_ENDPOINT}chats/?&${userRole}_id=${userData.id}`);
+      const response = await fetch(`${API_ENDPOINT}chats/?populate=order_id,last_message&${userRole}_id=${userData.id}`);
       const newChats = await response.json();
       if (newChats.results.length === 0) {
         setShowError(true);
@@ -286,24 +62,23 @@ const Chat = () => {
       .then((response) => response.json())
       .then((data) => {
         const outputMessages = transformMessages(data.results);
-        setNewMessages(outputMessages);
+        setNewMessages(outputMessages.reverse());
       });
   }
-
-  useEffect(() => {
-    setFilteredItems(() => {
-      return contactList.filter((d) => {
-        return d.name.toLowerCase().includes(searchUser.toLowerCase());
-      });
-    });
-  }, [searchUser]);
 
   useEffect(() => {
     fetchChats();
   }, []);
 
   useEffect(() => {
-    socket.current = io('http://localhost:5000');
+    setTimeout(() => {
+      setIsTyping(false);
+    }, 3000);
+  }, [isTyping]);
+
+  //
+  useEffect(() => {
+    socket.current = io(SOCKET_URL);
     joinRoom();
   }, [selectedChatRoom]);
 
@@ -320,7 +95,21 @@ const Chat = () => {
       });
       //   Listaning messages
       socket.current.on('message', (data: any) => {
-        setNewMessages((prevMessages: any) => [data, ...prevMessages]);
+        setNewMessages((prevMessages: any) => {
+          const messageIdExists = prevMessages.some((message: any) => message.messageId === data.messageId);
+          if (!messageIdExists) {
+            return [...prevMessages, data];
+          }
+          return prevMessages;
+        });
+        scrollToBottom();
+      });
+      socket.current.on('userTyping', (data: MessageTypingProps) => {
+        if (data.userId !== userData.id) {
+          setIsTyping(true);
+          scrollToBottom();
+          setTyptingUser(data);
+        }
       });
     }
     // Cleanup the socket connection when the component unmounts
@@ -331,9 +120,8 @@ const Chat = () => {
 
   const selectUser = (chat: any) => {
     setSelectedChatRoom(chat);
-    setIsShowUserChat(true);
-    setIsShowChatMenu(false);
     scrollToBottom();
+    setIsShowChatMenu(false);
   };
   const sendMessage = (text: string) => {
     socket.current.emit('message', {
@@ -341,36 +129,29 @@ const Chat = () => {
     });
     // Reset the textMessage state by setting an empty string
     setTextMessage('');
-    scrollToBottom();
   };
+
   const sendMessageHandle = (event: any) => {
+    setTextMessage(event.target.value);
     if (event.key === 'Enter') {
       sendMessage(event.target.value);
     }
+    socket.current.emit('userTyping', {
+      roomId: selectedChatRoom.id,
+    });
   };
 
   const scrollToBottom = () => {
+    setIsShowUserChat(true);
+    setTimeout(() => {
+      const element: any = document.querySelector('.chat-conversation-box');
+      element.behavior = 'smooth';
+      element.scrollTop = element.scrollHeight;
+    }, 100);
     if (isShowUserChat) {
-      setTimeout(() => {
-        const element: any = document.querySelector('.chat-conversation-box');
-        element.behavior = 'smooth';
-        element.scrollTop = element.scrollHeight;
-      });
     }
   };
 
-  function transformMessages(messages: any) {
-    return messages.map((input: any) => {
-      const output = {
-        senderId: input.sent_by.id,
-        senderName: input.sent_by.name,
-        messageId: input.id,
-        message: input.message,
-        success: true,
-      };
-      return output;
-    });
-  }
   return (
     <div>
       <div className={`relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)] sm:min-h-0 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
@@ -392,25 +173,25 @@ const Chat = () => {
                     <button
                       type="button"
                       className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${
-                        selectedChatRoom && selectedChatRoom.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
+                        selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
                       }`}
                       onClick={() => selectUser(chat)}
                     >
                       <div className="flex-1">
                         <div className="flex items-center">
-                          {/* <div className="relative flex-shrink-0">
-                            <img src={`/assets/images/${person.path}`} className="h-12 w-12 rounded-full object-cover" alt="" />
-                            {person.active && (
+                          <div className="relative flex-shrink-0">
+                            <img src="https://i.pravatar.cc/800" className="h-12 w-12 rounded-full object-cover" alt="" />
+                            {/* {person.active && (
                               <div>
                                 <div className="absolute bottom-0 ltr:right-0 rtl:left-0">
                                   <div className="h-4 w-4 rounded-full bg-success"></div>
                                 </div>
                               </div>
-                            )}
-                          </div> */}
+                            )} */}
+                          </div>
                           <div className="mx-3 ltr:text-left rtl:text-right">
-                            <p className="mb-1 font-semibold">{chat.id}</p>
-                            <p className="max-w-[185px] truncate text-xs text-white-dark">{chat.last_message ? chat.last_message : 'No messages'}</p>
+                            <p className="mb-1 font-semibold">{chat.order_id?.order_name}</p>
+                            <p className="max-w-[185px] truncate text-xs text-white-dark">{chat.last_message ? chat.last_message?.message : 'Last messages'}</p>
                           </div>
                         </div>
                       </div>
@@ -564,14 +345,14 @@ const Chat = () => {
                     </svg>
                   </button>
                   <div className="relative flex-none">
-                    <img src="https://www.pexels.com/photo/closeup-photo-of-woman-with-brown-coat-and-gray-top-733872/" className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" alt="img" />
+                    <img src="/public/favicon.png" className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" alt="img" />
                     <div className="absolute bottom-0 ltr:right-0 rtl:left-0">
                       <div className="h-4 w-4 rounded-full bg-success"></div>
                     </div>
                   </div>
                   <div className="mx-3">
-                    <p className="font-semibold">Order Id: {selectedChatRoom.order_id}</p>
-                    <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + selectedChatRoom.time}</p>
+                    <p className="font-semibold">{selectedChatRoom?.order_id?.order_name}</p>
+                    <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + selectedChatRoom?.time}</p>
                   </div>
                 </div>
                 <div className="flex gap-3 sm:gap-5">
@@ -600,7 +381,7 @@ const Chat = () => {
                 <div className="min-h-[400px] space-y-5 p-4 pb-[68px] sm:min-h-[300px] sm:pb-0">
                   <div className="m-6 mt-0 block">
                     <h4 className="relative border-b border-[#f4f4f4] text-center text-xs dark:border-gray-800">
-                      <span className="relative top-2 bg-white px-3 dark:bg-black">{'Today, ' + selectedChatRoom.time}</span>
+                      <span className="relative top-2 bg-white px-3 dark:bg-black">{'Today, ' + selectedChatRoom?.time}</span>
                     </h4>
                   </div>
                   {newMessages.length ? (
@@ -610,18 +391,19 @@ const Chat = () => {
                           <div key={index}>
                             <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
                               <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
-                                {message?.senderId === userData.id ? <img src={`/assets/images/${loginUser.path}`} className="h-10 w-10 rounded-full object-cover" alt="" /> : ''}
-                                {message?.senderId !== userData.id ? <img src={`/assets/images/${selectedChatRoom.path}`} className="h-10 w-10 rounded-full object-cover" alt="" /> : ''}
+                                {message?.senderId === userData.id ? <img src="https://thispersondoesnotexist.com/" className="h-10 w-10 rounded-full object-cover" alt="" /> : ''}
+                                {message?.senderId !== userData.id ? <img src="https://i.pravatar.cc/800" className="h-10 w-10 rounded-full object-cover" alt="" /> : ''}
                               </div>
-                              <div className="space-y-2">
+                              <div className="">
                                 <div className="flex items-center gap-3">
                                   <div
-                                    className={`rounded-md bg-black/10 p-4 py-2 dark:bg-gray-800 ${
+                                    className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${
                                       message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
                                     }`}
                                   >
                                     {message?.message}
                                   </div>
+
                                   <div className={`${message?.senderId === userData.id ? 'hidden' : ''}`}>
                                     <svg className="h-5 w-5 text-black/70 hover:!text-primary dark:text-white/70" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                       <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
@@ -631,7 +413,8 @@ const Chat = () => {
                                     </svg>
                                   </div>
                                 </div>
-                                <div className={`text-xs text-white-dark ${message?.senderId === userData.id ? 'ltr:text-right rtl:text-left' : ''}`}>{message.time ? message.time : '5h ago'}</div>
+                                <div className="text-xs text-white-dark">{message?.senderName}</div>
+                                {/* <div className={`text-xs text-white-dark ${message?.senderId === userData.id ? 'ltr:text-right rtl:text-left' : ''}`}>{message.time ? message.time : '5h ago'}</div> */}
                               </div>
                             </div>
                           </div>
@@ -641,6 +424,7 @@ const Chat = () => {
                   ) : (
                     ''
                   )}
+                  {isTyping && <p className="text-white-dark"> {typtingUser?.userName} is typing...</p>}
                 </div>
               </PerfectScrollbar>
               <div className="absolute bottom-0 left-0 w-full p-4">
@@ -661,7 +445,13 @@ const Chat = () => {
                         <ellipse cx="9" cy="10.5" rx="1" ry="1.5" fill="currentColor" />
                       </svg>
                     </button>
-                    <button type="button" className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:right-4 rtl:left-4" onClick={() => sendMessage()}>
+                    <button
+                      type="button"
+                      className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:right-4 rtl:left-4"
+                      onClick={(e: any) => {
+                        sendMessage(textMessage);
+                      }}
+                    >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M17.4975 18.4851L20.6281 9.09373C21.8764 5.34874 22.5006 3.47624 21.5122 2.48782C20.5237 1.49939 18.6511 2.12356 14.906 3.37189L5.57477 6.48218C3.49295 7.1761 2.45203 7.52305 2.13608 8.28637C2.06182 8.46577 2.01692 8.65596 2.00311 8.84963C1.94433 9.67365 2.72018 10.4495 4.27188 12.0011L4.55451 12.2837C4.80921 12.5384 4.93655 12.6658 5.03282 12.8075C5.22269 13.0871 5.33046 13.4143 5.34393 13.7519C5.35076 13.9232 5.32403 14.1013 5.27057 14.4574C5.07488 15.7612 4.97703 16.4131 5.0923 16.9147C5.32205 17.9146 6.09599 18.6995 7.09257 18.9433C7.59255 19.0656 8.24576 18.977 9.5522 18.7997L9.62363 18.79C9.99191 18.74 10.1761 18.715 10.3529 18.7257C10.6738 18.745 10.9838 18.8496 11.251 19.0285C11.3981 19.1271 11.5295 19.2585 11.7923 19.5213L12.0436 19.7725C13.5539 21.2828 14.309 22.0379 15.1101 21.9985C15.3309 21.9877 15.5479 21.9365 15.7503 21.8474C16.4844 21.5244 16.8221 20.5113 17.4975 18.4851Z"
