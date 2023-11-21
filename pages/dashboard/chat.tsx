@@ -253,17 +253,17 @@ const Chat = () => {
   const [showError, setShowError] = useState(false);
   const [chats, setChats] = useState([]);
   const [newMessages, setNewMessages] = useState<any>([]);
-  console.log('🚀 ~ file: chat.tsx:257 ~ Chat ~ newMessages:', newMessages);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchData, setFetchData] = useState([]);
   const { userData } = useAuth();
   const socket = useRef<any>(null);
+  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
   const fetchChats = async () => {
     try {
       setIsLoading(true);
       //   const response = await fetch(`${API_ENDPOINT}/chats?sortBy=updatedAt:desc&limit=20&page=${currentPage}&cp_id=${userDetails.id}&populate=cp_id,client_id,order_id,last_message`);
-      const response = await fetch(`${API_ENDPOINT}chats/?&manager_id=${userData.id}`);
+      const response = await fetch(`${API_ENDPOINT}chats/?&${userRole}_id=${userData.id}`);
       const newChats = await response.json();
       if (newChats.results.length === 0) {
         setShowError(true);
@@ -300,7 +300,6 @@ const Chat = () => {
 
   useEffect(() => {
     fetchChats();
-    return () => {};
   }, []);
 
   useEffect(() => {
@@ -333,13 +332,16 @@ const Chat = () => {
   const selectUser = (chat: any) => {
     setSelectedChatRoom(chat);
     setIsShowUserChat(true);
-    scrollToBottom();
     setIsShowChatMenu(false);
+    scrollToBottom();
   };
   const sendMessage = (text: string) => {
     socket.current.emit('message', {
       message: text,
     });
+    // Reset the textMessage state by setting an empty string
+    setTextMessage('');
+    scrollToBottom();
   };
   const sendMessageHandle = (event: any) => {
     if (event.key === 'Enter') {
