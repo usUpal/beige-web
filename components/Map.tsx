@@ -1,3 +1,6 @@
+// reference_url: https://www.99darshan.com/posts/interactive-maps-using-nextjs-and-google-maps
+// reference_url: https://www.npmjs.com/package/use-places-autocomplete
+
 import type { NextPage } from 'next';
 import { useMemo, useState } from 'react';
 import { useLoadScript, GoogleMap, MarkerF, CircleF, } from '@react-google-maps/api';
@@ -6,6 +9,10 @@ import usePlacesAutocomplete, { getGeocode, getLatLng, } from 'use-places-autoco
 const Map: NextPage = (props) => {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
+  const [location, setLocation] = useState<string>("LA");
+  const [geoLocation, setGeoLocation] = useState<any>();
+
+  props.onChildData(geoLocation);
 
   const libraries = useMemo(() => ['places'], []);
   const mapCenter = useMemo(() => ({ lat: lat, lng: lng }), [lat, lng]);
@@ -28,59 +35,41 @@ const Map: NextPage = (props) => {
     return <p>Loading...</p>;
   }
 
+  const handleLocatoin = (childLocation: any) => {
+    setLocation(childLocation);
+  }
+
   return (
     <div>
       <div>
         {/* render Places Auto Complete and pass custom handler which updates the state */}
-        <PlacesAutocomplete
+        <PlacesAutocomplete locationName={handleLocatoin}
           onAddressSelect={(address) => {
             getGeocode({ address: address }).then((results) => {
               const { lat, lng } = getLatLng(results[0]);
 
               setLat(lat);
               setLng(lng);
+              setGeoLocation({
+                "coordinates": [lat, lng],
+                "type": "Point",
+                "location": location,
+              });
             });
           }}
         />
       </div>
-      {/* <GoogleMap
-        options={mapOptions}
-        zoom={14}
-        center={mapCenter}
-        mapTypeId={google.maps.MapTypeId.ROADMAP}
-        mapContainerStyle={{ width: '800px', height: '800px' }}
-        onLoad={(map) => console.log('Map Loaded')}
-      >
-        <MarkerF
-          position={mapCenter}
-          onLoad={() => console.log('Marker Loaded')}
-        />
-
-        {[1000, 2500].map((radius, idx) => {
-          return (
-            <CircleF
-              key={idx}
-              center={mapCenter}
-              radius={radius}
-              onLoad={() => console.log('Circle Load...')}
-              options={{
-                fillColor: radius > 1000 ? 'red' : 'green',
-                strokeColor: radius > 1000 ? 'red' : 'green',
-                strokeOpacity: 0.8,
-              }}
-            />
-          );
-        })}
-      </GoogleMap> */}
     </div>
   );
 };
 
 const PlacesAutocomplete = ({
+  locationName,
   onAddressSelect,
 }: {
+  locationName: (value: string) => void;
   onAddressSelect?: (address: string) => void;
-}) => {
+}, props: any) => {
   const {
     ready,
     value,
@@ -88,10 +77,12 @@ const PlacesAutocomplete = ({
     setValue,
     clearSuggestions,
   } = usePlacesAutocomplete({
-    requestOptions: { componentRestrictions: { country: ["us", "pr", "vi", "gu", "mp", "bn", "fr", "ch", "be", "in"] } },
     debounce: 300,
     cache: 86400,
   });
+
+
+  locationName(value);
 
   const renderSuggestions = () => {
     return data.map((suggestion) => {
@@ -103,15 +94,15 @@ const PlacesAutocomplete = ({
 
       return (
         <li
-          key={place_id}
-          onClick={() => {
-            setValue(description, false);
-            clearSuggestions();
-            onAddressSelect && onAddressSelect(description);
-          }}
-        >
-          <strong>{main_text}</strong> <small>{secondary_text}</small>
-        </li>
+        key={place_id}
+        onClick={() => {
+          setValue(description, false);
+          clearSuggestions();
+          onAddressSelect && onAddressSelect(description); // Update this line
+        }}
+      >
+        <strong>{main_text}</strong> <small>{secondary_text}</small>
+      </li>
       );
     });
   };

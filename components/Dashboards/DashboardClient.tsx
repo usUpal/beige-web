@@ -31,6 +31,7 @@ const IndexClient = () => {
   const [minBudget, setMinBudget] = useState('');
   const [formData, setFormData] = useState({});
   const [minBudgetError, setMinBudgetError] = useState('');
+  const [geo_location, setGeoLocation] = useState<any>({});
   const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
   const [items, setItems] = useState<any>([
     {
@@ -88,6 +89,7 @@ const IndexClient = () => {
             "max": data.min_budget,
             "min": data.max_budget
           },
+          geo_location,
           "description": data.description,
           "shoot_duration": durationSingle,
           "shoot_datetimes": [
@@ -228,6 +230,10 @@ const IndexClient = () => {
     }
   };
 
+  const handleChildData = (childData: any) => {
+    setGeoLocation(childData);
+  }
+
 
   return (
     <>
@@ -364,7 +370,7 @@ const IndexClient = () => {
                           <label htmlFor="location" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Location
                           </label>
-                          <Map title="Hello"/>
+                          <Map onChildData={handleChildData} />
                           {errors.location && <p className="text-danger">{errors?.location.message}</p>}
                         </div>
                       </div>
