@@ -33,6 +33,7 @@
     "@types/react-dom": "18.0.10",
     "@x1mrdonut1x/nouislider-react": "^3.4.3",
     "apexcharts": "^3.37.1",
+    "combobox": "^1.0.1",
     "date-fns": "^2.30.0",
     "easymde": "^2.18.0",
     "eslint": "8.32.0",
@@ -73,6 +74,7 @@
     "swiper": "^8.4.7",
     "twrnc": "^3.6.4",
     "typescript": "4.9.4",
+    "use-google-maps-script": "^0.1.2",
     "use-places-autocomplete": "^4.0.1",
     "yup": "^0.32.11"
   },
