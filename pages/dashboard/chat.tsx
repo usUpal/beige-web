@@ -62,17 +62,18 @@ const Chat = () => {
 
   // GET OLD MEASSAGES
   async function getOldMessages(roomId: string) {
-    await fetch(`${API_ENDPOINT}chats/${roomId}?limit=15&page=${msgPage}`)
+    await fetch(`${API_ENDPOINT}chats/${roomId}?limit=20&page=1`)
       .then((response) => response.json())
       .then((data) => {
         setTotalMsgPage(data.totalPages);
         const outputMessages = transformMessages(data.results);
-        console.log('🚀 ~ file: chat.tsx:70 ~ .then ~ outputMessages:', outputMessages[0]);
-        setNewMessages((prevMessages: any) => {
-          const uniqueNewMessages = outputMessages.reverse().filter((newChat: any) => !prevMessages.some((prevMessage: any) => prevMessage.messageId === newChat.messageId));
+        setNewMessages(outputMessages.reverse());
+        scrollToBottom();
+        // setNewMessages((prevMessages: any) => {
+        //   const uniqueNewMessages = outputMessages.filter((newChat: any) => !prevMessages.some((prevMessage: any) => prevMessage.messageId === newChat.messageId));
 
-          return [...uniqueNewMessages, ...prevMessages];
-        });
+        //   return [...prevMessages, ...uniqueNewMessages];
+        // });
       });
   }
 
@@ -94,11 +95,11 @@ const Chat = () => {
   }, [selectedChatRoom]);
 
   //
-  useEffect(() => {
-    if (selectedChatRoom) {
-      getOldMessages(selectedChatRoom?.id);
-    }
-  }, [msgPage]);
+  // useEffect(() => {
+  //   if (selectedChatRoom) {
+  //     getOldMessages(selectedChatRoom?.id);
+  //   }
+  // }, [msgPage]);
 
   const joinRoom = () => {
     if (selectedChatRoom) {
