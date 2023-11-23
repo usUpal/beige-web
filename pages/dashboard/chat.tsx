@@ -8,6 +8,7 @@ import { io } from 'socket.io-client';
 import Dropdown from '../../components/Dropdown';
 import { IRootState } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
+import Link from 'next/link';
 // types
 
 const Chat = () => {
@@ -31,6 +32,8 @@ const Chat = () => {
   const [fetchData, setFetchData] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [typtingUser, setTyptingUser] = useState<MessageTypingProps>();
+  const [msgPage, setMsgPage] = useState(1);
+  const [totalMsgPage, setTotalMsgPage] = useState(0);
 
   const { userData } = useAuth() as any;
   const socket = useRef<any | null>(null);
@@ -59,11 +62,17 @@ const Chat = () => {
 
   // GET OLD MEASSAGES
   async function getOldMessages(roomId: string) {
-    await fetch(`${API_ENDPOINT}chats/${roomId}`)
+    await fetch(`${API_ENDPOINT}chats/${roomId}?limit=15&page=${msgPage}`)
       .then((response) => response.json())
       .then((data) => {
+        setTotalMsgPage(data.totalPages);
         const outputMessages = transformMessages(data.results);
-        setNewMessages(outputMessages.reverse());
+        console.log('🚀 ~ file: chat.tsx:70 ~ .then ~ outputMessages:', outputMessages[0]);
+        setNewMessages((prevMessages: any) => {
+          const uniqueNewMessages = outputMessages.reverse().filter((newChat: any) => !prevMessages.some((prevMessage: any) => prevMessage.messageId === newChat.messageId));
+
+          return [...uniqueNewMessages, ...prevMessages];
+        });
       });
   }
 
@@ -83,6 +92,13 @@ const Chat = () => {
     socket.current = io(SOCKET_URL as string);
     joinRoom();
   }, [selectedChatRoom]);
+
+  //
+  useEffect(() => {
+    if (selectedChatRoom) {
+      getOldMessages(selectedChatRoom?.id);
+    }
+  }, [msgPage]);
 
   const joinRoom = () => {
     if (selectedChatRoom) {
@@ -153,7 +169,12 @@ const Chat = () => {
       element.behavior = 'smooth';
       element.scrollTop = element.scrollHeight;
     }, 100);
-    if (isShowUserChat) {
+  };
+  const handleScroll = () => {
+    if (msgPage > totalMsgPage) {
+      return;
+    } else {
+      setMsgPage((prev) => prev + 1);
     }
   };
 
@@ -356,8 +377,10 @@ const Chat = () => {
                     </div>
                   </div>
                   <div className="mx-3">
-                    <p className="font-semibold">{selectedChatRoom?.order_id?.order_name}</p>
-                    <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + selectedChatRoom?.time}</p>
+                    <Link href={`../manager/users/${selectedChatRoom?.order_id?.id}`}>
+                      <p className="font-semibold">{selectedChatRoom?.order_id?.order_name}</p>
+                      <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + selectedChatRoom?.time}</p>
+                    </Link>
                   </div>
                 </div>
                 <div className="flex gap-3 sm:gap-5">
@@ -382,7 +405,14 @@ const Chat = () => {
               </div>
               <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
 
-              <PerfectScrollbar className="chat-conversation-box relative h-full sm:h-[calc(100vh_-_300px)]">
+              <PerfectScrollbar
+                className="chat-conversation-box relative h-full sm:h-[calc(100vh_-_300px)]"
+                onScrollY={(container) => {
+                  if (container.scrollTop === 0) {
+                    handleScroll();
+                  }
+                }}
+              >
                 <div className="min-h-[400px] space-y-5 p-4 pb-[68px] sm:min-h-[300px] sm:pb-0">
                   <div className="m-6 mt-0 block">
                     <h4 className="relative border-b border-[#f4f4f4] text-center text-xs dark:border-gray-800">
