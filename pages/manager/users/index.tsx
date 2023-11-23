@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, Fragment } from 'react';
+import { API_ENDPOINT } from '@/config';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import Swal from 'sweetalert2';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
-import Link from 'next/link';
-import { API_ENDPOINT } from '@/config';
-import Swal from 'sweetalert2';
 
 const Users = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -75,6 +75,7 @@ const Users = () => {
   };
 
   // User Single
+  // Also unUsed Function For APi
   const getUserDetails = async (singleUserId: string) => {
     setLoading(true);
     try {
@@ -103,29 +104,6 @@ const Users = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const updatedUserDetails = await response.json();
-      console.log(updatedUserDetails);
-      console.log('UPDATE', formData);
-
-      // Handle the response as needed
-      coloredToast('success');
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   // Fixing handleChange Function version --1
   const handleChange = (e: any) => {
@@ -201,6 +179,7 @@ const Users = () => {
 
   console.log(newData);
 
+  // unUsed Function For Api
   const submitData = async (e: any) => {
     // console.log("ADDING", addHandler(e));
     try {
@@ -213,6 +192,30 @@ const Users = () => {
       });
 
       const updateNew = await response.json();
+
+      // Handle the response as needed
+      coloredToast('success');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // UnUsed Function for Api
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const updatedUserDetails = await response.json();
+      console.log(updatedUserDetails);
+      console.log('UPDATE', formData);
 
       // Handle the response as needed
       coloredToast('success');

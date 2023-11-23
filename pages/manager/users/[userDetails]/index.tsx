@@ -69,6 +69,7 @@ const UserDtails = () => {
   };
 
   // User Single
+  // Also unUsed Function For Api
   const getUserDetails = async (singleUserId: string) => {
     setLoading(true);
     try {
@@ -172,6 +173,7 @@ const UserDtails = () => {
 
   console.log(newData);
 
+  // unUsed Function For Api----When Get api we will work On it
   const submitData = async (e: any) => {
     try {
       const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
