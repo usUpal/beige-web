@@ -10,9 +10,6 @@ const Map: NextPage = (props) => {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [location, setLocation] = useState<string>("LA");
-  const [geoLocation, setGeoLocation] = useState<any>();
-
-  props.onChildData(geoLocation);
 
   const libraries = useMemo(() => ['places'], []);
   const mapCenter = useMemo(() => ({ lat: lat, lng: lng }), [lat, lng]);
@@ -48,13 +45,8 @@ const Map: NextPage = (props) => {
             getGeocode({ address: address }).then((results) => {
               const { lat, lng } = getLatLng(results[0]);
 
-              setLat(lat);
-              setLng(lng);
-              setGeoLocation({
-                "coordinates": [lat, lng],
-                "type": "Point",
-                "location": location,
-              });
+              localStorage.setItem("latitude", lat);
+              localStorage.setItem("longitude", lng);
             });
           }}
         />
@@ -90,6 +82,7 @@ const PlacesAutocomplete = ({
         place_id,
         structured_formatting: { main_text, secondary_text },
         description,
+        types,
       } = suggestion;
 
       return (
@@ -99,6 +92,7 @@ const PlacesAutocomplete = ({
           setValue(description, false);
           clearSuggestions();
           onAddressSelect && onAddressSelect(description); // Update this line
+          localStorage.setItem("location", description);
         }}
       >
         <strong>{main_text}</strong> <small>{secondary_text}</small>

@@ -17,6 +17,10 @@ const Map: NextPage = (props) => {
   const libraries = useMemo(() => ['places'], []);
   const mapCenter = useMemo(() => ({ lat: lat, lng: lng }), [lat, lng]);
 
+  const allowOrderWithoutCp = false;
+  const hello = false;
+  // need an empty array as state
+
   const mapOptions = useMemo<google.maps.MapOptions>(
     () => ({
       disableDefaultUI: true,

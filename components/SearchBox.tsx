@@ -32,10 +32,10 @@ function ReadySearchBox({ onSelectAddress, defaultValue }: ISearchBoxProps) {
     clearSuggestions,
   } = usePlacesAutocomplete({ debounce: 300, defaultValue });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: any) => {
     setValue(e.target.value);
-    if (e.target.value === "") {
-      onSelectAddress("", null, null);
+    if (e.target.value === '') {
+      onSelectAddress('', null, null);
     }
   };
 
@@ -43,17 +43,18 @@ function ReadySearchBox({ onSelectAddress, defaultValue }: ISearchBoxProps) {
     setValue(address, false);
     clearSuggestions();
     try {
-        const results = await getGeocode({address})
-        const {lat, lng} = await getLatLng(results[0]);
-        onSelectAddress(address, lat, lng);
-    } catch(error) {
-        console.error(error);
+      const results = await getGeocode({ address });
+      const { lat, lng } = await getLatLng(results[0]);
+      onSelectAddress(address, lat, lng);
+      
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
-    <Combobox>
-      <Combobox.Input onSelect={handleSelect} id="search" defaultValue={value} onChange={handleChange} placeholder="Search your location" className="form-input" autoComplete='off' />
+    <Combobox as="div" onSelect={handleSelect}>
+      <Combobox.Input id="search" defaultValue={value} onChange={handleChange} placeholder="Search your location" className="form-input" autoComplete="off" />
       <Combobox.Options>
         {status === 'OK' &&
           data.map(({ place_id, description }) => (
@@ -64,6 +65,7 @@ function ReadySearchBox({ onSelectAddress, defaultValue }: ISearchBoxProps) {
       </Combobox.Options>
     </Combobox>
   );
+
 }
 
 export default SearchBox;

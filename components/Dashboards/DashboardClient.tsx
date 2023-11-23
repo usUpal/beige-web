@@ -9,7 +9,9 @@ import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
 import ReactApexChart from 'react-apexcharts';
 import SearchBox from '@/components/SearchBox';
+import Map from '@/components/Map';
 import { ChangeEvent } from 'react';
+import { useAuth } from '@/contexts/authContext';
 
 interface FormData {
   content_type: number;
@@ -36,7 +38,6 @@ const IndexClient = ({}: IProps) => {
   const [minBudget, setMinBudget] = useState('');
   const [formData, setFormData] = useState({});
   const [minBudgetError, setMinBudgetError] = useState('');
-  const [geo_location, setGeoLocation] = useState<any>({});
   const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
@@ -51,6 +52,7 @@ const IndexClient = ({}: IProps) => {
       amount: 0,
     },
   ]);
+  const { userData } = useAuth() as any;
 
   useEffect(() => {
     const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')) || [];
@@ -78,6 +80,9 @@ const IndexClient = ({}: IProps) => {
 
   // localStorage.removeItem('dateTimes')
   // localStorage.removeItem('totalDuration')
+  // localStorage.removeItem('location')
+  // localStorage.removeItem('latitude')
+  // localStorage.removeItem('longitude')
 
   const addDateTime = () => {
     const newDateTime = { start_date_time: startDateTime, end_date_time: endDateTime, duration: calculateDuration(startDateTime, endDateTime), date_indicator: 'confirmed' };
@@ -114,12 +119,6 @@ const IndexClient = ({}: IProps) => {
   const address = watch('address');
   console.log('LO', address);
 
-  // useEffect(() => {
-  //   register({ name: "address" }, { required: "Please enter your address" });
-  //   register({ name: "latitude" }, { required: true, min: -90, max: 90 });
-  //   register({ name: "longitude" }, { required: true, min: -180, max: 180 });
-  // }, [register]);
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setPageTitle('Client Dashboard'));
@@ -131,29 +130,35 @@ const IndexClient = ({}: IProps) => {
 
   function onSubmit(data: any) {
     const shootDatetimes = items.map((item: any) => {
-
       setFormData({
+        order_name: data.order_name,
+        client_id: '654215a2c6a07429d166ac1a',
+        cp_ids: [
+          {
+            id: '65408a92f695fec58400404f',
+          },
+          {
+            id: '6542162bc6a07429d166ac30',
+          },
+          {
+            id: '654215e7c6a07429d166ac25',
+          },
+        ],
+        budget: {
+          max: parseFloat(data.max_budget),
+          min: parseFloat(data.min_budget),
+        },
         content_type: data.content_type,
         content_vertical: data.content_vertical,
-        order_name: data.order_name,
-        location: 'LA',
-        references: data.references,
-        budget: {
-          max: data.min_budget,
-          min: data.max_budget,
-        },
-        geo_location,
         description: data.description,
-        shoot_duration: localStorage.getItem('totalDuration'),
+        location: localStorage.getItem('location'),
+        references: data.references,
         shoot_datetimes: JSON.parse(localStorage.getItem('dateTimes')),
-        // [
-        //   {
-        //     start_date_time: starting_date,
-        //     end_date_time: ending_date,
-        //     duration: durationSingle,
-        //     date_indicator: 'confirmed',
-        //   },
-        // ]
+        geo_location: {
+          coordinates: [parseFloat(localStorage.getItem('latitude')), parseFloat(localStorage.getItem('longitude'))],
+          type: 'Point',
+        },
+        shoot_duration: parseFloat(localStorage.getItem('totalDuration')),
       });
     });
   }
@@ -274,10 +279,6 @@ const IndexClient = ({}: IProps) => {
       setMinBudgetError('');
       setMinBudgetErrorText('');
     }
-  };
-
-  const handleChildData = (childData: any) => {
-    setGeoLocation(childData);
   };
 
   return (
@@ -415,14 +416,7 @@ const IndexClient = ({}: IProps) => {
                           <label htmlFor="location" className="mb-3 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Location
                           </label>
-                          <SearchBox
-                            onSelectAddress={(address, latitude, longitude) => {
-                              setValue('address', address);
-                              setValue('latitude', latitude);
-                              setValue('longitude', longitude);
-                            }}
-                            defaultValue=""
-                          />
+                          <Map />
                           <h2>{address}</h2>
                           {errors.address && <p className="text-danger">{errors?.address.message}</p>}
                         </div>
@@ -573,7 +567,7 @@ const IndexClient = ({}: IProps) => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -610,7 +604,7 @@ const IndexClient = ({}: IProps) => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -647,7 +641,7 @@ const IndexClient = ({}: IProps) => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -684,7 +678,7 @@ const IndexClient = ({}: IProps) => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -721,7 +715,7 @@ const IndexClient = ({}: IProps) => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -794,7 +788,7 @@ const IndexClient = ({}: IProps) => {
                     Back
                   </button>
                   <button type="button" className="btn btn-warning font-sans ltr:ml-auto rtl:mr-auto" onClick={() => setActiveTab3(activeTab3 === 1 ? 2 : 3)}>
-                    {activeTab3 === 3 ? 'Finish' : 'Next'}
+                    {activeTab3 === 3 ? 'Finish' : activeTab3 === 2 ? 'Place Order' : 'Next'}
                   </button>
                 </div>
               </div>
