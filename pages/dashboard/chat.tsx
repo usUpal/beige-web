@@ -1,13 +1,14 @@
+import { API_ENDPOINT, SOCKET_URL } from '@/config';
+import { useAuth } from '@/contexts/authContext';
+import transformMessages from '@/utils/transformMessage';
+import { useEffect, useRef, useState } from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useDispatch, useSelector } from 'react-redux';
+import { io } from 'socket.io-client';
 import Dropdown from '../../components/Dropdown';
 import { IRootState } from '../../store';
-import { useDispatch, useSelector } from 'react-redux';
-import { useState, useEffect, useRef } from 'react';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { API_ENDPOINT, HOSTNAME, SOCKET_URL } from '@/config';
-import { useAuth } from '@/contexts/authContext';
-import { io } from 'socket.io-client';
-import transformMessages from '@/utils/transformMessage';
+// types
 
 const Chat = () => {
   const dispatch = useDispatch();
@@ -29,10 +30,10 @@ const Chat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [fetchData, setFetchData] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [typtingUser, setTyptingUser] = useState<MessageTypingProps>({});
+  const [typtingUser, setTyptingUser] = useState<MessageTypingProps>();
 
-  const { userData } = useAuth();
-  const socket = useRef<any>(null);
+  const { userData } = useAuth() as any;
+  const socket = useRef<any | null>(null);
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
   const fetchChats = async () => {
@@ -77,8 +78,9 @@ const Chat = () => {
   }, [isTyping]);
 
   //
+
   useEffect(() => {
-    socket.current = io(SOCKET_URL);
+    socket.current = io(SOCKET_URL as string);
     joinRoom();
   }, [selectedChatRoom]);
 
@@ -95,6 +97,7 @@ const Chat = () => {
       });
       //   Listaning messages
       socket.current.on('message', (data: any) => {
+        setIsTyping(false);
         setNewMessages((prevMessages: any) => {
           const messageIdExists = prevMessages.some((message: any) => message.messageId === data.messageId);
           if (!messageIdExists) {
@@ -114,7 +117,9 @@ const Chat = () => {
     }
     // Cleanup the socket connection when the component unmounts
     return () => {
-      socket.disconnect();
+      if (socket.current) {
+        socket.current.disconnect();
+      }
     };
   };
 
