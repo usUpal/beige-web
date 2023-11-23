@@ -15,6 +15,7 @@ const Addons = () => {
       // ...
     },
   });
+  console.log('🚀 ~ file: addons.tsx:18 ~ Addons ~ isData:', isData);
   const cleanedData = { ...isData };
 
   useEffect(() => {
