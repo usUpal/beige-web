@@ -1,22 +1,25 @@
-import {
-  useLoadScript,
-  GoogleMap,
-  MarkerF,
-  CircleF,
-} from '@react-google-maps/api';
+// reference_url: https://www.99darshan.com/posts/interactive-maps-using-nextjs-and-google-maps
+// reference_url: https://www.npmjs.com/package/use-places-autocomplete
+
 import type { NextPage } from 'next';
 import { useMemo, useState } from 'react';
-import usePlacesAutocomplete, {
-  getGeocode,
-  getLatLng,
-} from 'use-places-autocomplete';
+import { useLoadScript, GoogleMap, MarkerF, CircleF, } from '@react-google-maps/api';
+import usePlacesAutocomplete, { getGeocode, getLatLng, } from 'use-places-autocomplete';
 
-const Home: NextPage = () => {
-  const [lat, setLat] = useState(27.672932021393862);
-  const [lng, setLng] = useState(85.31184012689732);
+const Map: NextPage = (props) => {
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
+  const [location, setLocation] = useState<string>("LA");
+  const [geoLocation, setGeoLocation] = useState<any>();
+
+  props.onChildData(geoLocation);
 
   const libraries = useMemo(() => ['places'], []);
   const mapCenter = useMemo(() => ({ lat: lat, lng: lng }), [lat, lng]);
+
+  const allowOrderWithoutCp = false;
+  const hello = false;
+  // need an empty array as state
 
   const mapOptions = useMemo<google.maps.MapOptions>(
     () => ({
@@ -36,60 +39,41 @@ const Home: NextPage = () => {
     return <p>Loading...</p>;
   }
 
+  const handleLocatoin = (childLocation: any) => {
+    setLocation(childLocation);
+  }
+
   return (
     <div>
       <div>
         {/* render Places Auto Complete and pass custom handler which updates the state */}
-        <PlacesAutocomplete
+        <PlacesAutocomplete locationName={handleLocatoin}
           onAddressSelect={(address) => {
             getGeocode({ address: address }).then((results) => {
               const { lat, lng } = getLatLng(results[0]);
 
               setLat(lat);
               setLng(lng);
+              setGeoLocation({
+                "coordinates": [lat, lng],
+                "type": "Point",
+                "location": location,
+              });
             });
-            console.log("LAT", lat);
           }}
         />
       </div>
-      <GoogleMap
-        options={mapOptions}
-        zoom={14}
-        center={mapCenter}
-        mapTypeId={google.maps.MapTypeId.ROADMAP}
-        mapContainerStyle={{ width: '800px', height: '800px' }}
-        onLoad={(map) => console.log('Map Loaded')}
-      >
-        <MarkerF
-          position={mapCenter}
-          onLoad={() => console.log('Marker Loaded')}
-        />
-
-        {[1000, 2500].map((radius, idx) => {
-          return (
-            <CircleF
-              key={idx}
-              center={mapCenter}
-              radius={radius}
-              onLoad={() => console.log('Circle Load...')}
-              options={{
-                fillColor: radius > 1000 ? 'red' : 'green',
-                strokeColor: radius > 1000 ? 'red' : 'green',
-                strokeOpacity: 0.8,
-              }}
-            />
-          );
-        })}
-      </GoogleMap>
     </div>
   );
 };
 
 const PlacesAutocomplete = ({
+  locationName,
   onAddressSelect,
 }: {
+  locationName: (value: string) => void;
   onAddressSelect?: (address: string) => void;
-}) => {
+}, props: any) => {
   const {
     ready,
     value,
@@ -97,11 +81,12 @@ const PlacesAutocomplete = ({
     setValue,
     clearSuggestions,
   } = usePlacesAutocomplete({
-    requestOptions: { componentRestrictions: { country: 'us' } },
     debounce: 300,
     cache: 86400,
   });
 
+  locationName(value);
+  const [location, setLocation] = useState<string>("LA");
   const renderSuggestions = () => {
     return data.map((suggestion) => {
       const {
@@ -126,12 +111,13 @@ const PlacesAutocomplete = ({
   };
 
   return (
-    <div>
+    <div className='block w-full'>
       <input
         value={value}
         disabled={!ready}
         onChange={(e) => setValue(e.target.value)}
         placeholder="123 Stariway To Heaven"
+        className="form-input"
       />
 
       {status === 'OK' && (
@@ -141,4 +127,4 @@ const PlacesAutocomplete = ({
   );
 };
 
-export default Home;
+export default Map;

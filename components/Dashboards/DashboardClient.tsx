@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, differenceInHours } from 'date-fns';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import dynamic from 'next/dynamic';
@@ -8,14 +8,18 @@ import Link from 'next/link';
 import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
 import ReactApexChart from 'react-apexcharts';
+import SearchBox from '@/components/SearchBox';
 import Map from '@/components/Map';
-import Home from '@/components/Test';
+import { ChangeEvent } from 'react';
+import { useAuth } from '@/contexts/authContext';
 
 interface FormData {
   content_type: number;
   content_vertical: string;
   order_name: string;
-  location: string;
+  address: string;
+  latitude: number;
+  longitude: number;
   shoot_datetimes: string;
   start_date_time: string;
   end_date_time: string;
@@ -26,12 +30,18 @@ interface FormData {
   max_budget: number;
 }
 
-const IndexClient = () => {
+interface IProps {}
+
+const IndexClient = ({}: IProps) => {
   const [activeTab3, setActiveTab3] = useState<any>(1);
   const [isMounted, setIsMounted] = useState(false);
   const [minBudget, setMinBudget] = useState('');
+  const [formData, setFormData] = useState({});
   const [minBudgetError, setMinBudgetError] = useState('');
   const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
+  const [startDateTime, setStartDateTime] = useState('');
+  const [endDateTime, setEndDateTime] = useState('');
+  const [dateTimes, setDateTimes] = useState([]);
   const [items, setItems] = useState<any>([
     {
       id: 1,
@@ -42,12 +52,72 @@ const IndexClient = () => {
       amount: 0,
     },
   ]);
+  const { userData } = useAuth() as any;
+
+  useEffect(() => {
+    const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')) || [];
+    setDateTimes(storedDateTimes);
+  }, []);
+
+  const handleChangeStartDateTime = (e: ChangeEvent<HTMLInputElement>) => {
+    const s_time = parseISO(e.target.value);
+    const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    setStartDateTime(starting_date);
+  };
+
+  const handleChangeEndDateTime = (e: ChangeEvent<HTMLInputElement>) => {
+    const e_time = parseISO(e.target.value);
+    const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    setEndDateTime(ending_date);
+  };
+
+  const calculateDuration = (start_date_time: string, end_date_time: string) => {
+    const startDateTime = parseISO(start_date_time);
+    const endDateTime = parseISO(end_date_time);
+    const durationInHours = differenceInHours(endDateTime, startDateTime);
+    return durationInHours;
+  };
+
+  // localStorage.removeItem('dateTimes')
+  // localStorage.removeItem('totalDuration')
+  // localStorage.removeItem('location')
+  // localStorage.removeItem('latitude')
+  // localStorage.removeItem('longitude')
+
+  const addDateTime = () => {
+    const newDateTime = { start_date_time: startDateTime, end_date_time: endDateTime, duration: calculateDuration(startDateTime, endDateTime), date_indicator: 'confirmed' };
+    const newDateTimes = [...dateTimes, newDateTime];
+    setDateTimes(newDateTimes);
+
+    localStorage.setItem('dateTimes', JSON.stringify(newDateTimes));
+
+    setStartDateTime('');
+    setEndDateTime('');
+
+    logTotalDuration(newDateTimes);
+  };
+
+  const logTotalDuration = (dateTimesArray: any[]) => {
+    const totalDuration = dateTimesArray.reduce((acc, dateTime) => {
+      const duration = calculateDuration(dateTime.start_date_time, dateTime.end_date_time);
+      return acc + duration;
+    }, 0);
+
+    localStorage.setItem('totalDuration', totalDuration);
+  };
+
+  console.log('formData', formData);
 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>({ defaultValues: {} });
+
+  const address = watch('address');
+  console.log('LO', address);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -60,31 +130,37 @@ const IndexClient = () => {
 
   function onSubmit(data: any) {
     const shootDatetimes = items.map((item: any) => {
-      const s_time = parseISO(data.start_date_time);
-      const e_time = parseISO(data.end_date_time);
-      const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-      const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-      const startingTime = new Date(starting_date);
-      const endingTime = new Date(ending_date);
-
-      // Calculate the time difference in milliseconds
-      const timeDifferenceInMilliseconds: number = endingTime.getTime() - startingTime.getTime();
-
-      // Calculate the time difference in hours
-      const durationSingle = timeDifferenceInMilliseconds / (1000 * 60 * 60);
-
-      return {
-        start_date_time: starting_date,
-        end_date_time: ending_date,
-        duration: durationSingle,
-      };
+      setFormData({
+        order_name: data.order_name,
+        client_id: '654215a2c6a07429d166ac1a',
+        cp_ids: [
+          {
+            id: '65408a92f695fec58400404f',
+          },
+          {
+            id: '6542162bc6a07429d166ac30',
+          },
+          {
+            id: '654215e7c6a07429d166ac25',
+          },
+        ],
+        budget: {
+          max: parseFloat(data.max_budget),
+          min: parseFloat(data.min_budget),
+        },
+        content_type: data.content_type,
+        content_vertical: data.content_vertical,
+        description: data.description,
+        location: localStorage.getItem('location'),
+        references: data.references,
+        shoot_datetimes: JSON.parse(localStorage.getItem('dateTimes')),
+        geo_location: {
+          coordinates: [parseFloat(localStorage.getItem('latitude')), parseFloat(localStorage.getItem('longitude'))],
+          type: 'Point',
+        },
+        shoot_duration: parseFloat(localStorage.getItem('totalDuration')),
+      });
     });
-
-  }
-
-  function onSubmitDateTime(date: any) {
-    console.log("DATETIME DATA", date);
   }
 
   //Cost Breakdown
@@ -200,11 +276,10 @@ const IndexClient = () => {
       setMinBudgetErrorText("Minimum budget must be greater than $1000");
       console.log(value);
     } else {
-      setMinBudgetError("");
-      setMinBudgetErrorText("");
+      setMinBudgetError('');
+      setMinBudgetErrorText('');
     }
   };
-
 
   return (
     <>
@@ -289,7 +364,6 @@ const IndexClient = () => {
                 </div>
                 <div>
                   {activeTab3 === 1 && (
-                    // onSubmit={handleSubmit(onSubmit)}
                     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                       <div className="flex items-center justify-between">
                         {/* Shoot Type */}
@@ -338,24 +412,24 @@ const IndexClient = () => {
                         </div>
 
                         {/* Location */}
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="location" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <div className="flex basis-[45%] flex-col flex-wrap sm:flex-row">
+                          <label htmlFor="location" className="mb-3 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Location
                           </label>
-                          <Home />
-                          {errors.location && <p className="text-danger">{errors?.location.message}</p>}
+                          <Map />
+                          <h2>{address}</h2>
+                          {errors.address && <p className="text-danger">{errors?.address.message}</p>}
                         </div>
                       </div>
                       <div className="mt-8">
                         <div className="table-responsive">
-
                           <div className="flex items-center justify-between">
                             {/* Starting Date and Time */}
                             <div className="flex basis-[45%] flex-col sm:flex-row">
                               <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                 Starting Date
                               </label>
-                              <input id="start_date_time" type="datetime-local" className="form-input" {...register('start_date_time')} />
+                              <input id="start_date_time" type="datetime-local" className="form-input" onChange={handleChangeStartDateTime} />
                               {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
 
@@ -364,11 +438,11 @@ const IndexClient = () => {
                               <label htmlFor="end_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                 Ending Date
                               </label>
-                              <input id="end_date_time" type="datetime-local" className="form-input" {...register('end_date_time')} />
+                              <input id="end_date_time" type="datetime-local" className="form-input" onChange={handleChangeEndDateTime} />
                               {errors.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                             </div>
                           </div>
-                          <button type="submit" id='dateTimeBtn' className="btn btn-success mt-5 ml-auto">
+                          <button type="button" id="dateTimeBtn" className="btn btn-success ml-auto mt-5" onClick={addDateTime}>
                             Add
                           </button>
 
@@ -380,14 +454,18 @@ const IndexClient = () => {
                                   <th>#</th>
                                   <th>Starting DateTime</th>
                                   <th>Ending DateTime</th>
+                                  <th>Duration (Hours)</th>
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr>
-                                  <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-                                  <td>Malcolm Lockyer</td>
-                                  <td>1961</td>
-                                </tr>
+                                {dateTimes.map((dateTime, index) => (
+                                  <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{dateTime.start_date_time}</td>
+                                    <td>{dateTime.end_date_time}</td>
+                                    <td>{calculateDuration(dateTime.start_date_time, dateTime.end_date_time)} Hour</td>
+                                  </tr>
+                                ))}
                               </tbody>
                             </table>
                           </div>
@@ -430,7 +508,7 @@ const IndexClient = () => {
                           {errors.max_budget && <p className="text-danger">{errors?.max_budget.message}</p>}
                         </div>
                       </div>
-                      <div className='text-[#ff0000] ml-[120px] leading-none font-sans'>{minBudgetErrorText}</div>
+                      <div className="ml-[120px] font-sans leading-none text-[#ff0000]">{minBudgetErrorText}</div>
                       <div className="flex items-center justify-between">
                         {/* Special Note */}
                         <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -441,7 +519,7 @@ const IndexClient = () => {
                           {errors.description && <p className="text-danger">{errors?.description.message}</p>}
                         </div>
                       </div>
-                      <button type="submit" className="btn mt-6 bg-black font-sans text-white" id='submitBtn'>
+                      <button type="submit" className="btn mt-6 bg-black font-sans text-white" id="submitBtn">
                         Enter
                       </button>
                     </form>
@@ -489,7 +567,7 @@ const IndexClient = () => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -526,7 +604,7 @@ const IndexClient = () => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -563,7 +641,7 @@ const IndexClient = () => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -600,7 +678,7 @@ const IndexClient = () => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -637,7 +715,7 @@ const IndexClient = () => {
                               </Link>
                               <Link href={'/'}>
                                 <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                  shoot
+                                  select
                                 </span>
                               </Link>
                             </div>
@@ -681,14 +759,15 @@ const IndexClient = () => {
                                     <tr key={data.id}>
                                       <td>
                                         <div
-                                          className={`whitespace-nowrap ${data.indicator === 1
-                                            ? 'h-3 w-3 bg-success text-success'
-                                            : data.indicator === 2
+                                          className={`whitespace-nowrap ${
+                                            data.indicator === 1
+                                              ? 'h-3 w-3 bg-success text-success'
+                                              : data.indicator === 2
                                               ? 'h-3 w-3 bg-secondary'
                                               : data.indicator === 3
-                                                ? 'h-3 w-3 bg-info'
-                                                : 'h-3 w-3 bg-success'
-                                            }`}
+                                              ? 'h-3 w-3 bg-info'
+                                              : 'h-3 w-3 bg-success'
+                                          }`}
                                         ></div>
                                       </td>
                                       <td>{data.costings}</td>
@@ -709,7 +788,7 @@ const IndexClient = () => {
                     Back
                   </button>
                   <button type="button" className="btn btn-warning font-sans ltr:ml-auto rtl:mr-auto" onClick={() => setActiveTab3(activeTab3 === 1 ? 2 : 3)}>
-                    {activeTab3 === 3 ? 'Finish' : 'Next'}
+                    {activeTab3 === 3 ? 'Finish' : activeTab3 === 2 ? 'Place Order' : 'Next'}
                   </button>
                 </div>
               </div>
