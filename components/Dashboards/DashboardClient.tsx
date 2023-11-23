@@ -195,7 +195,7 @@ const IndexClient = () => {
   const handleChangeMinBudget = (e: any) => {
     const value = e.target.value;
     setMinBudget(value);
-    if (minBudget < 1000) {
+    if (parseFloat(minBudget) < 1000) {
       setMinBudgetError("border-[#ff0000] focus:border-[#ff0000]");
       setMinBudgetErrorText("Minimum budget must be greater than $1000");
       console.log(value);
