@@ -55,7 +55,8 @@ const IndexClient = ({}: IProps) => {
   const { userData } = useAuth() as any;
 
   useEffect(() => {
-    const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')) || [];
+    const storedDateTimesString = localStorage.getItem('dateTimes');
+    const storedDateTimes = storedDateTimesString ? JSON.parse(storedDateTimesString) : [];
     setDateTimes(storedDateTimes);
   }, []);
 
@@ -272,8 +273,8 @@ const IndexClient = ({}: IProps) => {
     const value = e.target.value;
     setMinBudget(value);
     if (parseFloat(minBudget) < 1000) {
-      setMinBudgetError("border-[#ff0000] focus:border-[#ff0000]");
-      setMinBudgetErrorText("Minimum budget must be greater than $1000");
+      setMinBudgetError('border-[#ff0000] focus:border-[#ff0000]');
+      setMinBudgetErrorText('Minimum budget must be greater than $1000');
       console.log(value);
     } else {
       setMinBudgetError('');
