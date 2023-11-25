@@ -3,12 +3,10 @@ import { useDispatch } from 'react-redux';
 import { format, parseISO, differenceInHours } from 'date-fns';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import 'flatpickr/dist/flatpickr.css';
 import { useForm } from 'react-hook-form';
 import ReactApexChart from 'react-apexcharts';
-import SearchBox from '@/components/SearchBox';
 import Map from '@/components/Map';
 import { ChangeEvent } from 'react';
 import { useAuth } from '@/contexts/authContext';
@@ -17,31 +15,28 @@ interface FormData {
   content_type: number;
   content_vertical: string;
   order_name: string;
-  address: string;
-  latitude: number;
-  longitude: number;
   shoot_datetimes: string;
   start_date_time: string;
   end_date_time: string;
+  date_indicator: string;
   references: string;
   budget: string;
   description: string;
   min_budget: number;
   max_budget: number;
+  duration: number;
 }
 
-interface IProps {}
-
-const IndexClient = ({}: IProps) => {
+const IndexClient = () => {
   const [activeTab3, setActiveTab3] = useState<any>(1);
   const [isMounted, setIsMounted] = useState(false);
-  const [minBudget, setMinBudget] = useState('');
+  const [minBudget, setMinBudget] = useState<number>(1000);
   const [formData, setFormData] = useState({});
   const [minBudgetError, setMinBudgetError] = useState('');
   const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
-  const [dateTimes, setDateTimes] = useState([]);
+  const [dateTimes, setDateTimes] = useState<FormData[]>([]);
   const [items, setItems] = useState<any>([
     {
       id: 1,
@@ -55,7 +50,7 @@ const IndexClient = ({}: IProps) => {
   const { userData } = useAuth() as any;
 
   useEffect(() => {
-    const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')) || [];
+    const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')!) || [];
     setDateTimes(storedDateTimes);
   }, []);
 
@@ -84,8 +79,24 @@ const IndexClient = ({}: IProps) => {
   // localStorage.removeItem('latitude')
   // localStorage.removeItem('longitude')
 
+  console.log('FORM DATA', formData);
+
   const addDateTime = () => {
-    const newDateTime = { start_date_time: startDateTime, end_date_time: endDateTime, duration: calculateDuration(startDateTime, endDateTime), date_indicator: 'confirmed' };
+    const newDateTime: FormData = {
+      start_date_time: startDateTime,
+      end_date_time: endDateTime,
+      duration: calculateDuration(startDateTime, endDateTime),
+      date_indicator: 'confirmed',
+      content_type: 0,
+      content_vertical: '',
+      order_name: '',
+      shoot_datetimes: '',
+      references: '',
+      budget: '',
+      description: '',
+      min_budget: 0,
+      max_budget: 0,
+    };
     const newDateTimes = [...dateTimes, newDateTime];
     setDateTimes(newDateTimes);
 
@@ -99,14 +110,12 @@ const IndexClient = ({}: IProps) => {
 
   const logTotalDuration = (dateTimesArray: any[]) => {
     const totalDuration = dateTimesArray.reduce((acc, dateTime) => {
-      const duration = calculateDuration(dateTime.start_date_time, dateTime.end_date_time);
+      const duration: number = calculateDuration(dateTime.start_date_time, dateTime.end_date_time);
       return acc + duration;
     }, 0);
 
     localStorage.setItem('totalDuration', totalDuration);
   };
-
-  console.log('formData', formData);
 
   const {
     register,
@@ -115,10 +124,6 @@ const IndexClient = ({}: IProps) => {
     watch,
     formState: { errors },
   } = useForm<FormData>({ defaultValues: {} });
-
-  const address = watch('address');
-  console.log('LO', address);
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setPageTitle('Client Dashboard'));
@@ -153,12 +158,12 @@ const IndexClient = ({}: IProps) => {
         description: data.description,
         location: localStorage.getItem('location'),
         references: data.references,
-        shoot_datetimes: JSON.parse(localStorage.getItem('dateTimes')),
+        shoot_datetimes: JSON.parse(localStorage.getItem('dateTimes') || '[]'),
         geo_location: {
-          coordinates: [parseFloat(localStorage.getItem('latitude')), parseFloat(localStorage.getItem('longitude'))],
+          coordinates: [parseFloat(localStorage.getItem('latitude') || '0'), parseFloat(localStorage.getItem('longitude') || '0')],
           type: 'Point',
         },
-        shoot_duration: parseFloat(localStorage.getItem('totalDuration')),
+        shoot_duration: parseFloat(localStorage.getItem('totalDuration') || '0'),
       });
     });
   }
@@ -417,8 +422,6 @@ const IndexClient = ({}: IProps) => {
                             Location
                           </label>
                           <Map />
-                          <h2>{address}</h2>
-                          {errors.address && <p className="text-danger">{errors?.address.message}</p>}
                         </div>
                       </div>
                       <div className="mt-8">
@@ -458,7 +461,7 @@ const IndexClient = ({}: IProps) => {
                                 </tr>
                               </thead>
                               <tbody>
-                                {dateTimes.map((dateTime, index) => (
+                                {dateTimes.map((dateTime: FormData, index) => (
                                   <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{dateTime.start_date_time}</td>
