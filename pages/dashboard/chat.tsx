@@ -377,7 +377,7 @@ const Chat = () => {
                     </div>
                   </div>
                   <div className="mx-3">
-                    <Link href={`../manager/users/${selectedChatRoom?.order_id?.id}`}>
+                    <Link href={`./shoots/${selectedChatRoom?.order_id?.id}`}>
                       <p className="font-semibold">{selectedChatRoom?.order_id?.order_name}</p>
                       <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + selectedChatRoom?.time}</p>
                     </Link>
