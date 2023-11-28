@@ -39,6 +39,8 @@ const IndexClient = () => {
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
   const [dateTimes, setDateTimes] = useState<FormData[]>([]);
+  const [showDateTimes, setShowDateTimes] = useState<any>();
+  const [getTotalDuration, setTotalDuration] = useState<any>();
   const [items, setItems] = useState<any>([
     {
       id: 1,
@@ -87,8 +89,6 @@ const IndexClient = () => {
     }
   };
 
-  // localStorage.removeItem('dateTimes')
-  // localStorage.removeItem('totalDuration')
   // localStorage.removeItem('location')
   // localStorage.removeItem('latitude')
   // localStorage.removeItem('longitude')
@@ -103,7 +103,7 @@ const IndexClient = () => {
     const newDateTimes = [...dateTimes, newDateTime];
     setDateTimes(newDateTimes);
 
-    localStorage.setItem('dateTimes', JSON.stringify(newDateTimes));
+    setShowDateTimes(JSON.stringify(newDateTimes));
 
     setStartDateTime('');
     setEndDateTime('');
@@ -117,7 +117,7 @@ const IndexClient = () => {
       return acc + duration;
     }, 0);
 
-    localStorage.setItem('totalDuration', totalDuration);
+    setTotalDuration(totalDuration);
   };
 
   const {
@@ -143,7 +143,7 @@ const IndexClient = () => {
       coloredToast('danger', 'Please select category!');
     } else if (localStorage.getItem('location') == null) {
       coloredToast('danger', 'Please enter your location!');
-    } else if (JSON.parse(localStorage.getItem('dateTimes') || '[]') == '') {
+    } else if (JSON.parse(showDateTimes) == '') {
       coloredToast('danger', 'Please select date time!');
     } else if (parseFloat(data.min_budget) < 1000 && parseFloat(data.max_budget) < 1000) {
       coloredToast('danger', 'Please select your budget!');
@@ -157,7 +157,7 @@ const IndexClient = () => {
       data.content_type == false ||
       data.content_vertical == '' ||
       localStorage.getItem('location') == null ||
-      JSON.parse(localStorage.getItem('dateTimes') || '[]') == '' ||
+      JSON.parse(showDateTimes) == '' ||
       parseFloat(data.max_budget) < 1000 ||
       parseFloat(data.max_budget) < parseFloat(data.min_budget) ||
       data.description == ''
@@ -167,23 +167,25 @@ const IndexClient = () => {
       try {
         // Format your data as needed
         const formattedData = {
-          "budget": {
-            "max": parseFloat(data.max_budget),
-            "min": parseFloat(data.min_budget),
+
+          budget: {
+            max: parseFloat(data.max_budget),
+            min: parseFloat(data.min_budget),
           },
-          "client_id": userData.id,
-          "content_type": data.content_type,
-          "content_vertical": data.content_vertical,
-          "description": data.description,
-          "location": localStorage.getItem('location'),
-          "order_name": data.order_name,
-          "references": data.references,
-          "shoot_datetimes": JSON.parse(localStorage.getItem('dateTimes') || '[]'),
-          "geo_location": {
-            "coordinates": [parseFloat(localStorage.getItem('latitude') || '0'), parseFloat(localStorage.getItem('longitude') || '0')],
-            "type": 'Point',
+          client_id: userData.id,
+          content_type: data.content_type,
+          content_vertical: data.content_vertical,
+          description: data.description,
+          location: localStorage.getItem('location'),
+          order_name: data.order_name,
+          references: data.references,
+          shoot_datetimes: JSON.parse(showDateTimes),
+          geo_location: {
+            coordinates: [parseFloat(localStorage.getItem('longitude') || '0'), parseFloat(localStorage.getItem('latitude') || '0')],
+            type: 'Point',
           },
-          "shoot_duration": parseFloat(localStorage.getItem('totalDuration') || '0'),
+          shoot_duration: parseFloat(localStorage.getItem('totalDuration') || '0'),
+        
         };
 
         // Send a POST request
@@ -196,20 +198,21 @@ const IndexClient = () => {
           body: JSON.stringify(formattedData),
         });
 
+        console.log("RESPOMSE", response.ok)
         if (response.ok) {
           const responseData = await response.json();
           console.log('POST request successful!', responseData);
           coloredToast('success', 'Form submitted!');
-          setActiveTab3(activeTab3 === 1 ? 2 : 3)
+          setActiveTab3(activeTab3 === 1 ? 2 : 3);
           // Handle success if needed
         } else {
           console.error('Error:', response.statusText);
-          coloredToast('danger', "https://api.beigecorporation.io/v1/orders 500 (Internal Server Error)");
+          coloredToast('danger', 'https://api.beigecorporation.io/v1/orders 500 (Internal Server Error)');
           // Handle errors
+          console.log('FORM DATA', formattedData);
         }
-        console.log('FORM DATA', formattedData);
       } catch (error) {
-        coloredToast('danger', "error");
+        coloredToast('danger', 'error');
       }
     }
   };
@@ -458,7 +461,7 @@ const IndexClient = () => {
                             </select>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between mt-5">
+                        <div className="mt-5 flex items-center justify-between">
                           {/* Order Name */}
                           <div className="flex basis-[45%] flex-col sm:flex-row">
                             <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
