@@ -3,11 +3,12 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import Link from 'next/link';
 import { Tab } from '@headlessui/react';
+import { API_ENDPOINT } from '@/config';
 
 const Addons = () => {
   const [general, setGeneralAddons] = useState(null);
 
-  const [isData, setData] = useState({
+  const [addonsData, setAddonsData] = useState({
     general: {
       // ...
     },
@@ -15,18 +16,18 @@ const Addons = () => {
       // ...
     },
   });
-  console.log('🚀 ~ file: addons.tsx:18 ~ Addons ~ isData:', isData);
-  const cleanedData = { ...isData };
+  // console.log('🚀 ~ file: addons.tsx:18 ~ Addons ~ addonsData:', addonsData);
+  const cleanedData = { ...addonsData };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`https://api.beigecorporation.io/v1/addOns`);
+        const res = await fetch(`${API_ENDPOINT}addOns`);
         if (!res.ok) {
           throw new Error(`Error: ${res.status}`);
         }
         const jsonData = await res.json();
-        setData(jsonData);
+        setAddonsData(jsonData);
       } catch (error) {
         console.error(`Error fetching data`);
       }
@@ -37,7 +38,8 @@ const Addons = () => {
 
   // General Object Rate Change
   const handleRateChange = (key, newValue) => {
-    setData((prevData) => ({
+
+    setAddonsData((prevData) => ({
       ...prevData,
       general: {
         ...prevData.general,
@@ -51,7 +53,7 @@ const Addons = () => {
 
   // General Object Status Change
   const handleStatusChange = (key, newValue) => {
-    setData((prevData) => ({
+    setAddonsData((prevData) => ({
       ...prevData,
       general: {
         ...prevData.general,
@@ -65,7 +67,7 @@ const Addons = () => {
 
   // Models Object Rate Change
   const handleMoedelsRateChange = (key, newValue) => {
-    setData((prevData) => ({
+    setAddonsData((prevData) => ({
       ...prevData,
       models: {
         ...prevData.models,
@@ -79,7 +81,8 @@ const Addons = () => {
 
   // Models Object Rate Change
   const handleMoedelsStatusChange = (key, newValue) => {
-    setData((prevData) => ({
+    console.log(key, newValue);
+    setAddonsData((prevData) => ({
       ...prevData,
       models: {
         ...prevData.models,
@@ -93,7 +96,7 @@ const Addons = () => {
 
   const getValue = () => {
     const updatedData = JSON.parse(JSON.stringify(cleanedData));
-    const url = 'https://api.beigecorporation.io/v1/addOns';
+    const url = `${API_ENDPOINT}addOns`;
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -128,6 +131,15 @@ const Addons = () => {
   useEffect(() => {
     setIsMounted(true);
   });
+
+/*   // title
+  const [editTitle, setEditTitle] = useState(false);
+  // handleAddOnsTitle
+  const handleAddonsTitle = id => {
+    console.log(id);
+
+    setEditTitle(!editTitle);
+  } */
 
   return (
     <div>
@@ -211,6 +223,7 @@ const Addons = () => {
                 </Tab>
               </Tab.List>
               <Tab.Panels>
+                {/* workingOn -> */}
                 <Tab.Panel>
                   <div className="active">
                     <div className="flex items-center justify-between bg-black p-5 text-white">
@@ -218,11 +231,14 @@ const Addons = () => {
                       <span className="block basis-[40%] font-sans text-[18px] uppercase leading-none">Rate</span>
                       <span className="block font-sans text-[18px] uppercase leading-none">Status</span>
                     </div>
-                    {Object.keys(isData.general).map((key) => {
-                      const item = isData.general[key];
+                    {Object.keys(addonsData.general).map((key) => {
+                      const item = addonsData.general[key];
+                      // console.log(item);
+
                       return (
                         <div key={key} className="my-2 flex items-center justify-between border-b p-5">
-                          <p className="block basis-[25%] font-sans text-[18px] font-semibold capitalize leading-none text-black">{key}</p>
+                          <p className="block basis-[25%] font-sans text-[18px] font-semibold capitalize leading-none text-black">{item.title}</p>
+                          
                           <input
                             name={key}
                             type="number"
@@ -238,7 +254,7 @@ const Addons = () => {
                       );
                     })}
 
-                    <button type="submit" className="btn my-5 bg-black font-sans text-white" onClick={getValue}>
+                    <button type="submit" className="btn my-5 bg-black font-sans text-white float-right" onClick={getValue}>
                       Save
                     </button>
                   </div>
@@ -254,11 +270,11 @@ const Addons = () => {
                             <span className="block font-sans text-[18px] uppercase leading-none">Status</span>
                           </div>
 
-                          {Object.keys(isData.models).map((key) => {
-                            const item = isData.models[key];
+                          {Object.keys(addonsData.models).map((key) => {
+                            const item = addonsData.models[key];
                             return (
                               <div key={key} className="my-2 flex items-center justify-between border-b p-5">
-                                <p className="block basis-[25%] font-sans text-[18px] font-semibold capitalize leading-none text-black">{key}</p>
+                                <p className="block basis-[25%] font-sans text-[18px] font-semibold capitalize leading-none text-black">{item.title}</p>
                                 <input
                                   name={key}
                                   type="number"
@@ -273,7 +289,7 @@ const Addons = () => {
                             );
                           })}
 
-                          <button type="submit" className="btn my-5 bg-black font-sans text-white" onClick={getValue}>
+                          <button type="submit" className="btn my-5 bg-black font-sans text-white float-right" onClick={getValue}>
                             Save
                           </button>
                         </div>

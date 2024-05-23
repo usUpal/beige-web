@@ -11,6 +11,7 @@ import Cookies from 'js-cookie';
 
 const Auth = () => {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { setUserData, setAccessToken, setRefreshToken } = useAuth();
 
@@ -20,9 +21,10 @@ const Auth = () => {
 
   const router = useRouter();
 
+
   const submitForm = async (e: any) => {
     e.preventDefault();
-
+    setIsLoading(true)
     const formData = new FormData(e.target);
     const loginEndPoint = `${API_ENDPOINT}auth/login`;
 
@@ -55,6 +57,7 @@ const Auth = () => {
           domain: HOSTNAME,
         });
 
+
         //Store access token to the cookie storage
         Cookies.set('accessToken', JSON.stringify(accessToken), {
           expires: new Date(accessToken?.expires),
@@ -70,14 +73,24 @@ const Auth = () => {
         //Redirect user to the dashboard
         // await router.push('/');
         await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
+        setIsLoading(false)
       } else {
         toast.error(data.message, {
           position: toast.POSITION.TOP_CENTER,
         });
+        setIsLoading(false)
       }
     } catch (error) {
       console.error('Login error:', error);
+      setIsLoading(false)
+
     }
+
+    // // -------> auto sign in text show 
+    // setTimeout(() => {
+    //   setSigningLoading(false);
+    // }, 1000);
+
   };
 
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -94,6 +107,8 @@ const Auth = () => {
     setLocale(localStorage.getItem('i18nextLng') || themeConfig.locale);
   }, []);
 
+
+
   return (
     <div>
       <div className="absolute inset-0">
@@ -109,7 +124,7 @@ const Auth = () => {
           <div className="relative flex flex-col justify-center rounded-md bg-white/60 px-6 py-20 backdrop-blur-lg dark:bg-black/50 lg:min-h-[758px]">
             <div className="mx-auto w-full max-w-[440px]">
               <div className="mb-10">
-                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-[#333434] md:text-4xl">Sign in</h1>
+                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-[#333434] md:text-4xl"> Sign in</h1>
                 <p className="text-base font-bold leading-normal text-[#676767]">Enter your email and password to login</p>
               </div>
               <form className="space-y-5 dark:text-white" onSubmit={submitForm}>
@@ -170,8 +185,9 @@ const Auth = () => {
                 <button
                   type="submit"
                   className="btn !mt-6 w-full border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
-                >
-                  Sign in
+                > {
+                    isLoading ? `Loading...` : "Sign In"
+                  }
                 </button>
               </form>
               <div className="relative my-7 text-center md:mb-9">
