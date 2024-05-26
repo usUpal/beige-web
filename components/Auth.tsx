@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { API_ENDPOINT, HOSTNAME } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import Cookies from 'js-cookie';
+import Loader from './SharedComponent/Loader';
 
 const Auth = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const Auth = () => {
 
   const submitForm = async (e: any) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     const formData = new FormData(e.target);
     const loginEndPoint = `${API_ENDPOINT}auth/login`;
 
@@ -74,22 +75,21 @@ const Auth = () => {
         // await router.push('/');
         await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
         setIsLoading(false)
-      } else {
+      }
+      else {
         toast.error(data.message, {
           position: toast.POSITION.TOP_CENTER,
-        });
+        }
+        );
         setIsLoading(false)
       }
+      console.log(data);
+
     } catch (error) {
       console.error('Login error:', error);
       setIsLoading(false)
 
     }
-
-    // // -------> auto sign in text show 
-    // setTimeout(() => {
-    //   setSigningLoading(false);
-    // }, 1000);
 
   };
 
@@ -186,7 +186,12 @@ const Auth = () => {
                   type="submit"
                   className="btn !mt-6 w-full border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
                 > {
-                    isLoading ? `Loading...` : "Sign In"
+                    isLoading ?
+                      <span role="status" className="flex h-5 items-center space-x-2">
+                        <Loader />
+                      </span>
+                      :
+                      'Sign In'
                   }
                 </button>
               </form>
