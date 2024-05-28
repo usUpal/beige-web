@@ -95,7 +95,7 @@ const Addons = () => {
     }));
   };
 
-  const getValue = () => {
+  const handleSave = () => {
     const updatedData = JSON.parse(JSON.stringify(cleanedData));
     const url = `${API_ENDPOINT}addOns`;
     const requestOptions = {
@@ -124,8 +124,6 @@ const Addons = () => {
   const dispatch = useDispatch();
   // state for setting modal for add button
   const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
-
-
 
   //Start theme functionality
   useEffect(() => {
@@ -158,6 +156,18 @@ const Addons = () => {
     }
     console.log("🚀 ~ handleFormSubmit ~ addedAddons:", addedAddons);
     setLoading(false);
+
+    /* let generalAddons;
+    if (category === 'general') {
+      generalAddons = [...addonsData, addedAddons];
+      console.log("General", addonsData.general)
+    } else {
+      console.log("Modal", addonsData.models)
+    } */
+
+    // send to backend
+
+
 
     e.target.reset();
   }
@@ -277,10 +287,10 @@ const Addons = () => {
                           );
                         })}
 
-                        <button type="submit" className="btn my-5 bg-black font-sans text-white float-left" onClick={() => setAddonsAddBtnModal(true)}>
+                        {/* <button type="submit" className="btn my-5 bg-black font-sans text-white float-left" onClick={() => setAddonsAddBtnModal(true)}>
                           Add Addons
-                        </button>
-                        <button type="submit" className="btn my-5 bg-black font-sans text-white float-right" onClick={getValue}>
+                        </button> */}
+                        <button type="submit" className="btn my-5 bg-black font-sans text-white float-right" onClick={handleSave}>
                           Save
                         </button>
                       </div>
@@ -317,12 +327,12 @@ const Addons = () => {
                             );
                           })}
 
-                          <button type="submit" className="btn my-5 bg-black font-sans text-white float-right" onClick={getValue}>
+                          <button type="submit" className="btn my-5 bg-black font-sans text-white float-right" onClick={handleSave}>
                             Save
                           </button>
-                          <button type="submit" className="btn my-5 bg-black font-sans text-white float-left" onClick={() => setAddonsAddBtnModal(true)}>
+                          {/*   <button type="submit" className="btn my-5 bg-black font-sans text-white float-left" onClick={() => setAddonsAddBtnModal(true)}>
                             Add Addons
-                          </button>
+                          </button> */}
                         </div>
                       </div>
                     </div>
