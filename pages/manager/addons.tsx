@@ -157,18 +157,6 @@ const Addons = () => {
     console.log("🚀 ~ handleFormSubmit ~ addedAddons:", addedAddons);
     setLoading(false);
 
-    /* let generalAddons;
-    if (category === 'general') {
-      generalAddons = [...addonsData, addedAddons];
-      console.log("General", addonsData.general)
-    } else {
-      console.log("Modal", addonsData.models)
-    } */
-
-    // send to backend
-
-
-
     e.target.reset();
   }
 

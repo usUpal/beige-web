@@ -12,7 +12,7 @@ const StatusBg: React.FC<any> = ({ children }) => {
     if (children === 'change_request' || children === 'pre_production' || children === 'open') {
         backgroundColor = '#FBEDD9';
         textColor = '#885A00';
-    } else if (children === 'pending' || children === 'ongoing' || children === 'In Dispute') {
+    } else if (children === 'pending' || children === 'ongoing' || children === 'in_dispute') {
         backgroundColor = '#FFE9E9';
         textColor = '#B50000';
     } else if (children === 'cancelled' || children === 'upcoming') {

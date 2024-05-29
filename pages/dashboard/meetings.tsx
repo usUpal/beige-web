@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '@/contexts/authContext';
 import Pagination from '@/components/Pagination';
 import StatusBg from '@/components/Status/StatusBg';
+import { log } from 'console';
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -110,6 +111,39 @@ const Meeting = () => {
     setCurrentPage(page);
   };
 
+  // get date format
+  function makeDateFormat(inputDate) {
+    const date = new Date(inputDate);
+
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    const month = months[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Handle midnight (0 hours)
+    const formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
+
+    const formattedDate = `${month} ${day}, ${year}`;
+
+    return {
+      date: formattedDate,
+      time: formattedTime
+    };
+  }
+
+  const inputDate = '2024-05-29T21:00:00.000Z';
+  const formattedDateTime = makeDateFormat(inputDate);
+
+  // order string split 
+  
+
+
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Orders */}
@@ -133,12 +167,13 @@ const Meeting = () => {
                 <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                   <td className=" min-w-[150px] text-black dark:text-white">
                     <div className="flex items-center">
-                      <p className="whitespace-nowrap break-words" >{(meeting?.order?.name)}</p>
+                      <p className="whitespace-nowrap break-words" >{(meeting?.order?.name)}</p> 
                     </div>
                   </td>
 
                   <td>
-                    {new Date(meeting?.meeting_date_time).toLocaleString()}
+                    {makeDateFormat(meeting?.meeting_date_time)?.date}
+                    <span className='ps-2'>Time: {makeDateFormat(meeting?.meeting_date_time)?.time}</span>
                   </td>
 
                   <td>
@@ -168,9 +203,10 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setmeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center px-4 ">
-              <Dialog.Panel as="div" className="panel my-8 w-1/3 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+              <Dialog.Panel as="div" className="panel my-8 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+
                 <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
-                  <div className="text-[24px] font-medium capitalize leading-none text-[#000000] mx-auto">Meeting Details</div>
+                  <div className="text-[22px] font-medium capitalize leading-none text-[#000000] ms-3">Meeting Details</div>
                   <button type="button" className="text-white-dark hover:text-dark" onClick={() => setmeetingModal(false)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -178,58 +214,68 @@ const Meeting = () => {
                     </svg>
                   </button>
                 </div>
-                <div className="flex items-center justify-between p-5">
-                  <div className="basis-[50%] mx-auto">
-                    <h2 className="mb-[20px] text-[26px] font-bold capitalize leading-[28.6px] text-[#ACA686]">meeting with <span className='text-[#0E1726]'>{meetingInfo?.client?.name}</span></h2>
-                    <div>
-                      <span className="mb-[10px] block font-sans text-[14px] leading-[18.2px] text-[#000000]">
-                        Meeting Date:
-                        <span className='ps-2 text-[#0E1726] font-semibold'>
-                          <span className='font-semibold'>{new Date(meetingInfo?.meeting_date_time).getDate()}</span>-
-                          <span className='font-semibold'>{new Date(meetingInfo?.meeting_date_time).getMonth()}</span>-
-                          <span className='font-semibold'>{new Date(meetingInfo?.meeting_date_time).getFullYear()}</span>
+
+                <div className="basis-[50%]">
+
+                  <h2 className="mx-8 mb-[12px] text-[18px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Meeting with <span className='text-[#0E1726]'>   {meetingInfo?.client?.name}</span></h2>
+
+                  <div className='mx-8 pb-6'>
+                    <span className="mb-[12px] block font-sans text-[16px] leading-[18.2px] text-[#000000] font-normal">
+                      Order:
+                      <span className='ps-2 text-[#0E1726]'>{meetingInfo?.order?.name}</span>
+                    </span>
+
+                    {/*  */}
+                    <div className='flex  justify-between mb-[12px]'>
+                      <span className=" block font-sans text-[16px] leading-[18.2px] text-[#000000]" >
+                        Time:
+                        <span className='font-semibold ps-2'>
+                          {makeDateFormat(meetingInfo?.meeting_date_time)?.time}
                         </span>
                       </span>
-                      <span className="mb-[10px] block font-sans text-[14px] leading-[18.2px] text-[#000000]">
-                        Meeting Time:
-                        {new Date(meetingInfo?.meeting_date_time).toLocaleString().split(",")[1]}
 
-                      </span>
-                      <span className="block font-sans text-[14px] leading-[18.2px] text-[#000000]">
-                        Meeting Status: <span><StatusBg>{meetingInfo?.meeting_status}</StatusBg></span>
+                      <span className=" block font-sans text-[16px] leading-[18.2px] text-[#000000]">
+                        Date:
+                        <span className='ps-2 text-[#0E1726] font-semibold'>
+                          {makeDateFormat(meetingInfo?.meeting_date_time)?.date}
+                        </span>
                       </span>
                     </div>
-                    <h2 className="mb-[15px] mt-[30px] font-mono text-[16px] font-bold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
-                    <form action="" className='flex flex-col'>
-                      <input
-                        className="rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd] w-60"
-                        type="datetime-local"
-                        name="dateTime"
-                        id="datetime"
-                        ref={dateTimeRef}
-                        onChange={handleButtonChange}
-                      />
 
-                      <button type="submit" className="btn my-5 bg-black font-sans text-white float-left w-60">
-                        Save
-                      </button>
-                    </form>
+                    {/*  */}
+                    <div className="flex justify-between">
+                      <span className="  block font-sans text-[16px] leading-[18.2px] text-[#000000]">
+                        Status: <span className='text-[12px]'><StatusBg>{meetingInfo?.meeting_status}</StatusBg></span>
+                      </span>
+                      <span className=" block font-sans text-[16px] leading-[18.2px] text-[#000000]">
+                        Link: [not valid now]
+                      </span>
+
+                    </div>
+
+                    {/* Resheduling */}
+                    <div className='flex flex-col items-start mt-8'>
+                      <h2 className=" mb-[15px] mt-[30px] font-mono text-[16px] font-bold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
+                      <form action="" className='flex flex-col'>
+                        <input
+                          className="rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[16px] font-medium leading-none text-[#000000] focus:border-[#dddddd] w-60"
+                          type="datetime-local"
+                          name="dateTime"
+                          id="datetime"
+                          ref={dateTimeRef}
+                          onChange={handleButtonChange}
+                        />
+
+                        <button type="submit" className="btn my-5 bg-black font-sans text-white float-left w-60">
+                          Save
+                        </button>
+                      </form>
+                    </div>
+                    {/* Resheduling */}
+
                   </div>
-                  {/* <div className="customWave relative basis-[50%]">
-                    <img src="/assets/images/lightbox4.jpeg" alt="bg-img" className="h-full rounded-[15px] object-cover" />
-                    <div className="glass absolute left-1/2 top-1/2 h-[260px] w-11/12 -translate-x-1/2 -translate-y-1/2">
-                      <p className="absolute left-1/2 top-1/2 z-10 w-full -translate-x-1/2 -translate-y-1/2 p-5 text-center font-sans text-[15px] font-medium leading-[28px] text-[#ffffff]">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum, molestias. Ipsa esse suscipit quos voluptatibus et soluta itaque consequatur! {
-
-                        }
-                      </p>
-                    </div>
-
-                    <div className="ribbon">
-                      <span>Meeting Note</span>
-                    </div>
-                  </div> */}
                 </div>
+
               </Dialog.Panel>
             </div>
           </div>
