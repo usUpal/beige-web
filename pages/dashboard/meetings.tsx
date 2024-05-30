@@ -10,6 +10,8 @@ import { useAuth } from '@/contexts/authContext';
 import Pagination from '@/components/Pagination';
 import StatusBg from '@/components/Status/StatusBg';
 import { log } from 'console';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
+// import allSvgs from '@/utils/allsvgs/allSvgs';
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -22,6 +24,9 @@ const Meeting = () => {
   const [meetingModal, setmeetingModal] = useState(false);
   const { userData } = useAuth();
   const dispatch = useDispatch();
+
+  // --> All SVG files imports
+  // const [closeModalSvg] = allSvgs();
 
   useEffect(() => {
     getAllMyMeetings();
@@ -140,7 +145,7 @@ const Meeting = () => {
   const formattedDateTime = makeDateFormat(inputDate);
 
   // order string split 
-  
+
 
 
 
@@ -167,7 +172,7 @@ const Meeting = () => {
                 <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                   <td className=" min-w-[150px] text-black dark:text-white">
                     <div className="flex items-center">
-                      <p className="whitespace-nowrap break-words" >{(meeting?.order?.name)}</p> 
+                      <p className="whitespace-nowrap break-words" >{(meeting?.order?.name)}</p>
                     </div>
                   </td>
 
@@ -208,10 +213,9 @@ const Meeting = () => {
                 <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                   <div className="text-[22px] font-medium capitalize leading-none text-[#000000] ms-3">Meeting Details</div>
                   <button type="button" className="text-white-dark hover:text-dark" onClick={() => setmeetingModal(false)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
+                    
+                    {allSvgs.closeModalSvg}
+
                   </button>
                 </div>
 
@@ -225,7 +229,7 @@ const Meeting = () => {
                       <span className='ps-2 text-[#0E1726]'>{meetingInfo?.order?.name}</span>
                     </span>
 
-                    {/*  */}
+               
                     <div className='flex  justify-between mb-[12px]'>
                       <span className=" block font-sans text-[16px] leading-[18.2px] text-[#000000]" >
                         Time:
@@ -242,7 +246,7 @@ const Meeting = () => {
                       </span>
                     </div>
 
-                    {/*  */}
+             
                     <div className="flex justify-between">
                       <span className="  block font-sans text-[16px] leading-[18.2px] text-[#000000]">
                         Status: <span className='text-[12px]'><StatusBg>{meetingInfo?.meeting_status}</StatusBg></span>

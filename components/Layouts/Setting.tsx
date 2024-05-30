@@ -34,7 +34,7 @@ const Setting = () => {
                     </svg>
                 </button> */}
 
-                <div className="perfect-scrollbar h-full overflow-y-auto overflow-x-hidden">
+                <div className="perfect-scrollbar h-full overflow-y-auto block overflow-x-hidden block">
                     <div className="relative pb-5 text-center">
                         <button type="button" className="absolute top-0 opacity-30 hover:opacity-100 ltr:right-0 rtl:left-0 dark:text-white" onClick={() => setShowCustomizer(false)}>
                             <svg
