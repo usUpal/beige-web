@@ -26,6 +26,7 @@
     "@next/font": "13.1.2",
     "@react-google-maps/api": "^2.19.2",
     "@reduxjs/toolkit": "^1.9.1",
+    "@syncfusion/ej2-react-filemanager": "^25.2.6",
     "@tippyjs/react": "^4.2.6",
     "@types/js-cookie": "^3.0.4",
     "@types/node": "18.11.18",
