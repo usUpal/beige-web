@@ -115,13 +115,56 @@ const SidebarManager = (props: any) => {
           </li>
 
           <li className="nav-item">
-            <Link href="/manager/users" className="group">
+
+            <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('users')}>
               <div className="flex items-center">
                 {allSvgs.helpSvg}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Users</span>
               </div>
-            </Link>
+
+              <div className={currentMenu === 'users' ? 'rotate-90' : 'rtl:rotate-180'}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </button>
+
+            <AnimateHeight duration={300} height={currentMenu === 'users' ? 'auto' : 0}>
+              <ul className="sub-menu text-gray-500">
+                {/* <li>
+                  <Link href="/manager/users" className="group">
+                    <span>All Users</span>
+                  </Link>
+                </li> */}
+
+                <li>
+                  <Link href="/manager/allUsers">All Users</Link>
+                </li>
+
+                <li>
+                  <Link href="/manager/cp">Content Provider</Link>
+                </li>
+
+                <li>
+                  <Link href="/manager/clients">Client</Link>
+                </li>
+
+              </ul>
+            </AnimateHeight>
+
+
+            <li>
+              {/* <Link href="/manager/users" className="group">
+                <div className="flex items-center">
+                  {allSvgs.helpSvg}
+                  <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Users</span>
+                </div>
+              </Link> */}
+            </li>
+
+
           </li>
+
         </ul>
       </li>
     </ul>

@@ -163,7 +163,7 @@ const Meeting = () => {
                             <Dialog.Panel as="div" className="panel my-24 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pt-8 pb-6">
                                 <div className="flex items-center justify-between bg-[#fbfbfb] px-5 dark:bg-[#121c2c]">
 
-                                    <div className="text-[18px] font-bold leading-none capitalize text-[#000000]">Dispute Details</div>
+                                    <div className="text-[22px] font-bold leading-none capitalize text-[#000000]">Dispute Details</div>
                                     <button type="button" className="text-white-dark hover:text-dark" onClick={() => disputeModal(false)}>
                                         {allSvgs.closeModalSvg}
                                     </button>

@@ -220,7 +220,7 @@ const Meeting = () => {
               <Dialog.Panel as="div" className="panel my-24 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
 
                 <div className="flex my-2 items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
-                  <div className="text-[22px] font-medium capitalize leading-none text-[#000000] ms-3">Meeting Details</div>
+                  <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-3">Meeting Details</div>
                   <button type="button" className="text-white-dark hover:text-dark" onClick={() => setmeetingModal(false)}>
 
                     {allSvgs.closeModalSvg}
@@ -269,23 +269,31 @@ const Meeting = () => {
                     </div>
 
                     {/* Resheduling */}
-                    <div className='flex flex-col items-start mt-5'>
-                      <h2 className=" mb-[15px] mt-[30px] text-[16px] font-bold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
-                      <form action="" className='flex flex-col'>
-                        <input
-                          className="rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[16px] font-medium leading-none text-[#000000] focus:border-[#dddddd] w-60"
-                          type="datetime-local"
-                          name="dateTime"
-                          id="datetime"
-                          ref={dateTimeRef}
-                          onChange={handleButtonChange}
-                        />
+                    <div className=''>
+                      <div className='flex flex-col items-start mt-5'>
+                        <h2 className=" mb-[15px] mt-[30px] text-[16px] font-bold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
+                        <form action="" className='flex flex-col'>
+                          <input
+                            className="rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[16px] font-medium leading-none text-[#000000] focus:border-[#dddddd] w-60"
+                            type="datetime-local"
+                            name="dateTime"
+                            id="datetime"
+                            ref={dateTimeRef}
+                            onChange={handleButtonChange}
+                          />
 
-                        <button type="submit" className="btn my-5 bg-black font-sans text-white float-left w-60">
-                          Save
-                        </button>
-                      </form>
+                          <button type="submit" className="btn my-5 bg-black font-sans text-white float-left w-60">
+                            Save
+                          </button>
+                        </form>
+                      </div>
+
+                      <button onClick={() => setmeetingModal(false)} type="submit" className="btn bg-black font-sans text-white mx-auto md:me-0 mt-0 hidden md:block">
+                        Close
+                      </button>
+
                     </div>
+
                     {/* Resheduling */}
 
                   </div>
