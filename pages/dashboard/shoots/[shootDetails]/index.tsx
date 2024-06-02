@@ -36,7 +36,7 @@ const ShootDetails = () => {
     <div className="pb-5 pl-5 pr-5">
       <div className="mt-5 flex items-center justify-between">
         <div className="basis-[40%] pr-8">
-          <h2 className="mb-[15px] mt-[30px] font-mono text-[22px] font-bold capitalize leading-none text-[#000000]">orderName</h2>
+          <h2 className="mb-[15px] mt-[30px] font-mono text-[22px] text-xl font-bold capitalize leading-none text-[#000000]">orderName</h2>
           <div>
             <span className="shootDate mb-[10px] block border-b-[1px] border-t-[1px] border-b-[#ACA686] border-t-[#ACA686] pb-[10px] pt-[10px] font-sans  leading-[18.2px] text-[#000000] text-[16x]">
               <strong>Date: </strong>

@@ -108,20 +108,19 @@ const Meeting = () => {
             {/* Recent Orders */}
             <div className="panel h-full w-full">
                 <div className="mb-5 flex items-center justify-between">
-                    <h5 className="text-lg font-semibold dark:text-white-light">All Disputes</h5>
+                    <h5 className="text-xl font-bold dark:text-white-light">All Disputes</h5>
                 </div>
                 <div className="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>Reason</th>
-                                <th>Updated Date</th>
-                                <th>Status</th>
-                                <th>View</th>
+                                <th className='font-semibold text-[16px]'>Reason</th>
+                                <th className='font-semibold text-[16px]'>Updated Date</th>
+                                <th className='font-semibold text-[16px]'>Status</th>
+                                <th className='font-semibold text-[16px]'>View</th>
                             </tr>
                         </thead>
                         <tbody>
-
                             {desputes?.map((dispute) => (
                                 <tr key={dispute.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                                     <td className=" min-w-[150px] text-black dark:text-white">
@@ -134,8 +133,10 @@ const Meeting = () => {
                                         {new Date(dispute?.updatedAt).toLocaleString()}
                                     </td>
 
-                                    <td className={((dispute?.status) == 'pending') ? `text-orange-400` : 'text-success'}>
-                                        {dispute?.status}
+                                    <td className="">
+                                        <StatusBg>
+                                            {dispute?.status}
+                                        </StatusBg>
                                     </td>
                                     <td>
                                         <button type="button" className="p-0" onClick={() => getSingleDesputeDetails(dispute?.id)}>
@@ -159,7 +160,7 @@ const Meeting = () => {
 
                     <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
                         <div className="flex min-h-screen items-start justify-center px-4">
-                            <Dialog.Panel as="div" className="panel my-24 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pt-8  pb-6">
+                            <Dialog.Panel as="div" className="panel my-24 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pt-8 pb-6">
                                 <div className="flex items-center justify-between bg-[#fbfbfb] px-5 dark:bg-[#121c2c]">
 
                                     <div className="text-[18px] font-bold leading-none capitalize text-[#000000]">Dispute Details</div>
@@ -167,66 +168,48 @@ const Meeting = () => {
                                         {allSvgs.closeModalSvg}
                                     </button>
                                 </div>
-                                <div className="p-5">
+                                <div className="px-5 mt-5">
                                     <h2 className='text-[#ACA686] text-[22px] font-bold leading-[28.6px] capitalize mb-[20px]'>Shoot Name: {disputeInfo?.order_id?.order_name}</h2>
                                     {/*  */}
-                                    <div className='flex justify-between'>
+                                    <div className='md:flex justify-between'>
                                         <div>
-                                            <div className="my-[5px]">
-                                                <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[6px]">Reason for dispute</h2>
-                                                <p className='text-[14px] font-regular leading-[28px] text-[#000000]'>{disputeInfo?.reason}</p>
+                                            <div className="mb-[5px]">
+
+                                                <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
+                                                    Reason : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'>{disputeInfo?.reason}</span>
+                                                </span>
                                             </div>
 
-                                            <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[6px]">Dispute Orders Info</h2>
+                                            <p>
+                                                <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
+                                                    Amount : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'>{disputeInfo?.order_id?.shoot_cost}</span>
+                                                </span>
+                                            </p>
 
-                                            <span className='text-[14px] my-[10px] leading-[18.2px] text-[#000000] block'>Dispute Amount:
-                                                ${disputeInfo?.order_id?.shoot_cost}
-                                            </span>
-
-                                            <span className='text-[14px] leading-[18.2px] text-[#000000] my-[10px] block '>Status:
-                                                <span className='ps-1 text-[12px]'>
+                                            <span className='text-[16px] leading-[18.2px] text-[#000000] my-[10px] block font-bold'>Status:
+                                                <span className='ps-1 text-[14px] font-semibold'>
                                                     <StatusBg>{disputeInfo?.status}</StatusBg>
                                                 </span>
                                             </span>
                                         </div>
 
                                         <div>
-                                            <div className="md:pe-40">
-                                                <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mb-[10px]">Dispute Timings:</h2>
-                                                <span className='text-[14px] leading-[18.2px] text-[#000000] mb-[10px] block '> Created at :
-
-                                                    <span className=''>
-                                                        <span className='ps-1'>
-                                                            {makeDateFormat(shootUpdatedTime)?.time} of
-                                                        </span>
-                                                        <span className='ps-1'>
-                                                            {makeDateFormat(shootUpdatedTime)?.date}
-                                                        </span>
-                                                    </span>
-
-                                                    <div className='mt-[8px]'>
-                                                        <span >
-                                                            Updated at :
-                                                            <span className='ps-1'>
-                                                                {makeDateFormat(shootStartTime)?.time} of
-                                                            </span>
-                                                            <span className='ps-1'>
-                                                                {makeDateFormat(shootStartTime)?.date}
-                                                            </span>
-                                                        </span>
-                                                    </div>
-
+                                            <p>
+                                                <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
+                                                    Time : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'>{makeDateFormat(shootStartTime)?.time}</span>
                                                 </span>
+                                            </p>
 
-                                                <h2 className="text-[16px] font-bold leading-none capitalize text-[#000000] mt-4">decision</h2>
-                                                <p className='text-[14px] font-regular leading-[28px] text-[#000000] mt-1 mb-8'>
-                                                    {disputeInfo?.order_id?.order_status}
-                                                </p>
+                                            <p>
+                                                <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
+                                                    Date : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'>{makeDateFormat(shootStartTime)?.date}</span>
+                                                </span>
+                                            </p>
 
-                                                <button onClick={() => disputeModal(false)} type="submit" className="btn mt-22  bg-black font-sans text-white">
-                                                    Close
-                                                </button>
-                                            </div>
+                                            <button onClick={() => disputeModal(false)} type="submit" className="btn md:mt-24 mt-8  bg-black font-sans text-white mx-auto md:me-0">
+                                                Close
+                                            </button>
+                                            {/* </div> */}
                                         </div>
                                     </div>
                                 </div>

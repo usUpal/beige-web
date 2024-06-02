@@ -51,18 +51,18 @@ const Shoots = () => {
       {/* Recent Orders */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
-          <h5 className="text-lg font-semibold dark:text-white-light">Recent Orders</h5>
+          <h5 className="text-xl font-bold dark:text-white-light">Recent Orders</h5>
         </div>
         <div className="table-responsive">
           <table>
             <thead>
               <tr>
-                <th className="ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
-                <th>Order ID</th>
-                <th>Price</th>
-                <th>Files</th>
+                <th className="ltr:rounded-l-md rtl:rounded-r-md font-semibold text-[16px]">Order Name</th>
+                <th className='text-[16px] font-semibold'>Order ID</th>
+                <th className='text-[16px] font-semibold'>Price</th>
+                <th className='text-[16px] font-semibold'>Files</th>
                 <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                <th>View</th>
+                <th className='text-[16px] font-semibold'>View</th>
               </tr>
             </thead>
             <tbody>
