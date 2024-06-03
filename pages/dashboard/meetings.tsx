@@ -5,16 +5,15 @@ import { setPageTitle } from '../../store/themeConfigSlice';
 import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
 import { API_ENDPOINT } from '@/config';
-import { useForm } from 'react-hook-form';
 import { useAuth } from '@/contexts/authContext';
 import Pagination from '@/components/Pagination';
 import StatusBg from '@/components/Status/StatusBg';
-import { log } from 'console';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
-// import allSvgs from '@/utils/allsvgs/allSvgs';
+import useDateFormat from '@/hooks/useDateFormat';
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
+  // console.log("🚀 ~ Meeting ~ totalPagesCount:", totalPagesCount)
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [myMeetings, setMyMeetings] = useState<MeetingResponsTypes[]>([]);
   const [rescheduleMeetingTime, setrescheduleMeetingTime] = useState('');
@@ -26,8 +25,11 @@ const Meeting = () => {
   const dispatch = useDispatch();
 
   // --> All SVG files imports
-  // const [closeModalSvg] = allSvgs();
 
+  // times and date
+  const myInputDate = (meetingInfo?.meeting_date_time);
+  const myFormattedDateTime = useDateFormat(myInputDate);
+  
   useEffect(() => {
     getAllMyMeetings();
   }, [currentPage]);
@@ -96,7 +98,7 @@ const Meeting = () => {
       const meetingDetailsRes = await response.json();
 
       if (!meetingDetailsRes) {
-        console.log(response);
+        // console.log(response);
         setShowError(true);
         setLoading(false);
       } else {
@@ -117,6 +119,7 @@ const Meeting = () => {
   };
 
   // get date format
+  // left only for table
   function makeDateFormat(inputDate) {
     const date = new Date(inputDate);
 
@@ -145,11 +148,7 @@ const Meeting = () => {
   const formattedDateTime = makeDateFormat(inputDate);
 
   // order string split 
-
   // console.log(myMeetings);
-
-
-
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
@@ -169,6 +168,9 @@ const Meeting = () => {
                 <th className='font-semibold text-[16px]'>View</th>
               </tr>
             </thead>
+            <div>
+
+            </div>
             <tbody>
               {myMeetings?.map((meeting) => (
                 <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
@@ -179,8 +181,16 @@ const Meeting = () => {
                   </td>
 
                   <td>
-                    {makeDateFormat(meeting?.meeting_date_time)?.date}
-                    <span className='ps-2'>Time: {makeDateFormat(meeting?.meeting_date_time)?.time}</span>
+                    {/* {myFormattedDateTime?.date} */}
+
+                    <span className='ps-2'>Date:{makeDateFormat(meeting?.meeting_date_time)?.date}
+                    </span>
+                    <span className='ps-2'>Time:{makeDateFormat(meeting?.meeting_date_time)?.time}
+                    </span>
+                    {/* <span className='ps-2'>Time: {myFormattedDateTime?.time}</span> */}
+                    {/* {useDateFormat(meeting?.meeting_date_time)} */}
+
+
                   </td>
 
                   <td>
@@ -242,12 +252,12 @@ const Meeting = () => {
                     <div className='md:flex justify-between mb-[7px]'>
                       <p>
                         <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
-                          Time : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'> {makeDateFormat(meetingInfo?.meeting_date_time)?.time}</span>
+                          Time : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'> {myFormattedDateTime?.time}</span>
                         </span>
                       </p>
                       <p>
                         <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
-                          Date : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'> {makeDateFormat(meetingInfo?.meeting_date_time)?.date}</span>
+                          Date : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'> {myFormattedDateTime?.date}</span>
                         </span>
                       </p>
 

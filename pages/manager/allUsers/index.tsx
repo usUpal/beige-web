@@ -1,11 +1,16 @@
 import { API_ENDPOINT } from '@/config';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import StatusBg from '@/components/Status/StatusBg';
+import { Dialog, Transition } from '@headlessui/react';
+import Loader from '@/components/SharedComponent/Loader';
+import useDateFormat from '@/hooks/useDateFormat';
+import { useRouter } from 'next/router';
 
 const Users = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -56,8 +61,13 @@ const Users = () => {
         updatedAt: '2023-11-14T10:56:45.303Z',
         id: '6527c687756ec2096cac7ab2',
     });
-    // console.log('🚀 ~ file: users.tsx:60 ~ Users ~ formData:', formData);
     const [backupFootage, setBackupFootage] = useState<string>();
+
+    // time formation
+    const inputDate = (userInfo?.createdAt);
+    const formattedDateTime = useDateFormat(inputDate);
+
+
 
     useEffect(() => {
         getAllUsers();
@@ -75,15 +85,17 @@ const Users = () => {
         }
     };
 
-    console.log("all users ==> ", allUsers);
 
+    const router = useRouter();
     // User Single
     // Also unUsed Function For APi
     const getUserDetails = async (singleUserId: string) => {
         setLoading(true);
+
         try {
-            const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
+            const response = await fetch(`${API_ENDPOINT}users/${singleUserId}`);
             const userDetailsRes = await response.json();
+            console.log("🚀 ~ getUserDetails ~ userDetailsRes:", userDetailsRes)
 
             if (!userDetailsRes) {
                 setShowError(true);
@@ -91,7 +103,13 @@ const Users = () => {
             } else {
                 setUserInfo(userDetailsRes);
                 setLoading(false);
-                setUserModal(true);
+                // if the user is cp then route to cp details router
+                if (userDetailsRes.role === 'cp') {
+                    const cpRoute = `cp/${userDetailsRes?.id}`;
+                    router.push(cpRoute);
+                } else {
+                    setUserModal(true);
+                }
             }
         } catch (error) {
             console.error(error);
@@ -180,11 +198,8 @@ const Users = () => {
         return newData;
     };
 
-    console.log(newData);
-
     // unUsed Function For Api
     const submitData = async (e: any) => {
-        // console.log("ADDING", addHandler(e));
         try {
             const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
                 method: 'PATCH',
@@ -274,20 +289,95 @@ const Users = () => {
                                                             <td>{user?.email}</td>
                                                             <td className="font-sans text-success">{user?.role}</td>
                                                             <td>
-                                                                <div className="font-sans">{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</div>
+                                                                <div className="font-sans">
+                                                                    <StatusBg>{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg>
+                                                                </div>
                                                             </td>
                                                             <td>
-                                                                <Link href={`allUsers/${user?.id}`}>
-                                                                    <button type="button" className="p-0">
-                                                                        {allSvgs.pencilIconForEdit}
-                                                                    </button>
-                                                                </Link>
+                                                                <button onClick={() => getUserDetails(user.id)} type="button" className="p-0">
+                                                                    {allSvgs.pencilIconForEdit}
+                                                                </button>
                                                             </td>
                                                         </tr>
                                                     ))}
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {/* modal Starts*/}
+                                    <Transition appear show={userModal} as={Fragment}>
+                                        <Dialog as="div" open={userModal} onClose={() => setUserModal(false)}>
+                                            <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                                                <div className="flex min-h-screen items-start justify-center md:px-4 ">
+                                                    <Dialog.Panel as="div" className="panel my-24 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+
+                                                        <div className="flex my-2 items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
+                                                            <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-3">All-Users </div>
+                                                            <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModal(false)}>
+                                                                {allSvgs.closeModalSvg}
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="basis-[50%]">
+                                                            <h2 className="mx-6 mb-[12px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Detail Information of {userInfo?.name} </h2>
+
+                                                            <div className='mx-6 pb-6'>
+                                                                <div className='flex justify-between'>
+                                                                    <div className="left">
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
+                                                                                Name :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{userInfo?.name}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000]'>
+                                                                                Email :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{userInfo?.email}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000] capitalize'>
+                                                                                Role :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{userInfo?.role}</span>
+                                                                            </span>
+                                                                        </p>
+
+                                                                    </div>
+
+                                                                    <div className="right">
+
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000]'>
+                                                                                Time :
+                                                                                <span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{formattedDateTime?.time}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000] capitalize'>
+                                                                                Date :
+                                                                                <span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{formattedDateTime?.date}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000] capitalize'>
+                                                                                Address :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{userInfo?.location}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="btn-group flex">
+                                                                    <button onClick={() => setUserModal(false)} type="submit" className="btn bg-black font-sans text-white mx-auto md:me-0 mt-12 hidden md:block">
+                                                                        Close
+                                                                    </button>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </Dialog.Panel>
+                                                </div>
+                                            </div>
+                                        </Dialog>
+                                    </Transition>
+                                    {/* modal ends*/}
                                 </div>
                             </div>
                         </div>

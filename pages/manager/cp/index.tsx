@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import StatusBg from '@/components/Status/StatusBg';
+import Pagination from '@/components/Pagination';
 
 const CpUsers = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -16,66 +18,28 @@ const CpUsers = () => {
     const [isLoading, setLoading] = useState<boolean>(true);
     const [showError, setShowError] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<any | null>(null);
-    const [formData, setFormData] = useState<any>({
-        geo_location: {
-            type: 'Point',
-            coordinates: [-122.4711, 37.7745],
-        },
-        content_type: ['wedding', 'portrait'],
-        content_verticals: ['modern', 'romanticasaa'],
-        vst: ['modern wedding', 'romantic wedding'],
-        shoot_availability: ['weekends', 'afternoons'],
-        successful_beige_shoots: 8,
-        trust_score: 4.7,
-        average_rating: 4.9,
-        avg_response_time: 1.5,
-        equipment: ['camera', 'lens', 'tripod'],
-        equipment_specific: ['Sony a7 III', 'Sony FE 85mm f/1.8'],
-        portfolio: ['https://example.com/portfolio5', 'https://example.com/portfolio6'],
-        total_earnings: 8000,
-        backup_footage: ['https://example.com/backup5', 'https://example.com/backup6'],
-        travel_to_distant_shoots: true,
-        experience_with_post_production_edit: true,
-        customer_service_skills_experience: true,
-        team_player: false,
-        avg_response_time_to_new_shoot_inquiry: 1,
-        num_declined_shoots: 0,
-        num_accepted_shoots: 8,
-        num_no_shows: 1,
-        review_status: 'rejected',
-        userId: '6527c39992e911feecc30b18',
-        city: 'Texas',
-        neighborhood: 'Mission District',
-        zip_code: '94110',
-        last_beige_shoot: '61d8f4b4c8d9e6a4a8c3f7d5',
-        timezone: 'PST',
-        own_transportation_method: true,
-        reference: 'Bob Johnson',
-        created_at: '2023-10-12T10:12:23.602Z',
-        createdAt: '2023-10-12T10:12:23.605Z',
-        updatedAt: '2023-11-14T10:56:45.303Z',
-        id: '6527c687756ec2096cac7ab2',
-    });
-    // console.log('🚀 ~ file: users.tsx:60 ~ Users ~ formData:', formData);
-    //   const [backupFootage, setBackupFootage] = useState<string>();
+    const [formData, setFormData] = useState<any>({});
 
     useEffect(() => {
         getAllCpUsers();
     }, [currentPage]);
 
+    // useEffect(() => {
+    //     dispatch(setPageTitle('Meetings'));
+    //   }, []);
+
     // All Users
     const getAllCpUsers = async () => {
         try {
-            const response = await fetch(`${API_ENDPOINT}cp`);
+            const response = await fetch(`${API_ENDPOINT}cp?limit=10&page=${currentPage}`);
             const users = await response.json();
-            setTotalPagesCount(users?.totalPages);
             setAllCpUsers(users.results);
-            console.log(users.results);
-
+            setTotalPagesCount(users?.totalPages);
         } catch (error) {
             console.error(error);
         }
     };
+
 
     // User Single
     // Also unUsed Function For APi
@@ -107,6 +71,10 @@ const CpUsers = () => {
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     // Fixing handleChange Function version --1
     const handleChange = (e: any) => {
@@ -182,51 +150,6 @@ const CpUsers = () => {
 
     console.log(newData);
 
-    // unUsed Function For Api
-    const submitData = async (e: any) => {
-        // console.log("ADDING", addHandler(e));
-        try {
-            const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(addHandler(e)),
-            });
-
-            const updateNew = await response.json();
-
-            // Handle the response as needed
-            coloredToast('success');
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    // UnUsed Function for Api
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-
-        try {
-            const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            const updatedUserDetails = await response.json();
-            console.log(updatedUserDetails);
-            console.log('UPDATE', formData);
-
-            // Handle the response as needed
-            coloredToast('success');
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    console.log("==>", allCpUsers);
 
     return (
         <>
@@ -254,7 +177,7 @@ const CpUsers = () => {
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    {/* <th className="font-mono">User ID</th> */}
+                                                    <th className="font-mono">User ID</th>
                                                     <th className="ltr:rounded-l-md rtl:rounded-r-md">Name</th>
                                                     <th className="font-mono">Email</th>
                                                     <th className="font-mono">Role</th>
@@ -266,22 +189,24 @@ const CpUsers = () => {
                                                 {allCpUsers
                                                     ?.map((cpUser) => (
                                                         <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                                            {/* <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                                            <td className="min-w-[150px] font-sans text-black dark:text-white">
                                                                 <div className="flex items-center">
                                                                     <p className="whitespace-nowrap">{cpUser?.id}</p>
                                                                 </div>
-                                                            </td> */}
+                                                            </td>
                                                             <td>{cpUser?.userId?.name}</td>
                                                             <td>{cpUser?.userId?.email}</td>
-                                                            {/* <td>{cpUser?.email}</td> */}
                                                             <td className="font-sans text-success">{cpUser?.userId?.role}</td>
 
                                                             <td>
-                                                                <div className="font-sans">{cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}</div>
+                                                                <div className="font-sans"><div className="font-sans">
+                                                                    <StatusBg>{cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg>
+                                                                </div></div>
                                                             </td>
 
                                                             <td>
                                                                 <Link href={`cp/${cpUser?.id}`}>
+                                                                    {/* getUserDetails */}
                                                                     <button type="button" className="p-0">
                                                                         {allSvgs.pencilIconForEdit}
                                                                     </button>
@@ -291,6 +216,8 @@ const CpUsers = () => {
                                                     ))}
                                             </tbody>
                                         </table>
+                                        {/*  */}
+                                        <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} />
                                     </div>
                                 </div>
                             </div>

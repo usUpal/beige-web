@@ -8,6 +8,7 @@ import { API_ENDPOINT } from '@/config';
 import Pagination from '@/components/Pagination';
 import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import useDateFormat from '@/hooks/useDateFormat';
 // import allSvgs from '@/utils/allsvgs/allSvgs';
 
 const Meeting = () => {
@@ -69,38 +70,40 @@ const Meeting = () => {
         setCurrentPage(page);
     };
 
-    const shootStartTime = disputeInfo?.createdAt;
-    const shootUpdatedTime = disputeInfo?.updatedAt;
+    // get Time Hooks
+    const inputedDesputeDate = disputeInfo?.createdAt;
+    const formattedDateTime = useDateFormat(inputedDesputeDate);
+
 
     // get date format
-    function makeDateFormat(inputDate) {
-        const date = new Date(inputDate);
-
-        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-        const month = months[date.getMonth()];
-        const day = date.getDate();
-        const year = date.getFullYear();
-
-        let hours = date.getHours();
-        const minutes = date.getMinutes();
-        const ampm = hours >= 12 ? 'pm' : 'am';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // Handle midnight (0 hours)
-        const formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
-
-        const formattedDate = `${month} ${day}, ${year}`;
-
-        return {
-            date: formattedDate,
-            time: formattedTime
-        };
-    }
-
-    const inputDate = '2024-05-29T21:00:00.000Z';
-    const formattedDateTime = makeDateFormat(inputDate);
-
-
+    /*   function makeDateFormat(inputDate) {
+          const date = new Date(inputDate);
+  
+          const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  
+          const month = months[date.getMonth()];
+          const day = date.getDate();
+          const year = date.getFullYear();
+  
+          let hours = date.getHours();
+          const minutes = date.getMinutes();
+          const ampm = hours >= 12 ? 'pm' : 'am';
+          hours = hours % 12;
+          hours = hours ? hours : 12; // Handle midnight (0 hours)
+          const formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
+  
+          const formattedDate = `${month} ${day}, ${year}`;
+  
+          return {
+              date: formattedDate,
+              time: formattedTime
+          };
+      }
+  
+      const inputDate = '2024-05-29T21:00:00.000Z';
+      const formattedDateTime = makeDateFormat(inputDate);
+  
+   */
 
     return (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
@@ -115,7 +118,7 @@ const Meeting = () => {
                         <thead>
                             <tr>
                                 <th className='font-semibold text-[16px]'>Reason</th>
-                                <th className='font-semibold text-[16px]'>Updated Date</th>
+                                <th className='font-semibold text-[16px]'>Created Date</th>
                                 <th className='font-semibold text-[16px]'>Status</th>
                                 <th className='font-semibold text-[16px]'>View</th>
                             </tr>
@@ -130,7 +133,7 @@ const Meeting = () => {
                                     </td>
 
                                     <td>
-                                        {new Date(dispute?.updatedAt).toLocaleString()}
+                                        {new Date(dispute?.createdAt).toLocaleString()}
                                     </td>
 
                                     <td className="">
@@ -196,13 +199,13 @@ const Meeting = () => {
                                         <div>
                                             <p>
                                                 <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
-                                                    Time : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'>{makeDateFormat(shootStartTime)?.time}</span>
+                                                    Time : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'>{formattedDateTime?.time}</span>
                                                 </span>
                                             </p>
 
                                             <p>
                                                 <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
-                                                    Date : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'>{makeDateFormat(shootStartTime)?.date}</span>
+                                                    Date : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'>{formattedDateTime?.date}</span>
                                                 </span>
                                             </p>
 

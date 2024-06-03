@@ -1,21 +1,25 @@
 import { API_ENDPOINT } from '@/config';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { Dialog, Transition } from '@headlessui/react';
+import useDateFormat from '@/hooks/useDateFormat';
+import StatusBg from '@/components/Status/StatusBg';
 
 const Users = () => {
     const [isMounted, setIsMounted] = useState(false);
-    const [userModal, setUserModal] = useState(false);
+    const [userModalClient, setUserModalClient] = useState(false);
     const [allClients, setAllClients] = useState<any[]>([]);
+
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
     const [isLoading, setLoading] = useState<boolean>(true);
     const [showError, setShowError] = useState<boolean>(false);
-    const [userInfo, setUserInfo] = useState<any | null>(null);
+    const [clientUserInfo, setClientUserInfo] = useState<any | null>(null);
     const [formData, setFormData] = useState<any>({
         geo_location: {
             type: 'Point',
@@ -56,15 +60,18 @@ const Users = () => {
         updatedAt: '2023-11-14T10:56:45.303Z',
         id: '6527c687756ec2096cac7ab2',
     });
-    console.log('🚀 ~ file: users.tsx:60 ~ Users ~ formData:', formData);
     //   const [backupFootage, setBackupFootage] = useState<string>();
 
+    // time formation
+    const inputDate = (clientUserInfo?.createdAt);
+    const formattedDateTime = useDateFormat(inputDate);
+
     useEffect(() => {
-        getallClients();
+        getAllClients();
     }, [currentPage]);
 
     // All Users
-    const getallClients = async () => {
+    const getAllClients = async () => {
         try {
             const response = await fetch(`${API_ENDPOINT}users`);
             const users = await response.json();
@@ -80,16 +87,16 @@ const Users = () => {
     const getUserDetails = async (singleUserId: string) => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
+            const response = await fetch(`${API_ENDPOINT}users/${singleUserId}`);
             const userDetailsRes = await response.json();
 
             if (!userDetailsRes) {
                 setShowError(true);
                 setLoading(false);
             } else {
-                setUserInfo(userDetailsRes);
+                setClientUserInfo(userDetailsRes);
                 setLoading(false);
-                setUserModal(true);
+                setUserModalClient(true);
             }
         } catch (error) {
             console.error(error);
@@ -129,8 +136,8 @@ const Users = () => {
     };
 
     {
-        userInfo?.content_verticals &&
-            userInfo.content_verticals.map((content_vertical: string) => (
+        clientUserInfo?.content_verticals &&
+            clientUserInfo.content_verticals.map((content_vertical: string) => (
                 <div className="mb-2" key={content_vertical}>
                     <label className="flex items-center">
                         <input
@@ -178,13 +185,13 @@ const Users = () => {
         return newData;
     };
 
-    console.log(newData);
+    // console.log(newData);
 
     // unUsed Function For Api
     const submitData = async (e: any) => {
         // console.log("ADDING", addHandler(e));
         try {
-            const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
+            const response = await fetch(`${API_ENDPOINT}cp/${clientUserInfo.userId}?role=manager`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,7 +213,7 @@ const Users = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
+            const response = await fetch(`${API_ENDPOINT}cp/${clientUserInfo.userId}?role=manager`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -215,8 +222,8 @@ const Users = () => {
             });
 
             const updatedUserDetails = await response.json();
-            console.log(updatedUserDetails);
-            console.log('UPDATE', formData);
+            // console.log(updatedUserDetails);
+            // console.log('UPDATE', formData);
 
             // Handle the response as needed
             coloredToast('success');
@@ -260,7 +267,9 @@ const Users = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {allClients
+                                                {allClients.filter((user) => {
+                                                    return user.role === 'user';
+                                                })
                                                     ?.map((userClient) => (
                                                         <tr key={userClient.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                                                             <td className="min-w-[150px] font-sans text-black dark:text-white">
@@ -268,24 +277,110 @@ const Users = () => {
                                                                     <p className="whitespace-nowrap">{userClient?.id}</p>
                                                                 </div>
                                                             </td>
-                                                            <td>{userClient?.name}</td>
-                                                            <td>{userClient?.email}</td>
-                                                            <td className="font-sans text-success">{userClient?.role}</td>
+
                                                             <td>
-                                                                <div className="font-sans">{userClient?.isEmailVerified === true ? 'Verified' : 'Unverified'}</div>
+                                                                {userClient?.name}
                                                             </td>
                                                             <td>
-                                                                <Link href={`clients/${userClient?.id}`}>
-                                                                    <button type="button" className="p-0">
-                                                                        {allSvgs.pencilIconForEdit}
-                                                                    </button>
-                                                                </Link>
+                                                                {userClient?.email}
+                                                            </td>
+
+                                                            <td className="font-sans text-success">
+                                                                {userClient?.role}
+                                                            </td>
+
+                                                            <td>
+                                                                <div className="font-sans">
+                                                                    <StatusBg>{userClient?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg>
+                                                                </div>
+                                                            </td>
+
+                                                            <td>
+                                                                <button type="button" className="p-0" onClick={() => getUserDetails(userClient.id)}>
+                                                                    {allSvgs.pencilIconForEdit}
+                                                                </button>
                                                             </td>
                                                         </tr>
                                                     ))}
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {/* modal Starts*/}
+                                    <Transition appear show={userModalClient} as={Fragment}>
+                                        <Dialog as="div" open={userModalClient} onClose={() => setUserModalClient(false)}>
+                                            <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                                                <div className="flex min-h-screen items-start justify-center md:px-4 ">
+                                                    <Dialog.Panel as="div" className="panel my-24 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+
+                                                        <div className="flex my-2 items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
+                                                            <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-3">Client </div>
+                                                            <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModalClient(false)}>
+                                                                {allSvgs.closeModalSvg}
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="basis-[50%]">
+                                                            <h2 className="mx-6 mb-[12px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Detail Information of {clientUserInfo?.name} </h2>
+
+                                                            <div className='mx-6 pb-6'>
+                                                                <div className='flex justify-between'>
+                                                                    <div className="left">
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
+                                                                                Name :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{clientUserInfo?.name}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000]'>
+                                                                                Email :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{clientUserInfo?.email}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000] capitalize'>
+                                                                                Role :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{clientUserInfo?.role}</span>
+                                                                            </span>
+                                                                        </p>
+
+                                                                    </div>
+
+                                                                    <div className="right">
+
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000]'>
+                                                                                Time :
+                                                                                <span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{formattedDateTime?.time}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000] capitalize'>
+                                                                                Date :
+                                                                                <span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{formattedDateTime?.date}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                        <p>
+                                                                            <span className='text-[16px] font-bold leading-none text-[#000000] capitalize'>
+                                                                                Address :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{clientUserInfo?.location}</span>
+                                                                            </span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="btn-group flex">
+                                                                    <button onClick={() => setUserModalClient(false)} type="submit" className="btn bg-black font-sans text-white mx-auto md:me-0 mt-12 hidden md:block">
+                                                                        Close
+                                                                    </button>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </Dialog.Panel>
+                                                </div>
+                                            </div>
+                                        </Dialog>
+                                    </Transition>
+                                    {/* modal ends*/}
+
                                 </div>
                             </div>
                         </div>
