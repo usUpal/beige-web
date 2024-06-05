@@ -124,7 +124,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
       .catch(() => toast.dark(`❗ Couldn't move file. Make sure a file with the same name doesn't already exist in that folder.`));
     setFileToMove({});
   };
-
+  // Download as the folder
   const fileCards = () => {
     return filesInPath(path, ignoringFileStructure).map((file) => (
       <FileCard
@@ -190,14 +190,27 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
             }
           }
         }}
+        // ==========
+
         onDownload={async (publicDownload) => {
           if (publicDownload) {
             window.open(file.downloadLink, '_blank');
           } else {
-            const { url } = await api.getSharableUrl(file.path, true);
-            window.open(url, '_blank');
+            if (file.isFolder) {
+              // If it's a folder, request the ZIP file from the backend
+              try {
+                await api.downloadFolder(file.path);
+              } catch (error) {
+                console.error('There was an error downloading the folder:', error);
+              }
+            } else {
+              // If it's a file, get the sharable URL and open it
+              const { url } = await api.getSharableUrl(file.path, true);
+              window.open(url, '_blank');
+            }
           }
         }}
+        // ==========
         checkIsPublic={() => api.checkIsPublic(file.path)}
         onSetPublic={(pub) => {
           api

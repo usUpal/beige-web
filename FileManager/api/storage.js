@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import axiosLib from 'axios';
 import config from '../../config';
 
@@ -16,11 +17,13 @@ export default {
   getFiles() {
     return axios.get('/get-files', reqConfig(this));
   },
-  checkIsPublic(path) {
-    return axios
-      .head(config.BucketUrl + path + `?bc_timestamp=${new Date().getTime()}`) // Append unused query param to ensure that browser cache is bypassed.
-      .then((res) => res.status === 200)
-      .catch((res) => false);
+  async checkIsPublic(path) {
+    try {
+      const res = await axios.head(config.BucketUrl + path + `?bc_timestamp=${new Date().getTime()}`); // Append unused query param to ensure that browser cache is bypassed.
+      return res.status === 200;
+    } catch (res_1) {
+      return false;
+    }
   },
   setPublicOrPrivate(filepath, pub) {
     return axios.post(
@@ -31,18 +34,18 @@ export default {
       reqConfig(this)
     );
   },
-  getSharableUrl(filepath, download) {
-    return axios
-      .post(
-        '/get-share-url',
-        {
-          filepath,
-          download,
-        },
-        reqConfig(this)
-      )
-      .then((res) => res.data);
+  async getSharableUrl(filepath, download) {
+    const res = await axios.post(
+      '/get-share-url',
+      {
+        filepath,
+        download,
+      },
+      reqConfig(this)
+    );
+    return res.data;
   },
+
   addFolder(folderpath) {
     return axios.post(
       '/add-folder',
@@ -61,30 +64,28 @@ export default {
       reqConfig(this)
     );
   },
-  moveFile(filepath, destination) {
-    return axios
-      .post(
-        '/move-file',
-        {
-          filepath,
-          destination,
-        },
-        reqConfig(this)
-      )
-      .then((res) => res.data);
+  async moveFile(filepath, destination) {
+    const res = await axios.post(
+      '/move-file',
+      {
+        filepath,
+        destination,
+      },
+      reqConfig(this)
+    );
+    return res.data;
   },
-  getNewUploadPolicy(filepath, fileContentType, fileSize) {
-    return axios
-      .post(
-        '/get-new-upload-policy',
-        {
-          filepath,
-          fileContentType,
-          fileSize,
-        },
-        reqConfig(this)
-      )
-      .then((res) => res.data);
+  async getNewUploadPolicy(filepath, fileContentType, fileSize) {
+    const res = await axios.post(
+      '/get-new-upload-policy',
+      {
+        filepath,
+        fileContentType,
+        fileSize,
+      },
+      reqConfig(this)
+    );
+    return res.data;
   },
   postFile(uploadPolicy, file, progressCb) {
     const data = new FormData();
@@ -104,18 +105,35 @@ export default {
 
     return [uploadPromise, () => cancelTokenSource.cancel()];
   },
-  getSettings() {
-    return axios.get('/get-settings', reqConfig(this)).then((res) => res.data.settings);
+  async getSettings() {
+    const res = await axios.get('/get-settings', reqConfig(this));
+    return res.data.settings;
   },
-  saveSettings(settings) {
-    return axios
-      .post(
-        '/save-settings',
-        {
-          settings,
-        },
-        reqConfig(this)
-      )
-      .then((res) => res.data);
+  async saveSettings(settings) {
+    const res = await axios.post(
+      '/save-settings',
+      {
+        settings,
+      },
+      reqConfig(this)
+    );
+    return res.data;
+  },
+  // New method to download a folder as a ZIP file
+  async downloadFolder(folderpath) {
+    const res = await axios.get(`/download-folder?folderpath=${encodeURIComponent(folderpath)}`, {
+      ...reqConfig(this),
+      responseType: 'blob', // Important for downloading files
+    });
+
+    const blob = new Blob([res.data], { type: 'application/zip' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = `${folderpath.split('/').pop()}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
   },
 };

@@ -22,12 +22,11 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
               </a>
               <Dropdown onClick={async () => setIsPublic(await checkIsPublic())}>
                 <Dropdown.Menu>
-                  {/*<Dropdown.Item icon='cloud download' text='Download' />*/}
-                  <Dropdown.Item icon="download" text="Download" disabled={isFolder} onClick={() => onDownload(isPublic)} />
+                  <Dropdown.Item icon="cloud download" text="Download" onClick={() => onDownload(isPublic)} />
+                  {/* <Dropdown.Item icon="download" text="Download" disabled={isFolder} onClick={() => onDownload(isPublic)} /> */}
                   <Dropdown.Item
                     icon={isPublic ? 'lock' : 'unlock'}
                     text={isPublic ? 'Make private' : 'Make public'}
-                    disabled={isFolder}
                     onClick={() => {
                       onSetPublic(!isPublic);
                     }}
