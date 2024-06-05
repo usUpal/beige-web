@@ -86,7 +86,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
     api
       .deleteFile(deletionState.file)
       .then((res) => {
-        toast.dark(`✔️ ${deletionState.isFolder ? 'Folder' : 'File'} deleted`);
+        toast.warn(`❗ ${deletionState.isFolder ? 'Folder' : 'File'} deleted`);
         if (res.data.deleted) setDeletionState({ ...deletionState, open: false, error: false, saving: false });
         getFiles();
       })
@@ -102,11 +102,11 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
       .moveFile(fileToRename.path, newFilePath.join('/'))
       .then((data) => {
         if (!data.success) return Promise.reject();
-        toast.dark('🖊 File renamed!');
+        toast('🖊 File renamed!');
         setRenameInputValue('');
         getFiles();
       })
-      .catch(() => toast.dark(`❗ Couldn't rename file. Make sure a file with the same name doesn't already exist.`));
+      .catch(() => toast(`❗ Couldn't rename file. Make sure a file with the same name doesn't already exist.`));
     setFileToRename({});
   };
 
@@ -117,11 +117,11 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
       .moveFile(fileToMove.path, destFolder.concat(fileToMove.name).join('/'))
       .then((data) => {
         if (!data.success) return Promise.reject();
-        toast.dark('🚚 File moved!');
+        toast('🚚 File moved!');
         setPath(destFolder);
         getFiles();
       })
-      .catch(() => toast.dark(`❗ Couldn't move file. Make sure a file with the same name doesn't already exist in that folder.`));
+      .catch(() => toast(`❗ Couldn't move file. Make sure a file with the same name doesn't already exist in that folder.`));
     setFileToMove({});
   };
   // Download as the folder
@@ -138,7 +138,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
         isDimmed={!!fileToMove.path && !file.isFolder}
         onDelete={() => {
           // If the folder isn't empty then don't delete (TODO recursive folder deletion)
-          if (file.isFolder && filesInPath(file.path.split('/').slice(0, -1)).length) return toast.dark('❌ You must delete all files from this folder first.');
+          if (file.isFolder && filesInPath(file.path.split('/').slice(0, -1)).length) return toast('❌ You must delete all files from this folder first.');
           setDeletionState({ ...deletionState, open: true, file: file.path, isFolder: file.isFolder });
         }}
         onRename={() => {
@@ -159,10 +159,10 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
               navigator.clipboard
                 .writeText(config.CDN_URL + file.path)
                 .then(() => {
-                  toast.dark('📋 File URL copied to clipboard');
+                  toast('📋 File URL copied to clipboard');
                 })
                 .catch(() => {
-                  toast.dark(`File URL: ${config.CDN_URL + file.path}`, {
+                  toast(`File URL: ${config.CDN_URL + file.path}`, {
                     position: 'top-center',
                     draggable: false,
                     closeOnClick: false,
@@ -171,16 +171,16 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
                 });
             } else {
               const { url, duration } = await api.getSharableUrl(file.path);
-              if (!url) toast.dark("🚫 Couldn't get sharable URL. Try making the file public instead.");
+              if (!url) toast("🚫 Couldn't get sharable URL. Try making the file public instead.");
               navigator.clipboard
                 .writeText(url)
                 .then(() => {
-                  toast.dark(`🔗 Sharable URL copied to clipboard. It will expire in ${duration} days. Make this file public to get a permanent public link.`, {
+                  toast(`🔗 Sharable URL copied to clipboard. It will expire in ${duration} days. Make this file public to get a permanent public link.`, {
                     autoClose: 8000,
                   });
                 })
                 .catch(() => {
-                  toast.dark(`Sharable URL (will expire in ${duration} days): ${url}`, {
+                  toast(`Sharable URL (will expire in ${duration} days): ${url}`, {
                     position: 'top-center',
                     draggable: false,
                     closeOnClick: false,
@@ -216,10 +216,10 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
           api
             .setPublicOrPrivate(file.path, pub)
             .then(() => {
-              toast.dark(pub ? '🌎 File is now publicly accessible' : '🔑 File is now private');
+              toast(pub ? '🌎 File is now publicly accessible' : '🔑 File is now private');
             })
             .catch(() => {
-              toast.dark('❓ Something went wrong');
+              toast('❓ Something went wrong');
             });
         }}
       />
@@ -251,23 +251,25 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
       </div>
 
       {/* Folder breadcrumbs */}
-      <Breadcrumb>
-        <Icon name="folder open outline" />
-        <Breadcrumb.Section link active={!path.length} onClick={() => setPath([])}>
-          {state.bucketName}
-        </Breadcrumb.Section>
-        <Breadcrumb.Divider />
-        {ignoringFileStructure && <Breadcrumb.Section>all files and folders</Breadcrumb.Section>}
-        {!ignoringFileStructure &&
-          path.map((folderName, folderDepth) => (
-            <span>
-              <Breadcrumb.Section link active={path.length === folderDepth + 1} onClick={() => setPath(path.slice(0, folderDepth + 1))}>
-                {folderName}
-              </Breadcrumb.Section>
-              <Breadcrumb.Divider />
-            </span>
-          ))}
-      </Breadcrumb>
+      <div className="mt-4">
+        <Breadcrumb>
+          <Icon name="folder open outline" />
+          <Breadcrumb.Section link active={!path.length} onClick={() => setPath([])}>
+            {state.bucketName && 'Beige'}
+          </Breadcrumb.Section>
+          <Breadcrumb.Divider />
+          {ignoringFileStructure && <Breadcrumb.Section>all files and folders</Breadcrumb.Section>}
+          {!ignoringFileStructure &&
+            path.map((folderName, folderDepth) => (
+              <span>
+                <Breadcrumb.Section link active={path.length === folderDepth + 1} onClick={() => setPath(path.slice(0, folderDepth + 1))}>
+                  {folderName}
+                </Breadcrumb.Section>
+                <Breadcrumb.Divider />
+              </span>
+            ))}
+        </Breadcrumb>
+      </div>
 
       {/* File Explorer */}
       <div className="files">

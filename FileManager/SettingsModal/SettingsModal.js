@@ -29,8 +29,8 @@ const SettingsModal = ({ open, closeModal }) => {
     // setError(false)
     api
       .saveSettings(settings)
-      .then(() => toast.dark('⚙️ Settings saved'))
-      .catch((err) => toast.dark(`❌ An error occurred and we couldn't save your settings`));
+      .then(() => toast('⚙️ Settings saved'))
+      .catch((err) => toast(`❌ An error occurred and we couldn't save your settings`));
   };
 
   const close = () => {

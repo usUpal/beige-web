@@ -125,7 +125,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
 
         if (i === state.files.length - 1) {
           // If that was the last file
-          toast.dark('🚀 All files uploaded!');
+          toast('🚀 All files uploaded!');
           dispatch({ type: 'reset' });
           setTimeout(onSuccess, 1000); // Wait one second before closing modal and refreshing explorer
         }

@@ -17,7 +17,7 @@ const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
         setError(false);
         if (!res.data.saved) return;
         onSuccess();
-        toast.dark('📁 Folder created!');
+        toast.success('📁 Folder created!');
       })
       .catch((err) => {
         setSaving(false);
