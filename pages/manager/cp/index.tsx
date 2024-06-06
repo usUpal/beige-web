@@ -8,6 +8,7 @@ import { setPageTitle } from '../../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import StatusBg from '@/components/Status/StatusBg';
 import Pagination from '@/components/Pagination';
+import { useRouter } from 'next/router';
 
 const CpUsers = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -40,6 +41,9 @@ const CpUsers = () => {
         }
     };
 
+    // routing
+    const router = useRouter();
+
 
     // User Single
     // Also unUsed Function For APi
@@ -48,6 +52,9 @@ const CpUsers = () => {
         try {
             const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
             const userDetailsRes = await response.json();
+            console.log(userDetailsRes);
+            const cpRoute = `cp/${userDetailsRes?.id}`;
+            router.push(cpRoute);
 
             if (!userDetailsRes) {
                 setShowError(true);
@@ -72,6 +79,7 @@ const CpUsers = () => {
         setIsMounted(true);
     }, []);
 
+    // for pagination
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
@@ -205,8 +213,9 @@ const CpUsers = () => {
                                                             </td>
 
                                                             <td>
-                                                                <Link href={`cp/${cpUser?.id}`}>
+                                                                <Link href={`cp/${cpUser?.userId?.id}`}>
                                                                     {/* getUserDetails */}
+                                                                    {/* onClick={() => getUserDetails(cpUser?.id)} */}
                                                                     <button type="button" className="p-0">
                                                                         {allSvgs.pencilIconForEdit}
                                                                     </button>

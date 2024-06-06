@@ -11,6 +11,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import Loader from '@/components/SharedComponent/Loader';
 import useDateFormat from '@/hooks/useDateFormat';
 import { useRouter } from 'next/router';
+import Pagination from '@/components/Pagination';
 
 const Users = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -21,7 +22,7 @@ const Users = () => {
     const [isLoading, setLoading] = useState<boolean>(true);
     const [showError, setShowError] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<any | null>(null);
-    const [formData, setFormData] = useState<any>({
+   /*  const [formData, setFormData] = useState<any>({
         geo_location: {
             type: 'Point',
             coordinates: [-122.4711, 37.7745],
@@ -60,7 +61,7 @@ const Users = () => {
         createdAt: '2023-10-12T10:12:23.605Z',
         updatedAt: '2023-11-14T10:56:45.303Z',
         id: '6527c687756ec2096cac7ab2',
-    });
+    }); */
     const [backupFootage, setBackupFootage] = useState<string>();
 
     // time formation
@@ -76,7 +77,7 @@ const Users = () => {
     // All Users
     const getAllUsers = async () => {
         try {
-            const response = await fetch(`${API_ENDPOINT}users`);
+            const response = await fetch(`${API_ENDPOINT}users?limit=10&page=${currentPage}`);
             const users = await response.json();
             setTotalPagesCount(users?.totalPages);
             setAllUsers(users.results);
@@ -126,8 +127,14 @@ const Users = () => {
         setIsMounted(true);
     }, []);
 
+    // for pagination
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+
     // Fixing handleChange Function version --1
-    const handleChange = (e: any) => {
+   /*  const handleChange = (e: any) => {
         const { name, value } = e.target;
 
         setFormData((prevFormData: any) => {
@@ -146,9 +153,9 @@ const Users = () => {
                 };
             }
         });
-    };
+    }; */
 
-    {
+   /*  {
         userInfo?.content_verticals &&
             userInfo.content_verticals.map((content_vertical: string) => (
                 <div className="mb-2" key={content_vertical}>
@@ -165,10 +172,10 @@ const Users = () => {
                     </label>
                 </div>
             ));
-    }
+    } */
 
     // Success Toast
-    const coloredToast = (color: any) => {
+    /* const coloredToast = (color: any) => {
         const toast = Swal.mixin({
             toast: true,
             position: 'top-start',
@@ -182,12 +189,12 @@ const Users = () => {
         toast.fire({
             title: 'User updated successfully!',
         });
-    };
+    }; */
 
     // Insert Footage
-    const [newData, insertNewData] = useState<any>({});
+    // const [newData, insertNewData] = useState<any>({});
 
-    const addHandler = (e: any) => {
+   /*  const addHandler = (e: any) => {
         let inputName = e.target.name;
         let val = e.target.value;
 
@@ -196,10 +203,10 @@ const Users = () => {
             [inputName]: [val],
         }));
         return newData;
-    };
+    }; */
 
     // unUsed Function For Api
-    const submitData = async (e: any) => {
+    /* const submitData = async (e: any) => {
         try {
             const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
                 method: 'PATCH',
@@ -216,10 +223,10 @@ const Users = () => {
         } catch (error) {
             console.error(error);
         }
-    };
+    }; */
 
     // UnUsed Function for Api
-    const handleSubmit = async (e: any) => {
+    /* const handleSubmit = async (e: any) => {
         e.preventDefault();
 
         try {
@@ -240,7 +247,7 @@ const Users = () => {
         } catch (error) {
             console.error(error);
         }
-    };
+    }; */
 
     return (
         <>
@@ -302,6 +309,8 @@ const Users = () => {
                                                     ))}
                                             </tbody>
                                         </table>
+                                        {/*  */}
+                                        <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} />
                                     </div>
 
                                     {/* modal Starts*/}

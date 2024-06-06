@@ -4,69 +4,24 @@ import 'tippy.js/dist/tippy.css';
 import { API_ENDPOINT } from '@/config';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import useDateFormat from '@/hooks/useDateFormat';
+
 const CpDetails = () => {
     const [userModal, setUserModal] = useState(false);
-    const [allUsers, setAllUsers] = useState<any[]>([]);
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
     const [isLoading, setLoading] = useState<boolean>(true);
     const [showError, setShowError] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<any | null>(null);
-    const [formData, setFormData] = useState<any>({
-        content_type: ['wedding', 'portrait'],
-        content_verticals: ['modern', 'romantic'],
-        vst: ['modern wedding', 'romantic wedding'],
-        shoot_availability: ['weekends', 'afternoons'],
-        successful_beige_shoots: 8,
-        trust_score: 4.7,
-        average_rating: 4.9,
-        avg_response_time: 1.5,
-        equipment: ['camera', 'lens', 'tripod'],
-        equipment_specific: ['Sony a7 III', 'Sony FE 85mm f/1.8'],
-        portfolio: ['https://example.com/portfolio5', 'https://example.com/portfolio6'],
-        total_earnings: 8000,
-        backup_footage: ['https://example.com/backup5', 'https://example.com/backup6'],
-        travel_to_distant_shoots: true,
-        experience_with_post_production_edit: true,
-        customer_service_skills_experience: true,
-        team_player: false,
-        avg_response_time_to_new_shoot_inquiry: 1,
-        num_declined_shoots: 0,
-        num_accepted_shoots: 8,
-        num_no_shows: 1,
-        review_status: 'rejected',
-        userId: {
-            role: 'cp',
-            isEmailVerified: false,
-            name: 'fake name',
-            email: 'mailto:fake2@example.com',
-            id: '654088f1f695fec584004043',
-        },
-        city: 'Texas',
-        neighborhood: 'Mission District',
-        zip_code: '94110',
-        last_beige_shoot: '61d8f4b4c8d9e6a4a8c3f7d5',
-        timezone: 'PST',
-        own_transportation_method: true,
-        reference: 'Bob Johnson',
-    });
-    console.log('🚀 ~ file: users.tsx:60 ~ Users ~ formData:', formData);
+    const [formData, setFormData] = useState<any | null>(null);
+
+    const params = useParams();
+    const dob = formData?.date_of_birth;
+    const formattedDateTime = useDateFormat(dob);
+
 
     useEffect(() => {
-        getAllUsers();
-    }, [currentPage]);
-
-    // All Users
-    const getAllUsers = async () => {
-        try {
-            const response = await fetch(`${API_ENDPOINT}users`);
-            const users = await response.json();
-            setTotalPagesCount(users?.totalPages);
-            setAllUsers(users.results);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+        getUserDetails(params?.cp)
+    }, [params.cp])
 
     // User Single
     // Also unUsed Function For Api
@@ -80,7 +35,8 @@ const CpDetails = () => {
                 setShowError(true);
                 setLoading(false);
             } else {
-                setUserInfo(userDetailsRes);
+                // setUserInfo(userDetailsRes);
+                setFormData(userDetailsRes);
                 setLoading(false);
                 setUserModal(true);
             }
@@ -90,32 +46,39 @@ const CpDetails = () => {
         }
     };
 
+    // console.log('FormData show: ', formData);
+
+
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         console.log('get data', formData);
     };
 
-    // Fixing handleChange Function version --1
     const handleChange = (e: any) => {
-        console.log('Event:', e);
+        // console.log('Event:', e);
         const { name, value } = e.target;
         console.log('e.target:', name, value);
 
         setFormData((prevFormData: any) => {
             console.log('previousFormData:', prevFormData);
+
             // Checking For Duplicate Value
             if (Array.isArray(prevFormData[name]) && prevFormData[name].includes(value)) {
                 // Deleting Duplicate Value
                 const updatedArray = prevFormData[name].filter((item: any) => item !== value);
-                return {
+                const updatedFormData = {
                     ...prevFormData,
                     [name]: updatedArray,
                 };
+                console.log('Updated FormData:', updatedFormData);
+                return updatedFormData;
             } else {
-                return {
+                const updatedFormData = {
                     ...prevFormData,
                     [name]: Array.isArray(prevFormData[name]) ? [...prevFormData[name], value] : value,
                 };
+                console.log('Updated FormData:', updatedFormData);
+                return updatedFormData;
             }
         });
     };
@@ -161,7 +124,7 @@ const CpDetails = () => {
 
     const addHandler = (e: any) => {
         let inputName = e.target.name;
-        console.log('🚀 ~ file: index.tsx:178 ~ addHandler ~ inputName:', inputName);
+        // console.log('🚀 ~ file: index.tsx:178 ~ addHandler ~ inputName:', inputName);
         let val = e.target.value;
 
         insertNewData((prevData: any) => ({
@@ -171,7 +134,7 @@ const CpDetails = () => {
         return newData;
     };
 
-    console.log(newData);
+    // console.log(newData);
 
     // unUsed Function For Api----When Get api we will work On it
     const submitData = async (e: any) => {
@@ -188,10 +151,14 @@ const CpDetails = () => {
 
             // Handle the response as needed
             coloredToast('success');
+            console.log(updateNew);
+
         } catch (error) {
             console.error(error);
         }
     };
+
+
     // Change Only formData To UserInfo(Here I use form Data for testing purpose)
     return (
         <div className="p-5">
@@ -212,6 +179,7 @@ const CpDetails = () => {
                                 ))}
                         </div>
                     </div>
+                    {/*  */}
                 </div>
                 <div className="flex items-center justify-between">
                     {/* Successful Shoots */}
@@ -223,7 +191,7 @@ const CpDetails = () => {
                     </div>
                     {/* Trust Score */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="trust_score" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <label htmlFor="trust_score" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             trust score
                         </label>
                         <input id="trust_score" type="number" defaultValue={formData?.trust_score} className="form-input" name="trust_score" onChange={handleChange} />
@@ -232,7 +200,7 @@ const CpDetails = () => {
                 <div className="flex items-center justify-between">
                     {/* References */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="reference" className="mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <label htmlFor="reference" className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Reference
                         </label>
                         <input id="reference" type="text" placeholder="John Doe" defaultValue={formData?.reference} className="form-input capitalize" name="reference" onChange={handleChange} />
@@ -242,7 +210,7 @@ const CpDetails = () => {
                         <label htmlFor="trust_score" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             average rating
                         </label>
-                        <input id="average_rating" type="number" defaultValue={formData?.average_rating} className="form-input" name="average_rating" onChange={handleChange} />
+                        <input id="average_rating" type="number" defaultValue={formData?.average_rating} className="form-input bg-gray-200" name="average_rating" onChange={handleChange} disabled />
                     </div>
                 </div>
                 <div className="flex items-center justify-between">
@@ -251,7 +219,7 @@ const CpDetails = () => {
                         <label htmlFor="avg_response_time" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             avg response time
                         </label>
-                        <input id="avg_response_time" type="number" defaultValue={formData?.avg_response_time} className="form-input block" name="avg_response_time" onChange={handleChange} />
+                        <input id="avg_response_time" type="number" defaultValue={formData?.avg_response_time} className="form-input block bg-gray-200" name="avg_response_time" onChange={handleChange} disabled />
                     </div>
                     {/* Total Earnings */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -261,7 +229,8 @@ const CpDetails = () => {
                         <input id="total_earnings" type="number" defaultValue={formData?.total_earnings} className="form-input" name="total_earnings" onChange={handleChange} />
                     </div>
                 </div>
-                <div className="flex items-center justify-between">
+
+                <div className="flex justify-between items-center">
                     {/* Equipement */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Equipement</label>
@@ -277,26 +246,51 @@ const CpDetails = () => {
                                 ))}
                         </div>
                     </div>
-                </div>
-                <div className="flex items-center justify-between">
-                    {/* Portfolio */}
+
+                    {/* equipment specificaion */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Portfolio</label>
+                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Equipment Specific</label>
                         <div className="flex-1">
-                            {formData?.portfolio &&
-                                formData.portfolio.map((portfolioItem: string) => (
-                                    <div className="mb-2" key={portfolioItem}>
+                            {formData?.equipment_specific &&
+                                formData.equipment_specific.map((equipment: string) => (
+                                    <div className="mb-2" key={equipment}>
                                         <label className="flex items-center">
-                                            <input type="checkbox" className="form-checkbox" value={formData.portfolioItem} id="portfolio" name="portfolio" />
-                                            <span className="font-sans capitalize text-white-dark">{portfolioItem}</span>
+                                            <input type="checkbox" className="form-checkbox" value={formData.equipment} id="equipment_specific" name="equipment_specific" />
+                                            <span className="font-sans capitalize text-white-dark">{equipment}</span>
                                         </label>
                                     </div>
                                 ))}
                         </div>
                     </div>
                 </div>
+
+
+
+                {/* rate and rate related */}
+                <div className="flex items-center justify-between ">
+                    {/* rate */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="initiative" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            rate
+                        </label>
+                        <input id="rate" type="text" defaultValue={(formData?.rate)} className="form-input block" name="rate" onChange={handleChange} />
+                    </div>
+
+                    {/* Rate Flexibility */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="rateFlexibility" className="mb-0 mt-2 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            rate Flexibility
+                        </label>
+                        <select className="form-select font-sans capitalize text-white-dark" id="rateFlexibility" defaultValue={formData?.rateFlexibility} name="rateFlexibility" onChange={handleChange}>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                </div>
+                {/* rate and rate related */}
+
                 <div className="flex items-center justify-between">
-                    {/* Travel to diostant */}
+                    {/* Travel to distant */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="travel_to_distant_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             travel to distant shoots
@@ -304,13 +298,29 @@ const CpDetails = () => {
                         <select
                             className="form-select font-sans capitalize text-white-dark"
                             id="travel_to_distant_shoots"
-                            defaultValue={formData.travel_to_distant_shoots}
+                            defaultValue={formData?.travel_to_distant_shoots}
                             name="travel_to_distant_shoots"
                             onChange={handleChange}
                         >
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>
+                    </div>
+
+                    {/* avg response time to new shoot inquiry */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="avg_response_time_to_new_shoot_inquiry" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            avg response time to new shoot inquiry
+                        </label>
+                        <input
+                            id="avg_response_time_to_new_shoot_inquiry"
+                            type="number"
+                            defaultValue={formData?.avg_response_time_to_new_shoot_inquiry}
+                            className="form-input block font-sans bg-gray-200"
+                            name="avg_response_time_to_new_shoot_inquiry"
+                            onChange={handleChange}
+                            disabled
+                        />
                     </div>
                 </div>
                 <div className="flex items-center justify-between">
@@ -322,7 +332,7 @@ const CpDetails = () => {
                         <select
                             className="form-select font-sans capitalize text-white-dark"
                             id="experience_with_post_production_edit"
-                            defaultValue={formData.experience_with_post_production_edit}
+                            defaultValue={formData?.experience_with_post_production_edit}
                             name="experience_with_post_production_edit"
                             onChange={handleChange}
                         >
@@ -338,7 +348,7 @@ const CpDetails = () => {
                         <select
                             className="form-select font-sans capitalize text-white-dark"
                             id="customer_service_skills_experience"
-                            defaultValue={formData.customer_service_skills_experience}
+                            defaultValue={formData?.customer_service_skills_experience}
                             name="customer_service_skills_experience"
                             onChange={handleChange}
                         >
@@ -350,86 +360,130 @@ const CpDetails = () => {
                 <div className="flex items-center justify-between">
                     {/* Team Player */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="team_player" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <label htmlFor="team_player" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             team player
                         </label>
-                        <select className="form-select font-sans capitalize text-white-dark" id="team_player" defaultValue={formData.team_player} name="team_player" onChange={handleChange}>
+                        <select className="form-select font-sans capitalize text-white-dark" id="team_player" defaultValue={formData?.team_player} name="team_player" onChange={handleChange}>
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>
                     </div>
-                    {/* Avg Res Time to New Shoot Inquiry */}
+                    {/* Handle co worker conflicts */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="avg_response_time_to_new_shoot_inquiry" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            avg response time to new shoot inquiry
+                            Handle Co Worker Conflicts
                         </label>
                         <input
-                            id="avg_response_time_to_new_shoot_inquiry"
-                            type="number"
-                            defaultValue={formData?.avg_response_time_to_new_shoot_inquiry}
-                            className="form-input block font-sans"
-                            name="avg_response_time_to_new_shoot_inquiry"
+                            id="handle_co_worker_conflicts"
+                            type="text"
+                            defaultValue={formData?.handle_co_worker_conflicts}
+                            className="form-input block font-sans "
+                            name="handle_co_worker_conflicts"
                             onChange={handleChange}
+                        // disabled
                         />
                     </div>
                 </div>
+
                 <div className="flex items-center justify-between">
                     {/* Num Declined Shoots */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="num_declined_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            num declined shoots
+                            num of declined shoots
                         </label>
                         <input id="num_declined_shoots" type="number" defaultValue={formData?.num_declined_shoots} className="form-input block" name="num_declined_shoots" onChange={handleChange} />
                     </div>
                     {/* Num accepted Shoots */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="num_accepted_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            num accepted shoots
+                            num of accepted shoots
                         </label>
                         <input id="num_accepted_shoots" type="number" defaultValue={formData?.num_accepted_shoots} className="form-input block" name="num_accepted_shoots" onChange={handleChange} />
                     </div>
                 </div>
+
                 <div className="flex items-center justify-between">
                     {/* Num no Shows */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="num_dnum_no_showseclined_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            num no shows
+                            num of no shows
                         </label>
                         <input id="num_no_shows" type="number" defaultValue={formData?.num_no_shows} className="form-input block font-sans" name="num_no_shows" onChange={handleChange} />
                     </div>
                     {/* Timezone */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="timezone" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <label htmlFor="timezone" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             timezone
                         </label>
-                        <input id="timezone" type="text" defaultValue={userInfo?.timezone} className="form-input block" name="timezone" onChange={handleChange} />
+                        <input id="timezone" type="text" defaultValue={formData?.timezone} className="form-input block" name="timezone" onChange={handleChange} />
                     </div>
                 </div>
+
+                <div className="flex items-center justify-between">
+                    {/* initiative */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="initiative" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            initiative
+                        </label>
+                        <input id="initiative" type="text" defaultValue={formData?.initiative} className="form-input block" name="initiative" onChange={handleChange} />
+                    </div>
+
+                    {/*  */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="additional_info" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            additional info
+                        </label>
+                        <input
+                            id="additional_info"
+                            type="text"
+                            defaultValue={formData?.additional_info}
+                            className="form-input block font-sans "
+                            name="additional_info"
+                            onChange={handleChange}
+                        // disabled
+                        />
+                    </div>
+
+                </div>
+
                 <div className="flex items-center justify-between">
                     {/* City */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="city" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <label htmlFor="city" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             city
                         </label>
                         <input id="city" type="text" defaultValue={formData?.city} className="form-input block" name="city" onChange={handleChange} />
                     </div>
+
                     {/* Neighbourhood */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="neighborhood" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <label htmlFor="neighborhood" className=" mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             neighborhood
                         </label>
-                        <input id="neighborhood" defaultValue={formData?.neighborhood} type="text" className="form-input block font-sans" name="neighborhood" onChange={handleChange} />
+                        <input id="neighborhood" defaultValue={(formData?.neighborhood)} type="text" className="form-input block font-sans" name="neighborhood" onChange={handleChange} />
                     </div>
                 </div>
+
+
                 <div className="flex items-center justify-between">
                     {/* Zip code */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="zip_code" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <label htmlFor="zip_code" className="mb-0 mt-2 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             zip code
                         </label>
                         <input id="zip_code" type="text" defaultValue={formData?.zip_code} className="form-input block" name="zip_code" onChange={handleChange} />
                     </div>
+                    {/* in work pressure */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="inwork_pressure" className="mb-0 mt-2 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            In Work Pressure
+                        </label>
+                        <input id="inwork_pressure" type="text" defaultValue={formData?.inWorkPressure} className="form-input block" name="inwork_pressure" onChange={handleChange} />
+                    </div>
+
+
                 </div>
+
                 <div className="flex items-center justify-between">
                     {/* Content Type */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -446,9 +500,8 @@ const CpDetails = () => {
                                 ))}
                         </div>
                     </div>
-                </div>
-                <div className="flex items-center justify-between">
-                    {/* VST */}
+
+                    {/*  */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">VST</label>
                         <div className="flex-1">
@@ -464,6 +517,7 @@ const CpDetails = () => {
                         </div>
                     </div>
                 </div>
+
                 <div className="flex items-center justify-between">
                     {/* Shoot availability */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -480,35 +534,24 @@ const CpDetails = () => {
                                 ))}
                         </div>
                     </div>
-                </div>
-                <div className="flex items-center justify-between">
-                    {/* Add Equipment Specific */}
 
-                    {/* Equipment Specific */}
+                    {/* Portfolio */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Equipment Specific</label>
+                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Portfolio</label>
                         <div className="flex-1">
-                            {formData?.equipment_specific &&
-                                formData.equipment_specific.map((equipment: string) => (
-                                    <div className="mb-2" key={equipment}>
+                            {formData?.portfolio &&
+                                formData.portfolio.map((portfolioItem: string) => (
+                                    <div className="mb-2" key={portfolioItem}>
                                         <label className="flex items-center">
-                                            <input type="checkbox" className="form-checkbox" value={formData.equipment} id="equipment_specific" name="equipment_specific" />
-                                            <span className="font-sans capitalize text-white-dark">{equipment}</span>
+                                            <input type="checkbox" className="form-checkbox" value={formData.portfolioItem} id="portfolio" name="portfolio" />
+                                            <span className="font-sans capitalize text-white-dark">{portfolioItem}</span>
                                         </label>
                                     </div>
                                 ))}
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center justify-between">
-                    {/* Last Beige Shoot */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="last_beige_shoot" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            last beige shoot
-                        </label>
-                        <input id="last_beige_shoot" type="text" defaultValue={formData?.last_beige_shoot} className="form-input block" name="last_beige_shoot" onChange={handleChange} />
-                    </div>
-                </div>
+
                 <div className="flex items-center justify-between">
                     {/* Add Footage */}
 
@@ -527,8 +570,7 @@ const CpDetails = () => {
                                 ))}
                         </div>
                     </div>
-                </div>
-                <div className="flex items-center justify-between">
+
                     {/* Own Transportation Method */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="own_transportation_method" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
@@ -537,13 +579,34 @@ const CpDetails = () => {
                         <select
                             className="form-select font-sans text-white-dark"
                             id="own_transportation_method"
-                            defaultValue={formData.own_transportation_method}
+                            defaultValue={formData?.own_transportation_method}
                             name="own_transportation_method"
                             onChange={handleChange}
                         >
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                    {/* DOB || AGE */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="own_transportation_method" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            Date Of Birth
+                        </label>
+
+                        <input
+                            className="form-select font-sans text-white-dark bg-gray-200"
+                            id="own_transportation_method"
+                            defaultValue={formattedDateTime?.date}
+                            type='text'
+                            name="own_transportation_method"
+                            onChange={handleChange}
+                            disabled
+
+                        />
+
                     </div>
                     {/* Review Status */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -553,16 +616,18 @@ const CpDetails = () => {
                         <input id="review_status" type="text" defaultValue={formData?.review_status} className="form-input block capitalize" name="review_status" onChange={handleChange} />
                     </div>
                 </div>
+
                 <div className="mt-8 flex items-center justify-end">
                     <button type="button" className="btn btn-dark font-sans">
                         <Link href={'/manager/cp'}>Back</Link>
                     </button>
+
                     <button type="submit" className="btn btn-success font-sans ltr:ml-4 rtl:mr-4">
                         Save
                     </button>
                 </div>
-            </form>
-        </div>
+            </form >
+        </div >
     );
 };
 

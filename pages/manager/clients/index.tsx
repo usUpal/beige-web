@@ -73,7 +73,7 @@ const Users = () => {
     // All Users
     const getAllClients = async () => {
         try {
-            const response = await fetch(`${API_ENDPOINT}users`);
+            const response = await fetch(`${API_ENDPOINT}users?limit=60`);
             const users = await response.json();
             setTotalPagesCount(users?.totalPages);
             setAllClients(users.results);
