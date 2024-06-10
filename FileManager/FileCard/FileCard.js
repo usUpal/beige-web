@@ -85,20 +85,17 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
             </Card.Content>
             <Card.Content extra>
               <Button.Group fluid>
-                {!isFolder && (
-                  <>
-                    <Button basic compact size="mini" color="green" onClick={() => onDownload(isPublic)}>
-                      <Icon name="download" />
-                    </Button>
-                    <Button basic compact size="mini" color="violet" onClick={onClickItem}>
-                      <Icon name="linkify" />
-                    </Button>
-                  </>
-                )}
-
-                <Button basic compact size="mini" color="red" onClick={onDelete}>
-                  <Icon name="trash alternate outline" />
+                <Button basic compact size="mini" color="green" onClick={() => onDownload(isPublic)}>
+                  <Icon name="download" />
                 </Button>
+                <Button basic compact size="mini" color="violet" onClick={onClickItem}>
+                  <Icon name="linkify" />
+                </Button>
+                {!isFolder && <></>}
+
+                {/* <Button basic compact size="mini" color="red" disabled={path.length === 0} onClick={onDelete}>
+                  <Icon name="trash alternate outline" />
+                </Button> */}
               </Button.Group>
             </Card.Content>
           </Card>
