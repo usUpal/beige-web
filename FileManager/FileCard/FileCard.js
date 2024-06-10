@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, List, Button, Icon, Dropdown, Checkbox, Dimmer } from 'semantic-ui-react';
 import { getIconByMIMEType } from '../util/fileutil';
 
-const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed, checkIsPublic, onDelete, onRename, onMove, onClickItem, onDownload, onSetPublic }) => {
+const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed, checkIsPublic, onDelete, onRename, onMove, onClickItem, onDownload, onSetPublic, path }) => {
   const [isPublic, setIsPublic] = useState(false);
 
   const fileIcon = getIconByMIMEType(fileType, isFolder);
@@ -34,7 +34,7 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
                   <Dropdown.Divider />
                   <Dropdown.Item icon="arrow right" text="Move" disabled={isFolder} onClick={onMove} />
                   <Dropdown.Item icon="edit" text="Rename" disabled={isFolder} onClick={onRename} />
-                  <Dropdown.Item icon="trash" text="Delete" onClick={onDelete} />
+                  <Dropdown.Item icon="trash" text="Delete" disabled={path.length === 0} onClick={onDelete} />
                 </Dropdown.Menu>
               </Dropdown>
             </List.Header>

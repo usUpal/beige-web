@@ -14,8 +14,8 @@ const reqConfig = (obj) => ({
 
 export default {
   idToken: null,
-  getFiles() {
-    return axios.get('/get-files', reqConfig(this));
+  getFiles(userId) {
+    return axios.get(`/get-files/${userId}`, reqConfig(this));
   },
   async checkIsPublic(path) {
     try {

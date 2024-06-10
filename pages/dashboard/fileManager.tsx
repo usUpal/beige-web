@@ -33,12 +33,12 @@ const FileManager = () => {
         open={fileUploadOpen}
         closeModal={() => {
           setFileUploadOpen(false);
-          refreshExplorer(true);
+          refreshExplorer(!doRefresh);
         }}
         path={explorerPath}
         onSuccess={() => {
           setFileUploadOpen(false);
-          refreshExplorer(true);
+          refreshExplorer(!doRefresh);
         }}
       />
       <FolderCreationModal
@@ -47,7 +47,7 @@ const FileManager = () => {
         path={explorerPath}
         onSuccess={() => {
           setFolderCreatorOpen(false);
-          refreshExplorer(true);
+          refreshExplorer(!doRefresh);
         }}
       />
       <SettingsModal open={settingsOpen} closeModal={() => setSettingsOpen(false)} />

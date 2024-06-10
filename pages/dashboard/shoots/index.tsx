@@ -8,6 +8,7 @@ import { API_ENDPOINT } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import Link from 'next/link';
 import Image from 'next/image';
+import api from '../../../FileManager/api/storage';
 
 const Shoots = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -27,7 +28,6 @@ const Shoots = () => {
     try {
       const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}`);
       const allShots = await response.json();
-      console.log('🚀 ~ file: index.tsx:33 ~ getAllMyShoots ~ allShots:', allShots);
       setTotalPagesCount(allShots?.totalPages);
       setMyShoots(allShots.results);
     } catch (error) {
@@ -81,9 +81,18 @@ const Shoots = () => {
                   <td>$ {shoot?.budget?.max}</td>
 
                   <td className="text-success">
-                    <Link href="/dashboard/files" className="rounded-[10px] border border-solid border-[#ddd] px-2 py-1 ring-1 ring-success">
+                    {shoot?.file_path && (
+                      <p
+                        onClick={async () => {
+                          await api.downloadFolder(`${shoot.order_name}/`);
+                        }}
+                      >
+                        Download file
+                      </p>
+                    )}
+                    {/* <Link href="/dashboard/files" className="rounded-[10px] border border-solid border-[#ddd] px-2 py-1 ring-1 ring-success">
                       Available
-                    </Link>
+                    </Link> */}
                   </td>
                   <td>
                     <div className="">

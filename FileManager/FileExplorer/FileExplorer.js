@@ -7,8 +7,9 @@ import { formatBytes, formatDatetime } from '../util/fileutil';
 import api from '../api/storage';
 import config from '../../config';
 import Menu from '../Menu/Menu';
-
+import { useAuth } from '../../contexts/authContext';
 const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
+  const { userData } = useAuth();
   const [state, setState] = useState({
     loading: false,
     loadingError: false,
@@ -64,7 +65,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
   const getFiles = () => {
     setState({ ...state, loading: true, loadingError: false });
     api
-      .getFiles()
+      .getFiles(userData?.id)
       .then(({ data }) => {
         setFiles(data.files);
         setState({ ...state, loadingError: false, loading: false, bucketName: data.bucket });
@@ -74,11 +75,11 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
 
   useEffect(() => {
     // When idToken and doRefresh are set, refresh the files
-    if (!idToken || idToken.length < 3 || !doRefresh) return;
+    // if (!idToken || idToken.length < 3 || !doRefresh) return;
     setState({ ...state, loading: true });
 
     getFiles();
-    didRefresh();
+    // didRefresh();
   }, [idToken, doRefresh]);
 
   const deleteFile = () => {
@@ -86,7 +87,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
     api
       .deleteFile(deletionState.file)
       .then((res) => {
-        toast.warn(`❗ ${deletionState.isFolder ? 'Folder' : 'File'} deleted`);
+        toast(`❗ ${deletionState.isFolder ? 'Folder' : 'File'} deleted`);
         if (res.data.deleted) setDeletionState({ ...deletionState, open: false, error: false, saving: false });
         getFiles();
       })
@@ -124,11 +125,11 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
       .catch(() => toast(`❗ Couldn't move file. Make sure a file with the same name doesn't already exist in that folder.`));
     setFileToMove({});
   };
-  // Download as the folder
   const fileCards = () => {
     return filesInPath(path, ignoringFileStructure).map((file) => (
       <FileCard
         key={file.id}
+        path={path}
         cardType={view}
         fileType={file.contentType}
         isFolder={file.isFolder}
@@ -138,7 +139,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
         isDimmed={!!fileToMove.path && !file.isFolder}
         onDelete={() => {
           // If the folder isn't empty then don't delete (TODO recursive folder deletion)
-          if (file.isFolder && filesInPath(file.path.split('/').slice(0, -1)).length) return toast('❌ You must delete all files from this folder first.');
+          // if (file.isFolder && filesInPath(file.path.split('/').slice(0, -1)).length) return toast('❌ You must delete all files from this folder first.');
           setDeletionState({ ...deletionState, open: true, file: file.path, isFolder: file.isFolder });
         }}
         onRename={() => {
@@ -228,7 +229,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
 
   return (
     <div>
-      <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} />
+      <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
       {/* Explorer controls */}
       <div className="explorer-buttons">
         <Button icon="arrow alternate circle up" basic size="tiny" color="blue" onClick={() => setPath(path.slice(0, -1))} />

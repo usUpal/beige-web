@@ -83,7 +83,7 @@ const SettingsModal = ({ open, closeModal }) => {
           {/*  {!saving && <Icon name='check'/>}*/}
           {/*  { error ? `An error occurred.` : saving ? 'Saving your settings....' : 'Settings saved' }*/}
           {/*</p>*/}
-          <Button onClick={close}>Close</Button>
+          <Button onClick={close}>Save</Button>
         </Modal.Actions>
       </Modal>
     </div>

@@ -205,7 +205,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
             <strong>{state.status}</strong>
           </p>
           {state.status && <Progress percent={state.progress} color="teal" progress active={state.uploading} error={state.error} />}
-          {state.status && state.uploading && <Progress percent={state.totalProgress} color="violet" />}
+          {/* {state.status && state.uploading && <Progress percent={state.totalProgress} color="violet" />} */}
         </Modal.Content>
         <Modal.Actions>
           <Button
