@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState, Fragment } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
 import 'tippy.js/dist/tippy.css';
 import { API_ENDPOINT } from '@/config';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import useDateFormat from '@/hooks/useDateFormat';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
 const CpDetails = () => {
     const [userModal, setUserModal] = useState(false);
@@ -14,6 +14,8 @@ const CpDetails = () => {
     const [userInfo, setUserInfo] = useState<any | null>(null);
     const [formData, setFormData] = useState<any | null>(null);
 
+    // const [checkboxAgree, setCheckboxAgree] = useState(false);
+
     const params = useParams();
     const dob = formData?.date_of_birth;
     const formattedDateTime = useDateFormat(dob);
@@ -21,7 +23,7 @@ const CpDetails = () => {
 
     useEffect(() => {
         getUserDetails(params?.cp)
-    }, [params.cp])
+    }, [params?.cp])
 
     // User Single
     // Also unUsed Function For Api
@@ -159,9 +161,104 @@ const CpDetails = () => {
     };
 
 
+    const [showVstInputField, setShowVstInputField] = useState(false);
+    const [showPortfolioInputField, setShowPortfolioInputField] = useState(false);
+
+
+    // state to hold the selected items
+    const [selectedItems, setSelectedItems] = useState<any>([]);
+
+    // function to handle checkbox toggle
+    const handleCheckboxChange = (item: any) => {
+        if (selectedItems.includes(item)) {
+            setSelectedItems(selectedItems.filter((selectedItem: any) => selectedItem !== item));
+            console.log('Clean');
+
+        } else {
+            setSelectedItems([...selectedItems, item]);
+            console.log('Selected');
+        }
+    };
+
+    const [vstData, setVstData] = useState<any>([]);
+    const [portfolioData, setPortfolioData] = useState<any>([]);
+
+
+    const [newVst, setNewVst] = useState('');
+    const [newPortfolio, setNewPortfolio] = useState('');
+    //  vst show and add 
+    useEffect(() => {
+        const existingVstData = formData?.vst;
+        setVstData(existingVstData);
+
+        // for portfolio
+        const existingPortfolioData = formData?.portfolio;
+        setPortfolioData(existingPortfolioData);
+    }, [formData?.portfolio, formData?.vst])
+
+    // handle Vst Add -------------------->
+    const handleVstAdd = () => {
+        setShowVstInputField(true);
+        if (newVst) {
+            // Check if the newVst already exists in the vstData array
+            if (vstData.includes(newVst)) {
+                console.log('No duplicate data');
+            } else {
+                // Add the newVst only if it's not a duplicate
+                setVstData([...vstData, newVst]);
+            }
+        }
+
+    }
+    // handle Portfolio Add -------------------->
+    const handlePortfolioAdd = () => {
+        setShowPortfolioInputField(true);
+        if (newPortfolio) {
+            // Check if the newVst already exists in the vstData array
+            if (portfolioData.includes(newPortfolio)) {
+                console.log('No duplicate data');
+            } else {
+                // Add the newVst only if it's not a duplicate
+                setPortfolioData([...portfolioData, newPortfolio]);
+            }
+        }
+    }
+    console.log("🚀 ~ CpDetails ~ vstData:", vstData);
+
+    // handle Dlt 
+    const handleDlt = (clickedItem: any) => {
+        const vstLeftAfterDlt = vstData.filter((vstItem: any) => vstItem !== clickedItem)
+        setVstData(vstLeftAfterDlt);
+    };
+
+    const handleAddCpItems = () => {
+        if (newVst.trim() !== '') {
+            if (vstData.includes(newVst)) {
+                console.log('No duplicate data');
+            } else {
+                setVstData([...vstData, newVst]);
+            }
+            setNewVst('');
+            setShowVstInputField(false);
+
+        };
+
+        if (newPortfolio.trim() !== '') {
+            if (portfolioData.includes(newPortfolio)) {
+                console.log('No duplicate data');
+            } else {
+                setPortfolioData([...portfolioData, newPortfolio]);
+            }
+            setNewPortfolio('');
+            setShowPortfolioInputField(false);
+        }
+    }
+
+
     // Change Only formData To UserInfo(Here I use form Data for testing purpose)
     return (
         <div className="p-5">
+
             <form className="space-y-5" onSubmit={handleSubmit}>
                 <div className="flex items-center justify-between">
                     {/* Content Vertical */}
@@ -179,24 +276,27 @@ const CpDetails = () => {
                                 ))}
                         </div>
                     </div>
-                    {/*  */}
+                    {/* test  */}
+                    {/* test  */}
                 </div>
+
                 <div className="flex items-center justify-between">
                     {/* Successful Shoots */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="successful_beige_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Successful Shoots
                         </label>
-                        <input id="successful_beige_shoots" type="number" defaultValue={formData?.successful_beige_shoots} className="form-input" name="successful_beige_shoots" onChange={handleChange} />
+                        <input id="successful_beige_shoots" type="number" defaultValue={formData?.successful_beige_shoots} className="form-input bg-gray-200" name="successful_beige_shoots" onChange={handleChange} disabled />
                     </div>
                     {/* Trust Score */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="trust_score" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             trust score
                         </label>
-                        <input id="trust_score" type="number" defaultValue={formData?.trust_score} className="form-input" name="trust_score" onChange={handleChange} />
+                        <input id="trust_score" type="number" defaultValue={formData?.trust_score} className="form-input bg-gray-200" name="trust_score" onChange={handleChange} disabled />
                     </div>
                 </div>
+
                 <div className="flex items-center justify-between">
                     {/* References */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -226,7 +326,7 @@ const CpDetails = () => {
                         <label htmlFor="total_earnings" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             total earnings ($)
                         </label>
-                        <input id="total_earnings" type="number" defaultValue={formData?.total_earnings} className="form-input" name="total_earnings" onChange={handleChange} />
+                        <input id="total_earnings" type="number" defaultValue={formData?.total_earnings} className="form-input bg-gray-200" name="total_earnings" onChange={handleChange} disabled />
                     </div>
                 </div>
 
@@ -357,6 +457,7 @@ const CpDetails = () => {
                         </select>
                     </div>
                 </div>
+
                 <div className="flex items-center justify-between">
                     {/* Team Player */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -389,35 +490,20 @@ const CpDetails = () => {
                     {/* Num Declined Shoots */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="num_declined_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            num of declined shoots
+                            declined shoots
                         </label>
-                        <input id="num_declined_shoots" type="number" defaultValue={formData?.num_declined_shoots} className="form-input block" name="num_declined_shoots" onChange={handleChange} />
+                        <input id="num_declined_shoots" type="number" defaultValue={formData?.num_declined_shoots} className="form-input block bg-gray-200" name="num_declined_shoots" onChange={handleChange} disabled />
                     </div>
                     {/* Num accepted Shoots */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="num_accepted_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            num of accepted shoots
+                            accepted shoots
                         </label>
-                        <input id="num_accepted_shoots" type="number" defaultValue={formData?.num_accepted_shoots} className="form-input block" name="num_accepted_shoots" onChange={handleChange} />
+                        <input id="num_accepted_shoots" type="number" defaultValue={formData?.num_accepted_shoots} className="form-input block bg-gray-200" name="num_accepted_shoots" onChange={handleChange} disabled />
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                    {/* Num no Shows */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="num_dnum_no_showseclined_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            num of no shows
-                        </label>
-                        <input id="num_no_shows" type="number" defaultValue={formData?.num_no_shows} className="form-input block font-sans" name="num_no_shows" onChange={handleChange} />
-                    </div>
-                    {/* Timezone */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="timezone" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            timezone
-                        </label>
-                        <input id="timezone" type="text" defaultValue={formData?.timezone} className="form-input block" name="timezone" onChange={handleChange} />
-                    </div>
-                </div>
+
 
                 <div className="flex items-center justify-between">
                     {/* initiative */}
@@ -428,7 +514,6 @@ const CpDetails = () => {
                         <input id="initiative" type="text" defaultValue={formData?.initiative} className="form-input block" name="initiative" onChange={handleChange} />
                     </div>
 
-                    {/*  */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="additional_info" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             additional info
@@ -444,6 +529,16 @@ const CpDetails = () => {
                         />
                     </div>
 
+                </div>
+
+                <div className="flex items-center justify-between">
+                    {/* Timezone */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="timezone" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            timezone
+                        </label>
+                        <input id="timezone" type="text" defaultValue={formData?.timezone} className="form-input block" name="timezone" onChange={handleChange} />
+                    </div>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -499,24 +594,40 @@ const CpDetails = () => {
                                     </div>
                                 ))}
                         </div>
-                    </div>
 
-                    {/*  */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">VST</label>
-                        <div className="flex-1">
-                            {formData?.vst &&
-                                formData.vst.map((vst_item: string) => (
-                                    <div className="mb-2" key={vst_item}>
+                    </div>
+                    {/*----------- vst show starts */}
+                    <div className="basis-[45%]">
+                        <div className="flex basis-[100%]">
+                            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">VST</label>
+                            <div className="flex-1">
+                                {vstData && vstData.map((vst_item: string, index: any) => (
+                                    <div className="mb-2" key={`${vst_item}_${index}`}>
                                         <label className="flex items-center">
-                                            <input type="checkbox" className="form-checkbox" value={formData.vst_item} id="vst" name="vst" />
-                                            <span className="font-sans capitalize text-white-dark">{vst_item}</span>
+                                            <input onClick={handleCheckboxChange} type="checkbox" className="form-checkbox" value={formData.vst_item} id="vst" name="vst" />
+                                            <span className="font-sans capitalize text-white-dark">{vst_item} </span>
+                                            <span onClick={() => handleDlt(vst_item)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
                                         </label>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+
+                        <div className='flex justify-start items-center'>
+                            <div>
+                                <span onClick={handleVstAdd} className="btn w-8 p-0 bg-gray-200 font-sans cursor-pointer text-white mx-auto md:me-0 hover:bg-white-dark">
+                                    {allSvgs.plusForAddCp}
+                                </span>
+                            </div>
+                            {showVstInputField && <div className="mb-[5px] ms-20">
+                                <input type="text" className='py-1 px-2 rounded border' value={newVst} onChange={(e) => setNewVst(e.target.value)} />
+                                <button onClick={handleAddCpItems} className='bg-black text-white px-4 py-1 rounded ms-2'>Add</button>
+                            </div>}
                         </div>
                     </div>
+                    {/* ---------------- vst show ends*/}
                 </div>
+
 
                 <div className="flex items-center justify-between">
                     {/* Shoot availability */}
@@ -535,19 +646,37 @@ const CpDetails = () => {
                         </div>
                     </div>
 
-                    {/* Portfolio */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Portfolio</label>
-                        <div className="flex-1">
-                            {formData?.portfolio &&
-                                formData.portfolio.map((portfolioItem: string) => (
-                                    <div className="mb-2" key={portfolioItem}>
-                                        <label className="flex items-center">
-                                            <input type="checkbox" className="form-checkbox" value={formData.portfolioItem} id="portfolio" name="portfolio" />
-                                            <span className="font-sans capitalize text-white-dark">{portfolioItem}</span>
-                                        </label>
-                                    </div>
-                                ))}
+                    {/* -------------------- Portfolio */}
+                    <div className="basis-[45%]">
+                        <div className="flex basis-[100%]">
+                            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Portfolio</label>
+                            <div className="flex-1">
+                                {portfolioData &&
+                                    portfolioData.map((portfolioItem: string) => (
+                                        <div className="mb-2" key={portfolioItem}>
+                                            <label className="flex items-center">
+                                                <input type="checkbox" className="form-checkbox" value={formData.portfolioItem} id="portfolio" name="portfolio" />
+                                                <span className="font-sans capitalize text-white-dark">{portfolioItem}</span>
+                                                <span onClick={() => handleDlt(portfolioItem)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
+                                            </label>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        </div>
+
+                        <div className='flex justify-start items-center'>
+                            <div>
+                                <span onClick={handlePortfolioAdd} className="btn w-8 p-0 bg-gray-200 font-sans cursor-pointer text-white mx-auto md:me-0 hover:bg-white-dark">
+                                    {allSvgs.plusForAddCp}
+                                </span>
+                            </div>
+                            {
+                                showPortfolioInputField && <div className="mb-[5px] ms-20">
+                                    <input type="text" className='py-1 px-2 rounded border' value={newPortfolio} onChange={(e) => setNewPortfolio(e.target.value)} />
+                                    <button onClick={handleAddCpItems} className='bg-black text-white px-4 py-1 rounded ms-2'>Add</button>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
