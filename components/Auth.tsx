@@ -58,21 +58,18 @@ const Auth = () => {
 
         //Store user data to the cookie storage
         Cookies.set('userData', JSON.stringify(userData), {
-          expires: new Date(accessToken?.expires),
-          domain: HOSTNAME,
+          expires: 7
         });
 
 
         //Store access token to the cookie storage
         Cookies.set('accessToken', JSON.stringify(accessToken), {
-          expires: new Date(accessToken?.expires),
-          domain: HOSTNAME,
+          expires: 7
         });
 
         //Store refresh token to the cookie storage
         Cookies.set('refreshToken', JSON.stringify(refreshToken), {
-          expires: new Date(refreshToken?.expires),
-          domain: HOSTNAME,
+          expires: new Date(refreshToken?.expires)
         });
 
         //Redirect user to the dashboard

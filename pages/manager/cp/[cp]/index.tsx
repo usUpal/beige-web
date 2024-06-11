@@ -22,7 +22,10 @@ const CpDetails = () => {
 
 
     useEffect(() => {
-        getUserDetails(params?.cp)
+        if (params?.cp) {
+            const singleUserId = Array.isArray(params.cp) ? params.cp[0] : params.cp;
+            getUserDetails(singleUserId);
+        }
     }, [params?.cp])
 
     // User Single
@@ -160,25 +163,15 @@ const CpDetails = () => {
         }
     };
 
-
     const [showVstInputField, setShowVstInputField] = useState(false);
     const [showPortfolioInputField, setShowPortfolioInputField] = useState(false);
+    const [addIconVst, setAddIconVst] = useState(true);
+    const [addIconPortfolio, setAddIconPortfolio] = useState(true);
 
 
     // state to hold the selected items
     const [selectedItems, setSelectedItems] = useState<any>([]);
 
-    // function to handle checkbox toggle
-    const handleCheckboxChange = (item: any) => {
-        if (selectedItems.includes(item)) {
-            setSelectedItems(selectedItems.filter((selectedItem: any) => selectedItem !== item));
-            console.log('Clean');
-
-        } else {
-            setSelectedItems([...selectedItems, item]);
-            console.log('Selected');
-        }
-    };
 
     const [vstData, setVstData] = useState<any>([]);
     const [portfolioData, setPortfolioData] = useState<any>([]);
@@ -198,7 +191,8 @@ const CpDetails = () => {
 
     // handle Vst Add -------------------->
     const handleVstAdd = () => {
-        setShowVstInputField(true);
+        setShowVstInputField(!showVstInputField);
+        setAddIconVst(!addIconVst);
         if (newVst) {
             // Check if the newVst already exists in the vstData array
             if (vstData.includes(newVst)) {
@@ -208,30 +202,47 @@ const CpDetails = () => {
                 setVstData([...vstData, newVst]);
             }
         }
-
     }
-    // handle Portfolio Add -------------------->
-    const handlePortfolioAdd = () => {
-        setShowPortfolioInputField(true);
-        if (newPortfolio) {
-            // Check if the newVst already exists in the vstData array
-            if (portfolioData.includes(newPortfolio)) {
-                console.log('No duplicate data');
-            } else {
-                // Add the newVst only if it's not a duplicate
-                setPortfolioData([...portfolioData, newPortfolio]);
+    
+
+    // handle addition to cp 
+    const handleAdditionCpArrData = (newData: any, existingData: any, setArrItemStateFunction: any, showInputFieldStateVar: any, setInputFieldFunction: any, setIconFunction: any, iconStateVarriable: any) => {
+        setInputFieldFunction(!showInputFieldStateVar);
+        setIconFunction(!iconStateVarriable);
+        if (newData) {
+            if (existingData.includes(newData)) {
+                console.log('No Duplicate Data Allowed.');
+                return;
+            }
+            else {
+                setArrItemStateFunction([...existingData, newData]);
             }
         }
     }
-    console.log("🚀 ~ CpDetails ~ vstData:", vstData);
 
-    // handle Dlt 
-    const handleDlt = (clickedItem: any) => {
-        const vstLeftAfterDlt = vstData.filter((vstItem: any) => vstItem !== clickedItem)
-        setVstData(vstLeftAfterDlt);
+    const handlePortfolioAddition = () => {
+        handleAdditionCpArrData(newPortfolio, portfolioData, setPortfolioData, showPortfolioInputField, setShowPortfolioInputField, setAddIconPortfolio, addIconPortfolio);
+    }
+
+
+
+    // handle Main Dlt function 
+    const handleDlt = (clickedItem: any, existingData: any, setStateFunction: any) => {
+        const leftAfterDlt = existingData.filter((vstItem: any) => vstItem !== clickedItem)
+        setStateFunction(leftAfterDlt);
     };
 
-    const handleAddCpItems = () => {
+    // dlt for vst data
+    const handleDltVst = (clickedItem: any) => {
+        handleDlt(clickedItem, vstData, setVstData);
+    };
+    // dlt for portfolio data
+    const handleDltPortfolio = (clickedItem: any) => {
+        handleDlt(clickedItem, portfolioData, setPortfolioData);
+    };
+
+
+    const handleAddConfirmBtn = () => {
         if (newVst.trim() !== '') {
             if (vstData.includes(newVst)) {
                 console.log('No duplicate data');
@@ -239,8 +250,7 @@ const CpDetails = () => {
                 setVstData([...vstData, newVst]);
             }
             setNewVst('');
-            setShowVstInputField(false);
-
+            // setShowVstInputField(false);
         };
 
         if (newPortfolio.trim() !== '') {
@@ -250,7 +260,7 @@ const CpDetails = () => {
                 setPortfolioData([...portfolioData, newPortfolio]);
             }
             setNewPortfolio('');
-            setShowPortfolioInputField(false);
+            // setShowPortfolioInputField(false);
         }
     }
 
@@ -601,31 +611,37 @@ const CpDetails = () => {
                         <div className="flex basis-[100%]">
                             <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">VST</label>
                             <div className="flex-1">
-                                {vstData && vstData.map((vst_item: string, index: any) => (
-                                    <div className="mb-2" key={`${vst_item}_${index}`}>
-                                        <label className="flex items-center">
-                                            <input onClick={handleCheckboxChange} type="checkbox" className="form-checkbox" value={formData.vst_item} id="vst" name="vst" />
-                                            <span className="font-sans capitalize text-white-dark">{vst_item} </span>
-                                            <span onClick={() => handleDlt(vst_item)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
-                                        </label>
+                                <div>
+                                    {vstData && vstData.map((vst_item: string, index: any) => (
+                                        <div className="mb-2" key={`${vst_item}_${index}`}>
+                                            <ul className="flex items-center list-disc">
+                                                <li className="mr-2 text-white-dark">
+                                                    <span className="font-sans capitalize text-white-dark">{vst_item}</span>
+                                                </li>
+                                                <li className='list-none'>
+                                                    <span onClick={() => handleDltVst(vst_item)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* add btn and input field */}
+                                <div className='flex justify-start items-center mt-2'>
+                                    <div onClick={handleVstAdd} className="btn border-none p-0 mt-3 pb-2 font-sans cursor-pointer text-white md:me-0">
+                                        <span>{addIconVst ? (allSvgs.plusForAddCp) : (allSvgs.minusForHide)}</span>
                                     </div>
-                                ))}
+                                    {showVstInputField &&
+                                        <div className="relative ml-2">
+                                            <input type="text" className="py-1 px-2 rounded border border-gray-200 focus:outline-none focus:border-gray-400" value={newVst} onChange={(e) => setNewVst(e.target.value)} />
+                                            <button onClick={handleAddConfirmBtn} className="absolute inset-y-0 right-0 bg-gray-100 hover:bg-gray-300 text-white px-2 py-1 rounded ml-2">{allSvgs.plusForAddCp}</button>
+                                        </div>
+                                    }
+                                </div>
                             </div>
-                        </div>
-
-                        <div className='flex justify-start items-center'>
-                            <div>
-                                <span onClick={handleVstAdd} className="btn w-8 p-0 bg-gray-200 font-sans cursor-pointer text-white mx-auto md:me-0 hover:bg-white-dark">
-                                    {allSvgs.plusForAddCp}
-                                </span>
-                            </div>
-                            {showVstInputField && <div className="mb-[5px] ms-20">
-                                <input type="text" className='py-1 px-2 rounded border' value={newVst} onChange={(e) => setNewVst(e.target.value)} />
-                                <button onClick={handleAddCpItems} className='bg-black text-white px-4 py-1 rounded ms-2'>Add</button>
-                            </div>}
                         </div>
                     </div>
                     {/* ---------------- vst show ends*/}
+
                 </div>
 
 
@@ -646,37 +662,44 @@ const CpDetails = () => {
                         </div>
                     </div>
 
-                    {/* -------------------- Portfolio */}
+                    {/*  Portfolio */}
                     <div className="basis-[45%]">
                         <div className="flex basis-[100%]">
                             <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Portfolio</label>
                             <div className="flex-1">
-                                {portfolioData &&
-                                    portfolioData.map((portfolioItem: string) => (
-                                        <div className="mb-2" key={portfolioItem}>
-                                            <label className="flex items-center">
-                                                <input type="checkbox" className="form-checkbox" value={formData.portfolioItem} id="portfolio" name="portfolio" />
-                                                <span className="font-sans capitalize text-white-dark">{portfolioItem}</span>
-                                                <span onClick={() => handleDlt(portfolioItem)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
-                                            </label>
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        </div>
-
-                        <div className='flex justify-start items-center'>
-                            <div>
-                                <span onClick={handlePortfolioAdd} className="btn w-8 p-0 bg-gray-200 font-sans cursor-pointer text-white mx-auto md:me-0 hover:bg-white-dark">
-                                    {allSvgs.plusForAddCp}
-                                </span>
-                            </div>
-                            {
-                                showPortfolioInputField && <div className="mb-[5px] ms-20">
-                                    <input type="text" className='py-1 px-2 rounded border' value={newPortfolio} onChange={(e) => setNewPortfolio(e.target.value)} />
-                                    <button onClick={handleAddCpItems} className='bg-black text-white px-4 py-1 rounded ms-2'>Add</button>
+                                <div>
+                                    {portfolioData &&
+                                        portfolioData.map((portfolioItem: string) => (
+                                            <div className="mb-2" key={portfolioItem}>
+                                                <ul className="flex items-center list-disc">
+                                                    <li className="mr-2 text-white-dark">
+                                                        <span className="font-sans capitalize text-white-dark">{portfolioItem}</span>
+                                                    </li>
+                                                    <li className='list-none'>
+                                                        <span onClick={() => handleDltPortfolio(portfolioItem)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        ))
+                                    }
                                 </div>
-                            }
+
+                                {/* add btn and input field */}
+                                <div className='flex flex-col justify-start items-start'>
+                                    {showPortfolioInputField &&
+                                        <div className="relative">
+                                            <textarea className="py-1 px-2 rounded border border-gray-200 focus:outline-none focus:border-gray-400" value={newPortfolio} onChange={(e) => setNewPortfolio(e.target.value)} />
+
+                                            <button onClick={handleAddConfirmBtn} className="absolute inset-y-30 pt-2 pr-2 right-0  text-white py-1 rounded"><span className='bg-gray-500'>
+                                                {allSvgs.plusForAddCp}</span></button>
+                                        </div>
+                                    }
+
+                                    <div onClick={handlePortfolioAddition} className="btn border-none p-0 mt-1 pb-2 font-sans cursor-pointer text-white md:me-0">
+                                        {addIconPortfolio ? (allSvgs.plusForAddCp) : (allSvgs.minusForHide)}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -739,10 +762,10 @@ const CpDetails = () => {
                     </div>
                     {/* Review Status */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="review_status" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <label htmlFor="review_status" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 ">
                             review status
                         </label>
-                        <input id="review_status" type="text" defaultValue={formData?.review_status} className="form-input block capitalize" name="review_status" onChange={handleChange} />
+                        <input id="review_status" type="text" defaultValue={formData?.review_status} className="form-input block capitalize bg-gray-200" name="review_status" onChange={handleChange} disabled />
                     </div>
                 </div>
 
