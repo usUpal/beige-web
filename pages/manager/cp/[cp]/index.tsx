@@ -14,8 +14,6 @@ const CpDetails = () => {
     const [userInfo, setUserInfo] = useState<any | null>(null);
     const [formData, setFormData] = useState<any | null>(null);
 
-    // const [checkboxAgree, setCheckboxAgree] = useState(false);
-
     const params = useParams();
     const dob = formData?.date_of_birth;
     const formattedDateTime = useDateFormat(dob);
@@ -29,7 +27,6 @@ const CpDetails = () => {
     }, [params?.cp])
 
     // User Single
-    // Also unUsed Function For Api
     const getUserDetails = async (singleUserId: string) => {
         setLoading(true);
         try {
@@ -51,16 +48,12 @@ const CpDetails = () => {
         }
     };
 
-    // console.log('FormData show: ', formData);
-
-
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         console.log('get data', formData);
     };
 
     const handleChange = (e: any) => {
-        // console.log('Event:', e);
         const { name, value } = e.target;
         console.log('e.target:', name, value);
 
@@ -139,8 +132,6 @@ const CpDetails = () => {
         return newData;
     };
 
-    // console.log(newData);
-
     // unUsed Function For Api----When Get api we will work On it
     const submitData = async (e: any) => {
         try {
@@ -163,31 +154,71 @@ const CpDetails = () => {
         }
     };
 
-    const [showVstInputField, setShowVstInputField] = useState(false);
-    const [showPortfolioInputField, setShowPortfolioInputField] = useState(false);
-    const [addIconVst, setAddIconVst] = useState(true);
-    const [addIconPortfolio, setAddIconPortfolio] = useState(true);
+    // -------------------------------->>> cp details edit works
 
+    // formData?.equipment_specific
+    const [equipmentSpecificExistingData, setEquipmentSpecificExistingData] = useState<any>([]);
+    const [newEquipmentSpecific, setNewEquipmentSpecific] = useState('');
+    const [addIconEquipmentSpecific, setAddIconEquipmentSpecific] = useState(true);
+    const [showInputFieldEquipmentSpecific, setShowInputFieldEquipmentSpecific] = useState(false);
 
-    // state to hold the selected items
-    const [selectedItems, setSelectedItems] = useState<any>([]);
-
-
+    // formData?.equipment
+    const [equipmentExistingData, setEquipmentExistingData] = useState<any>([]);
+    const [newEquipment, setNewEquipment] = useState('');
+    const [addIconEquipment, setAddIconEquipment] = useState(true);
+    const [showInputFieldEquipment, setShowInputFieldEquipment] = useState(false);
+    // vst edit
     const [vstData, setVstData] = useState<any>([]);
-    const [portfolioData, setPortfolioData] = useState<any>([]);
-
-
     const [newVst, setNewVst] = useState('');
+    const [addIconVst, setAddIconVst] = useState(true);
+    const [showVstInputField, setShowVstInputField] = useState(false);
+
+    // portfolio edit
+    const [portfolioData, setPortfolioData] = useState<any>([]);
     const [newPortfolio, setNewPortfolio] = useState('');
-    //  vst show and add 
+    const [addIconPortfolio, setAddIconPortfolio] = useState(true);
+    const [showPortfolioInputField, setShowPortfolioInputField] = useState(false);
+
+    // shoot avalibility : formData?.shoot_availability
+    const [shootAvailabilityExistingData, setShootAvailabilityExistingData] = useState<any>([]);
+    const [newShootAvailability, setNewShootAvailability] = useState('');
+    const [addIconShootAvailability, setAddIconShootAvailability] = useState(true);
+    const [showInputFieldShootAvailability, setShowInputFieldShootAvailability] = useState(false);
+
+    // formData?.backup_footage
+    const [backupFootageExistingData, setBackupFootageExistingData] = useState<any>([]);
+    const [newbackupFootage, setNewBackupFootage] = useState('');
+    const [addIconBackupFootage, setAddIconBackupFootage] = useState(true);
+    const [showInputFieldBackupFootage, setShowInputFieldBackupFootage] = useState(false);
+
+    //  to load api array data form a state variable
     useEffect(() => {
+
+        // Equipment
+        const existingEquipment = formData?.equipment;
+        setEquipmentExistingData(existingEquipment);
+
+        // Equipment Specific
+        const existingEquipmentSpecific = formData?.equipment_specific;
+        setEquipmentSpecificExistingData(existingEquipmentSpecific);
+
+        // vst
         const existingVstData = formData?.vst;
         setVstData(existingVstData);
 
         // for portfolio
         const existingPortfolioData = formData?.portfolio;
         setPortfolioData(existingPortfolioData);
-    }, [formData?.portfolio, formData?.vst])
+
+        // Shoot Availability
+        const existingShootAvailability = formData?.shoot_availability;
+        setShootAvailabilityExistingData(existingShootAvailability);
+
+        // backup footage
+        const existingBackupFootage = formData?.backup_footage;
+        setBackupFootageExistingData(existingBackupFootage);
+
+    }, [formData?.equipment, formData?.equipment_specific, formData?.portfolio, formData?.vst, formData?.shoot_availability, formData?.backup_footage])
 
     // handle Vst Add -------------------->
     const handleVstAdd = () => {
@@ -203,7 +234,7 @@ const CpDetails = () => {
             }
         }
     }
-    
+
 
     // handle addition to cp 
     const handleAdditionCpArrData = (newData: any, existingData: any, setArrItemStateFunction: any, showInputFieldStateVar: any, setInputFieldFunction: any, setIconFunction: any, iconStateVarriable: any) => {
@@ -220,8 +251,27 @@ const CpDetails = () => {
         }
     }
 
+    // handleEquipment
+    const handleEquipmentAddition = () => {
+        handleAdditionCpArrData(newEquipment, equipmentExistingData, setEquipmentExistingData, showInputFieldEquipment, setShowInputFieldEquipment, setAddIconEquipment, addIconEquipment);
+    }
+
+    // handleEquipmentSpecific
+    const handleEquipmentSpecificAddition = () => {
+        handleAdditionCpArrData(newEquipmentSpecific, equipmentSpecificExistingData, setEquipmentSpecificExistingData, showInputFieldEquipmentSpecific, setShowInputFieldEquipmentSpecific, setAddIconEquipmentSpecific, addIconEquipmentSpecific);
+    }
+
+    // handlePortfolioAddition
     const handlePortfolioAddition = () => {
         handleAdditionCpArrData(newPortfolio, portfolioData, setPortfolioData, showPortfolioInputField, setShowPortfolioInputField, setAddIconPortfolio, addIconPortfolio);
+    }
+    // handleShootAvailability
+    const handleShootAvailabilityAddition = () => {
+        handleAdditionCpArrData(newShootAvailability, shootAvailabilityExistingData, setShootAvailabilityExistingData, showInputFieldShootAvailability, setShowInputFieldShootAvailability, setAddIconShootAvailability, addIconShootAvailability);
+    }
+    // handle Backup Footage Addition
+    const handleBackupFootageAddition = () => {
+        handleAdditionCpArrData(newbackupFootage, backupFootageExistingData, setBackupFootageExistingData, showInputFieldBackupFootage, setShowInputFieldBackupFootage, setAddIconBackupFootage, addIconBackupFootage);
     }
 
 
@@ -232,6 +282,15 @@ const CpDetails = () => {
         setStateFunction(leftAfterDlt);
     };
 
+    // dlt for Equipment data
+    const handleDltEquipment = (clickedItem: any) => {
+        handleDlt(clickedItem, equipmentExistingData, setEquipmentExistingData);
+    };
+    // dlt for Equipment data
+    const handleDltEquipmentSpecific = (clickedItem: any) => {
+        handleDlt(clickedItem, equipmentSpecificExistingData, setEquipmentSpecificExistingData);
+    };
+
     // dlt for vst data
     const handleDltVst = (clickedItem: any) => {
         handleDlt(clickedItem, vstData, setVstData);
@@ -240,9 +299,41 @@ const CpDetails = () => {
     const handleDltPortfolio = (clickedItem: any) => {
         handleDlt(clickedItem, portfolioData, setPortfolioData);
     };
+    // dlt for portfolio data
+    const handleDltShootAvailability = (clickedItem: any) => {
+        handleDlt(clickedItem, shootAvailabilityExistingData, setShootAvailabilityExistingData);
+    };
+    // dlt for portfolio data
+    const handleDltBackupFootage = (clickedItem: any) => {
+        handleDlt(clickedItem, backupFootageExistingData, setBackupFootageExistingData);
+    };
 
 
     const handleAddConfirmBtn = () => {
+
+        // equipment
+        if (newEquipment.trim() !== '') {
+            if (equipmentExistingData.includes(newEquipment)) {
+                console.log('No duplicate data');
+            } else {
+                setEquipmentExistingData([...equipmentExistingData, newEquipment]);
+            }
+            setNewEquipment('');
+            // setShowEquipmentInputField(false);
+        }
+
+        // equipment Specific
+        if (newEquipmentSpecific.trim() !== '') {
+            if (equipmentSpecificExistingData.includes(newEquipmentSpecific)) {
+                console.log('No duplicate data');
+            } else {
+                setEquipmentSpecificExistingData([...equipmentSpecificExistingData, newEquipmentSpecific]);
+            }
+            setNewEquipmentSpecific('');
+            // setShowEquipmentSpecificInputField(false);
+        }
+
+        // vst
         if (newVst.trim() !== '') {
             if (vstData.includes(newVst)) {
                 console.log('No duplicate data');
@@ -253,6 +344,7 @@ const CpDetails = () => {
             // setShowVstInputField(false);
         };
 
+        // portfolio
         if (newPortfolio.trim() !== '') {
             if (portfolioData.includes(newPortfolio)) {
                 console.log('No duplicate data');
@@ -260,6 +352,27 @@ const CpDetails = () => {
                 setPortfolioData([...portfolioData, newPortfolio]);
             }
             setNewPortfolio('');
+            // setShowPortfolioInputField(false);
+        }
+
+        // shoot avavility
+        if (newShootAvailability.trim() !== '') {
+            if (shootAvailabilityExistingData.includes(newShootAvailability)) {
+                console.log('No duplicate data');
+            } else {
+                setShootAvailabilityExistingData([...shootAvailabilityExistingData, newShootAvailability]);
+            }
+            setNewShootAvailability('');
+            // setShowPortfolioInputField(false);
+        }
+        // backup Footage
+        if (newbackupFootage.trim() !== '') {
+            if (backupFootageExistingData.includes(newbackupFootage)) {
+                console.log('No duplicate data');
+            } else {
+                setBackupFootageExistingData([...backupFootageExistingData, newbackupFootage]);
+            }
+            setNewBackupFootage('');
             // setShowPortfolioInputField(false);
         }
     }
@@ -342,23 +455,47 @@ const CpDetails = () => {
 
                 <div className="flex justify-between items-center">
                     {/* Equipement */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Equipement</label>
-                        <div className="flex-1">
-                            {formData?.equipment &&
-                                formData.equipment.map((equipmentItem: string) => (
-                                    <div className="mb-2" key={equipmentItem}>
-                                        <label className="flex items-center">
-                                            <input type="checkbox" className="form-checkbox" value={formData.equipmentItem} id="equipment" name="equipment" />
-                                            <span className="font-sans capitalize text-white-dark">{equipmentItem}</span>
-                                        </label>
+                    <div className="basis-[45%] shootAvailability">
+                        <div className="flex basis-[100%]">
+                            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Equipement </label>
+                            <div className="flex-1">
+                                <div>
+                                    {equipmentExistingData && equipmentExistingData.map((equipment_item: string, index: any) => (
+                                        // Equipement Existing Data
+                                        <div className="mb-2" key={`${equipment_item}_${index}`}>
+                                            <ul className="flex items-center list-disc">
+                                                <li className="mr-2 text-white-dark">
+                                                    <span className="font-sans capitalize text-white-dark">{equipment_item}</span>
+                                                </li>
+                                                <li className='list-none'>
+                                                    <span onClick={() => handleDltEquipment(equipment_item)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* add btn and input field */}
+                                <div className='flex justify-start items-center'>
+
+                                    <div onClick={handleEquipmentAddition} className="btn border-none p-0 pb-2 font-sans cursor-pointer text-white md:me-0">
+                                        <span>{addIconEquipment ? (allSvgs.plusForAddCp) : (allSvgs.minusForHide)}</span>
                                     </div>
-                                ))}
+
+                                    {showInputFieldEquipment &&
+                                        <div className="relative ml-2">
+                                            <input type="text" className="py-1 x-2 rounded border border-gray-200 focus:outline-none focus:border-gray-400" value={newEquipment} onChange={(e) => setNewEquipment(e.target.value)} />
+
+                                            <button onClick={handleAddConfirmBtn} className="absolute inset-y-0 right-0   text-white mr-1 py-1 rounded ml-2">{allSvgs.plusForAddCp}</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    {/* ends Equipment<---------------------------------------------------------------- */}
 
                     {/* equipment specificaion */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                    {/* <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Equipment Specific</label>
                         <div className="flex-1">
                             {formData?.equipment_specific &&
@@ -371,7 +508,47 @@ const CpDetails = () => {
                                     </div>
                                 ))}
                         </div>
+                    </div> */}
+
+                    {/* Equipement Specific */}
+                    <div className="basis-[45%]">
+                        <div className="flex basis-[100%]">
+                            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Equipement Specific </label>
+                            <div className="flex-1">
+                                <div>
+                                    {equipmentSpecificExistingData && equipmentSpecificExistingData.map((equipmentSpecific_item: string, index: any) => (
+                                        // Equipement Existing Data
+                                        <div className="mb-2" key={`${equipmentSpecific_item}_${index}`}>
+                                            <ul className="flex items-center list-disc">
+                                                <li className="mr-2 text-white-dark">
+                                                    <span className="font-sans capitalize text-white-dark">{equipmentSpecific_item}</span>
+                                                </li>
+                                                <li className='list-none'>
+                                                    <span onClick={() => handleDltEquipmentSpecific(equipmentSpecific_item)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* add btn and input field */}
+                                <div className='flex justify-start items-center'>
+
+                                    <div onClick={handleEquipmentSpecificAddition} className="btn border-none p-0 pb-2 font-sans cursor-pointer text-white md:me-0">
+                                        <span>{addIconEquipmentSpecific ? (allSvgs.plusForAddCp) : (allSvgs.minusForHide)}</span>
+                                    </div>
+
+                                    {showInputFieldEquipmentSpecific &&
+                                        <div className="relative ml-2">
+                                            <input type="text" className="py-1 x-2 rounded border border-gray-200 focus:outline-none focus:border-gray-400" value={newEquipmentSpecific} onChange={(e) => setNewEquipmentSpecific(e.target.value)} />
+
+                                            <button onClick={handleAddConfirmBtn} className="absolute inset-y-0 right-0   text-white mr-1 py-1 rounded ml-2">{allSvgs.plusForAddCp}</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    {/* ends Equipment Specific<---------------------------------------------------------------- */}
                 </div>
 
 
@@ -632,8 +809,9 @@ const CpDetails = () => {
                                     </div>
                                     {showVstInputField &&
                                         <div className="relative ml-2">
-                                            <input type="text" className="py-1 px-2 rounded border border-gray-200 focus:outline-none focus:border-gray-400" value={newVst} onChange={(e) => setNewVst(e.target.value)} />
-                                            <button onClick={handleAddConfirmBtn} className="absolute inset-y-0 right-0 bg-gray-100 hover:bg-gray-300 text-white px-2 py-1 rounded ml-2">{allSvgs.plusForAddCp}</button>
+                                            <input type="text" className="py-1 x-2 rounded border border-gray-200 focus:outline-none focus:border-gray-400" value={newVst} onChange={(e) => setNewVst(e.target.value)} />
+
+                                            <button onClick={handleAddConfirmBtn} className="absolute inset-y-0 right-0   text-white mr-1 py-1 rounded ml-2">{allSvgs.plusForAddCp}</button>
                                         </div>
                                     }
                                 </div>
@@ -645,25 +823,53 @@ const CpDetails = () => {
                 </div>
 
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between container-section ">
                     {/* Shoot availability */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">shoot availability</label>
-                        <div className="flex-1">
-                            {formData?.shoot_availability &&
-                                formData.shoot_availability.map((available_shoot: string) => (
-                                    <div className="mb-2" key={available_shoot}>
-                                        <label className="flex items-center">
-                                            <input type="checkbox" className="form-checkbox" value={formData.available_shoot} id="shoot_availability" name="shoot_availability" />
-                                            <span className="font-sans capitalize text-white-dark">{available_shoot}</span>
-                                        </label>
+                    <div className="basis-[45%] shootAvailability">
+                        <div className="flex basis-[100%]">
+                            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">shoot <br />availability</label>
+                            <div className="flex-1">
+                                <div>
+                                    {shootAvailabilityExistingData && shootAvailabilityExistingData.map((shootAvailability_item: string, index: any) => (
+                                        // shoot Availability ExistingData
+                                        <div className="mb-2" key={`${shootAvailability_item}_${index}`}>
+                                            <ul className="flex items-center list-disc">
+                                                <li className="mr-2 text-white-dark">
+                                                    <span className="font-sans capitalize text-white-dark">{shootAvailability_item}</span>
+                                                </li>
+                                                <li className='list-none'>
+                                                    <span onClick={() => handleDltShootAvailability(shootAvailability_item)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* add btn and input field */}
+                                <div className='flex justify-start items-center'>
+
+                                    <div onClick={handleShootAvailabilityAddition} className="btn border-none p-0 pb-2 font-sans cursor-pointer text-white md:me-0">
+                                        <span>{addIconShootAvailability ? (allSvgs.plusForAddCp) : (allSvgs.minusForHide)}</span>
                                     </div>
-                                ))}
+
+                                    {showInputFieldShootAvailability &&
+                                        <div className="relative ml-2">
+                                            <input type="text" className="py-1 x-2 rounded border border-gray-200 focus:outline-none focus:border-gray-400" value={newShootAvailability} onChange={(e) => setNewShootAvailability(e.target.value)} />
+
+                                            <button onClick={handleAddConfirmBtn} className="absolute inset-y-0 right-0   text-white mr-1 py-1 rounded ml-2">{allSvgs.plusForAddCp}</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    {/* ends <---------------------------------------------------------------- */}
+                    {/* ends <---------------------------------------------------------------- */}
+                    {/* ends <---------------------------------------------------------------- */}
+                    {/* ends <---------------------------------------------------------------- */}
+                    {/* ends <---------------------------------------------------------------- */}
 
                     {/*  Portfolio */}
-                    <div className="basis-[45%]">
+                    <div className="basis-[45%] portfolio">
                         <div className="flex basis-[100%]">
                             <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Portfolio</label>
                             <div className="flex-1">
@@ -707,21 +913,45 @@ const CpDetails = () => {
                 <div className="flex items-center justify-between">
                     {/* Add Footage */}
 
-                    {/* Backup Footage */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">backup footage</label>
-                        <div className="flex-1">
-                            {formData?.backup_footage &&
-                                formData.backup_footage.map((footage: string) => (
-                                    <div className="mb-2" key={footage}>
-                                        <label className="flex items-center">
-                                            <input type="checkbox" className="form-checkbox" value={formData.footage} id="backup_footage" name="backup_footage" />
-                                            <span className="font-sans text-white-dark">{footage}</span>
-                                        </label>
+                    {/* Backup Footage starts */}
+                    <div className="basis-[45%]">
+                        <div className="flex basis-[100%]">
+                            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">backup <br /> footage</label>
+                            <div className="flex-1">
+                                <div>
+                                    {backupFootageExistingData && backupFootageExistingData.map((backupFootage_item: string, index: any) => (
+                                        // backupFootageExistingData
+                                        <div className="mb-2" key={`${backupFootage_item}_${index}`}>
+                                            <ul className="flex items-center list-disc">
+                                                <li className="mr-2 text-white-dark">
+                                                    <span className="font-sans capitalize text-white-dark">{backupFootage_item}</span>
+                                                </li>
+                                                <li className='list-none'>
+                                                    <span onClick={() => handleDltBackupFootage(backupFootage_item)} className="btn w-4 text-bold text-white-dark p-0 font-sans cursor-pointer ml-5 md:me-0"> {allSvgs.closeModalSvg}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* add btn and input field */}
+                                <div className='flex justify-start items-center'>
+
+                                    <div onClick={handleBackupFootageAddition} className="btn border-none p-0 pb-2 font-sans cursor-pointer text-white md:me-0">
+                                        <span>{addIconBackupFootage ? (allSvgs.plusForAddCp) : (allSvgs.minusForHide)}</span>
                                     </div>
-                                ))}
+
+                                    {showInputFieldBackupFootage &&
+                                        <div className="relative ml-2">
+                                            <input type="text" className="py-1 x-2 rounded border border-gray-200 focus:outline-none focus:border-gray-400" value={newbackupFootage} onChange={(e) => setNewBackupFootage(e.target.value)} />
+
+                                            <button onClick={handleAddConfirmBtn} className="absolute inset-y-0 right-0   text-white mr-1 py-1 rounded ml-2">{allSvgs.plusForAddCp}</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    {/* ends <-- */}
 
                     {/* Own Transportation Method */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
