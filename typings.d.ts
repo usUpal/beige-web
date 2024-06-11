@@ -1,4 +1,4 @@
-export {};
+export { };
 declare global {
   interface ChatRoomTypes {
     order_id: OrderID;
@@ -68,6 +68,7 @@ declare global {
     budget_range: string;
     description: string;
     shoot_duration: string;
+    file_path: string;
   }
 
   interface ShootDatetimeTypes {
