@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
 import React, { useState, useEffect, useCallback } from 'react';
 import { Header, Segment, Icon, Breadcrumb, List, Card, Button, Message, Modal, Form, Portal, Checkbox } from 'semantic-ui-react';
@@ -8,6 +9,7 @@ import api from '../api/storage';
 import config from '../../config';
 import Menu from '../Menu/Menu';
 import { useAuth } from '../../contexts/authContext';
+import RefreshIcon from '../../public/allSvg/refresh.svg';
 const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
   const { userData } = useAuth();
   const [state, setState] = useState({
@@ -229,26 +231,29 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
 
   return (
     <div>
-      <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
+      <div>
+        <p className="my-8 text-2xl">Files</p>
+      </div>
       {/* Explorer controls */}
-      <div className="explorer-buttons">
-        <Button icon="arrow alternate circle up" basic size="tiny" color="blue" onClick={() => setPath(path.slice(0, -1))} />
-        <Button basic color="green" size="tiny" onClick={getFiles}>
-          <Icon name="refresh" loading={state.refreshing} />
-          Refresh
-        </Button>
-        <Button basic color="orange" size="tiny" onClick={() => setIgnoringFileStructure(!ignoringFileStructure)}>
-          <Icon name={ignoringFileStructure ? 'checkmark box' : 'square outline'} />
-          Ignore Folder Structure
-        </Button>
+      <div className="flex items-center gap-4">
+        {/* <Button icon="arrow alternate circle up" basic size="tiny" onClick={() => setPath(path.slice(0, -1))} />
         <Button.Group size="tiny">
-          <Button icon basic={view === 'grid'} color="purple" onClick={() => setView('list')}>
+          <Button icon basic={view === 'grid'} onClick={() => setView('list')}>
             <Icon name="list layout" />
           </Button>
-          <Button icon basic={view === 'list'} color="purple" onClick={() => setView('grid')}>
+          <Button icon basic={view === 'list'} onClick={() => setView('grid')}>
             <Icon name="grid layout" />
           </Button>
-        </Button.Group>
+        </Button.Group> */}
+        <p className="mb-0 py-2 pr-4 text-lg" onClick={() => setIgnoringFileStructure(!ignoringFileStructure)}>
+          <Icon name={ignoringFileStructure ? 'checkmark box' : 'square outline'} />
+          Ignore Folder Structure
+        </p>
+        <p className="mb-0 flex items-center gap-2 px-4	py-2 text-lg text-lime-600" onClick={getFiles}>
+          <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
+          Refresh
+        </p>
+        <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
       </div>
 
       {/* Folder breadcrumbs */}

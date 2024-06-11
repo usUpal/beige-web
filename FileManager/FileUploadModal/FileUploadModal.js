@@ -86,6 +86,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
 
     for (const [i, file] of state.files.entries()) {
       try {
+        dispatch({ type: 'setUploading', uploading: true });
         dispatch({
           type: 'reset',
           betweenSteps: true,
@@ -95,7 +96,6 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
           .getNewUploadPolicy(file.name, file.type, file.size) // Get upload policy for full file destination path.
           .catch((err) => handleStepFail(err, `Unable to get upload policy for file ${i + 1}`));
 
-        dispatch({ type: 'setUploading', uploading: true });
         dispatch({
           type: 'setStatus',
           status: `Uploading file ${i + 1} of ${state.files.length}...`,
