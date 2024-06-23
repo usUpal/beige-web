@@ -682,6 +682,21 @@ const minusForDltCp = <svg width="15px" height="15px" viewBox="0 0 24 24" fill="
     </g>
 </svg>
 
+//modal cross img svg [COMMON]
+const closeBtnCp = <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="15"
+    height="15"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+
 export const allSvgs = {
-    emailSvg, passwordSvg, bookNowSvg, shootSvg, meetingsSvg, chatSvg, transactionsSvg, disputesSvg, settingsSvg, helpSvg, closeModalSvg, addonsSvgGeneral, addonsSvgModel, filesSvg, addonsSvg, greaterThanArrowSvg, mugSvg, goToTopArrowSvg, rightArrowSvg, viewAllActivitiesArrow, notificationCancelRoundXBtnSvg, invalidSvg, notificationBtnSvg, invalidNotificationCrossBtnSvg, toggleMenuExpandSvg, messageIconSvg, signOutSvg, horizontalMenuDashboardSvg, downArrowSvg, horizontalAppsIconSvg, diceForComponentsHorizontalMenuSvg, elementsSvg, tablesSvgIcon, formsSvgIcon, pagesIconSvg, revenueDayWkMonthSortBtnSvg, cartIconSvg, dolarIconSvg, threeDotDropDown, summaryIncomeIconSvg, summaryProfitIconSvg, summaryExpensesIconSvg, plusIconSvg, clientDashBoardBookSvg, bestOfLuckIconSvg, userLogoIconSvg, pencilIconForEdit, plusForAddCp, minusForDltCp, minusForHide
+    emailSvg, passwordSvg, bookNowSvg, shootSvg, meetingsSvg, chatSvg, transactionsSvg, disputesSvg, settingsSvg, helpSvg, closeModalSvg, addonsSvgGeneral, addonsSvgModel, filesSvg, addonsSvg, greaterThanArrowSvg, mugSvg, goToTopArrowSvg, rightArrowSvg, viewAllActivitiesArrow, notificationCancelRoundXBtnSvg, invalidSvg, notificationBtnSvg, invalidNotificationCrossBtnSvg, toggleMenuExpandSvg, messageIconSvg, signOutSvg, horizontalMenuDashboardSvg, downArrowSvg, horizontalAppsIconSvg, diceForComponentsHorizontalMenuSvg, elementsSvg, tablesSvgIcon, formsSvgIcon, pagesIconSvg, revenueDayWkMonthSortBtnSvg, cartIconSvg, dolarIconSvg, threeDotDropDown, summaryIncomeIconSvg, summaryProfitIconSvg, summaryExpensesIconSvg, plusIconSvg, clientDashBoardBookSvg, bestOfLuckIconSvg, userLogoIconSvg, pencilIconForEdit, plusForAddCp, minusForDltCp, minusForHide, closeBtnCp
 } 
