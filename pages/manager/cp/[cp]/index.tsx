@@ -6,182 +6,19 @@ import { useParams } from 'next/navigation';
 import useDateFormat from '@/hooks/useDateFormat';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useForm } from "react-hook-form";
+import Loader from '@/components/SharedComponent/Loader';
 
 const CpDetails = () => {
     const [userModal, setUserModal] = useState(false);
-    const [isLoading, setLoading] = useState<boolean>(true);
+    const [isLoading, setLoading] = useState<boolean>(false);
     const [showError, setShowError] = useState<boolean>(false);
-    
-    const [formData, setFormData] = useState<any | null>(null);
-    
-    const [newEquipments, setNewEquipments] = useState<string[]>([]);
-    const [newEquipmentsSpecifics, setNewEquipmentsSpecifics] = useState<string[]>([]);
-    const [newBackupfootages, setNewBackupfootages] = useState<string[]>([]);
-    const [newVsts, setNewVsts] = useState<string[]>([]);
-    const [newShootAvailabilitys, setNewShootAvailabilitys] = useState<string[]>([]);
-    const [newPortfolios, setNewPortfolios] = useState<string[]>([]);
 
+    const [formData, setFormData] = useState<any | null>(null);
+    console.log("🚀 ~ CpDetails ~ formData:", formData);
 
     const params = useParams();
     const dob = formData?.date_of_birth;
     const formattedDateTime = useDateFormat(dob);
-
-    useEffect(() => {
-        if (params?.cp) {
-            const singleUserId = Array.isArray(params.cp) ? params.cp[0] : params.cp;
-            getUserDetails(singleUserId);
-        }
-    }, [params?.cp])
-
-    // User Single
-    const getUserDetails = async (singleUserId: string) => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
-            const userDetailsRes = await response.json();
-
-            if (!userDetailsRes) {
-                setShowError(true);
-                setLoading(false);
-            } else {
-                // setUserInfo(userDetailsRes);
-                setFormData(userDetailsRes);
-                setLoading(false);
-                setUserModal(true);
-            }
-        } catch (error) {
-            console.error(error);
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (formData) {
-            setNewEquipments(formData?.equipment);
-            setNewEquipmentsSpecifics(formData?.equipment_specific);
-            setNewBackupfootages(formData?.backup_footage);
-            setNewVsts(formData?.vst);
-            setNewShootAvailabilitys(formData?.shoot_availability);
-            setNewPortfolios(formData?.portfolio);
-        }
-    }, [formData])
-
-    const handleChange = (e: any) => {
-        const { name, value } = e.target;
-        // console.log('e.target:', name, value);
-
-        setFormData((prevFormData: any) => {
-            // console.log('previousFormData:', prevFormData);
-
-            // Checking For Duplicate Value
-            if (Array.isArray(prevFormData[name]) && prevFormData[name].includes(value)) {
-                // Deleting Duplicate Value
-                const updatedArray = prevFormData[name].filter((item: any) => item !== value);
-                const updatedFormData = {
-                    ...prevFormData,
-                    [name]: updatedArray,
-                };
-                // console.log('Updated FormData:', updatedFormData);
-                return updatedFormData;
-            } else {
-                const updatedFormData = {
-                    ...prevFormData,
-                    [name]: Array.isArray(prevFormData[name]) ? [...prevFormData[name], value] : value,
-                };
-                // console.log('Updated FormData:', updatedFormData);
-                return updatedFormData;
-            }
-        });
-
-    };
-
-    {
-        formData?.content_verticals &&
-            formData.content_verticals.map((content_vertical: string) => (
-                <div className="mb-2" key={content_vertical}>
-                    <label className="flex items-center">
-                        <input
-                            type="checkbox"
-                            className="form-checkbox"
-                            value={content_vertical}
-                            id={`checkbox_${content_vertical}`}
-                            name={`checkbox_${content_vertical}`}
-                            onChange={(e) => handleChange('content_verticals')}
-                        />
-                        <span className="font-sans capitalize text-white-dark">{content_vertical}</span>
-                    </label>
-                </div>
-            ));
-    }
-
-
-    const { register, handleSubmit, getValues, reset } = useForm();
-
-    const handleSetNewItem = (fieldName: string) => {
-        const value = getValues(fieldName);
-
-        // Check if the new value already exists in equipmentData
-        if (!fieldName) return;
-
-        switch (fieldName) {
-            case 'equipment':
-                setNewEquipments(prev => [...prev, value]);
-                break;
-            case 'equipment_specific':
-                setNewEquipmentsSpecifics(prev => [...prev, value]);
-                break;
-            case 'backup_footage':
-                setNewBackupfootages(prev => [...prev, value]);
-                break;
-            case 'vst':
-                setNewVsts(prev => [...prev, value]);
-                break;
-            case 'shoot_availability':
-                setNewShootAvailabilitys(prev => [...prev, value]);
-                break;
-            case 'portfolio':
-                setNewPortfolios(prev => [...prev, value]);
-                break;
-            default:
-                break;
-        }
-
-        reset({ [fieldName]: "" });
-    };
-
-
-    // 
-    const removeEquipmentItem = (arr_item: any, fieldName: string) => {
-        if (!fieldName) return;
-
-        switch (fieldName) {
-            case 'equipment':
-                setNewEquipments(prev => prev.filter(equipment => equipment !== arr_item));
-                break;
-            case 'equipment_specific':
-                setNewEquipmentsSpecifics(prev => prev.filter(equipmentSpecific => equipmentSpecific !== arr_item));
-                break;
-            case 'backup_footage':
-                setNewBackupfootages(prev => prev.filter(backupfootage => backupfootage !== arr_item));
-                break;
-            case 'vst':
-                setNewVsts(prev => prev.filter(vst => vst !== arr_item));
-                break;
-            case 'shoot_availability':
-                setNewShootAvailabilitys(prev => prev.filter(shootAvailability => shootAvailability !== arr_item));
-                break;
-            case 'portfolio':
-                setNewPortfolios(prev => prev.filter(portfolio => portfolio !== arr_item));
-                break;
-            default:
-                break;
-        }
-    };
-
-
-    const onSubmit = (data: any) => {
-        console.log(data);
-    }
 
     // State variables to manage input field visibility
     const [showEquipmentInput, setShowEquipmentInput] = useState(false);
@@ -216,6 +53,226 @@ const CpDetails = () => {
         setShowPortfolioInput(prev => !prev);
     };
 
+
+    useEffect(() => {
+        if (params?.cp) {
+            const singleUserId = Array.isArray(params.cp) ? params.cp[0] : params.cp;
+            getUserDetails(singleUserId);
+        }
+    }, [params?.cp])
+
+    // User Single
+    const getUserDetails = async (singleUserId: string) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
+            const userDetailsRes = await response.json();
+
+            if (!userDetailsRes) {
+                // setShowError(true);
+                setLoading(true);
+            } else {
+                // setUserInfo(userDetailsRes);
+                setFormData(userDetailsRes);
+                setLoading(false);
+                setUserModal(true);
+            }
+        } catch (error) {
+            console.error(error);
+            // setLoading(false);
+        }
+    };
+
+
+    const { register, handleSubmit, getValues, reset } = useForm();
+
+    const handleSetNewItem = (fieldName: string) => {
+        const value = getValues(fieldName);
+
+        // Check if the new value already exists in equipmentData
+        if (!fieldName) return;
+
+        switch (fieldName) {
+            case 'equipment':
+                // setEquipment(prev => [...prev, value]);
+                formData.equipment.push(value);
+                break;
+            case 'equipment_specific':
+                formData.equipment_specific.push(value);
+                // setEquipment_specific(prev => [...prev, value]);
+                break;
+            case 'backup_footage':
+                formData.backup_footage.push(value);
+                // setBackup_footage(prev => [...prev, value]);
+                break;
+            case 'vst':
+                formData.vst.push(value);
+                // setVst(prev => [...prev, value]);
+                break;
+            case 'shoot_availability':
+                formData.shoot_availability.push(value);
+                // setShoot_availability(prev => [...prev, value]);
+                break;
+            case 'portfolio':
+                formData.portfolio.push(value);
+                // setPortfolio(prev => [...prev, value]);
+                break;
+            default:
+                break;
+        }
+
+        reset({ [fieldName]: "" });
+    };
+
+
+    // 
+    const removeEquipmentItem = (arr_item: any, fieldName: string) => {
+        if (!fieldName) return;
+
+        switch (fieldName) {
+            case 'equipment':
+                const existingItemsEquipment = formData?.equipment?.filter((item: any) => item !== arr_item)
+                setFormData((prevFormData: any) => ({
+                    ...prevFormData,
+                    equipment: existingItemsEquipment
+                }));
+                break;
+            case 'equipment_specific':
+                const existingItemsEquipmentSpecific = formData?.equipment_specific?.filter((item: any) => item !== arr_item)
+                setFormData((prevFormData: any) => ({
+                    ...prevFormData,
+                    equipment_specific: existingItemsEquipmentSpecific
+                }));
+                break;
+            case 'backup_footage':
+                const existingItemsBackup = formData?.backup_footage?.filter((item: any) => item !== arr_item);
+                setFormData((prevFormData: any) => ({
+                    ...prevFormData,
+                    backup_footage: existingItemsBackup
+                }));
+                break;
+
+            case 'vst':
+                const existingItemsVst = formData?.vst?.filter((item: any) => item !== arr_item);
+                setFormData((prevFormData: any) => ({
+                    ...prevFormData,
+                    vst: existingItemsVst
+                }));
+                break;
+            case 'shoot_availability':
+                const existingItemsShoot = formData?.shoot_availability?.filter((item: any) => item !== arr_item);
+                setFormData((prevFormData: any) => ({
+                    ...prevFormData,
+                    shoot_availability: existingItemsShoot
+                }));
+                break;
+            case 'portfolio':
+                const existingItemsPortfolio = formData?.portfolio?.filter((item: any) => item !== arr_item)
+                setFormData((prevFormData: any) => ({
+                    ...prevFormData,
+                    portfolio: existingItemsPortfolio
+                }));
+                break;
+            default:
+                break;
+        }
+    };
+
+    const handleInputChange = (key: any, value: any) => {
+        setFormData({
+            ...formData,
+            [key]: value
+        });
+    }
+
+    const handleBooleanValueOnChange = (fieldName: string) => {
+        /* if (fieldName === 'rate_flexibility') {
+            // Assuming formData is your state or object holding form data
+            const rateFlexibilityValue = formData?.rateFlexibility; // Accessing the current value
+            if (rateFlexibilityValue === 'true') {
+                console.log(true);
+                return true;
+
+            } else if (rateFlexibilityValue === 'false') {
+                console.log(false);
+                return false;
+
+            } else {
+                return null; // Return null or handle unexpected values as per your logic
+            }
+        } */
+    }
+
+
+    const onSubmit = async (data: any) => {
+
+        const singleUserId = Array.isArray(params.cp) ? params.cp[0] : params.cp;
+
+        const disabledFieldsValue = {
+            successful_beige_shoots: formData?.successful_beige_shoots,
+            trust_score: formData?.trust_score,
+            average_rating: formData?.average_rating,
+            total_earnings: formData?.total_earnings,
+            avg_response_time: formData?.avg_response_time,
+            avg_response_time_to_new_shoot_inquiry: formData?.avg_response_time_to_new_shoot_inquiry,
+            num_declined_shoots: formData?.num_declined_shoots,
+            num_accepted_shoots: formData?.num_accepted_shoots,
+            date_of_birth: formData?.date_of_birth,
+            review_status: formData?.review_status,
+        }
+
+        const updatableStringField = {
+            // if edited the updated value or default value
+            reference: data?.reference || formData.reference,
+            rate: data?.rate || formData.rate,
+            handle_co_worker_conflicts: data?.handle_co_worker_conflicts || formData.handle_co_worker_conflicts,
+            initiative: data?.initiative || formData.initiative,
+            additional_info: data?.additional_info || formData.additional_info,
+            timezone: data?.timezone || formData.timezone,
+            city: data?.city || formData.city,
+            neighborhood: data?.neighborhood || formData.neighborhood,
+            zip_code: data?.zip_code || formData.zip_code,
+            inWorkPressure: data?.inWorkPressure || formData.inWorkPressure,
+        }
+
+        const arrayInputFields = {
+            equipment: data?.equipment || formData?.equipment,
+            equipment_specific: data?.equipment_specific || formData?.equipment_specific,
+            backup_footage: data?.backup_footage || formData?.backup_footage,
+            vst: data?.vst || formData?.vst,
+            shoot_availability: data?.shoot_availability || formData?.shoot_availability,
+            portfolio: formData?.portfolio,
+        }
+
+        const updatedData = {
+            // arrayInputFields
+            ...arrayInputFields,
+            // disabled fields value;
+            ...disabledFieldsValue,
+            // updatable String Fields value
+            ...updatableStringField
+        }
+
+        console.log("🚀 ~ onSubmit ~ updatedData:", updatedData);
+
+        const patchResponse = await fetch(`${API_ENDPOINT}cp/${singleUserId}?role=manager`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData),
+        });
+
+        if (!patchResponse.ok) {
+            return "error failed to patch";
+        }
+
+        const patchedData = await patchResponse.json();
+        console.log('Patch successful:', patchedData);
+
+    }
+
+
     return (
         <div className="p-5">
             <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col'>
@@ -228,7 +285,13 @@ const CpDetails = () => {
                                 formData.content_verticals.map((content_vertical: string) => (
                                     <div className="mb-2" key={content_vertical}>
                                         <label className="flex items-center">
-                                            <input type="checkbox" {...register('content_verticals')} className="form-checkbox" defaultValue={formData.content_vertical} id="content_verticals" name="content_verticals" />
+                                            <input type="checkbox"
+                                                {...register('content_verticals')}
+                                                className="form-checkbox"
+                                                defaultValue={formData.content_vertical}
+                                                id="content_verticals"
+                                                name="content_verticals"
+                                            />
                                             <span className="font-sans capitalize text-white-dark">{content_vertical}</span>
                                         </label>
                                     </div>
@@ -253,14 +316,22 @@ const CpDetails = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between my-6">
+                <div className="flex items-center justify-between my-4">
                     {/* Successful Shoots */}
                     <div className="flex basis-[45%] flex-col items-center sm:flex-row">
                         <label htmlFor="successful_beige_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Successful <br /> Shoots
                         </label>
 
-                        <input type="number" {...register("successful_beige_shoots")} defaultValue={formData?.successful_beige_shoots} className='border rounded bg-gray-200 p-3 ' disabled />
+                        <input
+                            type="number"
+                            {...register("successful_beige_shoots")}
+                            defaultValue={formData?.successful_beige_shoots}
+                            className='border rounded bg-gray-200 p-3 '
+                            disabled
+                            onChange={(e) => handleInputChange('successful_beige_shoots', e.target.value)}
+
+                        />
                     </div>
                     {/* Trust Score */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -268,7 +339,12 @@ const CpDetails = () => {
                             trust score
                         </label>
 
-                        <input type="number" {...register("trust_score")} defaultValue={formData?.trust_score} className='border rounded bg-gray-200 p-3' disabled />
+                        <input type="number"
+                            {...register("trust_score")}
+                            defaultValue={formData?.trust_score}
+                            className='border rounded bg-gray-200 p-3'
+                            onChange={(e) => handleInputChange('trust_score', e.target.value)}
+                            disabled />
                     </div>
                 </div>
 
@@ -278,32 +354,27 @@ const CpDetails = () => {
                         <label htmlFor="reference" className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Reference
                         </label>
-                        <input {...register("reference")} defaultValue={formData?.reference} className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400' />
+                        <input
+                            {...register("reference")}
+                            defaultValue={formData?.reference}
+                            className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400'
+                            onChange={(e) => handleInputChange('reference', e.target.value)}
+                        />
                     </div>
-                    {/* Average Rating */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="trust_score" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            average rating
-                        </label>
-                        <input type="number" {...register("average_rating")} defaultValue={formData?.average_rating} className='border rounded bg-gray-200 p-3' disabled />
-                    </div>
-                </div>
-                <div className="flex items-center justify-between">
-                    {/* Avg Res Time */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="avg_response_time" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            avg response time
-                        </label>
 
-                        <input type="number" {...register("avg_response_time")} defaultValue={formData?.avg_response_time} className='border rounded bg-gray-200 p-3' disabled />
-                    </div>
                     {/* Total Earnings */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="total_earnings" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             total earnings ($)
                         </label>
-                        <input type="number" {...register("total_earnings")} defaultValue={formData?.total_earnings} className='border rounded bg-gray-200 p-3' disabled />
-
+                        <input
+                            type="number"
+                            {...register("total_earnings")}
+                            defaultValue={formData?.total_earnings}
+                            className='border rounded bg-gray-200 p-3'
+                            disabled
+                            onChange={(e) => handleInputChange('total_earnings', e.target.value)}
+                        />
                     </div>
                 </div>
 
@@ -315,7 +386,13 @@ const CpDetails = () => {
                             rate
                         </label>
 
-                        <input type="number" {...register("rate")} defaultValue={(formData?.rate)} className='border rounded p-3 focus:outline-none focus:border-gray-400' />
+                        <input
+                            type="number"
+                            {...register("rate")}
+                            defaultValue={(formData?.rate)}
+                            className='border rounded p-3 focus:outline-none focus:border-gray-400'
+                            onChange={(e) => handleInputChange('rate', e.target.value)}
+                        />
                     </div>
 
                     {/* Rate Flexibility */}
@@ -327,14 +404,52 @@ const CpDetails = () => {
                             className="border focus:border-gray-400 rounded w-32 p-3"
                             id="rateFlexibility"
                             defaultValue={formData?.rateFlexibility}
-                            name="rateFlexibility"
-                            onChange={handleChange}>
+                            {...register('rateFlexibility')}
+                            onChange={() => handleBooleanValueOnChange('rateFlexibility')}
+                        >
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>
                     </div>
                 </div>
                 {/* rate and rate related */}
+
+                {/* Avg Res Time && Average Rating */}
+                <div className="flex items-center justify-between">
+                    {/* Avg Res Time */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="avg_response_time" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            avg response time
+                        </label>
+
+                        <input
+                            type="number"
+                            {...register("avg_response_time")}
+                            defaultValue={formData?.avg_response_time}
+                            className='border rounded bg-gray-200 p-3'
+                            disabled
+                            onChange={(e) => handleInputChange('avg_response_time', e.target.value)}
+                        />
+                    </div>
+
+                    {/* Average Rating */}
+                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <label htmlFor="trust_score" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            average rating
+                        </label>
+                        <input
+                            type="number"
+                            {...register("average_rating", { min: 1, max: 99 })}
+                            defaultValue={formData?.average_rating}
+                            className='border rounded bg-gray-200 p-3'
+                            disabled
+                            onChange={(e) => handleInputChange('average_rating', e.target.value)}
+                        />
+                    </div>
+
+                </div>
+
+
 
                 <div className="flex items-center justify-between my-4">
                     {/* Travel to distant */}
@@ -358,7 +473,14 @@ const CpDetails = () => {
                         <label htmlFor="avg_response_time_to_new_shoot_inquiry" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             avg response time to new shoot inquiry
                         </label>
-                        <input type="number" {...register("avg_response_time_to_new_shoot_inquiry")} defaultValue={(formData?.avg_response_time_to_new_shoot_inquiry)} className='border rounded p-3 bg-gray-200' disabled />
+                        <input
+                            type="number"
+                            {...register("avg_response_time_to_new_shoot_inquiry")}
+                            defaultValue={(formData?.avg_response_time_to_new_shoot_inquiry)}
+                            className='border rounded p-3 bg-gray-200'
+                            disabled
+                            onChange={(e) => handleInputChange('avg_response_time_to_new_shoot_inquiry', e.target.value)}
+                        />
                     </div>
                 </div>
 
@@ -419,7 +541,12 @@ const CpDetails = () => {
                             Handle Co Worker Conflicts
                         </label>
 
-                        <input {...register("handle_co_worker_conflicts")} defaultValue={(formData?.handle_co_worker_conflicts)} className='border rounded p-3 focus:outline-none focus:border-gray-400' />
+                        <input
+                            {...register("handle_co_worker_conflicts")}
+                            defaultValue={(formData?.handle_co_worker_conflicts)}
+                            className='border rounded p-3 focus:outline-none focus:border-gray-400'
+                            onChange={(e) => handleInputChange('handle_co_worker_conflicts', e.target.value)}
+                        />
                     </div>
                 </div>
 
@@ -430,14 +557,28 @@ const CpDetails = () => {
                             declined shoots
                         </label>
 
-                        <input type="number" {...register("num_declined_shoots")} defaultValue={(formData?.num_declined_shoots)} className='border rounded p-3 bg-gray-200' disabled />
+                        <input
+                            type="number"
+                            {...register("num_declined_shoots")}
+                            defaultValue={(formData?.num_declined_shoots)}
+                            className='border rounded p-3 bg-gray-200'
+                            disabled
+                            onChange={(e) => handleInputChange('num_declined_shoots', e.target.value)}
+                        />
                     </div>
                     {/* Num accepted Shoots */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
                         <label htmlFor="num_accepted_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             accepted <br /> shoots
                         </label>
-                        <input type="number" {...register("num_accepted_shoots")} defaultValue={(formData?.num_accepted_shoots)} className='border rounded p-3 bg-gray-200' disabled />
+                        <input
+                            type="number"
+                            {...register("num_accepted_shoots")}
+                            defaultValue={(formData?.num_accepted_shoots)}
+                            className='border rounded p-3 bg-gray-200'
+                            disabled
+                            onChange={(e) => handleInputChange('num_accepted_shoots', e.target.value)}
+                        />
                     </div>
                 </div>
 
@@ -447,7 +588,12 @@ const CpDetails = () => {
                         <label htmlFor="initiative" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             initiative
                         </label>
-                        <input {...register("initiative")} defaultValue={formData?.initiative} className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400' />
+                        <input
+                            {...register("initiative")}
+                            defaultValue={formData?.initiative}
+                            className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400'
+                            onChange={(e) => handleInputChange('initiative', e.target.value)}
+                        />
                     </div>
 
                     <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -455,7 +601,12 @@ const CpDetails = () => {
                             additional <br /> info
                         </label>
 
-                        <input {...register("additional_info")} defaultValue={formData?.additional_info} className='border p-3 w-64 rounded capitalize focus:outline-none focus:border-gray-400' placeholder={formData?.additional_info} />
+                        <input
+                            {...register("additional_info")}
+                            defaultValue={formData?.additional_info}
+                            className='border p-3 w-64 rounded capitalize focus:outline-none focus:border-gray-400'
+                            onChange={(e) => handleInputChange('additional_info', e.target.value)}
+                        />
                     </div>
 
                 </div>
@@ -466,7 +617,13 @@ const CpDetails = () => {
                         <label htmlFor="timezone" className="mt-2 mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             timezone
                         </label>
-                        <input {...register("timezone")} defaultValue={formData?.timezone} className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400' />
+                        <input
+                            {...register("timezone")}
+                            defaultValue={formData?.timezone}
+                            className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400'
+                            onChange={(e) => handleInputChange('timezone', e.target.value)}
+
+                        />
                     </div>
 
                     {/* own transportation method */}
@@ -495,7 +652,13 @@ const CpDetails = () => {
                             city
                         </label>
 
-                        <input {...register("city")} defaultValue={formData?.city} className='border p-3 w-72 rounded capitalize focus:outline-none focus:border-gray-400' />
+                        <input
+                            {...register("city")}
+                            defaultValue={formData?.city}
+                            className='border p-3 w-72 rounded capitalize focus:outline-none focus:border-gray-400'
+                            onChange={(e) => handleInputChange('city', e.target.value)}
+
+                        />
                     </div>
 
                     {/* Neighbourhood */}
@@ -504,7 +667,13 @@ const CpDetails = () => {
                             neighborhood
                         </label>
 
-                        <input {...register("neighborhood")} className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400' defaultValue={formData?.neighborhood} />
+                        <input
+                            {...register("neighborhood")}
+                            className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400'
+                            defaultValue={formData?.neighborhood}
+                            onChange={(e) => handleInputChange('neighborhood', e.target.value)}
+
+                        />
 
                     </div>
                 </div>
@@ -517,7 +686,12 @@ const CpDetails = () => {
                             zip code
                         </label>
 
-                        <input {...register("zip_code")} className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400' defaultValue={formData?.zip_code} />
+                        <input
+                            {...register("zip_code")}
+                            className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400'
+                            defaultValue={formData?.zip_code}
+                            onChange={(e) => handleInputChange('zip_code', e.target.value)}
+                        />
                     </div>
                     {/* in work pressure */}
                     <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -525,7 +699,12 @@ const CpDetails = () => {
                             In Work Pressure
                         </label>
 
-                        <input {...register("inWorkPressure")} className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400' defaultValue={formData?.inWorkPressure} />
+                        <input
+                            {...register("inWorkPressure")}
+                            className='border p-3 rounded capitalize focus:outline-none focus:border-gray-400'
+                            defaultValue={formData?.inWorkPressure}
+                            onChange={(e) => handleInputChange('inWorkPressure', e.target.value)}
+                        />
                     </div>
                 </div>
 
@@ -536,7 +715,13 @@ const CpDetails = () => {
                             Date Of Birth
                         </label>
 
-                        <input {...register("date")} defaultValue={formattedDateTime?.date} className='border p-3 rounded capitalize bg-gray-200' disabled />
+                        <input
+                            {...register("date_of_birth")}
+                            defaultValue={formattedDateTime?.date} className='border p-3 rounded capitalize bg-gray-200'
+                            disabled
+                            onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
+
+                        />
 
                     </div>
                     {/* Review Status */}
@@ -544,11 +729,18 @@ const CpDetails = () => {
                         <label htmlFor="review_status" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 ">
                             review status
                         </label>
-                        <input {...register("review_status")} className='border p-3 rounded capitalize bg-gray-200 text-gray-600' defaultValue={formData?.review_status} disabled />
+                        <input
+                            {...register("review_status")}
+                            className='border p-3 rounded capitalize bg-gray-200 text-gray-600'
+                            defaultValue={formData?.review_status}
+                            disabled
+                            onChange={(e) => handleInputChange('review_status', e.target.value)}
+
+                        />
                     </div>
                 </div>
                 {/* --------> array fields starts  */}
-                
+
                 {/* equipment and equipment_specific */}
                 <div className="md:flex md:justify-between md:items-start flex-row my-4">
                     {/* Equipment */}
@@ -557,14 +749,14 @@ const CpDetails = () => {
                         <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
                             <>
                                 {/* Render existing equipment items */}
-                                {formData?.equipment && newEquipments?.map((equipment_item: any, index: any) => (
+                                {formData?.equipment && formData?.equipment?.map((equipment_item: any, index: any) => (
                                     <div className="mb-2" key={`${equipment_item}_${index}`}>
-                                        <ul className="flex items-center justify-items-start ps-6 list-disc">
-                                            <li className=''>
-                                                <span className="font-sans capitalize text-white-dark">{equipment_item}</span>
+                                        <ul className="flex items-center justify-between ms-6 list-disc w-48 text-white-dark hover:text-dark">
+                                            <li >
+                                                <span className="font-sans capitalize text-white-dark hover:text-dark">{equipment_item}</span>
                                             </li>
 
-                                            <li className='list-none ms-5'>
+                                            <li className='list-none'>
                                                 <button
                                                     type="button"
                                                     className="text-white-dark hover:text-red-400"
@@ -615,18 +807,22 @@ const CpDetails = () => {
                             <>
 
                                 {/* Render existing specific equipment items */}
-                                {formData?.equipment_specific && newEquipmentsSpecifics?.map((equipmentSpecific_item: any, index: any) => (
+                                {formData?.equipment_specific && formData?.equipment_specific?.map((equipmentSpecific_item: any, index: any) => (
                                     <div className="mb-2" key={`${equipmentSpecific_item}_${index}`}>
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-sans capitalize text-white-dark">{equipmentSpecific_item}</span>
-                                            <button
-                                                type="button"
-                                                className="text-white-dark hover:text-red-400"
-                                                onClick={() => removeEquipmentItem(equipmentSpecific_item, 'equipment_specific')}
-                                            >
-                                                {allSvgs.closeBtnCp}
-                                            </button>
-                                        </div>
+                                        <ul className="flex items-center justify-between ms-6 list-disc w-48 text-white-dark hover:text-dark">
+                                            <li>
+                                                <span className="font-sans capitalize text-white-dark hover:text-dark">{equipmentSpecific_item}</span>
+                                            </li>
+                                            <li className='list-none'>
+                                                <button
+                                                    type="button"
+                                                    className="text-white-dark hover:text-red-400"
+                                                    onClick={() => removeEquipmentItem(equipmentSpecific_item, 'equipment_specific')}
+                                                >
+                                                    {allSvgs.closeBtnCp}
+                                                </button>
+                                            </li>
+                                        </ul>
                                     </div>
                                 ))}
                                 {/* Toggle button*/}
@@ -673,18 +869,22 @@ const CpDetails = () => {
 
                             <>
                                 {/* Render existing backup footage items */}
-                                {formData?.backup_footage && newBackupfootages?.map((backupFootage_item: any, index: any) => (
+                                {formData?.backup_footage && formData?.backup_footage?.map((backupFootage_item: any, index: any) => (
                                     <div className="mb-2" key={`${backupFootage_item}_${index}`}>
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-sans capitalize text-white-dark">{backupFootage_item}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeEquipmentItem(backupFootage_item, 'backup_footage')}
-                                                className="text-white-dark hover:text-red-400"
-                                            >
-                                                {allSvgs.closeBtnCp}
-                                            </button>
-                                        </div>
+                                        <ul className="flex items-center justify-between ms-6 list-disc w-48 text-white-dark hover:text-dark">
+                                            <li>
+                                                <span className="font-sans capitalize text-white-dark hover:text-dark">{backupFootage_item}</span>
+                                            </li>
+                                            <li className='list-none '>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeEquipmentItem(backupFootage_item, 'backup_footage')}
+                                                    className="text-white-dark hover:text-red-400"
+                                                >
+                                                    {allSvgs.closeBtnCp}
+                                                </button>
+                                            </li>
+                                        </ul>
                                     </div>
                                 ))}
 
@@ -731,18 +931,22 @@ const CpDetails = () => {
 
                             <>
                                 {/* Render existing VST items */}
-                                {formData?.vst && newVsts?.map((vst_item: any, index: any) => (
+                                {formData?.vst && formData?.vst?.map((vst_item: any, index: any) => (
                                     <div className="mb-2" key={`${vst_item}_${index}`}>
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-sans capitalize text-white-dark">{vst_item}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeEquipmentItem(vst_item, 'vst')}
-                                                className="text-white-dark hover:text-red-400"
-                                            >
-                                                {allSvgs.closeBtnCp}
-                                            </button>
-                                        </div>
+                                        <ul className="flex items-center justify-between ms-6 list-disc w-48 text-white-dark hover:text-dark">
+                                            <li>
+                                                <span className="font-sans capitalize text-white-dark hover:text-dark">{vst_item}</span>
+                                            </li>
+                                            <li className='list-none'>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeEquipmentItem(vst_item, 'vst')}
+                                                    className="text-white-dark hover:text-red-400"
+                                                >
+                                                    {allSvgs.closeBtnCp}
+                                                </button>
+                                            </li>
+                                        </ul>
                                     </div>
                                 ))}
                                 {/* toggle button */}
@@ -783,18 +987,22 @@ const CpDetails = () => {
 
                             <>
                                 {/* Render existing shoot availability items */}
-                                {formData?.shoot_availability && newShootAvailabilitys?.map((shootAvailability_item: any, index: any) => (
+                                {formData?.shoot_availability && formData?.shoot_availability?.map((shootAvailability_item: any, index: any) => (
                                     <div className="mb-2" key={`${shootAvailability_item}_${index}`}>
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-sans capitalize text-white-dark">{shootAvailability_item}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeEquipmentItem(shootAvailability_item, 'shoot_availability')}
-                                                className="text-white-dark hover:text-red-400"
-                                            >
-                                                {allSvgs.closeBtnCp}
-                                            </button>
-                                        </div>
+                                        <ul className="flex items-center justify-between ms-6 list-disc w-48 text-white-dark hover:text-dark">
+                                            <li>
+                                                <span className="font-sans capitalize text-white-dark hover:text-dark">{shootAvailability_item}</span>
+                                            </li>
+                                            <li className='list-none'>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeEquipmentItem(shootAvailability_item, 'shoot_availability')}
+                                                    className="text-white-dark hover:text-red-400"
+                                                >
+                                                    {allSvgs.closeBtnCp}
+                                                </button>
+                                            </li>
+                                        </ul>
                                     </div>
                                 ))}
                                 {/* toggle button */}
@@ -835,18 +1043,22 @@ const CpDetails = () => {
 
                             <>
                                 {/* Render existing portfolio items */}
-                                {formData?.portfolio && newPortfolios?.map((portfolio_item: any, index: any) => (
+                                {formData?.portfolio && formData?.portfolio?.map((portfolio_item: any, index: any) => (
                                     <div className="mb-2" key={`${portfolio_item}_${index}`}>
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-sans capitalize text-white-dark">{portfolio_item}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeEquipmentItem(portfolio_item, 'portfolio')}
-                                                className="text-white-dark hover:text-red-400"
-                                            >
-                                                {allSvgs.closeBtnCp}
-                                            </button>
-                                        </div>
+                                        <ul className="flex items-center justify-between ms-6 list-disc w-64 text-white-dark hover:text-dark">
+                                            <li>
+                                                <span className="font-sans capitalize text-white-dark hover:text-dark">{portfolio_item}</span>
+                                            </li>
+                                            <li className='list-none'>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeEquipmentItem(portfolio_item, 'portfolio')}
+                                                    className="text-white-dark hover:text-red-400"
+                                                >
+                                                    {allSvgs.closeBtnCp}
+                                                </button>
+                                            </li>
+                                        </ul>
                                     </div>
                                 ))}
                                 {/* toggle button */}
