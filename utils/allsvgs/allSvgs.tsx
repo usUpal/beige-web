@@ -699,6 +699,17 @@ const closeBtnCp = <svg
 
 const saveBtn = <svg width="40px" height="40px" viewBox="-512 -512 2048.00 2048.00" className="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000" stroke="#000000" stroke-width="0.01024"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M512 512m-448 0a448 448 0 1 0 896 0 448 448 0 1 0-896 0Z" fill="#4CAF50"></path><path d="M738.133333 311.466667L448 601.6l-119.466667-119.466667-59.733333 59.733334 179.2 179.2 349.866667-349.866667z" fill="#CCFF90"></path></g></svg>;
 
+const dataLoadingLoader = <svg className="h-20 w-20 animate-spin stroke-gray-500" viewBox="0 0 256 256">
+    <line x1="128" y1="32" x2="128" y2="64" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"></line>
+    <line x1="195.9" y1="60.1" x2="173.3" y2="82.7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"></line>
+    <line x1="224" y1="128" x2="192" y2="128" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"></line>
+    <line x1="195.9" y1="195.9" x2="173.3" y2="173.3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"></line>
+    <line x1="128" y1="224" x2="128" y2="192" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"></line>
+    <line x1="60.1" y1="195.9" x2="82.7" y2="173.3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"></line>
+    <line x1="32" y1="128" x2="64" y2="128" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"></line>
+    <line x1="60.1" y1="60.1" x2="82.7" y2="82.7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"></line>
+</svg>
+
 export const allSvgs = {
-    emailSvg, passwordSvg, bookNowSvg, shootSvg, meetingsSvg, chatSvg, transactionsSvg, disputesSvg, settingsSvg, helpSvg, closeModalSvg, addonsSvgGeneral, addonsSvgModel, filesSvg, addonsSvg, greaterThanArrowSvg, mugSvg, goToTopArrowSvg, rightArrowSvg, viewAllActivitiesArrow, notificationCancelRoundXBtnSvg, invalidSvg, notificationBtnSvg, invalidNotificationCrossBtnSvg, toggleMenuExpandSvg, messageIconSvg, signOutSvg, horizontalMenuDashboardSvg, downArrowSvg, horizontalAppsIconSvg, diceForComponentsHorizontalMenuSvg, elementsSvg, tablesSvgIcon, formsSvgIcon, pagesIconSvg, revenueDayWkMonthSortBtnSvg, cartIconSvg, dolarIconSvg, threeDotDropDown, summaryIncomeIconSvg, summaryProfitIconSvg, summaryExpensesIconSvg, plusIconSvg, clientDashBoardBookSvg, bestOfLuckIconSvg, userLogoIconSvg, pencilIconForEdit, plusForAddCp, minusForDltCp, minusForHide, closeBtnCp, saveBtn
+    emailSvg, passwordSvg, bookNowSvg, shootSvg, meetingsSvg, chatSvg, transactionsSvg, disputesSvg, settingsSvg, helpSvg, closeModalSvg, addonsSvgGeneral, addonsSvgModel, filesSvg, addonsSvg, greaterThanArrowSvg, mugSvg, goToTopArrowSvg, rightArrowSvg, viewAllActivitiesArrow, notificationCancelRoundXBtnSvg, invalidSvg, notificationBtnSvg, invalidNotificationCrossBtnSvg, toggleMenuExpandSvg, messageIconSvg, signOutSvg, horizontalMenuDashboardSvg, downArrowSvg, horizontalAppsIconSvg, diceForComponentsHorizontalMenuSvg, elementsSvg, tablesSvgIcon, formsSvgIcon, pagesIconSvg, revenueDayWkMonthSortBtnSvg, cartIconSvg, dolarIconSvg, threeDotDropDown, summaryIncomeIconSvg, summaryProfitIconSvg, summaryExpensesIconSvg, plusIconSvg, clientDashBoardBookSvg, bestOfLuckIconSvg, userLogoIconSvg, pencilIconForEdit, plusForAddCp, minusForDltCp, minusForHide, closeBtnCp, saveBtn, dataLoadingLoader
 } 
