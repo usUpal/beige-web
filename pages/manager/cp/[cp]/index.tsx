@@ -315,9 +315,9 @@ const CpDetails = () => {
                 </div>
 
                 {/* Successful Shoots && Trust Score  */}
-                <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
+                <div className="md:flex md:items-center md:justify-between md:mb-4">
                     {/* Successful Shoots */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-2">
                         <label htmlFor="successful_beige_shoots" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Successful <br /> Shoots
                         </label>
@@ -333,7 +333,7 @@ const CpDetails = () => {
                     </div>
 
                     {/* Trust Score */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-2">
                         <label htmlFor="trust_score" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             trust score
                         </label>
@@ -348,9 +348,9 @@ const CpDetails = () => {
 
                 </div>
 
-                <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
+                <div className="md:flex md:items-center md:justify-between md:mb-4">
                     {/* References */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="reference" className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Reference
                         </label>
@@ -363,7 +363,7 @@ const CpDetails = () => {
                     </div>
 
                     {/* Total Earnings */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="total_earnings" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             total earnings ($)
                         </label>
@@ -380,9 +380,9 @@ const CpDetails = () => {
                 </div>
 
                 {/* rate and rate related */}
-                <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
+                <div className="md:flex md:items-center md:justify-between md:mb-4">
                     {/* rate */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="initiative" className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             rate
                         </label>
@@ -397,7 +397,7 @@ const CpDetails = () => {
                     </div>
 
                     {/* Rate Flexibility */}
-                    <div className="flex basis-[45%] flex-col sm:flex-row mb:mt-0 mb-4">
+                    <div className="flex basis-[45%] flex-col sm:flex-row mb:mt-0 mb-6 md:mb-0">
                         <label htmlFor="rateFlexibility" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             rate Flexibility
                         </label>
@@ -418,7 +418,7 @@ const CpDetails = () => {
                 {/* Avg Res Time && Average Rating */}
                 <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
                     {/* Avg Res Time */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="avg_response_time" className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             avg response time
                         </label>
@@ -433,7 +433,7 @@ const CpDetails = () => {
                     </div>
 
                     {/* average rating */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="average_rating" className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             {/* className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2" */}
                             average rating
@@ -450,7 +450,7 @@ const CpDetails = () => {
 
                 </div>
 
-                <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
+                <div className="md:flex md:items-center md:justify-between md:mb-6 mb-0">
                     {/* Travel to distant */}
                     <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
                         <label htmlFor="travel_to_distant_shoots" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
@@ -470,7 +470,7 @@ const CpDetails = () => {
 
                     {/* avg response time to new shoot inquiry */}
                     {/* <div className="flex basis-[45%] flex-col sm:flex-row"> */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="avg_response_time_to_new_shoot_inquiry" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             avg response time to new shoot inquiry
                         </label>
@@ -489,7 +489,7 @@ const CpDetails = () => {
                 {/* Experience with Post Production && Customer Service Skills Experience */}
                 <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
                     {/* Experience with Post Production */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="experience_with_post_production_edit" className="mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             experience with post production
                         </label>
@@ -505,7 +505,7 @@ const CpDetails = () => {
                         </select>
                     </div>
                     {/* Customer Service Skills Experience */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="customer_service_skills_experience" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             customer service skills experience
                         </label>
@@ -524,7 +524,7 @@ const CpDetails = () => {
 
                 <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
                     {/* Team Player */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="team_player" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             team player
                         </label>
@@ -542,7 +542,7 @@ const CpDetails = () => {
                     </div>
 
                     {/* Handle co worker conflicts */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="avg_response_time_to_new_shoot_inquiry" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             Handle Co Worker Conflicts
                         </label>
@@ -732,9 +732,9 @@ const CpDetails = () => {
                 </div>
                 {/*  array fields starts  */}
                 {/* equipment and equipment_specific */}
-                <div className="md:flex md:justify-between md:items-start flex-row my-4">
+                <div className="md:flex md:justify-between md:items-start flex-row md:mb-4">
                     {/* Equipment */}
-                    <div className="md:flex basis-[45%] mb-10 md:mb-2">
+                    <div className="md:flex basis-[45%] mb-8 md:mb-2">
                         <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Equipment</label>
                         <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
                             <>
@@ -791,7 +791,7 @@ const CpDetails = () => {
                     </div>
 
                     {/* Equipment Specific */}
-                    <div className="md:flex basis-[45%] mb-10 md:mb-2">
+                    <div className="md:flex basis-[45%] mb-8 md:mb-2">
                         <label className="font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Equipment Specific</label>
                         <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
                             <>
@@ -849,10 +849,10 @@ const CpDetails = () => {
                 </div>
 
                 {/* backup and vst */}
-                <div className="md:flex md:justify-between md:items-start flex-row md:my-4">
+                <div className="md:flex md:justify-between md:items-start flex-row md:mb-4">
                     {/* backup */}
-                    <div className="md:flex basis-[45%] mb-10 md:mb-2">
-                        <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Backup Footage</label>
+                    <div className="md:flex basis-[45%] mb-8 md:mb-2">
+                        <label className="font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Backup Footage</label>
                         <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
                             <>
                                 {/* Render existing backup footage items */}
@@ -909,7 +909,7 @@ const CpDetails = () => {
                     </div>
 
                     {/* VST */}
-                    <div className="md:flex basis-[45%] mb-10 md:mb-2">
+                    <div className="md:flex basis-[45%] mb-8 md:mb-2">
                         <label className="font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">VST</label>
                         <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
                             <>
@@ -961,9 +961,9 @@ const CpDetails = () => {
                 </div >
 
                 {/* shoot avalibility and portfolio */}
-                <div className="md:flex md:justify-between md:items-start flex-row my-4">
+                <div className="md:flex md:justify-between md:items-start flex-row md:mb-4">
                     {/* Shoot Availability */}
-                    <div className="md:flex basis-[45%] mb-10 md:mb-2">
+                    <div className="md:flex basis-[45%] mb-8 md:mb-2">
                         <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Availability</label>
                         <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
 
@@ -1019,7 +1019,7 @@ const CpDetails = () => {
                     </div>
 
                     {/* Portfolio */}
-                    <div className="md:flex basis-[45%] mb-10 md:mb-2">
+                    <div className="md:flex basis-[45%] mb-8 md:mb-2">
                         <label className="font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Portfolio</label>
                         <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
                             <>
@@ -1072,7 +1072,7 @@ const CpDetails = () => {
                 </div>
 
                 {/* array fields ends */}
-                <div className="mt-8 flex items-center justify-end">
+                <div className="flex items-center justify-end">
                     <button type="button" className="btn btn-dark font-sans">
                         <Link href={'/manager/cp'}>Back</Link>
                     </button>
