@@ -2,16 +2,15 @@ import { API_ENDPOINT } from '@/config';
 import Link from 'next/link';
 import { Fragment, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import Swal from 'sweetalert2';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import StatusBg from '@/components/Status/StatusBg';
 import { Dialog, Transition } from '@headlessui/react';
-import Loader from '@/components/SharedComponent/Loader';
 import useDateFormat from '@/hooks/useDateFormat';
 import { useRouter } from 'next/router';
 import Pagination from '@/components/Pagination';
+import { useForm } from 'react-hook-form';
 
 const Users = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -22,53 +21,12 @@ const Users = () => {
     const [isLoading, setLoading] = useState<boolean>(true);
     const [showError, setShowError] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<any | null>(null);
-   /*  const [formData, setFormData] = useState<any>({
-        geo_location: {
-            type: 'Point',
-            coordinates: [-122.4711, 37.7745],
-        },
-        content_type: ['wedding', 'portrait'],
-        content_verticals: ['modern', 'romanticasaa'],
-        vst: ['modern wedding', 'romantic wedding'],
-        shoot_availability: ['weekends', 'afternoons'],
-        successful_beige_shoots: 8,
-        trust_score: 4.7,
-        average_rating: 4.9,
-        avg_response_time: 1.5,
-        equipment: ['camera', 'lens', 'tripod'],
-        equipment_specific: ['Sony a7 III', 'Sony FE 85mm f/1.8'],
-        portfolio: ['https://example.com/portfolio5', 'https://example.com/portfolio6'],
-        total_earnings: 8000,
-        backup_footage: ['https://example.com/backup5', 'https://example.com/backup6'],
-        travel_to_distant_shoots: true,
-        experience_with_post_production_edit: true,
-        customer_service_skills_experience: true,
-        team_player: false,
-        avg_response_time_to_new_shoot_inquiry: 1,
-        num_declined_shoots: 0,
-        num_accepted_shoots: 8,
-        num_no_shows: 1,
-        review_status: 'rejected',
-        userId: '6527c39992e911feecc30b18',
-        city: 'Texas',
-        neighborhood: 'Mission District',
-        zip_code: '94110',
-        last_beige_shoot: '61d8f4b4c8d9e6a4a8c3f7d5',
-        timezone: 'PST',
-        own_transportation_method: true,
-        reference: 'Bob Johnson',
-        created_at: '2023-10-12T10:12:23.602Z',
-        createdAt: '2023-10-12T10:12:23.605Z',
-        updatedAt: '2023-11-14T10:56:45.303Z',
-        id: '6527c687756ec2096cac7ab2',
-    }); */
     const [backupFootage, setBackupFootage] = useState<string>();
 
     // time formation
     const inputDate = (userInfo?.createdAt);
+    console.log("🚀 ~ Users ~ inputDate:", inputDate)
     const formattedDateTime = useDateFormat(inputDate);
-
-
 
     useEffect(() => {
         getAllUsers();
@@ -86,17 +44,14 @@ const Users = () => {
         }
     };
 
-
     const router = useRouter();
     // User Single
     // Also unUsed Function For APi
     const getUserDetails = async (singleUserId: string) => {
         setLoading(true);
-
         try {
             const response = await fetch(`${API_ENDPOINT}users/${singleUserId}`);
             const userDetailsRes = await response.json();
-            console.log("🚀 ~ getUserDetails ~ userDetailsRes:", userDetailsRes)
 
             if (!userDetailsRes) {
                 setShowError(true);
@@ -132,122 +87,25 @@ const Users = () => {
         setCurrentPage(page);
     };
 
-
-    // Fixing handleChange Function version --1
-   /*  const handleChange = (e: any) => {
-        const { name, value } = e.target;
-
-        setFormData((prevFormData: any) => {
-            // Checking For Duplicate Value
-            if (Array.isArray(prevFormData[name]) && prevFormData[name].includes(value)) {
-                // Deleting Duplicate Value
-                const updatedArray = prevFormData[name].filter((item: any) => item !== value);
-                return {
-                    ...prevFormData,
-                    [name]: updatedArray,
-                };
-            } else {
-                return {
-                    ...prevFormData,
-                    [name]: Array.isArray(prevFormData[name]) ? [...prevFormData[name], value] : value,
-                };
-            }
+    const handleInputChange = (key: any, value: any) => {
+        setUserInfo({
+            ...userInfo,
+            [key]: value
         });
-    }; */
+    }
 
-   /*  {
-        userInfo?.content_verticals &&
-            userInfo.content_verticals.map((content_vertical: string) => (
-                <div className="mb-2" key={content_vertical}>
-                    <label className="flex items-center">
-                        <input
-                            type="checkbox"
-                            className="form-checkbox"
-                            value={content_vertical}
-                            id={`checkbox_${content_vertical}`}
-                            name={`checkbox_${content_vertical}`}
-                            onChange={(e) => handleChange('content_verticals')}
-                        />
-                        <span className="font-sans capitalize text-white-dark">{content_vertical}</span>
-                    </label>
-                </div>
-            ));
-    } */
-
-    // Success Toast
-    /* const coloredToast = (color: any) => {
-        const toast = Swal.mixin({
-            toast: true,
-            position: 'top-start',
-            showConfirmButton: false,
-            timer: 3000,
-            showCloseButton: true,
-            customClass: {
-                popup: `color-${color}`,
-            },
-        });
-        toast.fire({
-            title: 'User updated successfully!',
-        });
-    }; */
-
-    // Insert Footage
-    // const [newData, insertNewData] = useState<any>({});
-
-   /*  const addHandler = (e: any) => {
-        let inputName = e.target.name;
-        let val = e.target.value;
-
-        insertNewData((prevData: any) => ({
-            ...prevData,
-            [inputName]: [val],
-        }));
-        return newData;
-    }; */
-
-    // unUsed Function For Api
-    /* const submitData = async (e: any) => {
-        try {
-            const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(addHandler(e)),
-            });
-
-            const updateNew = await response.json();
-
-            // Handle the response as needed
-            coloredToast('success');
-        } catch (error) {
-            console.error(error);
+    const { register, handleSubmit } = useForm();
+    const onSubmit = (data: any) => {
+        const updatedUserDetails = {
+            id: userInfo?.id || data?.id,
+            name: userInfo?.name || data?.name,
+            email: userInfo?.email || data?.email,
+            role: userInfo?.role || data?.role,
+            location: userInfo?.location || data?.location,
+            isEmailVerified: userInfo?.isEmailVerified || data?.isEmailVerified,
         }
-    }; */
-
-    // UnUsed Function for Api
-    /* const handleSubmit = async (e: any) => {
-        e.preventDefault();
-
-        try {
-            const response = await fetch(`${API_ENDPOINT}cp/${userInfo.userId}?role=manager`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            const updatedUserDetails = await response.json();
-            console.log(updatedUserDetails);
-            console.log('UPDATE', formData);
-
-            // Handle the response as needed
-            coloredToast('success');
-        } catch (error) {
-            console.error(error);
-        }
-    }; */
+        console.log("🚀 ~ onSubmit ~ updatedUserDetails:", updatedUserDetails);
+    };
 
     return (
         <>
@@ -275,11 +133,11 @@ const Users = () => {
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th className="font-mono">User ID</th>
+                                                    <th className="font-mono hidden md:block">User ID</th>
                                                     <th className="font-mono ltr:rounded-l-md rtl:rounded-r-md">Name</th>
                                                     <th className="font-mono">Email</th>
                                                     <th className="font-mono">Role</th>
-                                                    <th className="font-mono ltr:rounded-r-md rtl:rounded-l-md">Status</th>
+                                                    <th className="font-mono ltr:rounded-r-md rtl:rounded-l-md hidden md:block">Status</th>
                                                     <th className="font-mono">Edit</th>
                                                 </tr>
                                             </thead>
@@ -287,7 +145,7 @@ const Users = () => {
                                                 {allUsers
                                                     ?.map((user) => (
                                                         <tr key={user.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                                            <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                                            <td className="min-w-[150px] font-sans text-black dark:text-white hidden md:block">
                                                                 <div className="flex items-center">
                                                                     <p className="whitespace-nowrap">{user?.id}</p>
                                                                 </div>
@@ -295,8 +153,8 @@ const Users = () => {
                                                             <td>{user?.name}</td>
                                                             <td>{user?.email}</td>
                                                             <td className="font-sans text-success">{user?.role}</td>
-                                                            <td>
-                                                                <div className="font-sans">
+                                                            <td className='hidden md:block'>
+                                                                <div className="font-sans ">
                                                                     <StatusBg>{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg>
                                                                 </div>
                                                             </td>
@@ -317,70 +175,122 @@ const Users = () => {
                                     <Transition appear show={userModal} as={Fragment}>
                                         <Dialog as="div" open={userModal} onClose={() => setUserModal(false)}>
                                             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
-                                                <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                                                    <Dialog.Panel as="div" className="panel my-24 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                                                <div className="flex min-h-screen items-start justify-center md:px-4">
 
+                                                    <Dialog.Panel as="div" className="panel my-32 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark w-10/12 md:w-3/5 xl:w-3/6 2xl:w-2/6"
+                                                    >
                                                         <div className="flex my-2 items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
-                                                            <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-3">All-Users </div>
+                                                            <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-3"> users details </div>
                                                             <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModal(false)}>
                                                                 {allSvgs.closeModalSvg}
                                                             </button>
                                                         </div>
+                                                        <div className="">
+                                                            <h2 className="mx-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Detail Information of {userInfo?.name} </h2>
+                                                            {/* <div className='mx-6 pb-6'> */}
+                                                            <form onSubmit={handleSubmit(onSubmit)} className='mx-6 pb-6'>
+                                                                <div
+                                                                    className='md:flex justify-between mx-auto pb-6 space-y-5 md:space-y-0 box-border px-6'>
+                                                                    <div className="left space-y-4 ">
+                                                                        {/* Id */}
+                                                                        <div className="">
+                                                                            <label htmlFor="id" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
+                                                                                User id
+                                                                            </label>
+                                                                            <input
+                                                                                {...register("id")}
+                                                                                defaultValue={userInfo?.id}
+                                                                                className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400 mt-1 bg-gray-200'
+                                                                                onChange={(e) => handleInputChange('id', e.target.value)}
+                                                                                disabled
+                                                                            />
+                                                                        </div>
+                                                                        {/* Name */}
+                                                                        <div className="">
+                                                                            <label htmlFor="name" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
+                                                                                Name
+                                                                            </label>
+                                                                            <input
+                                                                                {...register("name")}
+                                                                                defaultValue={userInfo?.name}
+                                                                                className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1'
+                                                                                onChange={(e) => handleInputChange('name', e.target.value)}
+                                                                            />
+                                                                        </div>
 
-                                                        <div className="basis-[50%]">
-                                                            <h2 className="mx-6 mb-[12px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Detail Information of {userInfo?.name} </h2>
-
-                                                            <div className='mx-6 pb-6'>
-                                                                <div className='flex justify-between'>
-                                                                    <div className="left">
-                                                                        <p>
-                                                                            <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
-                                                                                Name :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{userInfo?.name}</span>
-                                                                            </span>
-                                                                        </p>
-                                                                        <p>
-                                                                            <span className='text-[16px] font-bold leading-none text-[#000000]'>
-                                                                                Email :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{userInfo?.email}</span>
-                                                                            </span>
-                                                                        </p>
-                                                                        <p>
-                                                                            <span className='text-[16px] font-bold leading-none text-[#000000] capitalize'>
-                                                                                Role :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{userInfo?.role}</span>
-                                                                            </span>
-                                                                        </p>
-
+                                                                        {/*Email*/}
+                                                                        <div className="">
+                                                                            <label htmlFor="email" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
+                                                                                email
+                                                                            </label>
+                                                                            <input
+                                                                                {...register("email")}
+                                                                                defaultValue={userInfo?.email}
+                                                                                className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1'
+                                                                                onChange={(e) => handleInputChange('email', e.target.value)}
+                                                                            />
+                                                                        </div>
                                                                     </div>
 
-                                                                    <div className="right">
+                                                                    <div className="right space-y-4">
+                                                                        {/*Email Varified*/}
+                                                                        <div className="">
+                                                                            <label htmlFor="isEmailVerified" className="mb-0 font-sans text-[14px] rtl:ml-2 w-1/4 md:w-full capitalize"
+                                                                            >
+                                                                                Email Verified
+                                                                            </label>
+                                                                            <select
+                                                                                className='border rounded p-3 focus:outline-none focus:border-gray-400 ms-12 md:ms-0 mt-1 w-56'
+                                                                                id="isEmailVerified"
+                                                                                defaultValue={userInfo?.isEmailVerified}
+                                                                                {...register('isEmailVerified')}
+                                                                                onChange={(e) => handleInputChange('isEmailVerified', e.target.value)}
+                                                                            >
+                                                                                <option value="true">Yes</option>
+                                                                                <option value="false">No</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        {/*Role*/}
+                                                                        <div className="">
+                                                                            <label htmlFor="role" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize"
+                                                                            >
+                                                                                role
+                                                                            </label>
+                                                                            <select
+                                                                                className='border rounded p-3 focus:outline-none focus:border-gray-400 ms-12 md:ms-0 mt-1 w-56'
+                                                                                id="role"
+                                                                                defaultValue={userInfo?.role}
+                                                                                {...register('role')}
+                                                                                onChange={(e) => handleInputChange('role', e.target.value)}
+                                                                            >
+                                                                                <option value="manager">Manager</option>
+                                                                                <option value="user">User</option>
+                                                                                <option value="cp">Cp</option>
+                                                                            </select>
+                                                                        </div>
 
-                                                                        <p>
-                                                                            <span className='text-[16px] font-bold leading-none text-[#000000]'>
-                                                                                Time :
-                                                                                <span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{formattedDateTime?.time}</span>
-                                                                            </span>
-                                                                        </p>
-                                                                        <p>
-                                                                            <span className='text-[16px] font-bold leading-none text-[#000000] capitalize'>
-                                                                                Date :
-                                                                                <span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{formattedDateTime?.date}</span>
-                                                                            </span>
-                                                                        </p>
-                                                                        <p>
-                                                                            <span className='text-[16px] font-bold leading-none text-[#000000] capitalize'>
-                                                                                Address :<span className='ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]'>{userInfo?.location}</span>
-                                                                            </span>
-                                                                        </p>
+                                                                        {/*Address*/}
+                                                                        <div className="">
+                                                                            <label htmlFor="location" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
+                                                                                Address
+                                                                            </label>
+                                                                            <input
+                                                                                {...register("location")}
+                                                                                defaultValue={userInfo?.location}
+                                                                                className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1 '
+                                                                                onChange={(e) => handleInputChange('location', e.target.value)}
+                                                                            />
+                                                                        </div>
+
+                                                                        <div className="">
+                                                                            <button type="submit" className="btn bg-black font-sans text-white mb-4 capitalize md:block mt-5">
+                                                                                Save
+                                                                            </button>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="btn-group flex">
-                                                                    <button onClick={() => setUserModal(false)} type="submit" className="btn bg-black font-sans text-white mx-auto md:me-0 mt-12 hidden md:block">
-                                                                        Close
-                                                                    </button>
-
-                                                                </div>
-                                                            </div>
+                                                            </form>
                                                         </div>
-
                                                     </Dialog.Panel>
                                                 </div>
                                             </div>

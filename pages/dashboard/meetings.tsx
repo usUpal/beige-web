@@ -29,7 +29,7 @@ const Meeting = () => {
   // times and date
   const myInputDate = (meetingInfo?.meeting_date_time);
   const myFormattedDateTime = useDateFormat(myInputDate);
-  
+
   useEffect(() => {
     getAllMyMeetings();
   }, [currentPage]);
@@ -120,7 +120,7 @@ const Meeting = () => {
 
   // get date format
   // left only for table
-  function makeDateFormat(inputDate) {
+  function makeDateFormat(inputDate: any) {
     const date = new Date(inputDate);
 
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -227,7 +227,7 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setmeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+              <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
 
                 <div className="flex my-2 items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
                   <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-3">Meeting Details</div>
@@ -240,68 +240,68 @@ const Meeting = () => {
 
                 <div className="basis-[50%]">
 
-                  <h2 className="mx-6 mb-[12px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Meeting with <span className='text-[#ACA686] capitalize'>{meetingInfo?.client?.name}</span></h2>
+                  <h2 className="mx-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Meeting with <span className='text-[#ACA686] capitalize'>{meetingInfo?.client?.name}</span></h2>
 
-                  <div className='mx-6 pb-6'>
-                    <p>
-                      <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
-                        Order : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'>{meetingInfo?.order?.name}</span>
-                      </span>
-                    </p>
+                  <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  justify-between mx-auto pb-6 w-5/6`}>
 
-                    <div className='md:flex justify-between mb-[7px]'>
+                    <div className="leftdata">
                       <p>
-                        <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
-                          Time : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'> {myFormattedDateTime?.time}</span>
-                        </span>
-                      </p>
-                      <p>
-                        <span className='text-[16px] font-bold leading-none capitalize text-[#000000]'>
-                          Date : <span className='text-[16px] font-semibold leading-[28px] text-[#000000]'> {myFormattedDateTime?.date}</span>
+                        <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
+                          Order : <span className='text-[14px] font-normal text-[#000000]'>{meetingInfo?.order?.name}</span>
                         </span>
                       </p>
 
-                    </div>
-
-                    <div className="flex justify-between">
-
-                      <span className=" text-[16px] font-bold leading-none capitalize text-[#000000]">
-                        Status: <span className='ps-2 text-[#0E1726] font-semibold'><StatusBg>{meetingInfo?.meeting_status}</StatusBg></span>
-                      </span>
-
-                      {meetingInfo.link ?
-                        <span className=" block font-sans text-[16px] leading-[18.2px] text-[#000000]">
-                          Link: {meetingInfo.link}
+                      <p>
+                        <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
+                          Time : <span className='text-[14px] font-normal leading-[28px] text-[#000000]'> {myFormattedDateTime?.time}</span>
                         </span>
-                        : ''
-                      }
+                      </p>
 
+                      <p>
+                        <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
+                          Date : <span className='text-[14px] font-normal leading-[28px] text-[#000000]'> {myFormattedDateTime?.date}</span>
+                        </span>
+                      </p>
+                      <div className="flex justify-between">
+                        <span className=" text-[14px] font-light leading-none capitalize text-[#000000]">
+                          Status: <span className='ps-2 text-[#0E1726] font-normal'><StatusBg>{meetingInfo?.meeting_status}</StatusBg></span>
+                        </span>
+                        {meetingInfo.link ?
+                          <span className=" block font-sans text-[14px] leading-[18.2px] text-[#000000]">
+                            Link: {meetingInfo.link}
+                          </span>
+                          : ''
+                        }
+                      </div>
                     </div>
 
                     {/* Resheduling */}
-                    <div className=''>
-                      <div className='flex flex-col items-start mt-5'>
-                        <h2 className=" mb-[15px] mt-[30px] text-[16px] font-bold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
-                        <form action="" className='flex flex-col'>
-                          <input
-                            className="rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[16px] font-medium leading-none text-[#000000] focus:border-[#dddddd] w-60"
-                            type="datetime-local"
-                            name="dateTime"
-                            id="datetime"
-                            ref={dateTimeRef}
-                            onChange={handleButtonChange}
-                          />
+                    <div>
+                      {
+                        meetingInfo?.meeting_status === 'pending' &&
+                        <div className='flex flex-col items-start'>
+                          <h2 className="text-[14px] font-light capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
+                          <form action="" className='flex flex-col'>
+                            <input
+                              className="rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd] w-60"
+                              type="datetime-local"
+                              name="dateTime"
+                              id="datetime"
+                              ref={dateTimeRef}
+                              onChange={handleButtonChange}
+                            />
 
-                          <button type="submit" className="btn my-5 bg-black font-sans text-white float-left w-60">
-                            Save
-                          </button>
-                        </form>
-                      </div>
+                            <button type="submit" className="btn my-5 font-light bg-black font-sans text-white float-left w-60 capitalize">
+                              Save date
+                            </button>
+                          </form>
+                        </div>
+                      }
 
-                      <button onClick={() => setmeetingModal(false)} type="submit" className="btn bg-black font-sans text-white mx-auto md:me-0 mt-0 hidden md:block">
+
+                      <button onClick={() => setmeetingModal(false)} type="submit" className="btn bg-black font-sans text-white mx-auto md:me-0 mt-0 hidden md:block ">
                         Close
                       </button>
-
                     </div>
 
                     {/* Resheduling */}

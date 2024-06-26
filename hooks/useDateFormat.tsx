@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 
-const useDateFormat = (inputDate) => {
+const useDateFormat = (inputDate: any) => {
     const [formattedDateTime, setFormattedDateTime] = useState<any | null>(null);
 
     useEffect(() => {
-        const makeDateFormat = (inputDate) => {
+        const makeDateFormat = (inputDate: any) => {
             const date = new Date(inputDate);
+            console.log("🚀 ~ makeDateFormat ~ date:", date)
 
             const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
             const month = months[date.getMonth()];
             const day = date.getDate();
             const year = date.getFullYear();
@@ -18,8 +18,8 @@ const useDateFormat = (inputDate) => {
             const ampm = hours >= 12 ? 'pm' : 'am';
             hours = hours % 12;
             hours = hours ? hours : 12; // Handle midnight (0 hours)
-            const formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
 
+            const formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
             const formattedDate = `${month} ${day}, ${year}`;
 
             return {

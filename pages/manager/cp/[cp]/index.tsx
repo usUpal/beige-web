@@ -557,7 +557,7 @@ const CpDetails = () => {
 
                 <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
                     {/* Num Declined Shoots */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="num_declined_shoots" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             declined shoots
                         </label>
@@ -571,7 +571,7 @@ const CpDetails = () => {
                         />
                     </div>
                     {/* Num accepted Shoots */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="num_accepted_shoots" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             accepted <br /> shoots
                         </label>
@@ -588,7 +588,7 @@ const CpDetails = () => {
 
                 <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
                     {/* initiative */}
-                    <div className="basis-[45%] md:flex items-center mb-10 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="initiative" className="mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             initiative
                         </label>
@@ -616,7 +616,7 @@ const CpDetails = () => {
                 {/* timezone &&  own transportation method */}
                 <div className="md:flex md:items-center md:justify-between md:mb-4 mb-0">
                     {/* Timezone */}
-                    <div className="basis-[45%] md:flex items-center mb-4 md:mb-0">
+                    <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
                         <label htmlFor="timezone" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                             timezone
                         </label>
