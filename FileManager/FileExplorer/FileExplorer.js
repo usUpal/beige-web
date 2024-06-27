@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header, Segment, Icon, Breadcrumb, List, Card, Button, Message, Modal, Form, Portal, Checkbox } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
 import FileCard from '../../FileManager/FileCard/FileCard';
@@ -9,17 +9,21 @@ import api from '../api/storage';
 import config from '../../config';
 import Menu from '../Menu/Menu';
 import { useAuth } from '../../contexts/authContext';
-import RefreshIcon from '../../public/allSvg/refresh.svg';
-const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import Loader from '@/components/SharedComponent/Loader';
+
+const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
   const { userData } = useAuth();
   const [state, setState] = useState({
     loading: false,
     loadingError: false,
     bucketName: 'objects',
   });
+
   const [path, setPathState] = useState([]);
   const [files, setFiles] = useState([]); // All file objects
   const [view, setView] = useState('list');
+
 
   const [ignoringFileStructure, setIgnoringFileStructure] = useState(false);
 
@@ -72,7 +76,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
         setFiles(data.files);
         setState({ ...state, loadingError: false, loading: false, bucketName: data.bucket });
       })
-      .catch(() => setState({ ...state, loading: true, loadingError: true }));
+      .catch(() => setState({ ...state, loading: false, loadingError: true }));
   };
 
   useEffect(() => {
@@ -112,6 +116,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
       .catch(() => toast(`❗ Couldn't rename file. Make sure a file with the same name doesn't already exist.`));
     setFileToRename({});
   };
+
 
   const moveFile = (moveToParent) => {
     let destFolder = fileMoveDestination.splitPath;
@@ -229,26 +234,26 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
     ));
   };
 
+
   return (
     <div>
       <div>
         <p className="my-8 text-2xl">Files</p>
       </div>
-      {/* Explorer controls */}
-      <div className="flex items-center gap-4">
-        {/* <Button icon="arrow alternate circle up" basic size="tiny" onClick={() => setPath(path.slice(0, -1))} />
-        <Button.Group size="tiny">
-          <Button icon basic={view === 'grid'} onClick={() => setView('list')}>
-            <Icon name="list layout" />
-          </Button>
-          <Button icon basic={view === 'list'} onClick={() => setView('grid')}>
-            <Icon name="grid layout" />
-          </Button>
-        </Button.Group> */}
-        <p className="mb-0 py-2 pr-4 text-lg" onClick={() => setIgnoringFileStructure(!ignoringFileStructure)}>
-          <Icon name={ignoringFileStructure ? 'checkmark box' : 'square outline'} />
-          Ignore Folder Structure
-        </p>
+      {/* Explorer controls : Ignore Folder Structure & Refresh*/}
+      {/* ************************ EDITED starts ************************** */}
+      {/* Explorer controls : Ignore Folder Structure & Refresh*/}
+      <div className="flex items-center justify-start gap-4">
+        <label className="flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            className="form-checkbox h-4 w-4 border-black focus:outline-black text-black"
+            checked={ignoringFileStructure}
+            onChange={() => setIgnoringFileStructure(!ignoringFileStructure)}
+          />
+          <span className="ml-2 text-lg text-gray-900 font-normal">Ignore Folder Structure</span>
+        </label>
+
         <p className="mb-0 flex items-center gap-2 px-4	py-2 text-lg text-lime-600" onClick={getFiles}>
           <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
           Refresh
@@ -257,51 +262,126 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
       </div>
 
       {/* Folder breadcrumbs */}
-      <div className="mt-4">
-        <Breadcrumb>
-          <Icon name="folder open outline" />
-          <Breadcrumb.Section link active={!path.length} onClick={() => setPath([])}>
-            {state.bucketName && 'Beige'}
-          </Breadcrumb.Section>
-          <Breadcrumb.Divider />
-          {ignoringFileStructure && <Breadcrumb.Section>all files and folders</Breadcrumb.Section>}
-          {!ignoringFileStructure &&
-            path.map((folderName, folderDepth) => (
-              <span>
-                <Breadcrumb.Section link active={path.length === folderDepth + 1} onClick={() => setPath(path.slice(0, folderDepth + 1))}>
-                  {folderName}
-                </Breadcrumb.Section>
-                <Breadcrumb.Divider />
+      <div className="">
+        <nav className="flex" aria-label="Breadcrumb">
+          <ol className="flex items-center my-8">
+            <li className="mr-2">
+              <span name="folder" className="text-gray-500">
+                {allSvgs.folderIcon}
               </span>
-            ))}
-        </Breadcrumb>
+            </li>
+
+            <li>
+              <a
+                href="#"
+                className={`text-gray-500 ${!path.length ? 'font-bold' : 'hover:text-blue-600'}`}
+                onClick={() => setPath([])}
+              >
+                {state.bucketName ? 'Beige' : ''}
+              </a>
+            </li>
+
+            {path.length > 0 && (
+              <>
+                <li className="mx-2">
+                  <span className="text-gray-300">/</span>
+                </li>
+
+                {path.map((folderName, folderDepth) => (
+                  <li key={folderDepth}>
+                    <a
+                      href="#"
+                      className={`text-gray-500 ${path.length === folderDepth + 1 ? 'font-bold' : 'hover:text-blue-600'}`}
+                      onClick={() => setPath(path.slice(0, folderDepth + 1))}
+                    >
+                      {folderName}
+                    </a>
+                    {folderDepth !== path.length - 1 && <span className="mx-2 text-gray-300">/</span>}
+                  </li>
+                ))}
+              </>
+            )}
+          </ol>
+        </nav>
       </div>
+
+      {/************************* EDITED ends ************************** */}
 
       {/* File Explorer */}
       <div className="files">
-        {state.loading && (
-          <Message icon negative={state.loadingError}>
-            <Icon name={state.loadingError ? 'warning sign' : 'circle notched'} loading={!state.loadingError} />
-            <Message.Content>
-              <Message.Header>{state.loadingError ? 'Something went wrong.' : 'Please wait...'}</Message.Header>
-              {state.loadingError ? 'Either the request failed or you are not authorized to access these files. ' : 'We are gathering your files...'}
-              {state.loadingError && (
-                <a href="#" onClick={getFiles}>
-                  Try again.
-                </a>
-              )}
-            </Message.Content>
-          </Message>
+
+        <div className='message'>
+
+          {(state.loading) && (
+            <div className="  border px-4 py-3 rounded relative flex items-center bg-red-200 mb-10" role="alert">
+              <div className="h-12 w-20">
+                <div className='h-12 w-12'>{allSvgs.roundSpinIcon}</div>
+              </div>
+              <div className='mt-2'>
+                <span className="block sm:inline font-bold">Just one second</span>
+                <span className="block sm:inline">We are gathering your files... </span>
+              </div>
+            </div>
+          )}
+
+          {(state.loadingError) && (
+            <div className=" border px-4 py-3 rounded relative flex items-center bg-red-200 mb-10" role="alert">
+              <div className="h-12 w-20">
+                <div className=' h-12 w-12 flex justify-center items-center'>{allSvgs.invalidIcon}</div>
+              </div>
+              <div className='mt-2'>
+                <span className="block sm:inline font-bold">
+                  Something went wrong.
+                </span>
+                <span className="block sm:inline pe-4">
+                  Either the request failed or you are not authorized to access these files.
+                  <a href="#" className='ps-6' onClick={getFiles}>
+                    Try again.
+                  </a>
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+        {/* refresh-message-ends */}
+
+        {/* ------------------------------------working part starts ---------------------------------------------  */}
+
+        <div className=''>
+          {ignoringFileStructure && <span className='mb-4 h-10 bg-red-200 text-red-500 w-full border py-3 px-6' >Files that contain the text .bucket. may store dashboard settings or other information, so be careful when deleting or renaming them.</span>}
+        </div>
+
+        {!filesInPath().length && !state.loading && !ignoringFileStructure && <p>There are no files here : </p>}
+
+        {/* Tailwind CSS (assuming similar structure) */}
+        {view === 'list' ? (
+          <ul className="divide-y divide-gray-200">
+            {fileCards().map((card, index) => (
+              <li key={index} className="py-4">{card}</li>
+            ))}
+          </ul>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {fileCards().map((card, index) => (
+              <div key={index} className="bg-white shadow-md rounded-lg">{card}</div>
+            ))}
+          </div>
         )}
-        {ignoringFileStructure && <Message warning content="Files that contain the text .bucket. may store dashboard settings or other information, so be careful when deleting or renaming them." />}
-        {!filesInPath().length && !state.loading && !ignoringFileStructure && <p>There are no files here :(</p>}
+
+
+
+        {/* ------------------------------------working part ends---------------------------------------------  */}
+
+
+         {/* {ignoringFileStructure && <Message warning content="Files that contain the text .bucket. may store dashboard settings or other information, so be careful when deleting or renaming them." />}
+        {!filesInPath().length && !state.loading && !ignoringFileStructure && <p>There are no files here : </p>}
         {view === 'list' ? (
           <List divided relaxed>
             {fileCards()}
           </List>
         ) : (
           <Card.Group>{fileCards()}</Card.Group>
-        )}
+        )} */}
       </div>
 
       {/* Delete Modal */}
@@ -373,7 +453,7 @@ const FileExplorer = ({ idToken, profile, setExplorerPath, doRefresh, didRefresh
           </Segment>
         </div>
       </Portal>
-    </div>
+    </div >
   );
 };
 
