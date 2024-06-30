@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { Header, Segment, Icon, Breadcrumb, List, Card, Button, Message, Modal, Form, Portal, Checkbox } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
 import FileCard from '../../FileManager/FileCard/FileCard';
@@ -10,9 +10,13 @@ import config from '../../config';
 import Menu from '../Menu/Menu';
 import { useAuth } from '../../contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import Loader from '@/components/SharedComponent/Loader';
+import { Dialog, Transition, Tab } from '@headlessui/react';
+// import Loader from '@/components/SharedComponent/Loader';
+// import { Description, Dialog, DialogPanel, DialogTitle, Transition } from '@headlessui/react';
+
 
 const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
+
   const { userData } = useAuth();
   const [state, setState] = useState({
     loading: false,
@@ -23,6 +27,8 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   const [path, setPathState] = useState([]);
   const [files, setFiles] = useState([]); // All file objects
   const [view, setView] = useState('list');
+
+  const [modal, setModal] = useState(false);
 
 
   const [ignoringFileStructure, setIgnoringFileStructure] = useState(false);
@@ -93,6 +99,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
     api
       .deleteFile(deletionState.file)
       .then((res) => {
+        setModal(false);
         toast(`❗ ${deletionState.isFolder ? 'Folder' : 'File'} deleted`);
         if (res.data.deleted) setDeletionState({ ...deletionState, open: false, error: false, saving: false });
         getFiles();
@@ -318,7 +325,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                 <div className='h-12 w-12'>{allSvgs.roundSpinIcon}</div>
               </div>
               <div className='mt-2'>
-                <span className="block sm:inline font-bold">Just one second</span>
+                <span className="block sm:inline font-bold">Please wait...</span>
                 <span className="block sm:inline">We are gathering your files... </span>
               </div>
             </div>
@@ -367,75 +374,145 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             ))}
           </div>
         )}
-
-
-
-        {/* ------------------------------------working part ends---------------------------------------------  */}
-
-
-         {/* {ignoringFileStructure && <Message warning content="Files that contain the text .bucket. may store dashboard settings or other information, so be careful when deleting or renaming them." />}
-        {!filesInPath().length && !state.loading && !ignoringFileStructure && <p>There are no files here : </p>}
-        {view === 'list' ? (
-          <List divided relaxed>
-            {fileCards()}
-          </List>
-        ) : (
-          <Card.Group>{fileCards()}</Card.Group>
-        )} */}
       </div>
 
-      {/* Delete Modal */}
-      <Modal basic open={deletionState.open} onClose={() => setDeletionState({ ...deletionState, open: false, error: false, saving: false })}>
-        <Header icon>
-          <Icon name="delete" />
-          Delete {deletionState.isFolder ? 'folder' : 'file'}
-        </Header>
-        <Modal.Content>
-          <p style={{ textAlign: 'center' }}>
-            Are you sure you want to delete <span style={{ color: 'orange', fontWeight: 'bold' }}>{deletionState.file}</span>?
-          </p>
-          {deletionState.error && <p style={{ textAlign: 'center', color: 'red' }}>Something went wrong and we couldn't delete that file.</p>}
-        </Modal.Content>
-        <Modal.Actions>
-          <Button basic color="blue" inverted onClick={() => setDeletionState({ ...deletionState, open: false, error: false, saving: false })}>
-            No
-          </Button>
-          <Button color="red" inverted onClick={deleteFile}>
-            <Icon name="checkmark" /> {deletionState.saving ? 'Deleting...' : 'Yes'}
-          </Button>
-        </Modal.Actions>
-      </Modal>
+      <>
+        {/* Delete Modal */}
+        <div className="mb-5">
+          <Transition appear show={deletionState.open} as={Fragment}>
+            <Dialog as="div" open={deletionState.open} onClose={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="fixed inset-0" />
+              </Transition.Child>
+              <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
+                <div className="flex items-center justify-center min-h-screen px-4">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <Dialog.Panel as="div" className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg my-8 text-black dark:text-white-dark">
+                      <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
+                        <div className="text-lg font-bold capitalize text-red-600">
+                          Delete {deletionState.isFolder ? 'folder' : 'file'}
+                        </div>
+                        <button type="button" className="text-white-dark hover:text-dark " onClick={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
+                          {allSvgs.closeModalSvg}
+                        </button>
+                      </div>
+                      <div className="p-5 "> {/* Added flex and items-center classes here */}
+                        <p className='bg-rose-100 flex flex-col items-center text-danger'>
+                          {allSvgs.trashIcon}
+                        </p>
+                        <p className=" font-semibold"> {/* Added text-red-600 class for red color */}
+                          Are you sure you want to delete <span className='text-danger'> {deletionState.file}</span>?
+                        </p>
+                        <div className="flex justify-end items-center mt-8">
+                          <button type="button" className="btn btn-outline-danger" onClick={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
+                            No
+                          </button>
 
-      {/*Rename Modal*/}
-      <Modal open={!!fileToRename.path} onClose={() => setFileToRename({})} size="mini">
-        <Header icon>
-          <Icon name="edit" />
-          Rename {fileToRename.name}
-        </Header>
-        <Modal.Content>
-          <Form as="div">
-            <Form.Field>
-              <input placeholder="New name" value={renameInputValue} onChange={(e) => setRenameInputValue(e.target.value)} />
-            </Form.Field>
-          </Form>
-        </Modal.Content>
-        <Modal.Actions>
-          <Button
-            basic
-            color="blue"
-            onClick={() => {
-              setFileToRename({});
-              setRenameInputValue('');
-            }}
+                          <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={() => deleteFile()}>
+                            {deletionState.saving ? 'Deleting...' : 'Yes'}
+                          </button>
+                        </div>
+                      </div>
+                    </Dialog.Panel>
+
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition>
+        </div>
+      </>
+
+      {/* *** */}
+
+
+      {/* *** */}
+
+
+      {/* practice modal starts -->  open={!!fileToRename.path}*/}
+
+      <Transition appear show={!!fileToRename.path} as={Fragment}>
+        <Dialog as="div" open={!!fileToRename.path} onClose={() => setFileToRename({})} >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
           >
-            Cancel
-          </Button>
-          <Button color="violet" onClick={renameFile}>
-            <Icon name="checkmark" />
-            Rename
-          </Button>
-        </Modal.Actions>
-      </Modal>
+            <div className="fixed inset-0" />
+          </Transition.Child>
+          <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen px-4">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel as="div" className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg my-8 text-black dark:text-white-dark">
+                  <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
+                    <h5 className="font-bold text-lg">Rename</h5>
+                    <button type="button" className="text-white-dark hover:text-dark" onClick={() => setModal(false)}>
+                    </button>
+                  </div>
+                  <div className="px-5 pb-5 flex flex-col items-center">
+                    <p className='flex flex-col items-center text-info'>
+                      {allSvgs.docEditIcon}
+                    </p>
+                    <p className='font-semibold'>
+                      Rename <span className='text-blue-400'> {fileToRename.name}</span>
+                    </p>
+                    <p>
+                      <input className='border p-3 rounded capitalize focus:outline-none focus:border-gray-600' placeholder="New name" value={renameInputValue} onChange={(e) => setRenameInputValue(e.target.value)} />
+                    </p>
+
+                    <div className="flex justify-end items-center mt-8">
+                      <button type="button" className="btn btn-outline-danger"
+                        onClick={() => {
+                          setFileToRename({});
+                          setRenameInputValue('');
+                        }}>
+                        Cancel
+                      </button>
+
+                      <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={renameFile}>
+                        Rename
+                      </button>
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* <-- practice modal ends */}
+
+
+      
 
       {/* File Move Popup*/}
       <Portal open={!!fileToMove.path} onClose={() => setFileToMove({})} closeOnDocumentClick={false}>
