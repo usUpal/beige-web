@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button, Icon, Input } from 'semantic-ui-react';
+import React, { useState, useEffect, Fragment } from 'react';
+// import { Modal, Button, Icon, Input } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
 import api from '../api/storage';
+import { Dialog, Transition } from '@headlessui/react';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
 const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
   const [folderPath, setFolderPath] = useState('');
@@ -33,23 +35,86 @@ const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
 
   return (
     <div>
-      <Modal open={open} onClose={close} size="tiny">
-        <Modal.Header>Create Folder</Modal.Header>
-        <Modal.Content>
-          <Modal.Description style={{ marginBottom: '15px' }}>Your new folder will be created in the current directory.</Modal.Description>
-          <Input label={(path[path.length - 1] || '') + '/'} placeholder="New Folder Name" size="large" onChange={(e) => setFolderPath((path.length ? path.join('/') + '/' : '') + e.target.value)} />
-          {error && <p style={{ color: 'red', margin: '10px 0' }}>Something went wrong and we couldn't create that folder.</p>}
-        </Modal.Content>
-        <Modal.Actions>
-          <Button color="black" onClick={close}>
-            Cancel
-          </Button>
-          <Button color="orange" onClick={createFolder}>
-            <Icon name="plus circle" loading={saving} />
-            {saving ? 'Adding...' : 'Add Folder'}
-          </Button>
-        </Modal.Actions>
-      </Modal>
+      <>
+        <div className="mb-5">
+          <Transition appear show={open} as={Fragment}>
+            <Dialog as="div" open={open} onClose={close}>
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="fixed inset-0" />
+              </Transition.Child>
+
+              <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
+                <div className="flex items-center justify-center min-h-screen px-4">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <Dialog.Panel as="div" className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg my-8 text-black dark:text-white-dark">
+                      <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
+                        <h5 className="font-bold text-lg">Create folder</h5>
+
+                        <button type="button" className="text-white-dark hover:text-dark" onClick={close}>
+                          {allSvgs.closeBtnCp}
+                        </button>
+                      </div>
+
+                      <div className="p-5">
+                        <p>
+                          Your new folder will be created in the current directory.
+                        </p>
+                        <p>
+                          <div className="mb-5">
+                            <label htmlFor="url">Folder</label>
+                            <div className="flex">
+                              <div className="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b] w-32">
+                                {(path[path.length - 1] || '') + '/'}
+                              </div>
+                              <input
+                                onChange={(e) => setFolderPath((path.length ? path.join('/') + '/' : '') + e.target.value)}
+                                id="new_folder"
+                                type="text"
+                                placeholder="New Folder Name"
+                                className="form-input ltr:rounded-l-none rtl:rounded-r-none w-3/5" />
+
+                              {error && <p style={{ color: 'red', margin: '10px 0' }}>Something went wrong and we couldn't create that folder.</p>}
+                            </div>
+                          </div>
+                          
+                        </p>
+
+
+                        <div className="flex justify-end items-center mt-8">
+                          <button type="button" className="btn btn-outline-danger" onClick={close}>
+                            Discard
+                          </button>
+                          <button type="button" className="btn btn-outline-warning ltr:ml-4 rtl:mr-4" onClick={createFolder}>
+                            {saving ? 'Adding...' : 'Add Folder'}
+                          </button>
+                        </div>
+
+                      </div>
+                    </Dialog.Panel>
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition>
+        </div>
+      </>
+
     </div>
   );
 };

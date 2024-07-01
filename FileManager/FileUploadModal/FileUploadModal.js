@@ -1,13 +1,13 @@
-import React, { useState, useReducer, useEffect, createRef } from 'react';
+import React, { useState, useReducer, useEffect, createRef, Fragment } from 'react';
 import styles from './FileUploadModal.module.css';
-import { Modal, Button, Icon, List, Progress, Checkbox, Popup } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
 import { formatBytes } from '../util/fileutil';
-// import getDroppedOrSelectedFiles from '../../util/upload'
 import api from '../api/storage';
 import axios from 'axios';
+import { Dialog, Transition } from '@headlessui/react';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
-let uploadCancelFunc = () => {};
+let uploadCancelFunc = () => { };
 
 const initialUploadState = {
   files: [],
@@ -159,72 +159,164 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
   };
 
   const fileList = state.files.map((file) => (
-    <List.Item>
+    <li>
       <span className={styles.fileListName}>{file.name}</span> - {formatBytes(file.size)}
-    </List.Item>
+    </li>
   ));
 
+  console.log(state.progress);
   return (
     <div>
-      <Modal open={open}>
-        <Modal.Header>Upload Files</Modal.Header>
-        <Modal.Content>
-          <p>You can select multiple files or a single folder to upload. If you upload a folder, file structure will be preserved. Files will be uploaded to {(path || []).join('/') + '/'}.</p>
 
-          <Checkbox toggle label="Upload a folder" checked={state.folderUpload} onClick={() => dispatch({ type: 'switchFolderUpload' })} />
-          {/*<Popup content='' trigger={<Icon name='info circle' />} />*/}
+      {/* Delete Modal */}
+      <>
+        <div className="mb-5">
+          <Transition appear show={open} as={Fragment}>
+            <Dialog as="div" open={open} onClose={() => dispatch({ type: 'switchFolderUpload' })} >
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="fixed inset-0" />
+              </Transition.Child>
+              <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
+                <div className="flex items-center justify-center min-h-screen px-4">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pt-8 pb-6">
+                      <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
+                        <div className="text-lg font-bold capitalize text-red-600">
+                          Upload {state.folderUpload ? 'a Folder' : 'Files'}
+                        </div>
+                        <button type="button" className="text-white-dark hover:text-dark" onClick={() => {
+                          dispatch({ type: 'reset' });
+                          closeModal();
+                        }}>
+                          {allSvgs.closeModalSvg}
+                        </button>
+                      </div>
 
-          <div className={styles.fileInputContainer}>
-            <input
-              style={{ display: 'none' }}
-              multiple
-              type="file"
-              webkitdirectory={state.folderUpload ? '' : undefined} // Seems redundant, but needed for some reason
-              mozdirectory={state.folderUpload ? '' : undefined}
-              msdirectory={state.folderUpload ? '' : undefined}
-              odirectory={state.folderUpload ? '' : undefined}
-              directory={state.folderUpload ? '' : undefined}
-              ref={fileInput}
-              onChange={onFilesChange}
-            />
-            <Button color="blue" size="huge" style={{ display: 'block', margin: '15px auto' }} onClick={() => fileInput.current.click()} disabled={state.uploading}>
-              Select {state.folderUpload ? 'a Folder' : 'Files'}
-            </Button>
-          </div>
+                      <div className="p-5 ">
+                        <p className='flex items-center'>
+                          <label
+                            className="w-12 h-6 relative"
+                            onClick={() => dispatch({ type: 'switchFolderUpload' })}
+                          >
+                            <input
+                              type="checkbox"
+                              className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                              id="custom_switch_checkbox1"
+                              checked={state.folderUpload}
+                            />
+                            <span
+                              className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"
+                            >
+                            </span>
+                          </label>
+                          <span className='ms-3'>Select {!state.folderUpload ? 'a Folder' : 'Files'}</span>
+                        </p>
 
-          <div className={styles.fileList}>
-            <List>{fileList}</List>
-          </div>
-          <p
-            style={{
-              textAlign: 'right',
-              marginRight: '30px',
-              color: state.error ? 'red' : 'black',
-            }}
-          >
-            <strong>{state.status}</strong>
-          </p>
-          {state.status && <Progress percent={state.progress} color="teal" progress active={state.uploading} error={state.error} />}
-          {/* {state.status && state.uploading && <Progress percent={state.totalProgress} color="violet" />} */}
-        </Modal.Content>
-        <Modal.Actions>
-          <Button
-            color="black"
-            onClick={() => {
-              dispatch({ type: 'reset' });
-              closeModal();
-            }}
-          >
-            Cancel
-          </Button>
-          <Button color="orange" onClick={startUpload} disabled={!state.files.length || state.uploading}>
-            <Icon name="upload" />
-            {state.uploading ? 'Uploading...' : 'Start Upload'}
-          </Button>
-        </Modal.Actions>
-      </Modal>
-    </div>
+                        <p className=" font-semibold">
+                          <p>You can select multiple files or a single folder to upload. If you upload a folder, file structure will be preserved. Files will be uploaded to {(path || []).join('/') + '/'}.</p>
+                        </p>
+
+                        <div className={styles.fileInputContainer}>
+                          <input
+                            style={{ display: 'none' }}
+                            multiple
+                            type="file"
+                            webkitdirectory={state.folderUpload ? '' : undefined}
+                            mozdirectory={state.folderUpload ? '' : undefined}
+                            msdirectory={state.folderUpload ? '' : undefined}
+                            odirectory={state.folderUpload ? '' : undefined}
+                            directory={state.folderUpload ? '' : undefined}
+                            ref={fileInput}
+                            onChange={onFilesChange}
+                          />
+
+                          <button type="button" className="btn btn-dark" style={{ display: 'block', margin: '15px auto' }}
+                            onClick={() => fileInput.current.click()} disabled={state.uploading}
+                          >
+                            Select {state.folderUpload ? 'a Folder' : 'Files'}
+                          </button>
+
+                        </div>
+
+                        <div className={styles.fileList}>
+                          <li className='list-none'>{fileList}</li>
+                        </div>
+
+                        {state.status && (
+                          <div className="mb-5 space-y-5">
+                            <div className="w-full h-4 bg-[#ebedf2] dark:bg-dark/40 rounded-full">
+
+                              <div className={`bg-info h-4 rounded-full text-center text-white text-xs`} style={{ width: `${state.progress}%` }}>
+                                {state.uploading ? `${state.progress}%` : state.error ? 'Error!' : `${state.progress}%`}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <p
+                          style={{
+                            textAlign: 'right',
+                            marginRight: '30px',
+                            color: state.error ? 'red' : 'black',
+                          }}
+                        >
+                          <strong>{state.status}</strong>
+                        </p>
+
+                        <div className="flex justify-end items-center mt-8">
+                          <button
+                            className='mr-3 btn btn-outline-dark'
+                            color="black"
+                            onClick={() => {
+                              dispatch({ type: 'reset' });
+                              closeModal();
+                            }}
+                          >
+                            Cancel
+                          </button>
+
+                          <button
+                            className=' flex items-center btn btn-outline-secondary relative'
+                            onClick={startUpload}
+                            disabled={!state.files.length || state.uploading}
+                          >
+                            <span className="flex items-center justify-center duration-300">
+                              {allSvgs.uploadIcon}
+                            </span>
+                            {state.uploading ? 'Uploading...' : 'Start Upload'}
+                          </button>
+                        </div>
+
+                      </div>
+                    </Dialog.Panel>
+
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition>
+        </div>
+      </>
+    </div >
   );
 };
 
 export default FileUploadModal;
+
+

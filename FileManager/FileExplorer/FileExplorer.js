@@ -12,7 +12,6 @@ import { useAuth } from '../../contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition, Tab } from '@headlessui/react';
 // import Loader from '@/components/SharedComponent/Loader';
-// import { Description, Dialog, DialogPanel, DialogTitle, Transition } from '@headlessui/react';
 
 
 const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
@@ -127,7 +126,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
 
   const moveFile = (moveToParent) => {
     let destFolder = fileMoveDestination.splitPath;
-    if (moveToParent) destFolder = fileToMove.splitPath.slice(0, -2); // Find parent dir of file (2 levels up from file itself)
+    if (moveToParent) destFolder = fileToMove.splitPath.slice(0, -2); 
     api
       .moveFile(fileToMove.path, destFolder.concat(fileToMove.name).join('/'))
       .then((data) => {
@@ -165,10 +164,10 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           setFileMoveDestination({});
         }}
         onClickItem={async () => {
-          if (!!fileToMove.path) setFileMoveDestination(file); // The user is selecting a folder to move the file to
+          if (!!fileToMove.path) setFileMoveDestination(file); 
           else if (file.isFolder) {
             setIgnoringFileStructure(false);
-            setPath(file.path.slice(0, -1).split('/')); // Remove ending slash from folder path and split into separate folder names
+            setPath(file.path.slice(0, -1).split('/')); 
           } else {
             if (await api.checkIsPublic(file.path)) {
               navigator.clipboard
@@ -241,14 +240,11 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
     ));
   };
 
-
   return (
     <div>
       <div>
         <p className="my-8 text-2xl">Files</p>
       </div>
-      {/* Explorer controls : Ignore Folder Structure & Refresh*/}
-      {/* ************************ EDITED starts ************************** */}
       {/* Explorer controls : Ignore Folder Structure & Refresh*/}
       <div className="flex items-center justify-start gap-4">
         <label className="flex items-center cursor-pointer">
@@ -312,13 +308,10 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         </nav>
       </div>
 
-      {/************************* EDITED ends ************************** */}
 
       {/* File Explorer */}
       <div className="files">
-
         <div className='message'>
-
           {(state.loading) && (
             <div className="  border px-4 py-3 rounded relative flex items-center bg-red-200 mb-10" role="alert">
               <div className="h-12 w-20">
@@ -438,14 +431,6 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           </Transition>
         </div>
       </>
-
-      {/* *** */}
-
-
-      {/* *** */}
-
-
-      {/* practice modal starts -->  open={!!fileToRename.path}*/}
 
       <Transition appear show={!!fileToRename.path} as={Fragment}>
         <Dialog as="div" open={!!fileToRename.path} onClose={() => setFileToRename({})} >

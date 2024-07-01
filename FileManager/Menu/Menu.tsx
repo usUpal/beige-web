@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import React from 'react';
-import { Icon } from 'semantic-ui-react';
 import { useAuth } from '../../contexts/authContext';
 import Image from 'next/image';
 
