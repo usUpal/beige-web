@@ -1,5 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
-// import { Modal, Button, Icon, Input } from 'semantic-ui-react';
+import React, { useState, Fragment } from 'react';
 import { toast } from 'react-toastify';
 import api from '../api/storage';
 import { Dialog, Transition } from '@headlessui/react';
@@ -94,7 +93,6 @@ const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
                           </div>
                           
                         </p>
-
 
                         <div className="flex justify-end items-center mt-8">
                           <button type="button" className="btn btn-outline-danger" onClick={close}>

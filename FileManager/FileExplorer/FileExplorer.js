@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
 import React, { useState, useEffect, Fragment } from 'react';
-import { Header, Segment, Icon, Breadcrumb, List, Card, Button, Message, Modal, Form, Portal, Checkbox } from 'semantic-ui-react';
+// import { Header, Segment, Icon, Breadcrumb, List, Card, Button, Message, Modal, Form, Portal, Checkbox } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
-import FileCard from '../../FileManager/FileCard/FileCard';
+import FileCard from '../FileCard/FileCard';
 import { formatBytes, formatDatetime } from '../util/fileutil';
 import api from '../api/storage';
 import config from '../../config';
@@ -45,6 +45,8 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
 
   const [fileToMove, setFileToMove] = useState({});
   const [fileMoveDestination, setFileMoveDestination] = useState({});
+  const [isFileActive, setIsFileActive] = useState(false);
+  const [selectFileIds, setSelecFileIds] = useState([]);
 
   const setPath = (p) => {
     setPathState(p);
@@ -126,7 +128,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
 
   const moveFile = (moveToParent) => {
     let destFolder = fileMoveDestination.splitPath;
-    if (moveToParent) destFolder = fileToMove.splitPath.slice(0, -2); 
+    if (moveToParent) destFolder = fileToMove.splitPath.slice(0, -2);
     api
       .moveFile(fileToMove.path, destFolder.concat(fileToMove.name).join('/'))
       .then((data) => {
@@ -140,16 +142,21 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   };
   const fileCards = () => {
     return filesInPath(path, ignoringFileStructure).map((file) => (
-      <FileCard
+      // console.log(file);
+      < FileCard
         key={file.id}
+        id={file.id}
+        selectFileIds={selectFileIds}
         path={path}
         cardType={view}
         fileType={file.contentType}
         isFolder={file.isFolder}
-        lastMod={formatDatetime(file.updated)}
+        lastMod={formatDatetime(file.updated)
+        }
         name={ignoringFileStructure ? file.path : file.name}
         size={formatBytes(file.size)}
-        isDimmed={!!fileToMove.path && !file.isFolder}
+        isDimmed={!!fileToMove.path && !file.isFolder
+        }
         onDelete={() => {
           // If the folder isn't empty then don't delete (TODO recursive folder deletion)
           // if (file.isFolder && filesInPath(file.path.split('/').slice(0, -1)).length) return toast('❌ You must delete all files from this folder first.');
@@ -164,10 +171,10 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           setFileMoveDestination({});
         }}
         onClickItem={async () => {
-          if (!!fileToMove.path) setFileMoveDestination(file); 
+          if (!!fileToMove.path) setFileMoveDestination(file);
           else if (file.isFolder) {
             setIgnoringFileStructure(false);
-            setPath(file.path.slice(0, -1).split('/')); 
+            setPath(file.path.slice(0, -1).split('/'));
           } else {
             if (await api.checkIsPublic(file.path)) {
               navigator.clipboard
@@ -236,16 +243,26 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
               toast('❓ Something went wrong');
             });
         }}
+        handleDropDown={handleDropDown}
+
       />
     ));
   };
+  // show dropdown
 
+  const handleDropDown = (id) => {
+    if (selectFileIds.includes(id)) {
+      setSelecFileIds([])
+    } else {
+      setSelecFileIds([id])
+    }
+  }
   return (
     <div>
       <div>
         <p className="my-8 text-2xl">Files</p>
       </div>
-      {/* Explorer controls : Ignore Folder Structure & Refresh*/}
+
       <div className="flex items-center justify-start gap-4">
         <label className="flex items-center cursor-pointer">
           <input
@@ -257,7 +274,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           <span className="ml-2 text-lg text-gray-900 font-normal">Ignore Folder Structure</span>
         </label>
 
-        <p className="mb-0 flex items-center gap-2 px-4	py-2 text-lg text-lime-600" onClick={getFiles}>
+        <p className="mb-0 flex items-center gap-2 px-4	py-2 text-lg" onClick={getFiles}>
           <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
           Refresh
         </p>
@@ -313,7 +330,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
       <div className="files">
         <div className='message'>
           {(state.loading) && (
-            <div className="  border px-4 py-3 rounded relative flex items-center bg-red-200 mb-10" role="alert">
+            <div className="  border px-4 py-3 rounded relative flex items-center mb-10" role="alert">
               <div className="h-12 w-20">
                 <div className='h-12 w-12'>{allSvgs.roundSpinIcon}</div>
               </div>
@@ -325,7 +342,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           )}
 
           {(state.loadingError) && (
-            <div className=" border px-4 py-3 rounded relative flex items-center bg-red-200 mb-10" role="alert">
+            <div className=" border px-4 py-3 rounded relative flex items-center mb-10" role="alert">
               <div className="h-12 w-20">
                 <div className=' h-12 w-12 flex justify-center items-center'>{allSvgs.invalidIcon}</div>
               </div>
@@ -343,30 +360,62 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             </div>
           )}
         </div>
-        {/* refresh-message-ends */}
 
-        {/* ------------------------------------working part starts ---------------------------------------------  */}
 
-        <div className=''>
-          {ignoringFileStructure && <span className='mb-4 h-10 bg-red-200 text-red-500 w-full border py-3 px-6' >Files that contain the text .bucket. may store dashboard settings or other information, so be careful when deleting or renaming them.</span>}
-        </div>
+        {ignoringFileStructure && (
+          <p className="mb-4 w-full border py-3 px-6 sm:py-4 sm:px-8 text-warning ">
+            Files that contain the text .bucket. may store dashboard settings or other information, so be careful when deleting or renaming them.
+          </p>
+        )}
 
         {!filesInPath().length && !state.loading && !ignoringFileStructure && <p>There are no files here : </p>}
 
         {/* Tailwind CSS (assuming similar structure) */}
-        {view === 'list' ? (
-          <ul className="divide-y divide-gray-200">
-            {fileCards().map((card, index) => (
-              <li key={index} className="py-4">{card}</li>
-            ))}
-          </ul>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {fileCards().map((card, index) => (
-              <div key={index} className="bg-white shadow-md rounded-lg">{card}</div>
-            ))}
-          </div>
-        )}
+        {/* <div className='mt-8'>
+          {view === 'list' ? (
+            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {fileCards().map((card, index) => (
+                <li key={index} className="border box-border p-2">{card}</li>
+              ))}
+            </ul>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {fileCards().map((card, index) => (
+                <div key={index} className="bg-white shadow-md rounded-lg">{card}</div>
+              ))}
+            </div>
+          )}
+        </div> */}
+
+        <div className='mt-8 '>
+          {view === 'list' ?
+            (
+              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+                {fileCards().map((card, index) => (
+                  // console.log(card)
+                  <li key={index} className="box-border p-2 mx-8 bg-gray-200 border px-3 py-3 rounded-xl shadow hover:bg-gray-300">
+                    <div className="relative">
+                      <div onClick={() => {
+                        console.log('Card', card.key);
+                      }}>
+                        {card}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) :
+            (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 ">
+                {fileCards().map((card, index) => (
+                  <div key={index} className="file-card  shadow-md rounded-lg">
+                    {card}
+                  </div>
+                ))}
+              </div>
+            )}
+        </div>
+
       </div>
 
       <>
@@ -494,13 +543,8 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         </Dialog>
       </Transition>
 
-      {/* <-- practice modal ends */}
-
-
-      
-
       {/* File Move Popup*/}
-      <Portal open={!!fileToMove.path} onClose={() => setFileToMove({})} closeOnDocumentClick={false}>
+      {/*  <Portal open={!!fileToMove.path} onClose={() => setFileToMove({})} closeOnDocumentClick={false}>
         <div className="file-move-portal" style={{ position: 'fixed' }}>
           <Segment className="file-move-portal-segment">
             <p>{!fileMoveDestination.name ? `Select the folder you want to move this file into.` : `Move ${fileToMove.name} into ${fileMoveDestination.name}?`}</p>
@@ -514,7 +558,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             </div>
           </Segment>
         </div>
-      </Portal>
+      </Portal> */}
     </div >
   );
 };

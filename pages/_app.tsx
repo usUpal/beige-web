@@ -17,7 +17,6 @@ import '../FileManager/FileExplorer/FileExplorer.css';
 
 import { NextPage } from 'next';
 import { AuthProvider } from '@/contexts/authContext';
-import 'semantic-ui-css/semantic.min.css';
 import 'react-toastify/dist/ReactToastify.min.css';
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;

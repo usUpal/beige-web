@@ -37,10 +37,16 @@ module.exports = {
                     'dark-light': 'rgba(231,81,90,.15)',
                 },
                 warning: {
-                    DEFAULT: '#ACA686',
+                    DEFAULT: '#E2CE02',
                     light: '#fff9ed',
                     'dark-light': 'rgba(226,160,63,.15)',
                 },
+                yellow: {
+                    DEFAULT: '#E2CE02',
+                    light: '#E2CE02',
+                    'dark-light': 'rgba(255, 255, 0)',
+                },
+
                 info: {
                     DEFAULT: '#2196f3',
                     light: '#e7f7ff',

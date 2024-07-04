@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect, createRef, Fragment } from 'react';
+import React, { useReducer, createRef, Fragment } from 'react';
 import styles from './FileUploadModal.module.css';
 import { toast } from 'react-toastify';
 import { formatBytes } from '../util/fileutil';
