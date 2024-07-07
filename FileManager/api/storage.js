@@ -15,7 +15,13 @@ const reqConfig = (obj) => ({
 export default {
   idToken: null,
   getFiles(userId) {
-    return axios.get(`/get-files/${userId}`, reqConfig(this));
+    try {
+      return axios.get(`/get-files/${userId}`, reqConfig(this));
+    }
+    catch (error) {
+      console.error('Error in getFiles:', error);
+      throw error; // Rethrow the error to propagate it to the caller
+    }
   },
   async checkIsPublic(path) {
     try {
@@ -25,17 +31,24 @@ export default {
       }
       return res.status === 200;
     } catch (error) {
+      console.error('Error in checkIsPublic:', error);
       return false;
     }
   },
   setPublicOrPrivate(filepath, pub) {
-    return axios.post(
-      pub ? '/set-public' : '/set-private',
-      {
-        filepath,
-      },
-      reqConfig(this)
-    );
+    try {
+      return axios.post(
+        pub ? '/set-public' : '/set-private',
+        {
+          filepath,
+        },
+        reqConfig(this)
+      );
+    }
+    catch (error) {
+      console.error(`Error in setPublicOrPrivate for ${filepath}:`, error);
+      throw error;
+    }
   },
 
   async getSharableUrl(filepath, download) {
@@ -57,93 +70,141 @@ export default {
   },
 
   addFolder(folderpath) {
-    return axios.post(
-      '/add-folder',
-      {
-        folderpath,
-      },
-      reqConfig(this)
-    );
+    try {
+      return axios.post(
+        '/add-folder',
+        {
+          folderpath,
+        },
+        reqConfig(this)
+      );
+    }
+    catch (error) {
+      console.error(`Error in addFolder for ${folderpath}:`, error);
+      throw error;
+    }
   },
   deleteFile(filepath) {
-    return axios.post(
-      '/delete-file',
-      {
-        filepath,
-      },
-      reqConfig(this)
-    );
+    try {
+      return axios.post(
+        '/delete-file',
+        {
+          filepath,
+        },
+        reqConfig(this)
+      );
+    }
+    catch (error) {
+      console.error(`Error in deleteFile for ${filepath}:`, error);
+      throw error;
+    }
   },
+
   async moveFile(filepath, destination) {
-    const res = await axios.post(
-      '/move-file',
-      {
-        filepath,
-        destination,
-      },
-      reqConfig(this)
-    );
-    return res.data;
+    try {
+      const res = await axios.post(
+        '/move-file',
+        {
+          filepath,
+          destination,
+        },
+        reqConfig(this)
+      );
+      return res.data;
+    } catch (error) {
+      console.error(`Error in moveFile for ${filepath} to ${destination}:`, error);
+      throw error;
+    }
+
   },
   async getNewUploadPolicy(filepath, fileContentType, fileSize) {
-    const res = await axios.post(
-      '/get-new-upload-policy',
-      {
-        filepath,
-        fileContentType,
-        fileSize,
-      },
-      reqConfig(this)
-    );
-    return res.data;
+    try {
+      const res = await axios.post(
+        '/get-new-upload-policy',
+        {
+          filepath,
+          fileContentType,
+          fileSize,
+        },
+        reqConfig(this)
+      );
+      return res.data;
+    } catch (error) {
+      console.error(`Error in getNewUploadPolicy for ${filepath}:`, error);
+      throw error;
+    }
   },
   postFile(uploadPolicy, file, progressCb) {
-    const data = new FormData();
-    for (const [key, value] of Object.entries(uploadPolicy.fields)) {
-      // Add form fields, including policy and signature, to formdata
-      data.append(key, value);
+    try {
+      const data = new FormData();
+      for (const [key, value] of Object.entries(uploadPolicy.fields)) {
+        data.append(key, value);
+      }
+      data.append('file', file);
+
+      const cancelTokenSource = axiosLib.CancelToken.source();
+
+      const uploadPromise = axiosLib.post(uploadPolicy.url, data, {
+        // Use the axiosLib because it's a different API baseURL
+        onUploadProgress: (p) => progressCb(p.loaded / p.total),
+        cancelToken: cancelTokenSource.token,
+      });
+
+      return [uploadPromise, () => cancelTokenSource.cancel()];
+
+    } catch (error) {
+      console.error('Error in postFile:', error);
+      throw error;
     }
-    data.append('file', file); // Add the file to the formdata
-
-    const cancelTokenSource = axiosLib.CancelToken.source();
-
-    const uploadPromise = axiosLib.post(uploadPolicy.url, data, {
-      // Use the axiosLib because it's a different API baseURL
-      onUploadProgress: (p) => progressCb(p.loaded / p.total),
-      cancelToken: cancelTokenSource.token,
-    });
-
-    return [uploadPromise, () => cancelTokenSource.cancel()];
   },
+
   async getSettings() {
-    const res = await axios.get('/get-settings', reqConfig(this));
-    return res.data.settings;
+    try {
+      const res = await axios.get('/get-settings', reqConfig(this));
+      return res.data.settings;
+    }
+    catch (error) {
+      console.error('Error in getSettings:', error);
+      throw error;
+    }
   },
   async saveSettings(settings) {
-    const res = await axios.post(
-      '/save-settings',
-      {
-        settings,
-      },
-      reqConfig(this)
-    );
-    return res.data;
+    try {
+      const res = await axios.post(
+        '/save-settings',
+        {
+          settings,
+        },
+        reqConfig(this)
+      );
+      return res.data;
+    }
+    catch (error) {
+      console.error('Error in saveSettings:', error);
+      throw error;
+    }
   },
   // New method to download a folder as a ZIP file
   async downloadFolder(folderpath) {
-    const res = await axios.get(`/download-folder?folderpath=${encodeURIComponent(folderpath)}`, {
-      ...reqConfig(this),
-      responseType: 'blob', // Important for downloading files
-    });
+    try {
+      const res = await axios.get(`/download-folder?folderpath=${encodeURIComponent(folderpath)}`, {
+        ...reqConfig(this),
+        responseType: 'blob', // Important for downloading files
+      });
 
-    const blob = new Blob([res.data], { type: 'application/zip' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = `${folderpath.split('/').pop()}.zip`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
+      const blob = new Blob([res.data], { type: 'application/zip' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `${folderpath.split('/').pop()}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+    catch (error) {
+      console.error(`Error in downloadFolder for ${folderpath}:`, error);
+      throw error;
+    }
   },
 };
