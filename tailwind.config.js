@@ -14,7 +14,8 @@ module.exports = {
         container: {
             center: true,
         },
-        extend: {
+        extend:
+        {
             colors: {
                 primary: {
                     DEFAULT: '#4361ee',
@@ -94,6 +95,14 @@ module.exports = {
                     },
                 },
             }),
+
+            screens: {
+                'sm': '640px',
+                'md': '768px',
+                'lg': '1024px',
+                'xl': '1280px',
+                'xxl': '1600px',
+            },
         },
     },
     plugins: [

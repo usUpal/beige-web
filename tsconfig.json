@@ -19,6 +19,6 @@
             "@/*": ["./*"]
         }
     },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/apps/todolist.tsx", "FileManager/FileExplorer/FileExplorer.js"],
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/apps/todolist.tsx", "FileManager/FileExplorer/FileExplorer.tsx", "FileManager/FileCard/FileCard.tsx", "FileManager/FileUploadModal/FileUploadModal.tsx", "FileManager/FolderCreationModal/FolderCreationModal.tsx", "FileManager/SettingsModal/SettingsModal.tsx", "FileManager/Menu/Menu.js"],
     "exclude": ["node_modules"]
 }

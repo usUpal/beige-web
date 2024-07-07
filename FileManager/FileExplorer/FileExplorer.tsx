@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/jsx-key */
 import React, { useState, useEffect, Fragment } from 'react';
-// import { Header, Segment, Icon, Breadcrumb, List, Card, Button, Message, Modal, Form, Portal, Checkbox } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
 import FileCard from '../FileCard/FileCard';
 import { formatBytes, formatDatetime } from '../util/fileutil';
@@ -11,7 +10,6 @@ import Menu from '../Menu/Menu';
 import { useAuth } from '../../contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition, Tab } from '@headlessui/react';
-// import Loader from '@/components/SharedComponent/Loader';
 
 
 const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
@@ -40,7 +38,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
     isFolder: false,
   });
 
-  const [fileToRename, setFileToRename] = useState({});
+  const [fileToRename, setFileToRename] = useState<any>({});
   const [renameInputValue, setRenameInputValue] = useState('');
 
   const [fileToMove, setFileToMove] = useState({});
@@ -48,12 +46,12 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   const [isFileActive, setIsFileActive] = useState(false);
   const [selectFileIds, setSelecFileIds] = useState([]);
 
-  const setPath = (p) => {
+  const setPath = (p: any) => {
     setPathState(p);
     setExplorerPath(p);
   };
 
-  const filesInPath = (p = path, ignoreFileStructure) =>
+  const filesInPath = (p = path, ignoreFileStructure: any) =>
     files // Files and folders in current path, excluding full path in names, sorted with folders first.
       .map((file) => {
         const isFolder = file.path.endsWith('/');
@@ -126,7 +124,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   };
 
 
-  const moveFile = (moveToParent) => {
+  const moveFile = (moveToParent: any) => {
     let destFolder = fileMoveDestination.splitPath;
     if (moveToParent) destFolder = fileToMove.splitPath.slice(0, -2);
     api
@@ -190,14 +188,15 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                     autoClose: 10000,
                   });
                 });
-            } else {
-              const { url, duration } = await api.getSharableUrl(file.path);
+            }
+            else {
+              const { url, duration } = await api.getSharableUrl(file.path, true);
               if (!url) toast("🚫 Couldn't get sharable URL. Try making the file public instead.");
               navigator.clipboard
                 .writeText(url)
                 .then(() => {
                   toast(`🔗 Sharable URL copied to clipboard. It will expire in ${duration} days. Make this file public to get a permanent public link.`, {
-                    autoClose: 8000,
+                    autoClose: 2000,
                   });
                 })
                 .catch(() => {
@@ -205,7 +204,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                     position: 'top-center',
                     draggable: false,
                     closeOnClick: false,
-                    autoClose: 10000,
+                    autoClose: 2000,
                   });
                 });
             }
@@ -213,7 +212,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         }}
         // ==========
 
-        onDownload={async (publicDownload) => {
+        onDownload={async (publicDownload: any) => {
           if (publicDownload) {
             window.open(file.downloadLink, '_blank');
           } else {
@@ -227,13 +226,14 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             } else {
               // If it's a file, get the sharable URL and open it
               const { url } = await api.getSharableUrl(file.path, true);
+              console.log("🚀 ~ onDownload={ ~ url:", url)
               window.open(url, '_blank');
             }
           }
         }}
         // ==========
         checkIsPublic={() => api.checkIsPublic(file.path)}
-        onSetPublic={(pub) => {
+        onSetPublic={(pub: any) => {
           api
             .setPublicOrPrivate(file.path, pub)
             .then(() => {
@@ -250,7 +250,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   };
   // show dropdown
 
-  const handleDropDown = (id) => {
+  const handleDropDown = (id: any) => {
     if (selectFileIds.includes(id)) {
       setSelecFileIds([])
     } else {
@@ -274,7 +274,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           <span className="ml-2 text-lg text-gray-900 font-normal">Ignore Folder Structure</span>
         </label>
 
-        <p className="mb-0 flex items-center gap-2 px-4	py-2 text-lg" onClick={getFiles}>
+        <p className="mb-0 flex items-center gap-2 px-4	 text-lg" onClick={getFiles}>
           <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
           Refresh
         </p>
@@ -284,9 +284,9 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
       {/* Folder breadcrumbs */}
       <div className="">
         <nav className="flex" aria-label="Breadcrumb">
-          <ol className="flex items-center my-8">
+          <ol className="flex items-center mt-3 mb-5">
             <li className="mr-2">
-              <span name="folder" className="text-gray-500">
+              <span className="text-gray-500">
                 {allSvgs.folderIcon}
               </span>
             </li>
@@ -324,7 +324,6 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           </ol>
         </nav>
       </div>
-
 
       {/* File Explorer */}
       <div className="files">
@@ -370,37 +369,13 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
 
         {!filesInPath().length && !state.loading && !ignoringFileStructure && <p>There are no files here : </p>}
 
-        {/* Tailwind CSS (assuming similar structure) */}
-        {/* <div className='mt-8'>
-          {view === 'list' ? (
-            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {fileCards().map((card, index) => (
-                <li key={index} className="border box-border p-2">{card}</li>
-              ))}
-            </ul>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {fileCards().map((card, index) => (
-                <div key={index} className="bg-white shadow-md rounded-lg">{card}</div>
-              ))}
-            </div>
-          )}
-        </div> */}
-
-        <div className='mt-8 '>
+        <div className=''>
           {view === 'list' ?
             (
-              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+              <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
                 {fileCards().map((card, index) => (
-                  // console.log(card)
-                  <li key={index} className="box-border p-2 mx-8 bg-gray-200 border px-3 py-3 rounded-xl shadow hover:bg-gray-300">
-                    <div className="relative">
-                      <div onClick={() => {
-                        console.log('Card', card.key);
-                      }}>
-                        {card}
-                      </div>
-                    </div>
+                  <li key={index} className="relative">
+                    {card}
                   </li>
                 ))}
               </ul>
@@ -408,7 +383,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 ">
                 {fileCards().map((card, index) => (
-                  <div key={index} className="file-card  shadow-md rounded-lg">
+                  <div key={index} className="file-card relative shadow-md rounded-lg">
                     {card}
                   </div>
                 ))}

@@ -13,7 +13,7 @@ import '../styles/tailwind.css';
 import '../styles/custom.css';
 //
 import '../FileManager/FileCard/FileCard';
-import '../FileManager/FileExplorer/FileExplorer.css';
+// import '../FileManager/FileExplorer/FileExplorer.css';
 
 import { NextPage } from 'next';
 import { AuthProvider } from '@/contexts/authContext';

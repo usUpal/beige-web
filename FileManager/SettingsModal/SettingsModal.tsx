@@ -39,9 +39,12 @@ const SettingsModal = ({ open, closeModal }) => {
     closeModal();
   };
 
+  console.log(settings);
+
+
   return (
     <div>
-     
+
 
       {/* settings starts */}
       <div className="mb-5">
@@ -69,10 +72,9 @@ const SettingsModal = ({ open, closeModal }) => {
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pt-8 pb-6">
+                  <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pb-6">
                     <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
                       <div className="text-lg font-bold capitalize">
-                        {/* Upload {state.folderUpload ? 'a Folder' : 'Files'} */}
                         Options & Settings
                       </div>
                       <button type="button" className="text-white-dark hover:text-dark" onClick={() => {
@@ -99,7 +101,6 @@ const SettingsModal = ({ open, closeModal }) => {
                               type="checkbox"
                               className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
                               id="custom_switch_checkbox1"
-                              // checked={state.folderUpload}
                               checked={settings.defaultPublicFiles}
                             />
                             <span
@@ -113,7 +114,7 @@ const SettingsModal = ({ open, closeModal }) => {
                         </p>
                       </div>
 
-                      <p className=" font-semibold mt-2">
+                      <p className=" font-semibold mt-2 mb-4">
                         <div className="flex flex-col">
                           <span className=''>
                             Private URL Expiration
@@ -155,7 +156,6 @@ const SettingsModal = ({ open, closeModal }) => {
 
                       <div>
                         <input type="email" placeholder="Enter Email" className="form-input" onChange={(e) => setSettings({ ...settings, cdnAdmins: e.currentTarget.value })} value={settings.cdnAdmins} />
-
                       </div>
 
                       <div className="flex justify-end items-center mt-8 bg-[#fbfbfb]">
@@ -163,12 +163,6 @@ const SettingsModal = ({ open, closeModal }) => {
                           className='flex items-center btn btn-outline-dark relative'
                           onClick={close}>Save
                         </button>
-                      </div>
-
-                      <div>
-
-                        {/* <p style={{ color: error ? 'red' : 'green', fontWeight: 'bold' }}> </p> */}
-                        {/* {error ? `An error occurred.` : saving ? 'Saving your settings....' : 'Settings saved'} */}
                       </div>
                     </div>
                   </Dialog.Panel>

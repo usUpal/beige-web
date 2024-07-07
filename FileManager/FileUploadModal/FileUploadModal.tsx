@@ -1,5 +1,4 @@
 import React, { useReducer, createRef, Fragment } from 'react';
-import styles from './FileUploadModal.module.css';
 import { toast } from 'react-toastify';
 import { formatBytes } from '../util/fileutil';
 import api from '../api/storage';
@@ -22,7 +21,7 @@ const initialUploadState = {
   uploadCancelled: false,
 };
 
-function uploadStateReducer(state, action) {
+function uploadStateReducer(state:any, action:any) {
   switch (action.type) {
     case 'reset':
       if (action.betweenSteps)
@@ -78,7 +77,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
   const startUpload = async () => {
     const shouldBePublic = (await api.getSettings()).defaultPublicFiles;
 
-    const handleStepFail = (err, message) => {
+    const handleStepFail = (err: any, message: any) => {
       console.error(err);
       // Return a rejection so that the catch block is called
       return Promise.reject(message);
@@ -93,7 +92,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
           status: 'Requesting upload policy...',
         });
         const uploadPolicy = await api
-          .getNewUploadPolicy(file.name, file.type, file.size) // Get upload policy for full file destination path.
+          .getNewUploadPolicy(file?.name, file?.type, file?.size) // Get upload policy for full file destination path.
           .catch((err) => handleStepFail(err, `Unable to get upload policy for file ${i + 1}`));
 
         dispatch({
@@ -101,10 +100,10 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
           status: `Uploading file ${i + 1} of ${state.files.length}...`,
         });
 
-        const [uploadPromise, cancelFunc] = api.postFile(uploadPolicy, file, (p) => dispatch({ type: 'setProgress', rawProgress: p })); // Post file and set progress callback
+        const [uploadPromise, cancelFunc] = api.postFile(uploadPolicy, file, (p: any) => dispatch({ type: 'setProgress', rawProgress: p })); // Post file and set progress callback
         uploadCancelFunc = cancelFunc;
         let doBreak = false;
-        await uploadPromise.catch((err) => {
+        await uploadPromise.catch((err: any) => {
           // If the error was an intentional axios cancel, don't handle it and instead exit the loop
           if (axios.isCancel(err)) {
             doBreak = true;
@@ -136,35 +135,36 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
     }
   };
 
-  const onFilesChange = (event) => {
+  const onFilesChange = (event: any) => {
     const parentPath = path.length ? path.join('/') + '/' : ''; // Folder to upload files to
-    let fileArray = Array.from(event.target.files).map((file) => {
+    let fileArray = Array.from(event.target.files).map((file:any) => {
       const fileName = parentPath + (state.folderUpload ? file.webkitRelativePath : file.name); // The absolute destination path of file. webkitRelativePath is the relative path of the file on the user's FS.
       const newFile = new File([file], fileName, { type: file.type });
       return newFile;
     });
     if (state.folderUpload) {
       // If it's a folder upload we also have to generate files for each folder so that they show up in the file manager
-      let folderPaths = [];
+      let folderPaths: any = [];
       for (const file of fileArray) {
         const fileParentFolder = file.name.split('/').slice(0, -1).join('/') + '/';
         console.log(fileParentFolder);
         if (!folderPaths.includes(fileParentFolder)) folderPaths.push(fileParentFolder);
       }
-      folderPaths = folderPaths.map((folderName) => new File([''], folderName));
+      folderPaths = folderPaths.map((folderName:any) => new File([''], folderName));
       fileArray = fileArray.concat(folderPaths);
       console.log(fileArray);
     }
     dispatch({ type: 'setFiles', files: fileArray });
   };
 
-  const fileList = state.files.map((file) => (
-    <li>
-      <span className={styles.fileListName}>{file.name}</span> - {formatBytes(file.size)}
+  const fileList = state.files.map((file: any) => ((console.log(file)
+  ),
+    <li key={file.name}>
+      {/* <span className={styles.fileListName}>{file.name}</span> - {formatBytes(file.size)} */}
+      <span>{file.name}</span> - {formatBytes(file.size)}
     </li>
   ));
 
-  console.log(state.progress);
   return (
     <div>
 
@@ -195,7 +195,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pt-8 pb-6">
+                    <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pb-6">
                       <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
                         <div className="text-lg font-bold capitalize text-red-600">
                           Upload {state.folderUpload ? 'a Folder' : 'Files'}
@@ -232,7 +232,8 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                           <p>You can select multiple files or a single folder to upload. If you upload a folder, file structure will be preserved. Files will be uploaded to {(path || []).join('/') + '/'}.</p>
                         </p>
 
-                        <div className={styles.fileInputContainer}>
+                        {/* <div className={styles.fileInputContainer}> */}
+                        <div>
                           <input
                             style={{ display: 'none' }}
                             multiple
@@ -254,7 +255,8 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
 
                         </div>
 
-                        <div className={styles.fileList}>
+                        {/* <div className={styles.fileList}> */}
+                        <div >
                           <li className='list-none'>{fileList}</li>
                         </div>
 
@@ -268,7 +270,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             </div>
                           </div>
                         )}
-                        
+
                         <p
                           style={{
                             textAlign: 'right',

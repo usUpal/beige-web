@@ -20,8 +20,11 @@ export default {
   async checkIsPublic(path) {
     try {
       const res = await axios.head(config.BucketUrl + path + `?bc_timestamp=${new Date().getTime()}`); // Append unused query param to ensure that browser cache is bypassed.
+      if (!res.ok) {
+        console.log("Bad");
+      }
       return res.status === 200;
-    } catch (res_1) {
+    } catch (error) {
       return false;
     }
   },
@@ -34,16 +37,23 @@ export default {
       reqConfig(this)
     );
   },
+
   async getSharableUrl(filepath, download) {
-    const res = await axios.post(
-      '/get-share-url',
-      {
-        filepath,
-        download,
-      },
-      reqConfig(this)
-    );
-    return res.data;
+    try {
+      const res = await axios.post(
+        '/get-share-url',
+        {
+          filepath,
+          download,
+        },
+        reqConfig(this)
+      );
+      return res.data;
+    }
+    catch (error) {
+      console.error('Error in getSharableUrl:', error);
+      throw error;
+    }
   },
 
   addFolder(folderpath) {

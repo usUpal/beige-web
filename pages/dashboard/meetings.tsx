@@ -227,11 +227,11 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setmeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+              <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark space-x-6">
 
-                <div className="flex my-2 items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
-                  <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-3">Meeting Details</div>
-                  <button type="button" className="text-white-dark hover:text-dark" onClick={() => setmeetingModal(false)}>
+                <div className="flex my-2 items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
+                  <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-6">Meeting Details</div>
+                  <button type="button" className="text-white-dark hover:text-dark me-4" onClick={() => setmeetingModal(false)}>
 
                     {allSvgs.closeModalSvg}
 
@@ -240,18 +240,18 @@ const Meeting = () => {
 
                 <div className="basis-[50%]">
 
-                  <h2 className="mx-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Meeting with <span className='text-[#ACA686] capitalize'>{meetingInfo?.client?.name}</span></h2>
+                  <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Meeting with <span className='text-[#ACA686] capitalize'>{meetingInfo?.client?.name}</span></h2>
 
-                  <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  justify-between mx-auto pb-6 w-5/6`}>
+                  <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  justify-between pb-6 w-5/6 space-y-6`}>
 
                     <div className="leftdata">
                       <p>
-                        <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
+                        <span className='text-[14px] font-light leading-none capitalize text-[#000000] '>
                           Order : <span className='text-[14px] font-normal text-[#000000]'>{meetingInfo?.order?.name}</span>
                         </span>
                       </p>
 
-                      <p>
+                      <p className='mt-2'>
                         <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
                           Time : <span className='text-[14px] font-normal leading-[28px] text-[#000000]'> {myFormattedDateTime?.time}</span>
                         </span>
@@ -262,7 +262,7 @@ const Meeting = () => {
                           Date : <span className='text-[14px] font-normal leading-[28px] text-[#000000]'> {myFormattedDateTime?.date}</span>
                         </span>
                       </p>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between mt-3">
                         <span className=" text-[14px] font-light leading-none capitalize text-[#000000]">
                           Status: <span className='ps-2 text-[#0E1726] font-normal'><StatusBg>{meetingInfo?.meeting_status}</StatusBg></span>
                         </span>
@@ -280,7 +280,7 @@ const Meeting = () => {
                       {
                         meetingInfo?.meeting_status === 'pending' &&
                         <div className='flex flex-col items-start'>
-                          <h2 className="text-[14px] font-light capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
+                          <h2 className="text-[14px] font-semibold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
                           <form action="" className='flex flex-col'>
                             <input
                               className="rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd] w-60"
