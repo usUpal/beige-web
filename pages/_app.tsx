@@ -11,6 +11,7 @@ import { ni18nConfig } from 'ni18n.config.ts';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import '../styles/tailwind.css';
 import '../styles/custom.css';
+import '../styles/pagination.css';
 //
 import '../FileManager/FileCard/FileCard';
 // import '../FileManager/FileExplorer/FileExplorer.css';

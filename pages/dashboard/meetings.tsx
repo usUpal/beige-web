@@ -6,10 +6,13 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
 import { API_ENDPOINT } from '@/config';
 import { useAuth } from '@/contexts/authContext';
-import Pagination from '@/components/Pagination';
+// import Pagination from '@/components/Pagination';
 import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
+import ResponsivePagination from 'react-responsive-pagination';
+
+
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -147,9 +150,6 @@ const Meeting = () => {
   const inputDate = '2024-05-29T21:00:00.000Z';
   const formattedDateTime = makeDateFormat(inputDate);
 
-  // order string split 
-  // console.log(myMeetings);
-
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Orders */}
@@ -219,7 +219,15 @@ const Meeting = () => {
               ))}
             </tbody>
           </table>
-          <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} />
+          {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
+          <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
+            <ResponsivePagination
+              current={currentPage}
+              total={totalPagesCount}
+              onPageChange={handlePageChange}
+              maxWidth={400}
+            />
+          </div>
         </div>
       </div>
 

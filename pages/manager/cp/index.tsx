@@ -9,6 +9,7 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import StatusBg from '@/components/Status/StatusBg';
 import Pagination from '@/components/Pagination';
 import { useRouter } from 'next/router';
+import ResponsivePagination from 'react-responsive-pagination';
 
 const CpUsers = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -178,7 +179,7 @@ const CpUsers = () => {
                         <div className="mb-5 flex items-center justify-between">
                             <h5 className="text-lg font-semibold dark:text-white-light">Content Provider</h5>
                         </div>
-                        <div className="mb-5">
+                        <div className="mb-1">
                             <div className="inline-block w-full">
                                 <div>
                                     <div className="table-responsive">
@@ -226,7 +227,17 @@ const CpUsers = () => {
                                             </tbody>
                                         </table>
                                         {/*  */}
-                                        <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} />
+                                        {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
+
+                                        <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
+                                            <ResponsivePagination
+                                                current={currentPage}
+                                                total={totalPagesCount}
+                                                onPageChange={handlePageChange}
+                                                maxWidth={400}
+                                            // styles={styles}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

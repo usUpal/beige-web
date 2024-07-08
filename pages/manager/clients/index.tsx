@@ -9,6 +9,8 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition } from '@headlessui/react';
 import useDateFormat from '@/hooks/useDateFormat';
 import StatusBg from '@/components/Status/StatusBg';
+import ResponsivePagination from 'react-responsive-pagination';
+
 
 const Users = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -73,8 +75,9 @@ const Users = () => {
     // All Users
     const getAllClients = async () => {
         try {
-            const response = await fetch(`${API_ENDPOINT}users?limit=60`);
+            const response = await fetch(`${API_ENDPOINT}users?limit=30&page=${currentPage}`);
             const users = await response.json();
+            console.log("🚀 ~ getAllClients ~ users:", users)
             setTotalPagesCount(users?.totalPages);
             setAllClients(users.results);
         } catch (error) {
@@ -112,6 +115,11 @@ const Users = () => {
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    // for pagination
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     // Fixing handleChange Function version --1
     const handleChange = (e: any) => {
@@ -304,6 +312,15 @@ const Users = () => {
                                                     ))}
                                             </tbody>
                                         </table>
+
+                                        <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
+                                            <ResponsivePagination
+                                                current={currentPage}
+                                                total={totalPagesCount}
+                                                onPageChange={handlePageChange}
+                                                maxWidth={400}
+                                            />
+                                        </div>
                                     </div>
 
                                     {/* modal Starts*/}

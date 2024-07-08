@@ -5,11 +5,11 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { Dialog, Transition } from '@headlessui/react';
 import { API_ENDPOINT } from '@/config';
-import Pagination from '@/components/Pagination';
 import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
-// import allSvgs from '@/utils/allsvgs/allSvgs';
+import ResponsivePagination from 'react-responsive-pagination';
+
 
 const Meeting = () => {
 
@@ -24,10 +24,6 @@ const Meeting = () => {
     const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
     const [desputes, setDesputes] = useState<MeetingResponsTypes[]>([]);
     const [disputeInfo, setDisputeInfo] = useState<any>({});
-
-    // all svg imports
-    // const [closeModalSvg] = allSvgs();
-
 
     useEffect(() => {
         getAllDusputes();
@@ -45,7 +41,6 @@ const Meeting = () => {
             console.error(error);
         }
     };
-
 
     // get single despute dynamically
     const getSingleDesputeDetails = async (disputeId: string) => {
@@ -74,38 +69,7 @@ const Meeting = () => {
     const inputedDesputeDate = disputeInfo?.createdAt;
     const formattedDateTime = useDateFormat(inputedDesputeDate);
 
-
-    // get date format
-    /*   function makeDateFormat(inputDate) {
-          const date = new Date(inputDate);
-  
-          const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  
-          const month = months[date.getMonth()];
-          const day = date.getDate();
-          const year = date.getFullYear();
-  
-          let hours = date.getHours();
-          const minutes = date.getMinutes();
-          const ampm = hours >= 12 ? 'pm' : 'am';
-          hours = hours % 12;
-          hours = hours ? hours : 12; // Handle midnight (0 hours)
-          const formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
-  
-          const formattedDate = `${month} ${day}, ${year}`;
-  
-          return {
-              date: formattedDate,
-              time: formattedTime
-          };
-      }
-  
-      const inputDate = '2024-05-29T21:00:00.000Z';
-      const formattedDateTime = makeDateFormat(inputDate);
-  
-   */
-
-    return (
+        return (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
 
             {/* Recent Orders */}
@@ -152,7 +116,16 @@ const Meeting = () => {
                         </tbody>
                     </table>
 
-                    <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} />
+                    {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
+
+                    <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
+                        <ResponsivePagination
+                            current={currentPage}
+                            total={totalPagesCount}
+                            onPageChange={handlePageChange}
+                            maxWidth={400}
+                        />
+                    </div>
                 </div>
             </div>
 

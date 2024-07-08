@@ -9,8 +9,8 @@ import StatusBg from '@/components/Status/StatusBg';
 import { Dialog, Transition } from '@headlessui/react';
 import useDateFormat from '@/hooks/useDateFormat';
 import { useRouter } from 'next/router';
-import Pagination from '@/components/Pagination';
 import { useForm } from 'react-hook-form';
+import ResponsivePagination from 'react-responsive-pagination';
 
 const Users = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -25,7 +25,7 @@ const Users = () => {
 
     // time formation
     const inputDate = (userInfo?.createdAt);
-    console.log("🚀 ~ Users ~ inputDate:", inputDate)
+    // console.log("🚀 ~ Users ~ inputDate:", inputDate)
     const formattedDateTime = useDateFormat(inputDate);
 
     useEffect(() => {
@@ -168,7 +168,17 @@ const Users = () => {
                                             </tbody>
                                         </table>
                                         {/*  */}
-                                        <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} />
+                                        {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
+
+                                        <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
+                                            <ResponsivePagination
+                                                current={currentPage}
+                                                total={totalPagesCount}
+                                                onPageChange={handlePageChange}
+                                                maxWidth={400}
+                                            />
+                                        </div>
+
                                     </div>
 
                                     {/* modal Starts*/}

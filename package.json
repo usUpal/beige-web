@@ -66,6 +66,7 @@
     "react-popper": "^2.3.0",
     "react-quill": "^0.0.2",
     "react-redux": "^8.0.5",
+    "react-responsive-pagination": "^2.6.0",
     "react-select": "^5.7.0",
     "react-simplemde-editor": "^5.2.0",
     "react-sortablejs": "^6.1.4",

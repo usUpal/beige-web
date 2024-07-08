@@ -7,13 +7,14 @@ import Pagination from '@/components/Pagination';
 import { API_ENDPOINT } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import Link from 'next/link';
-import Image from 'next/image';
 import api from '../../../FileManager/api/storage';
+import ResponsivePagination from 'react-responsive-pagination';
 
 const Shoots = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [myShoots, setMyShoots] = useState<ShootTypes[]>([]);
+
 
   // All Shoots
   const { userData } = useAuth();
@@ -28,8 +29,9 @@ const Shoots = () => {
     try {
       const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}`);
       const allShots = await response.json();
+      console.log("🚀 ~ getAllMyShoots ~ allShots:", allShots);
       setTotalPagesCount(allShots?.totalPages);
-      setMyShoots(allShots.results);
+      setMyShoots(allShots?.results);
     } catch (error) {
       console.error(error);
     }
@@ -111,7 +113,17 @@ const Shoots = () => {
             </tbody>
           </table>
 
-          <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} />
+          {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
+          <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
+            <ResponsivePagination
+              current={currentPage}
+              total={totalPagesCount}
+              onPageChange={handlePageChange}
+              maxWidth={400}
+            // styles={styles}
+            />
+          </div>
+
         </div>
       </div>
     </div>
