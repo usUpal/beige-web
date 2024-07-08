@@ -72,12 +72,12 @@ const SettingsModal = ({ open, closeModal }) => {
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pb-6">
+                  <Dialog.Panel as="div" className="panel my-24 w-2/5 md:w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pb-2">
                     <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
                       <div className="text-lg font-bold capitalize">
                         Options & Settings
                       </div>
-                      <button type="button" className="text-white-dark hover:text-dark" onClick={() => {
+                      <button type="button" className="text-white-dark hover:text-dark text-[16px]" onClick={() => {
                         closeModal();
                       }}>
                         {allSvgs.closeModalSvg}
@@ -136,31 +136,33 @@ const SettingsModal = ({ open, closeModal }) => {
                         </form>
                       </p>
 
-                      <p className='flex flex-col'>
-                        <span className='font-semibold'>CDN Admins</span>
-                        <p>
-                          Every email you add to this comma-separated list <strong>(no spaces)</strong> will have <strong>full read and write access to the storage bucket</strong> and settings. They will be
-                          able to sign into this dashboard with their Google account.
+                      <div className='w-10/12'>
+                        <p className='flex flex-col'>
+                          <span className='font-semibold'>CDN Admins</span>
+                          <p>
+                            Every email you add to this comma-separated list <strong>(no spaces)</strong> will have <strong>full read and write access to the storage bucket</strong> and settings. They will be
+                            able to sign into this dashboard with their Google account.
+                          </p>
                         </p>
-                      </p>
 
-                      <p
-                        style={{
-                          textAlign: 'right',
-                          marginRight: '30px',
-                          // color: error ? 'red' : 'black',
-                        }}
-                      >
-                        {/* <strong>{state.status}</strong> */}
-                      </p>
+                        <p
+                          style={{
+                            textAlign: 'right',
+                            marginRight: '30px',
+                            // color: error ? 'red' : 'black',
+                          }}
+                        >
+                          {/* <strong>{state.status}</strong> */}
+                        </p>
 
-                      <div>
-                        <input type="email" placeholder="Enter Email" className="form-input" onChange={(e) => setSettings({ ...settings, cdnAdmins: e.currentTarget.value })} value={settings.cdnAdmins} />
+                        <div className=''>
+                          <input type="email" placeholder="Enter Email" className="form-input" onChange={(e) => setSettings({ ...settings, cdnAdmins: e.currentTarget.value })} value={settings.cdnAdmins} />
+                        </div>
                       </div>
-
-                      <div className="flex justify-end items-center mt-8 bg-[#fbfbfb]">
+                      
+                      <div className="flex justify-end items-center mt-8">
                         <button
-                          className='flex items-center btn btn-outline-dark relative'
+                          className='flex items-center btn btn-outline-dark relative text-[16px]'
                           onClick={close}>Save
                         </button>
                       </div>

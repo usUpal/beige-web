@@ -61,11 +61,11 @@ const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Dialog.Panel as="div" className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg my-8 text-black dark:text-white-dark">
+                    <Dialog.Panel as="div" className="panel border-0 p-0 rounded-lg overflow-hidden w-11/12 max-w-lg my-8 text-black dark:text-white-dark">
                       <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
                         <h5 className="font-bold text-lg">Create folder</h5>
 
-                        <button type="button" className="text-white-dark hover:text-dark" onClick={close}>
+                        <button type="button" className="text-white-dark hover:text-dark text-[16px]" onClick={close}>
                           {allSvgs.closeBtnCp}
                         </button>
                       </div>
@@ -78,7 +78,7 @@ const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
                           <div className="mb-5">
                             <label htmlFor="url">Folder</label>
                             <div className="flex">
-                              <div className="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b] w-32">
+                              <div className="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b] ">
                                 {(path[path.length - 1] || '') + '/'}
                               </div>
                               <input
@@ -86,7 +86,7 @@ const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
                                 id="new_folder"
                                 type="text"
                                 placeholder="New Folder Name"
-                                className="form-input ltr:rounded-l-none rtl:rounded-r-none w-3/5" />
+                                className="form-input ltr:rounded-l-none rtl:rounded-r-none " />
 
                               {error && <p style={{ color: 'red', margin: '10px 0' }}>Something went wrong and we couldn't create that folder.</p>}
                             </div>
@@ -95,10 +95,10 @@ const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
                         </p>
 
                         <div className="flex justify-end items-center mt-8">
-                          <button type="button" className="btn btn-outline-danger" onClick={close}>
+                          <button type="button" className="btn btn-outline-danger text-[16px]" onClick={close}>
                             Discard
                           </button>
-                          <button type="button" className="btn btn-outline-warning ltr:ml-4 rtl:mr-4" onClick={createFolder}>
+                          <button type="button" className="btn btn-outline-warning ltr:ml-4 rtl:mr-4 text-[16px]" onClick={createFolder}>
                             {saving ? 'Adding...' : 'Add Folder'}
                           </button>
                         </div>

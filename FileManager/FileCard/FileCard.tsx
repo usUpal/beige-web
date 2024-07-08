@@ -52,7 +52,7 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
           <div className={`flex justify-between items-center flex-1`} onClick={onClickItem}>
             <p className=''>{icon}</p>
 
-            <p title={name} className='text-[14px] flex-1 ml-2' >
+            <p title={name} className='text-[16px] flex-1 ml-2' >
               {/* Add a space before the name */}
               {name.length > 25 ? `${name.substring(0, 25)}... ${getFileExtension(name)}` : `${name}`}
             </p>
@@ -110,7 +110,7 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
                   )} */}
                   {/*  */}
 
-                  <a
+                  {!isFolder && <a
                     href="#"
                     className="px-4 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 capitalize flex justify-start items-center"
                     role="menuitem"
@@ -119,7 +119,7 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
                   >
                     <span className=''>{allSvgs.pencilIcon_dropdown}</span>
                     <span className='ms-3 text-gray-600 '> Rename</span>
-                  </a>
+                  </a>}
                   <a
                     href="#"
                     className=" px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg capitalize flex justify-start items-center"

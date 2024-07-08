@@ -361,18 +361,19 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         </div>
 
 
-        {ignoringFileStructure && (
+        {/* {ignoringFileStructure && (
           <p className="mb-4 w-full border py-3 px-6 sm:py-4 sm:px-8 text-warning ">
             Files that contain the text .bucket. may store dashboard settings or other information, so be careful when deleting or renaming them.
           </p>
-        )}
+        )} */}
 
         {!filesInPath().length && !state.loading && !ignoringFileStructure && <p>There are no files here : </p>}
 
         <div className=''>
           {view === 'list' ?
             (
-              <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+              >
                 {fileCards().map((card, index) => (
                   <li key={index} className="relative">
                     {card}
@@ -425,7 +426,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                         <div className="text-lg font-bold capitalize text-red-600">
                           Delete {deletionState.isFolder ? 'folder' : 'file'}
                         </div>
-                        <button type="button" className="text-white-dark hover:text-dark " onClick={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
+                        <button type="button" className="text-white-dark hover:text-dark text-[16px]" onClick={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
                           {allSvgs.closeModalSvg}
                         </button>
                       </div>
@@ -437,11 +438,11 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                           Are you sure you want to delete <span className='text-danger'> {deletionState.file}</span>?
                         </p>
                         <div className="flex justify-end items-center mt-8">
-                          <button type="button" className="btn btn-outline-danger" onClick={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
+                          <button type="button" className="btn btn-outline-danger text-[16px]" onClick={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
                             No
                           </button>
 
-                          <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={() => deleteFile()}>
+                          <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4 text-[16px]" onClick={() => deleteFile()}>
                             {deletionState.saving ? 'Deleting...' : 'Yes'}
                           </button>
                         </div>
@@ -483,7 +484,11 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                 <Dialog.Panel as="div" className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg my-8 text-black dark:text-white-dark">
                   <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
                     <h5 className="font-bold text-lg">Rename</h5>
-                    <button type="button" className="text-white-dark hover:text-dark" onClick={() => setModal(false)}>
+                    <button type="button" className="text-white-dark hover:text-dark text-[16px]" onClick={() => {
+                      setFileToRename({});
+                      setRenameInputValue('');
+                    }}>
+                      {allSvgs.closeBtnCp}
                     </button>
                   </div>
                   <div className="px-5 pb-5 flex flex-col items-center">
@@ -498,7 +503,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                     </p>
 
                     <div className="flex justify-end items-center mt-8">
-                      <button type="button" className="btn btn-outline-danger"
+                      <button type="button" className="btn btn-outline-danger text-[16px]"
                         onClick={() => {
                           setFileToRename({});
                           setRenameInputValue('');
@@ -506,7 +511,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                         Cancel
                       </button>
 
-                      <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={renameFile}>
+                      <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4 text-[16px]" onClick={renameFile}>
                         Rename
                       </button>
                     </div>

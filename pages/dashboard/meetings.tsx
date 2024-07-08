@@ -231,7 +231,7 @@ const Meeting = () => {
 
                 <div className="flex my-2 items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                   <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-6">Meeting Details</div>
-                  <button type="button" className="text-white-dark hover:text-dark me-4" onClick={() => setmeetingModal(false)}>
+                  <button type="button" className="text-white-dark hover:text-dark me-4 text-[16px]" onClick={() => setmeetingModal(false)}>
 
                     {allSvgs.closeModalSvg}
 
@@ -291,7 +291,7 @@ const Meeting = () => {
                               onChange={handleButtonChange}
                             />
 
-                            <button type="submit" className="btn my-5 font-light bg-black font-sans text-white float-left w-60 capitalize">
+                            <button type="submit" className="btn my-5 font-light bg-black font-sans text-white float-left w-60 capitalize text-[16px]">
                               Save date
                             </button>
                           </form>
@@ -299,7 +299,7 @@ const Meeting = () => {
                       }
 
 
-                      <button onClick={() => setmeetingModal(false)} type="submit" className="btn bg-black font-sans text-white mx-auto md:me-0 mt-0 hidden md:block ">
+                      <button onClick={() => setmeetingModal(false)} type="submit" className="btn bg-black font-sans text-white mx-auto md:me-0 mt-0 hidden md:block text-[16px]">
                         Close
                       </button>
                     </div>
