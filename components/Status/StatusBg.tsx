@@ -19,6 +19,10 @@ const StatusBg: React.FC<any> = ({ children }) => {
         backgroundColor = '#E8E8E8';
     } else if (children === 'rescheduled' || children === 'completed') {
         backgroundColor = '#E6FBD9';
+    } else if (children === 'active' || children === 'Active') {
+        backgroundColor = '#DDF5F0';
+    } else if (children === 'inactive' || children === 'InActive') {
+        backgroundColor = '#E7CF02';
     }
 
     return (

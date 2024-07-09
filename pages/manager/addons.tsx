@@ -6,20 +6,24 @@ import { Dialog, Tab, Transition } from '@headlessui/react';
 import { API_ENDPOINT } from '@/config';
 import Loader from '@/components/SharedComponent/Loader';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import 'tippy.js/dist/tippy.css';
+import { useForm } from "react-hook-form";
+import StatusBg from '@/components/Status/StatusBg';
 
 const Addons = () => {
   const [general, setGeneralAddons] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
+  const [addonsInfo, setAddonsInfo] = useState<any>({});
+  console.log("🚀 ~ Addons ~ addonsInfo:", addonsInfo)
 
-  const [addonsData, setAddonsData] = useState({
-    general: {
-      // ...
-    },
-    models: {
-      // ...
-    },
-  });
-  // console.log('🚀 ~ file: addons.tsx:18 ~ Addons ~ addonsData:', addonsData);
-  const cleanedData = { ...addonsData };
+  const [status, setStatus] = useState(0);
+
+
+  const { register, handleSubmit } = useForm();
+  const onSubmit = (data: any) => {
+    // console.log("data", data);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,15 +42,34 @@ const Addons = () => {
     fetchData();
   }, []);
 
+  const getAddonsDetails = async (addonsId: string) => {
+    console.log("addonsId::", addonsId);
+    try {
+      const response = await fetch(`${API_ENDPOINT}addons/${addonsId}`)
+      const addonsDetailsRse = await response.json();
+
+      if (!addonsDetailsRse) {
+        console.log(response);
+      }
+      else {
+        setAddonsInfo(addonsDetailsRse)
+      }
+    }
+    catch (error) {
+      console.error(error);
+      // setLoading(false);
+    }
+  };
+
   // General Object Rate Change
-  const handleRateChange = (key, newValue) => {
+  const handleRateChange = (key: any, newValue: any) => {
 
     setAddonsData((prevData) => ({
       ...prevData,
       general: {
         ...prevData.general,
         [key]: {
-          ...prevData.general[key],
+          ...prevData?.general[key],
           rate: newValue,
         },
       },
@@ -155,7 +178,7 @@ const Addons = () => {
       setLoading(false);
       return;
     }
-    console.log("🚀 ~ handleFormSubmit ~ addedAddons:", addedAddons);
+    // console.log("🚀 ~ handleFormSubmit ~ addedAddons:", addedAddons);
     setLoading(false);
 
     e.target.reset();
@@ -170,225 +193,485 @@ const Addons = () => {
           </Link>
         </li>
         <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span>Addons Calculation</span>
+          <span>Addons</span>
         </li>
       </ul>
 
       <div className="panel mt-5" id="pills_with_icon">
-        <div className="mb-5 flex items-center justify-between">
+        {/* <div className="mb-5 flex items-center justify-between">
           <h5 className="font-sans text-lg font-semibold dark:text-white-light">Addons Calculation</h5>
-        </div>
-        <div className="mb-5">
-          {isMounted && (
-            <Tab.Group>
-              <Tab.List className="mb-5 mt-3 grid grid-cols-4 gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center sm:space-x-3">
+        </div> */}
+
+        {/* tab starts*/}
+        <div className="mb-5 flex flex-col sm:flex-row">
+          <Tab.Group>
+            <div className="mx-3 mb-5 sm:mb-0">
+              <Tab.List className=" mb-5 grid grid-cols-4 gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center w-32 flex-col">
+
                 <Tab as={Fragment}>
                   {({ selected }) => (
                     <button
-                      className={`${selected ? '!bg-success text-white !outline-none' : ''} flex flex-col items-centerjustify-center rounded-lg bg-[#f1f2f3] p-7 py-3 hover:!bg-success hover:text-whitehover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}
-                    >
-                      {allSvgs.addonsSvgGeneral}
-                      General
+                      title='Wedding Photography'
+                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-7 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
+                      Wedding Photography
+                    </button>
+                  )}
+                </Tab>
+
+                <Tab as={Fragment}>
+                  {({ selected }) => (
+                    <button
+                      title='Commercial Video'
+                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
+                      Commercial Video
+                    </button>
+                  )}
+                </Tab>
+
+                <Tab as={Fragment}>
+                  {({ selected }) => (
+                    <button
+                      title='Music Video'
+                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
+                      Music Video
                     </button>
                   )}
                 </Tab>
                 <Tab as={Fragment}>
                   {({ selected }) => (
                     <button
-                      className={`${selected ? '!bg-success text-white !outline-none' : ''} flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-7 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}
-                    >
-                      {allSvgs.addonsSvgModel}
-                      Models
+                      title='Corporate Event Videography'
+                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12  flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
+                      Corp. Event Videography
+                    </button>
+                  )}
+                </Tab>
+                <Tab as={Fragment}>
+                  {({ selected }) => (
+                    <button
+                      title='Corporate Photography'
+                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
+                      Corporate Photography
+                    </button>
+                  )}
+                </Tab>
+                <Tab as={Fragment}>
+                  {({ selected }) => (
+                    <button
+                      title='Private Photography'
+                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
+                      Private Photography
+                    </button>
+                  )}
+                </Tab>
+                <Tab as={Fragment}>
+                  {({ selected }) => (
+                    <button
+                      title='Other Videography'
+                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
+                      Other Videography
                     </button>
                   )}
                 </Tab>
               </Tab.List>
+            </div>
 
+            <div className='ms-4'>
               <Tab.Panels>
                 <Tab.Panel>
-                  <div className="flex items-start pt-5">
-                    <div className="flex-auto">
-                      <div className="active">
-                        <div className="flex items-center justify-between bg-black p-5 text-white">
-                          <p className="block basis-[25%] font-sans text-[18px] uppercase leading-none">ITEM</p>
-                          <span className="block basis-[40%] font-sans text-[18px] uppercase leading-none">Rate</span>
-                          <span className="block font-sans text-[18px] uppercase leading-none">Status</span>
-                        </div>
-                        {Object.keys(addonsData.general).map((key) => {
-                          const item = addonsData.general[key];
-                          // console.log(item);
+                  <div className="active">
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                      <div className="table-responsive mb-5">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th className="font-mono">Title</th>
+                              <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
+                              <th className="font-mono">Extend Rate</th>
+                              <th className="font-mono">Rate</th>
+                              <th className="font-mono">Status</th>
+                              <th className="font-mono">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {addonsData
+                              ?.filter(filteredAddon => filteredAddon.category === "Wedding Photography")
+                              .map((addons, index) => ((console.log(addons._id)),
+                                <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90 ">
+                                  <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                    <div className="flex items-start flex-col">
+                                      <input
+                                        title={addons?.title}
+                                        {...register(`addons[${index}].title`)}
+                                        defaultValue={addons?.title}
+                                        className='border rounded p-3 focus:outline-none bg-gray-50 focus:border-gray-400 ms-12 md:ms-0 h-10 text-[13px]'
+                                      />
+                                    </div>
+                                  </td>
 
-                          return (
-                            <div key={key} className="my-2 flex items-center justify-between border-b p-5">
-                              <p className="block basis-[25%] font-sans text-[18px] font-semibold capitalize leading-none text-black">{item.title}</p>
+                                  <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                    <div className="flex items-start flex-col">
+                                      <select
+                                        title={addons?.ExtendRateType}
+                                        {...register(`addons[${index}].ExtendRateType`)}
+                                        className='border rounded px-3 focus:outline-none bg-gray-50 focus:border-gray-400 ms-12 md:ms-0 h-10 capitalize w-32 text-[13px] text-center'
+                                      >
+                                        {
+                                          addons?.ExtendRateType ?
+                                            <option defaultValue={addons?.ExtendRateType}>{addons?.ExtendRateType}</option>
+                                            :
+                                            <option defaultValue="n/a">n/a</option>
+                                        }
+                                        <option value="fullday">Fullday</option>
+                                        {
+                                          addons?.ExtendRateType !== 'hourly' &&
+                                          <option value="hourly">Hourly</option>
+                                        }
+                                      </select>
+                                    </div>
+                                  </td>
 
-                              <input
-                                name={key}
-                                type="number"
-                                value={item.rate}
-                                className="form-input basis-[40%] font-sans text-[16px] leading-none"
-                                id="rate"
-                                onChange={(e) => handleRateChange(key, e.target.value)}
-                              />
-                              <button type="button" className={`rounded-full px-5 py-2 text-white ${item.status === 1 ? 'bg-success' : 'bg-danger'}`} onClick={() => handleStatusChange(key)}>
-                                {item.status === 1 ? 'Active' : 'Inactive'}
-                              </button>
-                            </div>
-                          );
-                        })}
+                                  <td>
+                                    <input
+                                      type='number'
+                                      {...register(`addons[${index}].ExtendRate`)}
+                                      defaultValue={addons?.ExtendRate ? addons?.ExtendRate : 0}
+                                      className='border rounded p-3 focus:outline-none bg-gray-50 focus:border-gray-400 ms-12 md:ms-0 w-24 h-10 text-[13px]'
+                                    />
+                                  </td>
 
-                        {/* <button type="submit" className="btn my-5 bg-black font-sans text-white float-left" onClick={() => setAddonsAddBtnModal(true)}>
-                          Add Addons
-                        </button> */}
-                        <button type="submit" className="btn my-5 bg-black font-sans text-white float-right" onClick={handleSave}>
-                          Save
-                        </button>
+                                  <td>
+                                    <input
+                                      type='number'
+                                      {...register(`addons[${index}].rate`)}
+                                      defaultValue={addons?.rate}
+                                      className='border rounded text-gray-600 p-3 focus:outline-none bg-gray-50 focus:border-gray-400 ms-12 md:ms-0  w-24 h-10 text-[13px]'
+                                    />
+                                  </td>
+
+                                  <td className={`font-sans text-gray-600 hover:text-green-500`}>
+                                    {addons?.status >= 1 ? (
+                                      <span className="badge badge-outline-success">Active</span>
+                                    ) : (
+                                      <span className="badge badge-outline-success">Inactive</span>
+                                    )}
+
+                                   {/*  <label className="w-12 h-6 relative">
+                                      <input
+                                        type="checkbox"
+                                        className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                                        id="custom_switch_checkbox1"
+                                        checked={addons?.status >= 1} // This line controls the checked state of the checkbox
+                                      />
+                                      <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                                    </label> */}
+                                  </td>
+                                  {/*  */}
+                                  {/* <p className='flex items-center'>
+                                      <label
+                                        className="w-12 h-6 relative"
+                                        
+                                        // onClick={() => setSettings({ ...settings, defaultPublicFiles: !settings.defaultPublicFiles })}
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                                          id="custom_switch_checkbox1"
+                                          // checked={settings.defaultPublicFiles}
+                                        />
+                                        <span
+                                          className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"
+                                        >
+                                        </span>
+                                      </label>
+
+                                      <span className='ps-2 pb-2 '>{`Uploaded files are ${settings.defaultPublicFiles ? 'public' : 'private'} by default`}</span>
+
+                                    </p> */}
+
+                                  <td>
+                                    <button type="submit" className="btn text-dark btn-outline-dark" onClick={() => getAddonsDetails(addons._id)}>Save</button>
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
                       </div>
+                    </form>
+                    {/*  */}
+                  </div>
+                </Tab.Panel>
+
+                <Tab.Panel>
+                  {/* Commercial Video */}
+                  <div>
+                    <div className="table-responsive mb-5">
+                      <form action="">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th className="font-mono">Title</th>
+                              <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
+                              <th className="font-mono">Extend Rate</th>
+                              <th className="font-mono">Rate</th>
+                              <th className="font-mono">Status</th>
+                              <th className="font-mono">Action</th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+
+                            {addonsData?.filter(filteredAddon => filteredAddon.category === "Commercial Video").map((addons, index) => (
+                              <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                                <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                  <div className="flex items-center">
+                                    <p className="whitespace-nowrap">{addons?.title}</p>
+                                  </div>
+                                </td>
+                                <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
+                                <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
+                                <td>{addons?.rate}</td>
+                                <td className={`${addons?.status ? "text-success" : "text-warning"} font-sans text-success`}>{addons?.status ? "Active" : "Inactive"}</td>
+
+                                <td>
+                                  <button type="button" className="p-0" onClick={() => setOpenModal(!openModal)}>
+                                    {allSvgs.pencilIconForEdit}
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+
+                        </table>
+                      </form>
+
                     </div>
                   </div>
                 </Tab.Panel>
+
                 <Tab.Panel>
-                  <div>
-                    <div className="flex items-start pt-5">
-                      <div className="flex-auto">
-                        <div className="active">
-                          <div className="flex items-center justify-between bg-black p-5 text-white">
-                            <p className="block basis-[25%] font-sans text-[18px] uppercase leading-none">ITEM</p>
-                            <span className="block basis-[40%] font-sans text-[18px] uppercase leading-none">Rate</span>
-                            <span className="block font-sans text-[18px] uppercase leading-none">Status</span>
-                          </div>
+                  {/* Music Vedio - category */}
+                  <div className="">
+                    {/*  */}
+                    <h4 className="mb-4 text-2xl font-semibold">Music Video</h4>
+                    <div className="table-responsive mb-5">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th className="font-mono">Title</th>
+                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
+                            <th className="font-mono">Extend Rate</th>
+                            <th className="font-mono">Rate</th>
+                            <th className="font-mono">Status</th>
+                            <th className="font-mono">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {addonsData?.filter(filteredAddon => filteredAddon.category === "Music Video").map((addons, index) => (
+                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                              <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                <div className="flex items-center">
+                                  <p className="whitespace-nowrap">{addons?.title}</p>
+                                </div>
+                              </td>
+                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
+                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
+                              <td>{addons?.rate}</td>
+                              <td className="font-sans text-success">{addons?.status}</td>
 
-                          {Object.keys(addonsData.models).map((key) => {
-                            const item = addonsData.models[key];
-                            return (
-                              <div key={key} className="my-2 flex items-center justify-between border-b p-5">
-                                <p className="block basis-[25%] font-sans text-[18px] font-semibold capitalize leading-none text-black">{item.title}</p>
-                                <input
-                                  name={key}
-                                  type="number"
-                                  value={item.rate}
-                                  className="form-input basis-[40%] font-sans text-[16px] leading-none"
-                                  onChange={(e) => handleMoedelsRateChange(key, e.target.value)}
-                                />
-                                <button type="button" className={`rounded-full px-5 py-2 text-white ${item.status === 1 ? 'bg-success' : 'bg-danger'}`} onClick={() => handleMoedelsStatusChange(key)}>
-                                  {item.status === 1 ? 'Active' : 'Inactive'}
+                              <td>
+                                <button type="button" className="p-0">
+                                  {allSvgs.pencilIconForEdit}
                                 </button>
-                              </div>
-                            );
-                          })}
-
-                          <button type="submit" className="btn my-5 bg-black font-sans text-white float-right" onClick={handleSave}>
-                            Save
-                          </button>
-                          {/*   <button type="submit" className="btn my-5 bg-black font-sans text-white float-left" onClick={() => setAddonsAddBtnModal(true)}>
-                            Add Addons
-                          </button> */}
-                        </div>
-                      </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
+                    {/*  */}
+                  </div>
+                </Tab.Panel>
+
+                <Tab.Panel>
+                  <div className="">
+                    {/* Corporate Event Videography */}
+                    <h4 className="mb-4 text-2xl font-semibold">Corporate Event Videography</h4>
+                    <div className="table-responsive mb-5">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th className="font-mono">Title</th>
+                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
+                            <th className="font-mono">Extend Rate</th>
+                            <th className="font-mono">Rate</th>
+                            <th className="font-mono">Status</th>
+                            <th className="font-mono">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {addonsData?.filter(filteredAddon => filteredAddon.category === "Corporate Event Videography").map((addons, index) => (
+                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                              <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                <div className="flex items-center">
+                                  <p className="whitespace-nowrap">{addons?.title}</p>
+                                </div>
+                              </td>
+                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
+                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
+                              <td>{addons?.rate}</td>
+                              <td className="font-sans text-success">{addons?.status}</td>
+                              <td>
+                                <button type="button" className="p-0">
+                                  {allSvgs.pencilIconForEdit}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/*  */}
+                  </div>
+                </Tab.Panel>
+
+                <Tab.Panel>
+                  <div className="">
+                    {/* Corporate Photography */}
+                    <h4 className="mb-4 text-2xl font-semibold">Corporate Photography</h4>
+                    <div className="table-responsive mb-5">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th className="font-mono">Title</th>
+                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
+                            <th className="font-mono">Extend Rate</th>
+                            <th className="font-mono">Rate</th>
+                            <th className="font-mono">Status</th>
+                            <th className="font-mono">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {addonsData?.filter(filteredAddon => filteredAddon?.category === "Corporate Photography").map((addons, index) => (
+                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                              <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                <div className="flex items-center">
+                                  <p className="whitespace-nowrap">{addons?.title}</p>
+                                </div>
+                              </td>
+                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
+                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
+                              <td>{addons?.rate}</td>
+                              <td className="font-sans text-success">{addons?.status}</td>
+
+                              <td>
+                                <button type="button" className="p-0">
+                                  {allSvgs.pencilIconForEdit}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/*  */}
+                  </div>
+                </Tab.Panel>
+
+                <Tab.Panel>
+                  <div className="">
+                    {/* Private Photography */}
+                    <h4 className="mb-4 text-2xl font-semibold">Private Photography</h4>
+                    <div className="table-responsive mb-5">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th className="font-mono">Title</th>
+                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
+                            <th className="font-mono">Extend Rate</th>
+                            <th className="font-mono">Rate</th>
+                            <th className="font-mono">Status</th>
+                            <th className="font-mono">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {addonsData?.filter(filteredAddon => filteredAddon.category === "Private Photography").map((addons, index) => (
+                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                              <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                <div className="flex items-center">
+                                  <p className="whitespace-nowrap">{addons?.title}</p>
+                                </div>
+                              </td>
+                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
+                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
+                              <td>{addons?.rate}</td>
+                              <td className="font-sans text-success">{addons?.status}</td>
+
+                              <td>
+                                <button type="button" className="p-0">
+                                  {allSvgs.pencilIconForEdit}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/*  */}
+                  </div>
+                </Tab.Panel>
+
+                <Tab.Panel>
+                  <div className="">
+                    {/* Other Videography */}
+                    <h4 className="mb-4 text-2xl font-semibold">Other Videography</h4>
+                    <div className="table-responsive mb-5">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th className="font-mono">Title</th>
+                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
+                            <th className="font-mono">Extend Rate</th>
+                            <th className="font-mono">Rate</th>
+                            <th className="font-mono">Status</th>
+                            <th className="font-mono">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {addonsData?.filter(filteredAddon => filteredAddon?.category === "Other Videography").map((addons, index) => (
+                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                              <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                <div className="flex items-center">
+                                  <p className="whitespace-nowrap">{addons?.title}</p>
+                                </div>
+                              </td>
+                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
+                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
+                              <td>{addons?.rate}</td>
+                              <td className="font-sans text-success">{addons?.status}</td>
+
+                              <td>
+                                <button type="button" className="p-0">
+                                  {allSvgs.pencilIconForEdit}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/*  */}
                   </div>
                 </Tab.Panel>
               </Tab.Panels>
-            </Tab.Group>
-          )}
-        </div>
-
-        {/* modal for add button starts */}
-        <Transition appear show={addonsAddBtnModal} as={Fragment}>
-          <Dialog as="div" open={addonsAddBtnModal} onClose={() => setAddonsAddBtnModal(false)}>
-
-            <div className="fixed inset-0" />
-
-            <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
-              <div className="flex min-h-screen items-start justify-center px-4">
-                <Dialog.Panel as="div" className="panel my-8 w-full max-w-lg overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
-                  <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
-                    <div className="text-[18px] font-bold leading-none capitalize text-[#000000]">Add Addons</div>
-                    <button type="button" className="text-white-dark hover:text-dark" onClick={() => setAddonsAddBtnModal(false)}>
-                      {allSvgs.closeModalSvg}
-                    </button>
-                  </div>
-
-                  {/* add addons form */}
-                  <form className="space-y-2 dark:text-white mx-14 pb-5" onSubmit={handleFormSubmit}>
-                    <div className=''>
-                      <label htmlFor="title" className="text-[#0E1726] mb-1">
-                        Title
-                      </label>
-                      <div className="relative text-white-dark">
-                        <input id="title" name="title" type="text" placeholder="Enter AddOns Title" className="form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] " />
-                        <span className="absolute start-4 top-1/2 -translate-y-1/2">
-
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <label htmlFor="AddonsPrice" className="text-[#0E1726] mb-1">
-                        Price
-                      </label>
-                      <div className="relative text-white-dark">
-                        <input id="AddonsPrice" name="price" type='number' placeholder="Enter AddOns Title" className="form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] " />
-                        <span className="absolute start-4 top-1/2 -translate-y-1/2">
-
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className='rounded'>
-                      <label htmlFor="category" className="text-[#0E1726] mb-1 ">
-                        Category
-                      </label>
-                      <select name="category" id="category" className='w-full ps-3 '>
-                        <option defaultValue="general">General</option>
-                        <option defaultValue="modals">Modals</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label htmlFor="status" className="text-[#0E1726] mb-1 ">
-                        Status
-                      </label>
-                      <select name="status" id="status" className='w-full ps-3'>
-                        <option defaultValue="1">Active</option>
-                        <option defaultValue="0">Inactive</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label htmlFor="info" className="text-[#0E1726]">
-                        Info (optional)
-                      </label>
-                      <div className="relative text-white-dark">
-                        <input id="info" name="info" type="text" placeholder="Enter AddOns Info" className="form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] " />
-                        <span className="absolute start-4 top-1/2 -translate-y-1/2">
-
-                        </span>
-                      </div>
-                    </div>
-
-                    {/*form submit btn*/}
-                    <button
-                      type="submit"
-                      className="btn !mt-8 w-full border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
-                    >
-                      {
-                        isLoading ?
-                          <span role="status" className="flex h-5 items-center space-x-2">
-                            <Loader />
-                          </span>
-                          :
-                          'Add AddOns'
-                      }
-
-                    </button>
-                  </form>
-                </Dialog.Panel>
-              </div>
             </div>
-          </Dialog>
-        </Transition>
-      </div>
-    </div>
+          </Tab.Group>
+
+        </div>
+        {/* tab ends */}
+
+      </div >
+    </div >
   );
 }
 export default Addons;

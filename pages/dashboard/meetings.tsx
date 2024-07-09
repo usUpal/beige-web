@@ -101,7 +101,6 @@ const Meeting = () => {
       const meetingDetailsRes = await response.json();
 
       if (!meetingDetailsRes) {
-        // console.log(response);
         setShowError(true);
         setLoading(false);
       } else {
