@@ -6,672 +6,346 @@ import { Dialog, Tab, Transition } from '@headlessui/react';
 import { API_ENDPOINT } from '@/config';
 import Loader from '@/components/SharedComponent/Loader';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import 'tippy.js/dist/tippy.css';
-import { useForm } from "react-hook-form";
-import StatusBg from '@/components/Status/StatusBg';
+import { useForm } from 'react-hook-form';
 
 const Addons = () => {
-  const [general, setGeneralAddons] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
-  const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
-  const [addonsInfo, setAddonsInfo] = useState<any>({});
-  console.log("🚀 ~ Addons ~ addonsInfo:", addonsInfo)
 
-  const [status, setStatus] = useState(0);
+    const [addonsData, setAddonsData] = useState<addonTypes[]>([]); 
+    const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
+    const [addonsModal, setAddonsModal] = useState(false);
+    const [isLoading, setLoading] = useState(false);
 
 
-  const { register, handleSubmit } = useForm();
-  const onSubmit = (data: any) => {
-    // console.log("data", data);
-  }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${API_ENDPOINT}addOns`);
-        if (!res.ok) {
-          throw new Error(`Error: ${res.status}`);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch(`${API_ENDPOINT}addOns`);
+                if (!res.ok) {
+                    throw new Error(`Error: ${res.status}`);
+                }
+                const jsonData = await res.json();
+                setAddonsData(jsonData);
+            } catch (error) {
+                console.error(`Error fetching data`);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const dispatch = useDispatch();
+    // theme functionality
+    useEffect(() => {
+        dispatch(setPageTitle('Pricing Calculator - Client Web App - Beige'));
+    });
+
+    // categories
+    const categories = [
+        "Wedding Photography",
+        "Commercial Video",
+        "Music Video",
+        "Corporate Event Videography",
+        "Corporate Photography",
+        "Private Videography",
+        "Other Photography"
+    ];
+
+    // console.log("🚀 ~ Addons ~ addonsInfo:", addonsInfo);
+
+    const getAddonsDetails = async (addon: any) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${API_ENDPOINT}addons/${addon?._id}`);
+            const addonsDetailsRes = await response.json();
+
+            if (!addonsDetailsRes) {
+                setLoading(false);
+            } else {
+                setAddonsModal(!addonsModal);
+                setAddonsInfo(addonsDetailsRes);
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
         }
-        const jsonData = await res.json();
-        setAddonsData(jsonData);
-      } catch (error) {
-        console.error(`Error fetching data`);
-      }
     };
 
-    fetchData();
-  }, []);
-
-  const getAddonsDetails = async (addonsId: string) => {
-    console.log("addonsId::", addonsId);
-    try {
-      const response = await fetch(`${API_ENDPOINT}addons/${addonsId}`)
-      const addonsDetailsRse = await response.json();
-
-      if (!addonsDetailsRse) {
-        console.log(response);
-      }
-      else {
-        setAddonsInfo(addonsDetailsRse)
-      }
+    const handleInputChange = (key: any, value: any) => {
+        setAddonsInfo({
+            ...addonsInfo,
+            [key]: value
+        });
     }
-    catch (error) {
-      console.error(error);
-      // setLoading(false);
-    }
-  };
 
-  // General Object Rate Change
-  const handleRateChange = (key: any, newValue: any) => {
+    const { register, handleSubmit } = useForm();
 
-    setAddonsData((prevData) => ({
-      ...prevData,
-      general: {
-        ...prevData.general,
-        [key]: {
-          ...prevData?.general[key],
-          rate: newValue,
-        },
-      },
-    }));
-  };
+    const onSubmit = async (data: any) => {
+        const updatedAddonDetails = {
+            title: addonsInfo?.title || data?.title,
+            rate: addonsInfo?.rate || data?.rate,
+            ExtendRate: addonsInfo?.ExtendRate || data?.ExtendRate,
+            ExtendRateType: addonsInfo?.ExtendRateType || data?.ExtendRateType,
+            status: addonsInfo?.status || data?.status || false,
+        };
+        console.log("Updated Addon Details:", updatedAddonDetails);
 
-  // General Object Status Change
-  const handleStatusChange = (key, newValue) => {
-    setAddonsData((prevData) => ({
-      ...prevData,
-      general: {
-        ...prevData.general,
-        [key]: {
-          ...prevData.general[key],
-          status: newValue,
-        },
-      },
-    }));
-  };
+        try {
+            // const addonsId = addonsInfo?._id;
+            const patchResponse = await fetch(`${API_ENDPOINT}addons/${addonsInfo?._id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedAddonDetails)
+            });
 
-  // Models Object Rate Change
-  const handleMoedelsRateChange = (key, newValue) => {
-    setAddonsData((prevData) => ({
-      ...prevData,
-      models: {
-        ...prevData.models,
-        [key]: {
-          ...prevData.models[key],
-          rate: newValue,
-        },
-      },
-    }));
-  };
+            if (!patchResponse.ok) {
+                throw new Error("Failed to patch data");
+            }
+            
+            const updatedAddon = await patchResponse.json(); //
 
-  // Models Object Rate Change
-  const handleMoedelsStatusChange = (key, newValue) => {
-    console.log(key, newValue);
-    setAddonsData((prevData) => ({
-      ...prevData,
-      models: {
-        ...prevData.models,
-        [key]: {
-          ...prevData.models[key],
-          status: newValue,
-        },
-      },
-    }));
-  };
-
-  const handleSave = () => {
-    const updatedData = JSON.parse(JSON.stringify(cleanedData));
-    const url = `${API_ENDPOINT}addOns`;
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedData),
+            const updatedAddonsData = addonsData.map((addon: any) =>
+                addon._id === addonsInfo?._id ? updatedAddon : addon
+            );
+            setAddonsData(updatedAddonsData);
+            
+            setAddonsModal(false);
+        } catch (error) {
+            console.error('Patch error:', error);
+        }
     };
 
-    fetch(url, requestOptions)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  };
+    return (
+        <div>
+            <ul className="flex space-x-2 rtl:space-x-reverse">
+                <li>
+                    <Link href="/" className="text-warning hover:underline">
+                        Dashboard
+                    </Link>
+                </li>
+                <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
+                    <span>Addons Calculation</span>
+                </li>
+            </ul>
 
-  const dispatch = useDispatch();
-  // state for setting modal for add button
-  const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
+            <div className="panel mt-5" id="pills_with_icon">
 
-  //Start theme functionality
-  useEffect(() => {
-    dispatch(setPageTitle('Pricing Calculator - Client Web App - Beige'));
-  });
+                <div className="mb-5">
+                    <div className="panel mt-5" id="pills_with_icon">
+                        {/* tab starts*/}
+                        <div className="mb-5 flex flex-col sm:flex-row">
+                            <Tab.Group>
+                                <div className="mx-3 mb-5 sm:mb-0">
+                                    <Tab.List className="mb-5 grid grid-cols-4 gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center w-32 flex-col">
+                                        {categories.map((category, index) => (
+                                            <Tab key={index}>
+                                                {({ selected }) => (
+                                                    <button
+                                                        className={`text-[13px] h-12 w-36 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] px-2 py-3 hover:bg-success hover:text-white hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)] dark:bg-[#191e3a] ${selected ? 'bg-success text-white outline-none' : ''}`}
+                                                        title={category}
+                                                    >
+                                                        {category}
+                                                    </button>
+                                                )}
+                                            </Tab>
+                                        ))}
+                                    </Tab.List>
+                                </div>
 
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  });
+                                <div className='ms-4'>
+                                    <Tab.Panels>
+                                        {categories?.map((category, index) => (
 
-  /* Form Handle and Loader  */
-  const [isLoading, setLoading] = useState(false);
+                                            <Tab.Panel key={index}>
+                                                <div className="active">
+                                                    <div className="table-responsive mb-5">
+                                                        <p className='font-bold text-xl text-slate-600'>{category}</p>
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th className="font-mono">Title</th>
+                                                                    <th className="font-mono">Rate</th>
+                                                                    <th className="font-mono">Extend Rate Type</th>
+                                                                    <th className="font-mono">Extend Rate</th>
+                                                                    <th className="font-mono">Status</th>
+                                                                    <th className="font-mono">Action</th>
+                                                                </tr>
+                                                            </thead>
 
-  // form handleSubmitForm
-  const handleFormSubmit = (e: any) => {
-    e.preventDefault();
-    const title = e.target.title.value.toLowerCase();
-    const rate = parseInt(e.target.price.value);
-    const category = e.target.category.value.toLowerCase();
-    const status = e.target.status.value.toLowerCase();
-    const info = e.target.info.value.toLowerCase();
-    let addedAddons = { title, rate, category, status, info };
-    setLoading(true);
+                                                            <tbody>
+                                                                {addonsData
+                                                                    ?.filter((filteredAddon: any) => filteredAddon.category === category)
+                                                                    .map((addon: any, index) => (
+                                                                        <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                                                                            <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                                                                <p className="flex items-start flex-col">
+                                                                                    {addon.title}
+                                                                                </p>
+                                                                            </td>
+                                                                            <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                                                                <p className="flex items-start flex-col">
+                                                                                    {addon?.rate}
+                                                                                </p>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p className="flex items-start flex-col">
+                                                                                    {addon?.ExtendRateType ? addon?.ExtendRateType : "n/a"}
+                                                                                </p>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p className="flex items-start flex-col">
+                                                                                    {addon?.ExtendRate ? addon?.ExtendRate : 0}
+                                                                                </p>
+                                                                            </td>
+                                                                            <td className="font-sans text-gray-600">
+                                                                                <p className="flex items-start flex-col">
+                                                                                    {addon?.status >= 0 ? "active" : "inactive"}
+                                                                                </p>
+                                                                            </td>
 
-    if (title === '' || isNaN(rate) && category === '' || status === '') {
-      console.log("To add Addons, Addons Details Can't be empty.");
-      setLoading(false);
-      return;
-    }
-    // console.log("🚀 ~ handleFormSubmit ~ addedAddons:", addedAddons);
-    setLoading(false);
+                                                                            <td>
+                                                                                <button onClick={() => {
+                                                                                    getAddonsDetails(addon);
+                                                                                    setAddonsModal(true);
+                                                                                }}>
+                                                                                    {allSvgs.pencilIconForEdit}
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    {/*  */}
+                                                </div>
+                                            </Tab.Panel>
 
-    e.target.reset();
-  }
+                                        ))}
 
-  return (
-    <div>
-      <ul className="flex space-x-2 rtl:space-x-reverse">
-        <li>
-          <Link href="/" className="text-warning hover:underline">
-            Dashboard
-          </Link>
-        </li>
-        <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span>Addons</span>
-        </li>
-      </ul>
 
-      <div className="panel mt-5" id="pills_with_icon">
-        {/* <div className="mb-5 flex items-center justify-between">
-          <h5 className="font-sans text-lg font-semibold dark:text-white-light">Addons Calculation</h5>
-        </div> */}
+                                    </Tab.Panels>
+                                </div>
+                            </Tab.Group>
 
-        {/* tab starts*/}
-        <div className="mb-5 flex flex-col sm:flex-row">
-          <Tab.Group>
-            <div className="mx-3 mb-5 sm:mb-0">
-              <Tab.List className=" mb-5 grid grid-cols-4 gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center w-32 flex-col">
+                        </div>
+                        {/* tab ends */}
+                    </div >
+                </div>
 
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <button
-                      title='Wedding Photography'
-                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-7 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
-                      Wedding Photography
-                    </button>
-                  )}
-                </Tab>
+                {/* modal for add button starts */}
+                <Transition appear show={addonsModal} as={Fragment}>
+                    <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
+                        <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                            <div className="flex min-h-screen items-start justify-center md:px-4 ">
+                                <Dialog.Panel as="div" className="panel my-24 md:w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark space-x-6 md:px-0 px-8">
 
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <button
-                      title='Commercial Video'
-                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
-                      Commercial Video
-                    </button>
-                  )}
-                </Tab>
+                                    <div className="flex my-2 items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
+                                        <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-6">Edit Addons</div>
 
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <button
-                      title='Music Video'
-                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
-                      Music Video
-                    </button>
-                  )}
-                </Tab>
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <button
-                      title='Corporate Event Videography'
-                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12  flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
-                      Corp. Event Videography
-                    </button>
-                  )}
-                </Tab>
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <button
-                      title='Corporate Photography'
-                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
-                      Corporate Photography
-                    </button>
-                  )}
-                </Tab>
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <button
-                      title='Private Photography'
-                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
-                      Private Photography
-                    </button>
-                  )}
-                </Tab>
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <button
-                      title='Other Videography'
-                      className={`${selected ? '!bg-success text-white !outline-none' : ''} text-[13px] h-12 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] p-4 py-3 hover:!bg-success hover:text-white hover:shadow-[0_5px_15px_0_rgba(0,0,0,0.30)] dark:bg-[#191e3a]`}>
-                      Other Videography
-                    </button>
-                  )}
-                </Tab>
-              </Tab.List>
-            </div>
-
-            <div className='ms-4'>
-              <Tab.Panels>
-                <Tab.Panel>
-                  <div className="active">
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                      <div className="table-responsive mb-5">
-                        <table>
-                          <thead>
-                            <tr>
-                              <th className="font-mono">Title</th>
-                              <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
-                              <th className="font-mono">Extend Rate</th>
-                              <th className="font-mono">Rate</th>
-                              <th className="font-mono">Status</th>
-                              <th className="font-mono">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {addonsData
-                              ?.filter(filteredAddon => filteredAddon.category === "Wedding Photography")
-                              .map((addons, index) => ((console.log(addons._id)),
-                                <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90 ">
-                                  <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                    <div className="flex items-start flex-col">
-                                      <input
-                                        title={addons?.title}
-                                        {...register(`addons[${index}].title`)}
-                                        defaultValue={addons?.title}
-                                        className='border rounded p-3 focus:outline-none bg-gray-50 focus:border-gray-400 ms-12 md:ms-0 h-10 text-[13px]'
-                                      />
+                                        <button type="button" className="text-white-dark hover:text-dark me-4 text-[16px]" onClick={() => setAddonsModal(false)}>
+                                            {allSvgs.closeModalSvg}
+                                        </button>
                                     </div>
-                                  </td>
 
-                                  <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                    <div className="flex items-start flex-col">
-                                      <select
-                                        title={addons?.ExtendRateType}
-                                        {...register(`addons[${index}].ExtendRateType`)}
-                                        className='border rounded px-3 focus:outline-none bg-gray-50 focus:border-gray-400 ms-12 md:ms-0 h-10 capitalize w-32 text-[13px] text-center'
-                                      >
-                                        {
-                                          addons?.ExtendRateType ?
-                                            <option defaultValue={addons?.ExtendRateType}>{addons?.ExtendRateType}</option>
-                                            :
-                                            <option defaultValue="n/a">n/a</option>
-                                        }
-                                        <option value="fullday">Fullday</option>
-                                        {
-                                          addons?.ExtendRateType !== 'hourly' &&
-                                          <option value="hourly">Hourly</option>
-                                        }
-                                      </select>
+                                    <div className="basis-[50%]">
+                                        <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Addons Details </h2>
+                                        <div className={`justify-between pb-6 w-11/12`}>
+                                            <form action="" onSubmit={handleSubmit(onSubmit)}>
+                                                <div className=" flex flex-col md:flex-row md:flex md:justify-between mt-3 ">
+                                                    <p className='flex flex-col'>
+                                                        <span className='text-[14px] font-light leading-none capitalize text-[#000000] '>
+                                                            Title
+                                                        </span>
+                                                        <input
+                                                            {...register("title")}
+                                                            onChange={(e) => handleInputChange('title', e.target.value)}
+                                                            value={addonsInfo?.title || ""}
+                                                            className={` bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-72 w-64`}
+                                                            defaultValue={addonsInfo?.title}
+                                                        />
+                                                    </p>
+
+                                                    <div className="flex flex-col mt-3 md:mt-0">
+                                                        <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
+                                                            Status
+                                                        </span>
+                                                        <select
+                                                            {...register("status")}
+                                                            className="bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 w-28 text-[13px] border-gray-300"
+                                                            value={addonsInfo?.status || ""}
+                                                            onChange={(e) => handleInputChange('status', e.target.value)}
+                                                        >
+                                                            <option value={1}>Active</option>
+                                                            <option value={0}>Inactive</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col md:flex md:flex-row justify-between md:mt-3">
+                                                    {addonsInfo?.ExtendRate &&
+                                                        <div className="flex flex-col mt-3 md:mt-0">
+                                                            <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
+                                                                Extend Rate
+                                                            </span>
+
+                                                            <input
+                                                                {...register("ExtendRate")}
+                                                                onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
+                                                                value={addonsInfo?.ExtendRate || 0}
+                                                                className={` bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-72 w-64`}
+                                                            />
+                                                        </div>
+                                                    }
+
+                                                    {addonsInfo?.ExtendRateType &&
+                                                        <p className=' flex flex-col mt-3 md:mt-0'>
+                                                            <span className='text-[14px] font-light leading-none capitalize text-[#000000]'> Extend Rate Type
+                                                            </span>
+                                                            <select
+                                                                {...register("ExtendRateType")}
+                                                                className="bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 w-full text-[13px] border-gray-300"
+                                                                value={addonsInfo?.ExtendRateType || ""}
+                                                                onChange={(e) => handleInputChange('ExtendRateType', e.target.value)}
+                                                            >
+                                                                <option value="n/a">n/a</option>
+                                                                <option value="day">day long</option>
+                                                                <option value="hourly">Hourly</option>
+                                                            </select>
+                                                        </p>
+                                                    }
+                                                </div>
+
+                                                <div className="flex flex-col md:flex md:flex-row justify-between mt-3">
+                                                    <div className="flex flex-col mt-3 md:mt-0">
+                                                        <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
+                                                            Rate
+                                                        </span>
+
+                                                        <input
+                                                            {...register("rate")}
+                                                            onChange={(e) => handleInputChange('rate', e.target.value)}
+                                                            value={addonsInfo?.rate || 0}
+                                                            className={` bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-72 w-64`}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-end mt-8 md:mt-0" >
+                                                    <button type='submit' className='btn btn-outline-dark text-dark h-10 w-28'>Done</button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
-                                  </td>
 
-                                  <td>
-                                    <input
-                                      type='number'
-                                      {...register(`addons[${index}].ExtendRate`)}
-                                      defaultValue={addons?.ExtendRate ? addons?.ExtendRate : 0}
-                                      className='border rounded p-3 focus:outline-none bg-gray-50 focus:border-gray-400 ms-12 md:ms-0 w-24 h-10 text-[13px]'
-                                    />
-                                  </td>
-
-                                  <td>
-                                    <input
-                                      type='number'
-                                      {...register(`addons[${index}].rate`)}
-                                      defaultValue={addons?.rate}
-                                      className='border rounded text-gray-600 p-3 focus:outline-none bg-gray-50 focus:border-gray-400 ms-12 md:ms-0  w-24 h-10 text-[13px]'
-                                    />
-                                  </td>
-
-                                  <td className={`font-sans text-gray-600 hover:text-green-500`}>
-                                    {addons?.status >= 1 ? (
-                                      <span className="badge badge-outline-success">Active</span>
-                                    ) : (
-                                      <span className="badge badge-outline-success">Inactive</span>
-                                    )}
-
-                                   {/*  <label className="w-12 h-6 relative">
-                                      <input
-                                        type="checkbox"
-                                        className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
-                                        id="custom_switch_checkbox1"
-                                        checked={addons?.status >= 1} // This line controls the checked state of the checkbox
-                                      />
-                                      <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
-                                    </label> */}
-                                  </td>
-                                  {/*  */}
-                                  {/* <p className='flex items-center'>
-                                      <label
-                                        className="w-12 h-6 relative"
-                                        
-                                        // onClick={() => setSettings({ ...settings, defaultPublicFiles: !settings.defaultPublicFiles })}
-                                      >
-                                        <input
-                                          type="checkbox"
-                                          className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
-                                          id="custom_switch_checkbox1"
-                                          // checked={settings.defaultPublicFiles}
-                                        />
-                                        <span
-                                          className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"
-                                        >
-                                        </span>
-                                      </label>
-
-                                      <span className='ps-2 pb-2 '>{`Uploaded files are ${settings.defaultPublicFiles ? 'public' : 'private'} by default`}</span>
-
-                                    </p> */}
-
-                                  <td>
-                                    <button type="submit" className="btn text-dark btn-outline-dark" onClick={() => getAddonsDetails(addons._id)}>Save</button>
-                                  </td>
-                                </tr>
-                              ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </form>
-                    {/*  */}
-                  </div>
-                </Tab.Panel>
-
-                <Tab.Panel>
-                  {/* Commercial Video */}
-                  <div>
-                    <div className="table-responsive mb-5">
-                      <form action="">
-                        <table>
-                          <thead>
-                            <tr>
-                              <th className="font-mono">Title</th>
-                              <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
-                              <th className="font-mono">Extend Rate</th>
-                              <th className="font-mono">Rate</th>
-                              <th className="font-mono">Status</th>
-                              <th className="font-mono">Action</th>
-                            </tr>
-                          </thead>
-
-                          <tbody>
-
-                            {addonsData?.filter(filteredAddon => filteredAddon.category === "Commercial Video").map((addons, index) => (
-                              <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                  <div className="flex items-center">
-                                    <p className="whitespace-nowrap">{addons?.title}</p>
-                                  </div>
-                                </td>
-                                <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
-                                <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
-                                <td>{addons?.rate}</td>
-                                <td className={`${addons?.status ? "text-success" : "text-warning"} font-sans text-success`}>{addons?.status ? "Active" : "Inactive"}</td>
-
-                                <td>
-                                  <button type="button" className="p-0" onClick={() => setOpenModal(!openModal)}>
-                                    {allSvgs.pencilIconForEdit}
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-
-                        </table>
-                      </form>
-
-                    </div>
-                  </div>
-                </Tab.Panel>
-
-                <Tab.Panel>
-                  {/* Music Vedio - category */}
-                  <div className="">
-                    {/*  */}
-                    <h4 className="mb-4 text-2xl font-semibold">Music Video</h4>
-                    <div className="table-responsive mb-5">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th className="font-mono">Title</th>
-                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
-                            <th className="font-mono">Extend Rate</th>
-                            <th className="font-mono">Rate</th>
-                            <th className="font-mono">Status</th>
-                            <th className="font-mono">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {addonsData?.filter(filteredAddon => filteredAddon.category === "Music Video").map((addons, index) => (
-                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                              <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                <div className="flex items-center">
-                                  <p className="whitespace-nowrap">{addons?.title}</p>
-                                </div>
-                              </td>
-                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
-                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
-                              <td>{addons?.rate}</td>
-                              <td className="font-sans text-success">{addons?.status}</td>
-
-                              <td>
-                                <button type="button" className="p-0">
-                                  {allSvgs.pencilIconForEdit}
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {/*  */}
-                  </div>
-                </Tab.Panel>
-
-                <Tab.Panel>
-                  <div className="">
-                    {/* Corporate Event Videography */}
-                    <h4 className="mb-4 text-2xl font-semibold">Corporate Event Videography</h4>
-                    <div className="table-responsive mb-5">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th className="font-mono">Title</th>
-                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
-                            <th className="font-mono">Extend Rate</th>
-                            <th className="font-mono">Rate</th>
-                            <th className="font-mono">Status</th>
-                            <th className="font-mono">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {addonsData?.filter(filteredAddon => filteredAddon.category === "Corporate Event Videography").map((addons, index) => (
-                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                              <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                <div className="flex items-center">
-                                  <p className="whitespace-nowrap">{addons?.title}</p>
-                                </div>
-                              </td>
-                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
-                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
-                              <td>{addons?.rate}</td>
-                              <td className="font-sans text-success">{addons?.status}</td>
-                              <td>
-                                <button type="button" className="p-0">
-                                  {allSvgs.pencilIconForEdit}
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {/*  */}
-                  </div>
-                </Tab.Panel>
-
-                <Tab.Panel>
-                  <div className="">
-                    {/* Corporate Photography */}
-                    <h4 className="mb-4 text-2xl font-semibold">Corporate Photography</h4>
-                    <div className="table-responsive mb-5">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th className="font-mono">Title</th>
-                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
-                            <th className="font-mono">Extend Rate</th>
-                            <th className="font-mono">Rate</th>
-                            <th className="font-mono">Status</th>
-                            <th className="font-mono">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {addonsData?.filter(filteredAddon => filteredAddon?.category === "Corporate Photography").map((addons, index) => (
-                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                              <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                <div className="flex items-center">
-                                  <p className="whitespace-nowrap">{addons?.title}</p>
-                                </div>
-                              </td>
-                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
-                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
-                              <td>{addons?.rate}</td>
-                              <td className="font-sans text-success">{addons?.status}</td>
-
-                              <td>
-                                <button type="button" className="p-0">
-                                  {allSvgs.pencilIconForEdit}
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {/*  */}
-                  </div>
-                </Tab.Panel>
-
-                <Tab.Panel>
-                  <div className="">
-                    {/* Private Photography */}
-                    <h4 className="mb-4 text-2xl font-semibold">Private Photography</h4>
-                    <div className="table-responsive mb-5">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th className="font-mono">Title</th>
-                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
-                            <th className="font-mono">Extend Rate</th>
-                            <th className="font-mono">Rate</th>
-                            <th className="font-mono">Status</th>
-                            <th className="font-mono">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {addonsData?.filter(filteredAddon => filteredAddon.category === "Private Photography").map((addons, index) => (
-                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                              <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                <div className="flex items-center">
-                                  <p className="whitespace-nowrap">{addons?.title}</p>
-                                </div>
-                              </td>
-                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
-                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
-                              <td>{addons?.rate}</td>
-                              <td className="font-sans text-success">{addons?.status}</td>
-
-                              <td>
-                                <button type="button" className="p-0">
-                                  {allSvgs.pencilIconForEdit}
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {/*  */}
-                  </div>
-                </Tab.Panel>
-
-                <Tab.Panel>
-                  <div className="">
-                    {/* Other Videography */}
-                    <h4 className="mb-4 text-2xl font-semibold">Other Videography</h4>
-                    <div className="table-responsive mb-5">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th className="font-mono">Title</th>
-                            <th className="ltr:rounded-l-md rtl:rounded-r-md">Extend Rate Type</th>
-                            <th className="font-mono">Extend Rate</th>
-                            <th className="font-mono">Rate</th>
-                            <th className="font-mono">Status</th>
-                            <th className="font-mono">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {addonsData?.filter(filteredAddon => filteredAddon?.category === "Other Videography").map((addons, index) => (
-                            <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                              <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                <div className="flex items-center">
-                                  <p className="whitespace-nowrap">{addons?.title}</p>
-                                </div>
-                              </td>
-                              <td>{addons?.ExtendRateType ? addons?.ExtendRateType : "Extend Rate Type"}</td>
-                              <td>{addons?.ExtendRate ? addons?.ExtendRate : "ExtendRate"}</td>
-                              <td>{addons?.rate}</td>
-                              <td className="font-sans text-success">{addons?.status}</td>
-
-                              <td>
-                                <button type="button" className="p-0">
-                                  {allSvgs.pencilIconForEdit}
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {/*  */}
-                  </div>
-                </Tab.Panel>
-              </Tab.Panels>
+                                </Dialog.Panel>
+                            </div>
+                        </div>
+                    </Dialog>
+                </Transition>
             </div>
-          </Tab.Group>
-
         </div>
-        {/* tab ends */}
-
-      </div >
-    </div >
-  );
+    );
 }
 export default Addons;

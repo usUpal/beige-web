@@ -149,13 +149,13 @@ declare global {
   }
 
   interface addonTypes {
-    status: number,
-    _id: string,
-    category: string,
-    title: string,
-    rate: number,
-    info: string,
-    ExtendRateType: string,
-    ExtendRate: number,
+    _id: string;
+    title: string;
+    rate: number;
+    ExtendRate: number;
+    ExtendRateType: string;
+    status: boolean;
+    category: string;
+    info: string
   }
 }
