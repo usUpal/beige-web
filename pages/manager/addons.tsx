@@ -14,22 +14,38 @@ const Addons = () => {
     const [addonsModal, setAddonsModal] = useState(false);
     const [isLoading, setLoading] = useState(false);
     const [showDesignElement, setShowDesignElement] = useState({
-        showExistingCategory: false,
+        showNewCategoryInput: false,
     });
+    const [allCategory, setAllCategory] = useState([]);
+    const [newCategory, setNewCategory] = useState('');
 
-    // categories
-    const categories = [
-        "Wedding Photography",
-        "Commercial Video",
-        "Music Video",
-        "Corporate Event Videography",
-        "Corporate Photography",
-        "Private Videography",
-        "Other Photography"
-    ];
+    useEffect(() => {
+        const handleFilterCategory = () => {
+            if (addonsData) {
+                const uniqueCategories = addonsData
+                    .map(addon => addon.category)
+                    .filter((category, index, array) => array.indexOf(category) === index);
 
-    const [allCategory, setAllCategory] = useState(categories);
-    console.log("🚀 ~ Addons ~ allCategory:", allCategory);
+                console.log('Unique Categories:', uniqueCategories);
+                setAllCategory(uniqueCategories);
+            }
+        };
+
+        handleFilterCategory();
+
+    }, [addonsData]);
+
+    // add category to the allcategory
+    const handleAddCategory = () => {
+
+        if (newCategory.trim() !== '') {
+            // setAllCategory(prevCategories => [...prevCategories, newCategory.trim()]);
+            allCategory.push(newCategory);
+            setNewCategory('');
+        }
+        showDesignElement.showNewCategoryInput = false;
+        console.log(newCategory, allCategory);
+    }
 
     // setAddonsAddBtnModal
     const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
@@ -57,10 +73,6 @@ const Addons = () => {
         dispatch(setPageTitle('Pricing Calculator - Client Web App - Beige'));
     });
 
-
-
-    // console.log("🚀 ~ Addons ~ addonsInfo:", addonsInfo);
-
     const getAddonsDetails = async (addon: any) => {
         setLoading(true);
         try {
@@ -87,8 +99,9 @@ const Addons = () => {
         });
     }
 
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
+    //    update addons
     const onSubmit = async (data: any) => {
         const updatedAddonDetails = {
             title: addonsInfo?.title || data?.title,
@@ -128,22 +141,45 @@ const Addons = () => {
 
     // add new addons
     const handleFormSubmit = async (data: any) => {
+
+        const newAddonsData = {
+            title: data?.title,
+            category: data?.category,
+            rate: data?.rate,
+            ExtendRate: data?.ExtendRate,
+            ExtendRateType: data?.ExtendRateType,
+            status: data?.status || false,
+        };
         try {
-            const newAddonsData = {
-                title: data?.title,
-                category: data?.category || data.new_category,
-                rate: data?.rate,
-                ExtendRate: data?.ExtendRate,
-                ExtendRateType: data?.ExtendRateType,
-                status: addonsInfo?.status || data?.status || false,
-            };
-            console.log("🚀 ~ handleFormSubmit ~ newAddonsData:", newAddonsData)
+            setLoading(true);
+            const response = await fetch(`${API_ENDPOINT}addons`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newAddonsData),
+            });
+
+            if (!response.ok) {
+                throw new Error("Response: Failed to add new addon.")
+            }
+            const responseData = await response.json();
+
+            console.log('Addon successfully added:', responseData);
+            // console.log("🚀 ~ handleFormSubmit ~ newAddonsData:", newAddonsData);
+            addonsData.push(newAddonsData);
+
         } catch (error) {
+            setLoading(false);
             console.error('Error submitting form:', error);
         } finally {
-            // setIsLoading(false);
+            setLoading(false);
+            setAddonsAddBtnModal(false);
+            reset();
         }
     };
+
+
 
     return (
         <div>
@@ -154,24 +190,11 @@ const Addons = () => {
                     </Link>
                 </li>
                 <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                    <span>Addons Calculation</span>
+                    <span>Addons </span>
                 </li>
             </ul>
 
-            {/* <div className="panel mt-5" id="pills_with_icon"> */}
-
             <div className="mb-5">
-                {/* buttons for adds starts*/}
-                {isLoading ? (
-                    <span role="status" className="flex h-5 items-center space-x-2">
-                        {/* Show loader component */}
-                        Loading...
-                    </span>
-                ) : (
-                    <>
-                        <button onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}>add Addons</button>
-                    </>
-                )}
                 {/* buttons for adds ends*/}
                 <div className="panel" id="pills_with_icon">
                     {/* tab starts*/}
@@ -179,11 +202,21 @@ const Addons = () => {
                         <Tab.Group>
                             <div className="mx-3 mb-5 sm:mb-0">
                                 <Tab.List className="mb-5 grid grid-cols-4 gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center w-32 flex-col">
-                                    {categories.map((category, index) => (
+
+                                    <>
+                                        <button
+                                            onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}
+                                            className={`text-[13px] h-12 w-36 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] px-2 py-3 hover:bg-warning hover:text-white hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)] dark:bg-[#191e3a] capitalize  }`}
+                                        >
+                                            add new Addons
+                                        </button>
+                                    </>
+                                    {allCategory.map((category, index) => (
                                         <Tab key={index}>
                                             {({ selected }) => (
+
                                                 <button
-                                                    className={`text-[13px] h-12 w-36 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] px-2 py-3 hover:bg-success hover:text-white hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)] dark:bg-[#191e3a] ${selected ? 'bg-success text-white outline-none' : ''}`}
+                                                    className={`text-[13px] h-12 w-36 flex flex-col items-center justify-center rounded-lg bg-[#f1f2f3] px-2 py-3 hover:bg-success hover:text-white hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)] dark:bg-[#191e3a] capitalize ${selected ? 'bg-success text-white outline-none' : ''}`}
                                                     title={category}
                                                 >
                                                     {category}
@@ -196,7 +229,7 @@ const Addons = () => {
 
                             <div className='ms-4'>
                                 <Tab.Panels>
-                                    {categories?.map((category, index) => (
+                                    {allCategory?.map((category, index) => (
                                         <Tab.Panel key={index}>
                                             <div className="active">
                                                 <div className="table-responsive mb-5">
@@ -239,8 +272,8 @@ const Addons = () => {
                                                                             </p>
                                                                         </td>
                                                                         <td className="font-sans text-gray-600">
-                                                                            <p className="flex items-start flex-col">
-                                                                                {addon?.status >= 0 ? "active" : "inactive"}
+                                                                            <p className="flex items-start flex-col ">
+                                                                                {addon?.status >= 1 ? <span className="badge w-12 bg-success text-[10px] text-center">Active</span> : <span className="badge bg-warning text-[10px] w-12 text-center">Inactive</span>}
                                                                             </p>
                                                                         </td>
 
@@ -272,7 +305,7 @@ const Addons = () => {
                 <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
                     <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
                         <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                            <Dialog.Panel as="div" className="panel my-24 md:w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark space-x-6 md:px-0 px-8">
+                            <Dialog.Panel as="div" className="panel my-24 md:w-2/5  overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark space-x-6 md:px-0 px-8">
 
                                 <div className="flex my-2 items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                                     <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-6">Edit Addons</div>
@@ -338,13 +371,13 @@ const Addons = () => {
                                                         </span>
                                                         <select
                                                             {...register("ExtendRateType")}
-                                                            className="bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 w-full text-[13px] border-gray-300"
+                                                            className="bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 w-full text-[13px] border-gray-300 capitalize"
                                                             value={addonsInfo?.ExtendRateType || ""}
                                                             onChange={(e) => handleInputChange('ExtendRateType', e.target.value)}
                                                         >
-                                                            <option value="n/a">n/a</option>
-                                                            <option value="day">day long</option>
-                                                            <option value="hourly">Hourly</option>
+                                                            <option className='capitalize' value="n/a">n/a</option>
+                                                            <option className='capitalize' value="day">day</option>
+                                                            <option className='capitalize' value="hourly">Hourly</option>
                                                         </select>
                                                     </p>
                                                 }
@@ -365,7 +398,12 @@ const Addons = () => {
                                                 </div>
                                             </div>
                                             <div className="flex justify-end mt-8 md:mt-0" >
-                                                <button type='submit' className='btn btn-outline-dark text-dark h-10 w-28'>Done</button>
+                                                <button
+                                                    type='submit'
+                                                    className='btn btn-outline-dark h-10 w-28 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l'
+                                                >
+                                                    Update
+                                                </button>
                                             </div>
                                         </form>
                                     </div>
@@ -384,7 +422,7 @@ const Addons = () => {
 
                     <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
                         <div className="flex min-h-screen items-start justify-center px-4">
-                            <Dialog.Panel as="div" className="panel my-8 w-full md:w-7/12  overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                            <Dialog.Panel as="div" className="panel my-8 w-full md:w-7/12 xl:w-5/12  overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                                 {/* max-w-lg */}
                                 <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                                     <div className="text-[18px] font-bold leading-none capitalize text-[#000000]">Add Addons</div>
@@ -393,19 +431,16 @@ const Addons = () => {
                                     </button>
                                 </div>
 
-                                {/* category create or select start */}
-                                {/* <form className="space-y-2 dark:text-white pb-5 w-11/12 mx-auto bg-white-dark box-border py-3 px-5 rounded-md mb-5">
-                                </form> */}
 
                                 <p className='text-[12px] mt-1 flex justify-start my-1 mx-2 ms-8'>
-                                    {showDesignElement.showExistingCategory ?
+                                    {showDesignElement.showNewCategoryInput ?
                                         <>
                                             Select from existings?
                                             <span
                                                 // setShowDesignElement
                                                 onClick={() => setShowDesignElement(prevState => ({
                                                     ...prevState,
-                                                    showExistingCategory: !prevState?.showExistingCategory
+                                                    showNewCategoryInput: !prevState?.showNewCategoryInput
                                                 }))}
                                                 className='text-[12px] text-blue-500 ms-2 cursor-pointer hover:bg-slate-300'
                                             >
@@ -419,7 +454,7 @@ const Addons = () => {
                                                 // setShowDesignElement
                                                 onClick={() => setShowDesignElement(prevState => ({
                                                     ...prevState,
-                                                    showExistingCategory: !prevState?.showExistingCategory
+                                                    showNewCategoryInput: !prevState?.showNewCategoryInput
                                                 }))}
                                                 className='text-[12px] text-blue-500 ms-2 cursor-pointer hover:bg-slate-300'
                                             >
@@ -430,52 +465,62 @@ const Addons = () => {
                                 </p>
                                 {/* add addons form */}
                                 <form className="space-y-2 dark:text-white pb-5 w-11/12 mx-auto " onSubmit={handleSubmit(handleFormSubmit)}>
-                                    <div className="flex flex-col md:flex-row justify-between items-center">
-                                        <div className='rounded '>
-                                            <label htmlFor="category" className="text-[#0E1726] mb-1 ">
+                                    {/* <div className="flex flex-col md:flex-row justify-between items-center"> */}
+                                    {!showDesignElement.showNewCategoryInput &&
+                                        <div className='rounded'>
+                                            <label htmlFor="category" className="text-[#0E1726] mb-1">
                                                 Select Category
                                             </label>
-                                            <select {...register('category', { required: "Please Select a Category" })} id="category" className='w-64 form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] md:w-80'>
+                                            <select {...register('category', { required: "Please Select a Category" })} id="category" className='w-64 form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] md:w-80 capitalize'>
+                                                <option className=' capitalize text-primary' value="">select form here
+                                                    {/* {allSvgs.downArrow} */}
+                                                </option>
                                                 {
-                                                    categories.map((category, index) => (
-                                                        <option value={category} key={index}>{category}</option>
+                                                    allCategory.map((category, index) => (
+                                                        <option
+                                                            value={category}
+                                                            key={index}
+                                                            className='capitalize'
+                                                        >{category}
+                                                        </option>
                                                     ))
                                                 }
                                             </select>
                                             <span>
-                                                {errors.category && <p className='text-[12px] text-red-500'>*{errors?.category?.message}</p>}
+                                                {errors.category && <p className='text-[12px] text-red-500'>{errors?.category?.message}</p>}
                                             </span>
                                         </div>
+                                    }
+                                    {/*  */}
+                                    <div>
+                                        {showDesignElement.showNewCategoryInput &&
+                                            <div className='rounded-md '>
+                                                <label htmlFor="new_category" className="text-[#0E1726] mb-1 capitalize">
+                                                    Create New category
+                                                </label>
 
-                                        <div>
-                                            {showDesignElement.showExistingCategory &&
-                                                <div className='rounded-md '>
-                                                    <label htmlFor="new_category" className="text-[#0E1726] mb-1 capitalize">
-                                                        Create category
-                                                    </label>
-
-                                                    <div className="">
-                                                        <div className="flex">
-                                                            <input
-                                                                {...register('new_category')}
-                                                                id="new_category" type="text"
-                                                                placeholder="Create Category"
-                                                                className="form-input ltr:rounded-r-none rtl:rounded-l-none md:w-64"
-                                                            />
-                                                            <div
-                                                                className=" flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 dark:border-[#17263c] dark:bg-[#1b2e4b] bg-gradient-to-r from-[#ACA686] to-[#735C38] capitalize text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
-                                                            >
-                                                                Create
-                                                            </div>
+                                                <div className="">
+                                                    <div className="flex">
+                                                        <input
+                                                            // {...register('new_category')}
+                                                            name='new_category'
+                                                            id="new_category" type="text"
+                                                            placeholder="Create Category"
+                                                            className="form-input ltr:rounded-r-none rtl:rounded-l-none md:w-64"
+                                                            onChange={(e) => setNewCategory(e.target.value)}
+                                                        />
+                                                        <div
+                                                            className='flex justify-center items-center  ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 dark:border-[#17263c] dark:bg-[#1b2e4b] cursor-pointer hover:bg-gray-200 duration-500'
+                                                            onClick={handleAddCategory}
+                                                        >
+                                                            {allSvgs?.roundedPlusIconMd}
                                                         </div>
                                                     </div>
                                                 </div>
-                                            }
-                                        </div>
-
+                                            </div>
+                                        }
                                     </div>
 
-                                    {/* ------------------------------------ */}
                                     <div className='flex flex-col md:flex-row justify-between items-center'>
 
                                         <div>
@@ -485,7 +530,7 @@ const Addons = () => {
                                             <div className="relative text-white-dark">
                                                 <input {...register('title', { required: 'Title is required.' })} id="title" type="text" placeholder="Enter AddOns Title" className="form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] md:w-80 w-64" />
                                                 <span>
-                                                    {errors.title && <p className='text-[12px] text-red-500'>*{errors?.title?.message}</p>}
+                                                    {errors.title && <p className='text-[12px] text-red-500'>{errors?.title?.message}</p>}
                                                 </span>
                                             </div>
                                         </div>
@@ -507,7 +552,11 @@ const Addons = () => {
                                                 Extend Rate
                                             </label>
                                             <div className="relative text-white-dark">
-                                                <input {...register('extendRate')} id="ExtendRate" type="number" placeholder="Enter Extend Rate" className="form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] w-64 md:w-80" />
+                                                <input {...register('ExtendRate')}
+                                                    id="ExtendRate"
+                                                    type="number"
+                                                    placeholder="Enter Extend Rate"
+                                                    className="form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] w-64 md:w-80" />
                                             </div>
                                         </div>
 
@@ -516,7 +565,7 @@ const Addons = () => {
                                             <label htmlFor="ExtendRateType" className="text-[#0E1726] mb-1 ">
                                                 Extend Rate Type
                                             </label>
-                                            <select {...register('extendRateType')} id="ExtendRateType" className='form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] w-64 md:w-80'>
+                                            <select {...register('ExtendRateType')} id="ExtendRateType" className='form-input ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] w-64 md:w-80'>
                                                 <option value="hourly">Hourly</option>
                                                 <option value="day">Day</option>
                                                 <option value="n/a">N/A</option>
@@ -550,7 +599,7 @@ const Addons = () => {
                                     <div className="flex justify-end">
                                         <button
                                             type="submit"
-                                            className="btn !mt-8 w-3/12 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
+                                            className="btn !mt-8 w-36 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
                                         >
                                             {isLoading ? (
                                                 <span role="status" className="flex h-5 items-center space-x-2">
@@ -558,7 +607,7 @@ const Addons = () => {
                                                     Loading...
                                                 </span>
                                             ) : (
-                                                'Add AddOns'
+                                                'Add Addons'
                                             )}
                                         </button>
                                     </div>

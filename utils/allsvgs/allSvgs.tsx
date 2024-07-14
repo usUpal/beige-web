@@ -768,7 +768,7 @@ const pencilIcon_dropdown = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0
     <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
 </svg>;
 
-const trash_download = (
+const trash_download =
     <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -781,11 +781,32 @@ const trash_download = (
             clipRule="evenodd"
         />
     </svg>
-);
+
+const roundedPlusIconMd =
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+        width="22px" height="22px" viewBox="0 0 612 612" >
+        <g>
+            <g id="_x38__3_">
+                <g>
+                    <path d="M306,0C136.992,0,0,136.992,0,306s136.992,306,306,306s306-137.012,306-306S475.008,0,306,0z M306,573.75
+           C158.125,573.75,38.25,453.875,38.25,306C38.25,158.125,158.125,38.25,306,38.25c147.875,0,267.75,119.875,267.75,267.75
+           C573.75,453.875,453.875,573.75,306,573.75z M420.75,286.875h-95.625V191.25c0-10.557-8.568-19.125-19.125-19.125
+           c-10.557,0-19.125,8.568-19.125,19.125v95.625H191.25c-10.557,0-19.125,8.568-19.125,19.125c0,10.557,8.568,19.125,19.125,19.125
+           h95.625v95.625c0,10.557,8.568,19.125,19.125,19.125c10.557,0,19.125-8.568,19.125-19.125v-95.625h95.625
+           c10.557,0,19.125-8.568,19.125-19.125C439.875,295.443,431.307,286.875,420.75,286.875z"/>
+                </g>
+            </g>
+        </g>
+    </svg>
+
+const downArrow = <svg fill="#000000" width="15px" height="15px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M512 666.5L367.2 521.7l36.2-36.2 83 83V256h51.2v312.5l83-83 36.2 36.2L512 666.5zm-204.8 50.3V768h409.6v-51.2H307.2z"></path></g></svg>;
+
+
+
 
 
 
 
 export const allSvgs = {
-    emailSvg, passwordSvg, bookNowSvg, shootSvg, meetingsSvg, chatSvg, transactionsSvg, disputesSvg, settingsSvg, helpSvg, closeModalSvg, addonsSvgGeneral, addonsSvgModel, filesSvg, addonsSvg, greaterThanArrowSvg, mugSvg, goToTopArrowSvg, rightArrowSvg, viewAllActivitiesArrow, notificationCancelRoundXBtnSvg, invalidSvg, notificationBtnSvg, invalidNotificationCrossBtnSvg, toggleMenuExpandSvg, messageIconSvg, signOutSvg, horizontalMenuDashboardSvg, downArrowSvg, horizontalAppsIconSvg, diceForComponentsHorizontalMenuSvg, elementsSvg, tablesSvgIcon, formsSvgIcon, pagesIconSvg, revenueDayWkMonthSortBtnSvg, cartIconSvg, dolarIconSvg, threeDotDropDown, summaryIncomeIconSvg, summaryProfitIconSvg, summaryExpensesIconSvg, plusIconSvg, clientDashBoardBookSvg, bestOfLuckIconSvg, userLogoIconSvg, pencilIconForEdit, plusForAddCp, minusForDltCp, minusForHide, closeBtnCp, saveBtn, dataLoadingLoader, folderIcon, roundSpinIcon, invalidIcon, trashIcon, docEditIcon, uploadIcon, downloadIcon, linkify, trashIconSm, folderIconForFile, threeDotMenuIcon, imageIcon, vedio, docsIcon, quesMarkIcon, cloudIcon_Dropdown, lockIcon_Dropdown, arrowRight_dropdown, pencilIcon_dropdown, trash_download
+    emailSvg, passwordSvg, bookNowSvg, shootSvg, meetingsSvg, chatSvg, transactionsSvg, disputesSvg, settingsSvg, helpSvg, closeModalSvg, addonsSvgGeneral, addonsSvgModel, filesSvg, addonsSvg, greaterThanArrowSvg, mugSvg, goToTopArrowSvg, rightArrowSvg, viewAllActivitiesArrow, notificationCancelRoundXBtnSvg, invalidSvg, notificationBtnSvg, invalidNotificationCrossBtnSvg, toggleMenuExpandSvg, messageIconSvg, signOutSvg, horizontalMenuDashboardSvg, downArrowSvg, horizontalAppsIconSvg, diceForComponentsHorizontalMenuSvg, elementsSvg, tablesSvgIcon, formsSvgIcon, pagesIconSvg, revenueDayWkMonthSortBtnSvg, cartIconSvg, dolarIconSvg, threeDotDropDown, summaryIncomeIconSvg, summaryProfitIconSvg, summaryExpensesIconSvg, plusIconSvg, clientDashBoardBookSvg, bestOfLuckIconSvg, userLogoIconSvg, pencilIconForEdit, plusForAddCp, minusForDltCp, minusForHide, closeBtnCp, saveBtn, dataLoadingLoader, folderIcon, roundSpinIcon, invalidIcon, trashIcon, docEditIcon, uploadIcon, downloadIcon, linkify, trashIconSm, folderIconForFile, threeDotMenuIcon, imageIcon, vedio, docsIcon, quesMarkIcon, cloudIcon_Dropdown, lockIcon_Dropdown, arrowRight_dropdown, pencilIcon_dropdown, trash_download, roundedPlusIconMd, downArrow
 } 
