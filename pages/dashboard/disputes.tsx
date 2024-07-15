@@ -11,7 +11,7 @@ import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePagination from 'react-responsive-pagination';
 
 
-const Meeting = () => {
+const Disputes = () => {
 
     // previous code
     const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const Meeting = () => {
         dispatch(setPageTitle('Disputes'));
     });
 
-    const [meetingModal, disputeModal] = useState(false);
+    const [disputeModal, setDisputeModal] = useState(false);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
     const [desputes, setDesputes] = useState<MeetingResponsTypes[]>([]);
@@ -52,7 +52,7 @@ const Meeting = () => {
             if (!disputeDetailsRes) {
                 console.log(response);
             } else {
-                disputeModal(true);
+                setDisputeModal(true);
                 setDisputeInfo(disputeDetailsRes);
             }
         } catch (error) {
@@ -129,8 +129,8 @@ const Meeting = () => {
                 </div>
             </div>
 
-            <Transition appear show={meetingModal} as={Fragment}>
-                <Dialog as="div" open={meetingModal} onClose={() => disputeModal(false)}>
+            <Transition appear show={disputeModal} as={Fragment}>
+                <Dialog as="div" open={disputeModal} onClose={() => setDisputeModal(false)}>
 
                     <div className="fixed inset-0" />
 
@@ -140,7 +140,7 @@ const Meeting = () => {
                                 <div className="flex items-center justify-between bg-[#fbfbfb] px-5 dark:bg-[#121c2c]">
 
                                     <div className="text-[22px] font-bold leading-none capitalize text-[#000000]">Dispute Details</div>
-                                    <button type="button" className="text-white-dark hover:text-dark" onClick={() => disputeModal(false)}>
+                                    <button type="button" className="text-white-dark hover:text-dark" onClick={() => setDisputeModal(false)}>
                                         {allSvgs.closeModalSvg}
                                     </button>
                                 </div>
@@ -182,7 +182,7 @@ const Meeting = () => {
                                                 </span>
                                             </p>
 
-                                            <button onClick={() => disputeModal(false)} type="submit" className="btn md:mt-24 mt-8  bg-black font-sans text-white mx-auto md:me-0">
+                                            <button onClick={() => setDisputeModal(false)} type="submit" className="btn md:mt-24 mt-8  bg-black font-sans text-white mx-auto md:me-0">
                                                 Close
                                             </button>
                                             {/* </div> */}
@@ -199,4 +199,4 @@ const Meeting = () => {
     );
 };
 
-export default Meeting;
+export default Disputes;

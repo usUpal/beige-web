@@ -24,7 +24,7 @@ const SidebarManager = (props: any) => {
         <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
           <ul className="sub-menu text-gray-500">
             <li>
-            <Link href="/">Manager Dashboard</Link>
+              <Link href="/">Manager Dashboard</Link>
             </li>
           </ul>
         </AnimateHeight>
@@ -32,6 +32,18 @@ const SidebarManager = (props: any) => {
 
       <li className="nav-item">
         <ul>
+
+          <li className='nav-item'>
+            {/* <Link href='/dashboard/bookNow' className='group'> */}
+            <Link href='/manager/bookNow' className='group'>
+              <div className='flex items-center'>
+                {allSvgs.bookNowSvg}
+                <span
+                  className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Manual Book</span>
+              </div>
+            </Link>
+          </li>
+
           <li className="nav-item">
             <Link href="/dashboard/shoots" className="group">
               <div className="flex items-center">
