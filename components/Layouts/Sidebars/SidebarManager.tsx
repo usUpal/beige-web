@@ -23,9 +23,9 @@ const SidebarManager = (props: any) => {
 
         <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
           <ul className="sub-menu text-gray-500">
-            {/* <li> */}
+            <li>
             <Link href="/">Manager Dashboard</Link>
-            {/* </li> */}
+            </li>
           </ul>
         </AnimateHeight>
       </li>
@@ -113,18 +113,18 @@ const SidebarManager = (props: any) => {
             </button>
 
             <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
-              <ul className="sub-menu text-gray-500">
-
-                <Link href="/dashboard/searchingParams">Set Searching Params</Link>
-
-                <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
-
+              <ul className="sub-menu text-gray-500 flex flex-col ">
+                <li>
+                  <Link href="/dashboard/searchingParams">Set Searching Params</Link>
+                </li>
+                <li>
+                  <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
+                </li>
               </ul>
             </AnimateHeight>
           </li>
 
           <li className="nav-item">
-
             <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('users')}>
               <div className="flex items-center">
                 {allSvgs.helpSvg}
@@ -139,21 +139,21 @@ const SidebarManager = (props: any) => {
             </button>
 
             <AnimateHeight duration={300} height={currentMenu === 'users' ? 'auto' : 0}>
-              <ul className="sub-menu text-gray-500">
-                {/* <li>
-                  <Link href="/manager/users" className="group">
+              <ul className="sub-menu text-gray-500 flex flex-col leading-3 ">
+                <li>
+                  <Link href="/manager/allUsers">
                     <span>All Users</span>
                   </Link>
-                </li> */}
-
-                <Link href="/manager/allUsers">All Users</Link>
-
-                <Link href="/manager/cp">Content Provider</Link>
-
-                <Link href="/manager/clients">Client</Link>
+                </li>
+                {/* <Link href="/manager/allUsers">All Users</Link> */}
+                <li>
+                  <Link href="/manager/cp">Content Provider</Link>
+                </li>
+                <li>
+                  <Link href="/manager/clients">Client</Link>
+                </li>
               </ul>
             </AnimateHeight>
-
 
             {/*           
               <Link href="/manager/users" className="group">
@@ -162,9 +162,6 @@ const SidebarManager = (props: any) => {
                   <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Users</span>
                 </div>
               </Link> */}
-
-
-
           </li>
 
         </ul>
