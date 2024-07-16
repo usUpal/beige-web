@@ -6,10 +6,13 @@ import { Dialog, Tab, Transition } from '@headlessui/react';
 import { API_ENDPOINT } from '@/config';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useForm } from 'react-hook-form';
+import useAddons from '@/hooks/useAddons';
 
 const Addons = () => {
 
-    const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
+    // const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
+    const [addonsData, setAddonsData] = useAddons();
+
     const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
     const [addonsModal, setAddonsModal] = useState(false);
     const [isLoading, setLoading] = useState(false);
@@ -26,9 +29,8 @@ const Addons = () => {
         const handleFilterCategory = () => {
             if (addonsData) {
                 const uniqueCategories = addonsData
-                    .map(addon => addon.category)
-                    .filter((category, index, array) => array.indexOf(category) === index);
-
+                    ?.map((addon: any) => addon.category)
+                    ?.filter((category: string, index: any, array: any) => array.indexOf(category) === index);
                 console.log('Unique Categories:', uniqueCategories);
                 setAllCategory(uniqueCategories);
             }
@@ -52,7 +54,7 @@ const Addons = () => {
     // setAddonsAddBtnModal
     const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
 
-    useEffect(() => {
+    /* useEffect(() => {
         const fetchData = async () => {
             try {
                 const res = await fetch(`${API_ENDPOINT}addOns`);
@@ -68,7 +70,7 @@ const Addons = () => {
 
         fetchData();
     }, []);
-
+ */
 
     // theme functionality
     useEffect(() => {

@@ -13,6 +13,8 @@ import { useAuth } from '@/contexts/authContext';
 import { API_ENDPOINT } from '@/config';
 import Swal from 'sweetalert2';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import useDateFormat from '@/hooks/useDateFormat';
+
 
 interface FormData {
     content_type: string;
@@ -68,6 +70,29 @@ const BookNow = () => {
         dispatch(setPageTitle('Client Dashboard'));
     });
 
+
+    // formatted date time 
+    /*  const formatDateAndTimes = (inputDateTime:any) => {
+         // const formattedStartDateTime = useDateFormat(inputDateTime);
+         // console.log("🚀 ~ BookNow ~ formattedStartDateTime:", formattedStartDateTime?.time, "Date:", formattedStartDateTime?.date)
+         // const formattedEndDateTime = useDateFormat(endDateTime);
+         // console.log("🚀 ~ BookNow ~ formattedEndDateTime:", formattedEndDateTime);
+ 
+         // eslint-disable-next-line react-hooks/rules-of-hooks
+         const formattedStartDateTime = useDateFormat(inputDateTime);
+         console.log("input-date", formattedStartDateTime);
+         return inputDateTime;
+ 
+     } */
+
+    console.log(dateTimes);
+
+    /*  const formatDateAndTime = (inputDateTime: any) => {
+         dateTimes?.map()
+         const formatedEnd_date_time = useDateFormat(inputDateTime);
+         return formatedEnd_date_time;
+     } */
+
     useEffect(() => {
         const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')!) || [];
         setDateTimes(storedDateTimes);
@@ -77,6 +102,7 @@ const BookNow = () => {
         const s_time = parseISO(e.target.value);
         const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         setStartDateTime(starting_date);
+        // console.log("🚀 ~ handleChangeStartDateTime ~ starting_date:", starting_date)
     };
 
     const handleChangeEndDateTime = (e: ChangeEvent<HTMLInputElement>) => {
@@ -89,8 +115,27 @@ const BookNow = () => {
         const startDateTime = parseISO(start_date_time);
         const endDateTime = parseISO(end_date_time);
         const durationInHours = differenceInHours(endDateTime, startDateTime);
+        // console.log(durationInHours);
+        /* 
+            let days = 0;
+            let remainingHours = 0;
+            if (durationInHours > 24) {
+                days = Math.floor(durationInHours / 24);
+                remainingHours = durationInHours % 24;
+            } else {
+                remainingHours = durationInHours;
+            }
+            console.log(`Days: ${days}, Hours: ${remainingHours}`);
+            return {
+                days,
+                hours: remainingHours,
+            }; 
+        */
         return durationInHours;
     };
+
+    /* const duration = calculateDuration('2024-3-17T15:14:00.000', '2024-07-17T13:30:00');
+    console.log(duration); */
 
     const handleChangeMinBudget = (e: any) => {
         const value = e.target.value;
@@ -142,88 +187,88 @@ const BookNow = () => {
         setIsMounted(true);
     });
 
-    // const onSubmit = async (data: any) => {
-    //     if (data.content_type == false) {
-    //         coloredToast('danger', 'Please select shoot type!');
-    //     } else if (data.content_vertical == '') {
-    //         coloredToast('danger', 'Please select category!');
-    //     } else if (localStorage.getItem('location') == null) {
-    //         coloredToast('danger', 'Please enter your location!');
-    //     } else if (JSON.parse(showDateTimes) == '') {
-    //         coloredToast('danger', 'Please select date time!');
-    //     } else if (parseFloat(data.min_budget) < 1000 && parseFloat(data.max_budget) < 1000) {
-    //         coloredToast('danger', 'Please select your budget!');
-    //     } else if (parseFloat(data.max_budget) < 1000) {
-    //         coloredToast('danger', 'The maximum budget must be greater than $1000!');
-    //     } else if (parseFloat(data.max_budget) < parseFloat(data.min_budget)) {
-    //         coloredToast('danger', 'The maximum budget must be greater than the minimum budget!');
-    //     } else if (data.description == '') {
-    //         coloredToast('danger', 'Please write your special note!');
-    //     } else if (
-    //         data.content_type == false ||
-    //         data.content_vertical == '' ||
-    //         localStorage.getItem('location') == null ||
-    //         JSON.parse(showDateTimes) == '' ||
-    //         parseFloat(data.max_budget) < 1000 ||
-    //         parseFloat(data.max_budget) < parseFloat(data.min_budget) ||
-    //         data.description == ''
-    //     ) {
-    //         coloredToast('danger', 'Please select all fileds!');
-    //     }
-    //     else {
-    //         try {
-    //             // Format your data as needed
-    //             const formattedData = {
-    //                 budget: {
-    //                     max: parseFloat(data.max_budget),
-    //                     min: parseFloat(data.min_budget),
-    //                 },
-    //                 client_id: userData.id,
-    //                 content_type: data.content_type,
-    //                 content_vertical: data.content_vertical,
-    //                 description: data.description,
-    //                 location: localStorage.getItem('location'),
-    //                 order_name: data.order_name,
-    //                 references: data.references,
-    //                 shoot_datetimes: JSON.parse(showDateTimes),
-    //                 geo_location: {
-    //                     coordinates: [parseFloat(localStorage.getItem('longitude') || '0'), parseFloat(localStorage.getItem('latitude') || '0')],
-    //                     type: 'Point',
-    //                 },
-    //                 shoot_duration: parseFloat(localStorage.getItem('totalDuration') || '0'),
-    //             };
-    //             console.log("🚀 ~ onSubmit ~ formattedData:", formattedData);
-
-    //            /*  // Send a POST request
-    //             const response = await fetch(`${API_ENDPOINT}orders`, {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                     // Add any other headers your API requires
-    //                 },
-    //                 body: JSON.stringify(formattedData),
-    //             });
-
-    //             console.log('RESPOMSE', response.ok);
-    //             if (response.ok) {
-    //                 const responseData = await response.json();
-    //                 console.log('POST request successful!', responseData);
-    //                 coloredToast('success', 'Form submitted!');
-    //                 setActiveTab3(activeTab3 === 1 ? 2 : 3);
-    //                 // Handle success if needed
-    //             } else {
-    //                 console.error('Error:', response.statusText);
-    //                 // Handle errors
-    //                 console.log('FORM DATA', formattedData);
-    //             } */
-    //         } catch (error) {
-    //             coloredToast('danger', 'error');
-    //         }
-    //     }
-    // };
-
-
     const onSubmit = async (data: any) => {
+        if (data.content_type == false) {
+            coloredToast('danger', 'Please select shoot type!');
+        } else if (data.content_vertical == '') {
+            coloredToast('danger', 'Please select category!');
+        } else if (localStorage.getItem('location') == null) {
+            coloredToast('danger', 'Please enter your location!');
+        } else if (JSON.parse(showDateTimes) == '') {
+            coloredToast('danger', 'Please select date time!');
+        } else if (parseFloat(data.min_budget) < 1000 && parseFloat(data.max_budget) < 1000) {
+            coloredToast('danger', 'Please select your budget!');
+        } else if (parseFloat(data.max_budget) < 1000) {
+            coloredToast('danger', 'The maximum budget must be greater than $1000!');
+        } else if (parseFloat(data.max_budget) < parseFloat(data.min_budget)) {
+            coloredToast('danger', 'The maximum budget must be greater than the minimum budget!');
+        } else if (data.description == '') {
+            coloredToast('danger', 'Please write your special note!');
+        } else if (
+            data.content_type == false ||
+            data.content_vertical == '' ||
+            localStorage.getItem('location') == null ||
+            JSON.parse(showDateTimes) == '' ||
+            parseFloat(data.max_budget) < 1000 ||
+            parseFloat(data.max_budget) < parseFloat(data.min_budget) ||
+            data.description == ''
+        ) {
+            coloredToast('danger', 'Please select all fileds!');
+        }
+        else {
+            try {
+                // Format your data as needed
+                const formattedData = {
+                    budget: {
+                        max: parseFloat(data.max_budget),
+                        min: parseFloat(data.min_budget),
+                    },
+                    client_id: userData.id,
+                    content_type: data.content_type,
+                    content_vertical: data.content_vertical,
+                    description: data.description,
+                    location: localStorage.getItem('location'),
+                    order_name: data.order_name,
+                    references: data.references,
+                    shoot_datetimes: JSON.parse(showDateTimes),
+                    geo_location: {
+                        coordinates: [parseFloat(localStorage.getItem('longitude') || '0'), parseFloat(localStorage.getItem('latitude') || '0')],
+                        type: 'Point',
+                    },
+                    shoot_duration: parseFloat(localStorage.getItem('totalDuration') || '0'),
+                };
+                console.log("🚀 ~ onSubmit ~ formattedData:", formattedData);
+
+                /*  // Send a POST request
+                 const response = await fetch(`${API_ENDPOINT}orders`, {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         // Add any other headers your API requires
+                     },
+                     body: JSON.stringify(formattedData),
+                 });
+ 
+                 console.log('RESPOMSE', response.ok);
+                 if (response.ok) {
+                     const responseData = await response.json();
+                     console.log('POST request successful!', responseData);
+                     coloredToast('success', 'Form submitted!');
+                     setActiveTab3(activeTab3 === 1 ? 2 : 3);
+                     // Handle success if needed
+                 } else {
+                     console.error('Error:', response.statusText);
+                     // Handle errors
+                     console.log('FORM DATA', formattedData);
+                 } */
+            } catch (error) {
+                coloredToast('danger', 'error');
+            }
+        }
+    };
+
+
+    /* const onSubmit = async (data: any) => {
         if (data.content_type == false) {
             coloredToast('danger', 'Please select content type!');
         }
@@ -257,7 +302,7 @@ const BookNow = () => {
                 coloredToast('danger', 'error');
             }
         }
-    };
+    }; */
 
     // Toast
     const coloredToast = (color: any, message: string) => {
@@ -381,6 +426,11 @@ const BookNow = () => {
         },
     ];
 
+    /* 
+      const [isChecked, setIsChecked] = useState(false);
+      const [searchAddons, setSearchAddons] = useState({});
+   */
+
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -414,14 +464,23 @@ const BookNow = () => {
                                                         {/* Video */}
                                                         <div className="mb-2">
                                                             <label className="flex items-center">
-                                                                <input type="checkbox" className="form-checkbox" defaultValue="video" id="videoShootType" {...register('content_type')} />
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="form-checkbox"
+                                                                    defaultValue="video" id="videoShootType"
+                                                                    {...register('content_type', { required: `Select a Content-type` })}
+
+                                                                />
                                                                 <span className="text-white-dark">Video</span>
                                                             </label>
                                                         </div>
                                                         {/* Photo */}
                                                         <div className="mb-2">
                                                             <label className="flex items-center">
-                                                                <input type="checkbox" className="form-checkbox" defaultValue="photo" id="photoShootType" {...register('content_type')} />
+                                                                <input type="checkbox" className="form-checkbox" defaultValue="photo"
+                                                                    id="photoShootType"
+                                                                    {...register('content_type')}
+                                                                />
                                                                 <span className="text-white-dark">Photo</span>
                                                             </label>
                                                         </div>
@@ -434,8 +493,13 @@ const BookNow = () => {
                                                         Category
                                                         {/* content vertical */}
                                                     </label>
-                                                    <select className="form-select text-white-dark" id="content_vertical" defaultValue="Business" {...register('content_vertical')}>
-                                                        <option value="">Select Category</option>
+                                                    <select
+                                                        className="form-select text-white-dark"
+                                                        id="content_vertical"
+                                                        defaultValue="selectCategory"
+                                                        {...register('content_vertical')}
+                                                    >
+                                                        <option value="SelectCategory">Select Category</option>
                                                         <option value="Business">Business</option>
                                                         <option value="Personal">Personal</option>
                                                         <option value="Wedding">Wedding</option>
@@ -471,25 +535,29 @@ const BookNow = () => {
                                                             <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                                                 Starting Date
                                                             </label>
-                                                            <input id="start_date_time" type="datetime-local" className="form-input" onChange={handleChangeStartDateTime} />
+                                                            <input id="start_date_time" type="datetime-local" className="form-input" onChange={handleChangeStartDateTime} required />
                                                             {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                                                         </div>
 
                                                         {/* Ending Date and Time */}
                                                         <div className="flex basis-[45%] flex-col sm:flex-row">
-                                                            <label htmlFor="end_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                                            <label
+                                                                htmlFor="end_date_time"
+                                                                className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2"
+                                                            >
                                                                 Ending Date
                                                             </label>
-                                                            <input id="end_date_time" type="datetime-local" className="form-input" onChange={handleChangeEndDateTime} />
+                                                            <input id="end_date_time"
+                                                                type="datetime-local"
+                                                                className="form-input"
+                                                                onChange={handleChangeEndDateTime}
+                                                                onBlur={addDateTime}
+                                                                required
+                                                            />
                                                             {errors.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                                                         </div>
+
                                                     </div>
-                                                    <button type="button" id="dateTimeBtn" className="btn btn-success ml-auto mt-5"
-                                                        // onClick={addDateTime}
-                                                        onBlur={addDateTime}
-                                                    >
-                                                        Add
-                                                    </button>
 
                                                     {/* DateTime Output Table */}
                                                     <div className="my-5">
@@ -506,9 +574,15 @@ const BookNow = () => {
                                                                 {dateTimes.map((dateTime: FormData, index) => (
                                                                     <tr key={index}>
                                                                         <td>{index + 1}</td>
-                                                                        <td>{dateTime.start_date_time}</td>
-                                                                        <td>{dateTime.end_date_time}</td>
-                                                                        <td>{calculateDuration(dateTime.start_date_time, dateTime.end_date_time)} Hour</td>
+                                                                        {/* <td>{formattedStartDateTime?.time}</td> */}
+                                                                        <td>{dateTime?.start_date_time}</td>
+                                                                        <td>{dateTime?.end_date_time} </td>
+                                                                        {/* <td>{dateTime?.end_date_time}</td>
+                                                                        <td>{calculateDuration(dateTime?.start_date_time, dateTime?.end_date_time)} Hour</td> */}
+                                                                        {/* <td>{useDateFormat(dateTime.end_date_time)}</td> */}
+                                                                        <td>{calculateDuration(dateTime.start_date_time, dateTime.end_date_time)} Hour
+                                                                        </td>
+
                                                                     </tr>
                                                                 ))}
                                                             </tbody>
@@ -560,6 +634,53 @@ const BookNow = () => {
                                     <div className="mb-5">
                                         {activeTab3 === 2 && (
                                             <div>
+
+                                                <div
+                                                    className='mb-5 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-7 pb-7 pt-4'
+                                                >
+                                                    {/* <select
+                                                        className="form-select text-white-dark w-56 md:w-64"
+                                                        id="content_vertical"
+                                                        defaultValue="selectCategory"
+                                                        {...register('content_vertical')}
+                                                    >
+                                                        <option value="SelectCategory">Select Required Addons</option>
+                                                        <option value="Business">Business</option>
+                                                        <option value="Personal">Personal</option>
+                                                        <option value="Wedding">Wedding</option>
+                                                    </select> */}
+
+                                                    <div className="flex basis-[45%] flex-col sm:flex-row">
+                                                        <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Select Addons</label>
+                                                        <div className="flex-1">
+                                                            {/* Video */}
+                                                            <div className="mb-2">
+                                                                <label className="flex items-center">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="form-checkbox"
+                                                                        defaultValue="video" id="videoShootType"
+                                                                        {...register('addOns', { required: `Select a addOns` })}
+
+                                                                    />
+                                                                    <span className="text-white-dark">Video</span>
+                                                                </label>
+                                                            </div>
+                                                            {/* Photo */}
+                                                            <div className="mb-2">
+                                                                <label className="flex items-center">
+                                                                    <input type="checkbox" className="form-checkbox" defaultValue="photo"
+                                                                        id="photoShootType"
+                                                                        {...register('addOns')}
+                                                                    />
+                                                                    <span className="text-white-dark">Photo</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
                                                 <h2 className="mb-[30px] font-mono text-[24px] capitalize text-black">matching producer</h2>
 
                                                 <div className="mb-[30px]">
@@ -757,71 +878,32 @@ const BookNow = () => {
                                         )}
                                     </div>
 
-                                    <div className="mb-5">
-                                        {activeTab3 === 3 && (
-                                            <div className="h-full">
-                                                <div className="mb-5 flex items-center">
-                                                    <h5 className="text-lg font-semibold dark:text-white-light">Cost Breakdown</h5>
-                                                </div>
-                                                <div>
-                                                    <div className="rounded-lg bg-white dark:bg-black">
-                                                        {isMounted ? (
-                                                            <ReactApexChart series={costingssByCategory.series} options={costingssByCategory.options} type="donut" height={460} width={'100%'} />
-                                                        ) : (
-                                                            <div className="grid min-h-[325px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] ">
-                                                                <span className="inline-flex h-5 w-5 animate-spin rounded-full  border-2 border-black !border-l-transparent dark:border-white"></span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
 
-                                                <div className="panel mt-5">
-                                                    <div className="table-responsive mb-5">
-                                                        <table>
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Indicator</th>
-                                                                    <th>Costings</th>
-                                                                    <th className="text-center">Price</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {tableData.map((data) => {
-                                                                    return (
-                                                                        <tr key={data.id}>
-                                                                            <td>
-                                                                                <div
-                                                                                    className={`whitespace-nowrap ${data.indicator === 1
-                                                                                        ? 'h-3 w-3 bg-success text-success'
-                                                                                        : data.indicator === 2
-                                                                                            ? 'h-3 w-3 bg-secondary'
-                                                                                            : data.indicator === 3
-                                                                                                ? 'h-3 w-3 bg-info'
-                                                                                                : 'h-3 w-3 bg-success'
-                                                                                        }`}
-                                                                                ></div>
-                                                                            </td>
-                                                                            <td>{data.costings}</td>
-                                                                            <td className="text-center">${data.price}</td>
-                                                                        </tr>
-                                                                    );
-                                                                })}
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+
+
                                 </div>
                                 <div className="flex justify-between">
-                                    <button type="button" className={`btn btn-warning font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}>
+                                    <span className={`btn btn-outline-dark h-10  border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}>
                                         Back
-                                    </button>
-                                    <button type="submit" className="btn btn-warning font-sans ltr:ml-auto rtl:mr-auto capitalize" onClick={() => setActiveTab3(2)}>
-                                        {/* {activeTab3 === 3 ? 'Finish' : activeTab3 === 2 ? 'Place Order' : 'Next'} */}
-                                        next
-                                    </button>
+                                    </span>
+                                    <span className=" font-sans ltr:ml-auto rtl:mr-auto capitalize" onClick={() => setActiveTab3(2)}>
+                                        {
+                                            activeTab3 === 2 ? <button
+                                                type='submit'
+                                                className='btn btn-outline-dark h-10 w-36 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l'
+                                            >
+                                                Place Order
+                                            </button>
+                                                :
+                                                activeTab3 === 1 &&
+                                                <span
+                                                    // type='submit'
+                                                    className='btn btn-outline-dark h-10 w-28 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l cursor-pointer'
+                                                >
+                                                    Next
+                                                </span>
+                                        }
+                                    </span>
                                 </div>
                             </form>
                         </div>
