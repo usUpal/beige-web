@@ -157,5 +157,6 @@ declare global {
     status: boolean;
     category: string;
     info: string
+    
   }
 }

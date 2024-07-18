@@ -9,9 +9,11 @@ import { useForm } from 'react-hook-form';
 import useAddons from '@/hooks/useAddons';
 
 const Addons = () => {
+    const [addonsData, setAddonsData, addonsCategories, handleFilterCategory] = useAddons();
+
 
     // const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
-    const [addonsData, setAddonsData] = useAddons();
+    // const [addonsData, setAddonsData] = useAddons();
 
     const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
     const [addonsModal, setAddonsModal] = useState(false);
@@ -23,6 +25,8 @@ const Addons = () => {
     const [newCategory, setNewCategory] = useState('');
     const dispatch = useDispatch();
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+
 
 
     useEffect(() => {

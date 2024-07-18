@@ -14,6 +14,7 @@ import { API_ENDPOINT } from '@/config';
 import Swal from 'sweetalert2';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
+import useAddons from '@/hooks/useAddons';
 
 
 interface FormData {
@@ -56,6 +57,9 @@ const BookNow = () => {
     ]);
     const { userData } = useAuth() as any;
 
+    // store form one data
+    const [submitFormData, setSibmitFormData] = useState([]);
+
     const {
         register,
         handleSubmit,
@@ -85,7 +89,7 @@ const BookNow = () => {
  
      } */
 
-    console.log(dateTimes);
+    // console.log(dateTimes);
 
     /*  const formatDateAndTime = (inputDateTime: any) => {
          dateTimes?.map()
@@ -185,96 +189,18 @@ const BookNow = () => {
 
     useEffect(() => {
         setIsMounted(true);
-    });
+        // handleFilterCategory();
+    }, []);
+
+    // storing form one's data to this
+    const [formDataPageOne, setFormDataPageOne] = useState({});
 
     const onSubmit = async (data: any) => {
-        if (data.content_type == false) {
-            coloredToast('danger', 'Please select shoot type!');
-        } else if (data.content_vertical == '') {
-            coloredToast('danger', 'Please select category!');
-        } else if (localStorage.getItem('location') == null) {
-            coloredToast('danger', 'Please enter your location!');
-        } else if (JSON.parse(showDateTimes) == '') {
-            coloredToast('danger', 'Please select date time!');
-        } else if (parseFloat(data.min_budget) < 1000 && parseFloat(data.max_budget) < 1000) {
-            coloredToast('danger', 'Please select your budget!');
-        } else if (parseFloat(data.max_budget) < 1000) {
-            coloredToast('danger', 'The maximum budget must be greater than $1000!');
-        } else if (parseFloat(data.max_budget) < parseFloat(data.min_budget)) {
-            coloredToast('danger', 'The maximum budget must be greater than the minimum budget!');
-        } else if (data.description == '') {
-            coloredToast('danger', 'Please write your special note!');
-        } else if (
-            data.content_type == false ||
-            data.content_vertical == '' ||
-            localStorage.getItem('location') == null ||
-            JSON.parse(showDateTimes) == '' ||
-            parseFloat(data.max_budget) < 1000 ||
-            parseFloat(data.max_budget) < parseFloat(data.min_budget) ||
-            data.description == ''
-        ) {
-            coloredToast('danger', 'Please select all fileds!');
-        }
-        else {
-            try {
-                // Format your data as needed
-                const formattedData = {
-                    budget: {
-                        max: parseFloat(data.max_budget),
-                        min: parseFloat(data.min_budget),
-                    },
-                    client_id: userData.id,
-                    content_type: data.content_type,
-                    content_vertical: data.content_vertical,
-                    description: data.description,
-                    location: localStorage.getItem('location'),
-                    order_name: data.order_name,
-                    references: data.references,
-                    shoot_datetimes: JSON.parse(showDateTimes),
-                    geo_location: {
-                        coordinates: [parseFloat(localStorage.getItem('longitude') || '0'), parseFloat(localStorage.getItem('latitude') || '0')],
-                        type: 'Point',
-                    },
-                    shoot_duration: parseFloat(localStorage.getItem('totalDuration') || '0'),
-                };
-                console.log("🚀 ~ onSubmit ~ formattedData:", formattedData);
-
-                /*  // Send a POST request
-                 const response = await fetch(`${API_ENDPOINT}orders`, {
-                     method: 'POST',
-                     headers: {
-                         'Content-Type': 'application/json',
-                         // Add any other headers your API requires
-                     },
-                     body: JSON.stringify(formattedData),
-                 });
- 
-                 console.log('RESPOMSE', response.ok);
-                 if (response.ok) {
-                     const responseData = await response.json();
-                     console.log('POST request successful!', responseData);
-                     coloredToast('success', 'Form submitted!');
-                     setActiveTab3(activeTab3 === 1 ? 2 : 3);
-                     // Handle success if needed
-                 } else {
-                     console.error('Error:', response.statusText);
-                     // Handle errors
-                     console.log('FORM DATA', formattedData);
-                 } */
-            } catch (error) {
-                coloredToast('danger', 'error');
-            }
-        }
-    };
-
-
-    /* const onSubmit = async (data: any) => {
         if (data.content_type == false) {
             coloredToast('danger', 'Please select content type!');
         }
         else {
             try {
-                // Format your data as needed
                 const formattedData = {
                     budget: {
                         max: parseFloat(data.max_budget),
@@ -283,7 +209,6 @@ const BookNow = () => {
                     client_id: userData.id,
                     content_type: data.content_type,
                     content_vertical: data.content_vertical,
-                    vst: data.vst,
                     description: data.description,
                     location: localStorage.getItem('location'),
                     order_name: data.order_name,
@@ -296,13 +221,16 @@ const BookNow = () => {
                     shoot_duration: getTotalDuration,
                 };
                 console.log("🚀 ~ onSubmit ~ formattedData:", formattedData);
+                setFormDataPageOne(formattedData);
                 reset();
 
             } catch (error) {
                 coloredToast('danger', 'error');
             }
         }
-    }; */
+    };
+
+    console.log("🚀 ~ BookNow ~ formDataPageOne:", formDataPageOne)
 
     // Toast
     const coloredToast = (color: any, message: string) => {
@@ -426,10 +354,12 @@ const BookNow = () => {
         },
     ];
 
-    /* 
-      const [isChecked, setIsChecked] = useState(false);
-      const [searchAddons, setSearchAddons] = useState({});
-   */
+    // all addons show
+    const [addonsData, setAddonsData, addonsCategories] = useAddons();
+
+    // console.log("🚀 ~~~~~~~~ :", addonsCategories);
+    // console.log(addonsData);
+
 
     return (
         <div>
@@ -628,6 +558,8 @@ const BookNow = () => {
                                                     <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
                                                 </div>
                                             </div>
+
+
                                         </>
                                     )}
 
@@ -659,21 +591,11 @@ const BookNow = () => {
                                                                     <input
                                                                         type="checkbox"
                                                                         className="form-checkbox"
-                                                                        defaultValue="video" id="videoShootType"
-                                                                        {...register('addOns', { required: `Select a addOns` })}
-
+                                                                        defaultValue="video"
+                                                                        id="videoAddons"
+                                                                        {...register("video", { required: `Select a addOns` })}
                                                                     />
                                                                     <span className="text-white-dark">Video</span>
-                                                                </label>
-                                                            </div>
-                                                            {/* Photo */}
-                                                            <div className="mb-2">
-                                                                <label className="flex items-center">
-                                                                    <input type="checkbox" className="form-checkbox" defaultValue="photo"
-                                                                        id="photoShootType"
-                                                                        {...register('addOns')}
-                                                                    />
-                                                                    <span className="text-white-dark">Photo</span>
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -762,131 +684,22 @@ const BookNow = () => {
                                                             </Link>
                                                         </div>
                                                     </div>
-
-                                                    {/* match single */}
-                                                    <div className="single-match  mb-5 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-7 pb-7 pt-4">
-                                                        <div className="flex items-start justify-start">
-                                                            <div className="media">
-                                                                <img src="assets/images/producer-profile.png" alt="profile" className="mr-3 rounded-full" />
-                                                                <span></span>
-                                                            </div>
-                                                            <div className="content">
-                                                                <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                                <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-                                                                <div className="location mt-2 flex items-center justify-start">
-                                                                    <img src="assets/images/location.svg" alt="location" className="mr-1" />
-                                                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
-                                                                </div>
-                                                                <div className="ratings mt-2">
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="mt-[30px]">
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                    view profile
-                                                                </span>
-                                                            </Link>
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                                                    select
-                                                                </span>
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* match single */}
-                                                    <div className="single-match  mb-5 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-7 pb-7 pt-4">
-                                                        <div className="flex items-start justify-start">
-                                                            <div className="media">
-                                                                <img src="assets/images/producer-profile.png" alt="profile" className="mr-3 rounded-full" />
-                                                                <span></span>
-                                                            </div>
-                                                            <div className="content">
-                                                                <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                                <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-                                                                <div className="location mt-2 flex items-center justify-start">
-                                                                    <img src="assets/images/location.svg" alt="location" className="mr-1" />
-                                                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
-                                                                </div>
-                                                                <div className="ratings mt-2">
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="mt-[30px]">
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                    view profile
-                                                                </span>
-                                                            </Link>
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                                                    select
-                                                                </span>
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* match single */}
-                                                    <div className="single-match  mb-5 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-7 pb-7 pt-4">
-                                                        <div className="flex items-start justify-start">
-                                                            <div className="media">
-                                                                <img src="assets/images/producer-profile.png" alt="profile" className="mr-3 rounded-full" />
-                                                                <span></span>
-                                                            </div>
-                                                            <div className="content">
-                                                                <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                                <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-                                                                <div className="location mt-2 flex items-center justify-start">
-                                                                    <img src="assets/images/location.svg" alt="location" className="mr-1" />
-                                                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
-                                                                </div>
-                                                                <div className="ratings mt-2">
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="mt-[30px]">
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                    view profile
-                                                                </span>
-                                                            </Link>
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                                                    select
-                                                                </span>
-                                                            </Link>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
                                         )}
                                     </div>
-
-
-
-
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className={`btn btn-outline-dark h-10  border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}>
+                                {/* <div className="flex justify-between">
+                                    <span
+                                        className={`btn btn-outline-dark h-10  border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab3 === 1 ? 'hidden' : ''}`}
+                                        onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}
+                                    >
                                         Back
                                     </span>
-                                    <span className=" font-sans ltr:ml-auto rtl:mr-auto capitalize" onClick={() => setActiveTab3(2)}>
+                                    <span
+                                        className=" font-sans ltr:ml-auto rtl:mr-auto capitalize"
+                                        
+                                    >
                                         {
                                             activeTab3 === 2 ? <button
                                                 type='submit'
@@ -904,6 +717,46 @@ const BookNow = () => {
                                                 </span>
                                         }
                                     </span>
+                                </div> */}
+
+                                {/* <div className="flex justify-between">
+                                    <span
+                                        className={`btn btn-outline-dark h-10  border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab3 === 1 ? 'hidden' : ''}`}
+                                        onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}
+                                    >
+                                        Back
+                                    </span>
+                                    <span
+                                        className=" font-sans ltr:ml-auto rtl:mr-auto capitalize"
+
+                                    >
+                                        {
+                                            activeTab3 === 2 ? <button
+                                                type='submit'
+                                                className='btn btn-outline-dark h-10 w-36 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l'
+                                            >
+                                                Place Order
+                                            </button>
+                                                :
+                                                activeTab3 === 1 &&
+                                                <button
+                                                    type='submit'
+                                                    className='btn btn-outline-dark h-10 w-28 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l cursor-pointer'
+                                                    // onClick={() => setActiveTab3(activeTab3 === 1 ? 2 : 1)}
+                                                >
+                                                    Next
+                                                </button>
+                                        }
+                                    </span>
+                                </div> */}
+
+                                <div className="flex justify-between">
+                                    <button type="button" className={`btn btn-warning font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}>
+                                        Back
+                                    </button>
+                                    <button type="submit" className="btn btn-warning font-sans ltr:ml-auto rtl:mr-auto" >
+                                        {activeTab3 === 3 ? 'Finish' : activeTab3 === 2 ? 'Place Order' : 'Next'}
+                                    </button>
                                 </div>
                             </form>
                         </div>
