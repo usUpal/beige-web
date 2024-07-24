@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import useAddons from '@/hooks/useAddons';
+import { Span } from 'next/dist/trace';
 
 
 interface FormData {
@@ -56,9 +57,6 @@ const BookNow = () => {
         },
     ]);
     const { userData } = useAuth() as any;
-
-    // store form one data
-    const [submitFormData, setSibmitFormData] = useState([]);
 
     const {
         register,
@@ -194,6 +192,10 @@ const BookNow = () => {
 
     // storing form one's data to this
     const [formDataPageOne, setFormDataPageOne] = useState({});
+    // console.log("🚀 ~ BookNow ~ formDataPageOne:", formDataPageOne)
+
+    // go to next
+    const [isNext, setIsNext] = useState(false);
 
     const onSubmit = async (data: any) => {
         if (data.content_type == false) {
@@ -220,17 +222,20 @@ const BookNow = () => {
                     },
                     shoot_duration: getTotalDuration,
                 };
-                console.log("🚀 ~ onSubmit ~ formattedData:", formattedData);
-                setFormDataPageOne(formattedData);
-                reset();
+                if (Object.keys(formattedData).length > 0) {
+                    setFormDataPageOne(formattedData);
+                    handleToggleNext('nextBtn');
+                    setIsNext(true);
+                    reset();
+                } else {
+                    return false;
+                }
 
             } catch (error) {
                 coloredToast('danger', 'error');
             }
         }
     };
-
-    console.log("🚀 ~ BookNow ~ formDataPageOne:", formDataPageOne)
 
     // Toast
     const coloredToast = (color: any, message: string) => {
@@ -354,12 +359,122 @@ const BookNow = () => {
         },
     ];
 
+
+
+    // console.log("🚀 ~ BookNow ~ formDataPageOne:", formDataPageOne);
+
+    const handleToggleNext = (input: string) => {
+        // console.log("🚀 ~ BookNow ~ formDataPageOne:", formDataPageOne, input);
+        setActiveTab3(activeTab3 === 1 && 2);
+    }
+
     // all addons show
     const [addonsData, setAddonsData, addonsCategories] = useAddons();
+    const [filteredAddonsData, setFilteredAddonsData] = useState([]);
 
-    // console.log("🚀 ~~~~~~~~ :", addonsCategories);
-    // console.log(addonsData);
 
+    const handleShowAddonsData = () => {
+        // const addonsOptions = addonsData?.map((addons: any) => console.log(addons))
+        let shoot_type = 'Wedding';
+        // let shoot_type = formDataPageOne?.content_vertical;
+        const photography = formDataPageOne?.content_type?.includes('photo');
+        // const photography = "photo";
+        const videography = formDataPageOne?.content_type?.includes('video');
+        // const videography = false;
+        const photoAndVideoShootType = formDataPageOne?.content_type?.includes('photo') && formDataPageOne?.content_type?.includes('video');
+        // const photoAndVideoShootType = false;
+
+        let categories: any = [];
+        if (shoot_type === 'Wedding') {
+            if (photography && !photoAndVideoShootType) {
+                categories = ['Wedding Photography'];
+            } else if (videography && !photoAndVideoShootType) {
+                categories = ['Wedding Videography'];
+            } else if (photoAndVideoShootType) {
+                categories = ['Wedding Photography', 'Wedding Videography'];
+            }
+        } else if (shoot_type === 'Commercial') {
+            if (photography && !photoAndVideoShootType) {
+                categories = ['Commercial Photo'];
+            } else if (videography && !photoAndVideoShootType) {
+                categories = ['Commercial Video'];
+            } else if (photoAndVideoShootType) {
+                categories = ['Commercial Photo', 'Commercial Video'];
+            }
+        } else if (shoot_type === 'Corporate') {
+            if (photography && !photoAndVideoShootType) {
+                categories = ['Corporate Photography'];
+            } else if (videography && !photoAndVideoShootType) {
+                categories = ['Corporate Event Videography'];
+            } else if (photoAndVideoShootType) {
+                categories = ['Corporate Photography', 'Corporate Event Videography'];
+            }
+        } else if (shoot_type === 'Private') {
+            if (photography && !photoAndVideoShootType) {
+                categories = ['Private Photography'];
+            } else if (videography && !photoAndVideoShootType) {
+                categories = ['Private Videography'];
+            } else if (photoAndVideoShootType) {
+                categories = ['Private Photography', 'Private Videography'];
+            }
+        } else if (shoot_type === 'Music') {
+            if (photography && !photoAndVideoShootType) {
+                categories = ['Music Photography'];
+            } else if (videography && !photoAndVideoShootType) {
+                categories = ['Music Video'];
+            } else if (photoAndVideoShootType) {
+                categories = ['Music Photography', 'Music Video'];
+            }
+        } else if (shoot_type === 'Other') {
+            if (photography && !photoAndVideoShootType) {
+                categories = ['Other Photography'];
+            } else if (videography && !photoAndVideoShootType) {
+                categories = ['Other Videography'];
+            } else if (photoAndVideoShootType) {
+                categories = ['Other Photography', 'Other Videography'];
+            }
+        }
+        if (categories.length > 0) {
+            const seen = new Set();
+            const uniqueAddOns = addonsData?.filter((addOn: any) => {
+                const isInCategory = categories.includes(addOn?.category);
+                const key = `${addOn.title}-${addOn.rate}`;
+                if (isInCategory && !seen.has(key)) {
+                    seen.add(key)
+                        ;
+                    return true;
+                }
+                return false;
+            });
+            // setAddOns(uniqueAddOns);
+            setFilteredAddonsData(uniqueAddOns);
+            // console.log(uniqueAddOns);
+        }
+    }
+    // console.log("-->", formDataPageOne?.content_vertical);
+
+    useEffect(() => {
+        if (formDataPageOne?.content_type?.length !== 0) {
+            handleShowAddonsData();
+        }
+    }, [formDataPageOne?.content_type?.length])
+
+
+    // select unselect steps -- form the checkbox
+    // const [selectedAddons, setSelectedAddons] = useState([]);
+    // console.log("🚀🚀🚀🚀🚀🚀🚀 ~ BookNow ~ selectedTypes:", selectedTypes);
+    // filteredAddonsData
+    const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
+    // console.log("🚀 ~ BookNow ~ selectedFilteredAddons:", selectedFilteredAddons);
+
+    // Function to handle checkbox changes
+    const handleCheckboxChange = (addon: any) => {
+        // const { checked, value } = event.target;
+        setSelectedFilteredAddons([...selectedFilteredAddons, addon]);
+        console.log(addon);
+
+        setSelectedFilteredAddons(selectedFilteredAddons.filter(addons => console.log("del-addons-->", addons)))
+    };
 
     return (
         <div>
@@ -374,6 +489,8 @@ const BookNow = () => {
                 </li>
             </ul>
             <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
+                {/*  */}
+
                 {/* icon only */}
                 <div className="panel">
                     <div className="mb-5 flex items-center justify-between">
@@ -399,7 +516,6 @@ const BookNow = () => {
                                                                     className="form-checkbox"
                                                                     defaultValue="video" id="videoShootType"
                                                                     {...register('content_type', { required: `Select a Content-type` })}
-
                                                                 />
                                                                 <span className="text-white-dark">Video</span>
                                                             </label>
@@ -430,9 +546,12 @@ const BookNow = () => {
                                                         {...register('content_vertical')}
                                                     >
                                                         <option value="SelectCategory">Select Category</option>
-                                                        <option value="Business">Business</option>
+                                                        <option value="Commercial">Commercial</option>
+                                                        <option value="Corporate">Corporate</option>
+                                                        <option value="Music">Music</option>
                                                         <option value="Personal">Personal</option>
                                                         <option value="Wedding">Wedding</option>
+                                                        <option value="Other">Other</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -581,23 +700,30 @@ const BookNow = () => {
                                                         <option value="Personal">Personal</option>
                                                         <option value="Wedding">Wedding</option>
                                                     </select> */}
+                                                    {/* <div className='text-red-400' onClick={handleShowAddonsData}>CLick me</div> */}
 
                                                     <div className="flex basis-[45%] flex-col sm:flex-row">
                                                         <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Select Addons</label>
                                                         <div className="flex-1">
                                                             {/* Video */}
-                                                            <div className="mb-2">
-                                                                <label className="flex items-center">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        className="form-checkbox"
-                                                                        defaultValue="video"
-                                                                        id="videoAddons"
-                                                                        {...register("video", { required: `Select a addOns` })}
-                                                                    />
-                                                                    <span className="text-white-dark">Video</span>
-                                                                </label>
-                                                            </div>
+                                                            {filteredAddonsData.map((addon, index) => (
+                                                                <div className="mb-2" key={index}>
+                                                                    <label className="flex items-center">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="form-checkbox"
+                                                                            // name={`addon_${index}`}  
+                                                                            defaultValue={addon}
+                                                                            id={`addon_${index}`}
+                                                                            // {...register(`${addon.title}`, { required: `Select an addon` })}
+                                                                            onChange={() => handleCheckboxChange(addon)}
+
+                                                                        />
+                                                                        <span className="text-white-dark">{addon?.title}</span>
+                                                                    </label>
+                                                                </div>
+                                                            ))}
+
                                                         </div>
                                                     </div>
 
@@ -751,11 +877,17 @@ const BookNow = () => {
                                 </div> */}
 
                                 <div className="flex justify-between">
-                                    <button type="button" className={`btn btn-warning font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}>
+                                    <button type="button" className={`btn btn-warning font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 2 && 1)}>
                                         Back
                                     </button>
-                                    <button type="submit" className="btn btn-warning font-sans ltr:ml-auto rtl:mr-auto" >
-                                        {activeTab3 === 3 ? 'Finish' : activeTab3 === 2 ? 'Place Order' : 'Next'}
+                                    <button type="submit" className="btn btn-warning font-sans ltr:ml-auto rtl:mr-auto">
+                                        {activeTab3 === 2 ?
+                                            <span>Place Order</span>
+                                            :
+                                            <span
+                                            // onClick={() => handleToggleNext('nextBtn')}
+                                            >Next</span>
+                                        }
                                     </button>
                                 </div>
                             </form>
