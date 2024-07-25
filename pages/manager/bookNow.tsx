@@ -151,10 +151,6 @@ const BookNow = () => {
         }
     };
 
-    // localStorage.removeItem('location')
-    // localStorage.removeItem('latitude')
-    // localStorage.removeItem('longitude')
-
     const addDateTime = () => {
         const newDateTime: FormData = {
             start_date_time: startDateTime,
@@ -172,9 +168,25 @@ const BookNow = () => {
 
         logTotalDuration(newDateTimes);
         console.log(newDateTime);
-
-
     };
+
+    // time format convarsion
+    function convertToEnglishDateFormat(inputDateString: any) {
+        let date = new Date(inputDateString);
+
+        let months = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+
+        let year = date.getFullYear();
+        let month = date.getMonth();
+        let day = date.getDate();
+
+        let formattedDate = `${months[month]} ${day}, ${year}`;
+
+        return formattedDate;
+    }
+
+
 
     const logTotalDuration = (dateTimesArray: any[]) => {
         const totalDuration = dateTimesArray.reduce((acc, dateTime) => {
@@ -187,13 +199,10 @@ const BookNow = () => {
 
     useEffect(() => {
         setIsMounted(true);
-        // handleFilterCategory();
     }, []);
 
     // storing form one's data to this
     const [formDataPageOne, setFormDataPageOne] = useState({});
-    // console.log("🚀 ~ BookNow ~ formDataPageOne:", formDataPageOne)
-
     // go to next
     const [isNext, setIsNext] = useState(false);
 
@@ -224,13 +233,12 @@ const BookNow = () => {
                 };
                 if (Object.keys(formattedData).length > 0) {
                     setFormDataPageOne(formattedData);
-                    handleToggleNext('nextBtn');
+                    setActiveTab3(activeTab3 === 1 && 2);
                     setIsNext(true);
                     reset();
                 } else {
                     return false;
                 }
-
             } catch (error) {
                 coloredToast('danger', 'error');
             }
@@ -360,29 +368,16 @@ const BookNow = () => {
     ];
 
 
-
-    // console.log("🚀 ~ BookNow ~ formDataPageOne:", formDataPageOne);
-
-    const handleToggleNext = (input: string) => {
-        // console.log("🚀 ~ BookNow ~ formDataPageOne:", formDataPageOne, input);
-        setActiveTab3(activeTab3 === 1 && 2);
-    }
-
     // all addons show
     const [addonsData, setAddonsData, addonsCategories] = useAddons();
     const [filteredAddonsData, setFilteredAddonsData] = useState([]);
 
 
     const handleShowAddonsData = () => {
-        // const addonsOptions = addonsData?.map((addons: any) => console.log(addons))
-        let shoot_type = 'Wedding';
-        // let shoot_type = formDataPageOne?.content_vertical;
+        let shoot_type = formDataPageOne?.content_vertical;
         const photography = formDataPageOne?.content_type?.includes('photo');
-        // const photography = "photo";
         const videography = formDataPageOne?.content_type?.includes('video');
-        // const videography = false;
         const photoAndVideoShootType = formDataPageOne?.content_type?.includes('photo') && formDataPageOne?.content_type?.includes('video');
-        // const photoAndVideoShootType = false;
 
         let categories: any = [];
         if (shoot_type === 'Wedding') {
@@ -446,34 +441,69 @@ const BookNow = () => {
                 }
                 return false;
             });
-            // setAddOns(uniqueAddOns);
             setFilteredAddonsData(uniqueAddOns);
-            // console.log(uniqueAddOns);
         }
     }
-    // console.log("-->", formDataPageOne?.content_vertical);
 
     useEffect(() => {
-        if (formDataPageOne?.content_type?.length !== 0) {
+        if (formDataPageOne?.content_type?.length !== 0 && formDataPageOne?.content_vertical !== "") {
             handleShowAddonsData();
         }
     }, [formDataPageOne?.content_type?.length])
 
 
-    // select unselect steps -- form the checkbox
-    // const [selectedAddons, setSelectedAddons] = useState([]);
-    // console.log("🚀🚀🚀🚀🚀🚀🚀 ~ BookNow ~ selectedTypes:", selectedTypes);
-    // filteredAddonsData
+    // select unselect ADDONS -- steps -- form the checkbox
     const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
-    // console.log("🚀 ~ BookNow ~ selectedFilteredAddons:", selectedFilteredAddons);
+    console.log("🚀 ~ BookNow ~ selectedFilteredAddons:", selectedFilteredAddons);
+
+
+    // hours
+    const [hours, setHours] = useState(1);
+
+    const handleHours = (addon: any, hoursInput: number) => {
+        addon.hours = hoursInput;
+        setHours(addon?.hours);
+    }
 
     // Function to handle checkbox changes
     const handleCheckboxChange = (addon: any) => {
-        // const { checked, value } = event.target;
-        setSelectedFilteredAddons([...selectedFilteredAddons, addon]);
-        console.log(addon);
+        addon.hours = hours;
+        const isAddonSelected = selectedFilteredAddons.some((selectedAddon) => selectedAddon?._id === addon?._id);
+        if (!isAddonSelected) {
+            setSelectedFilteredAddons([...selectedFilteredAddons, addon]);
+        } else {
+            setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon) => selectedAddon?._id !== addon?._id));
+        }
+    };
 
-        setSelectedFilteredAddons(selectedFilteredAddons.filter(addons => console.log("del-addons-->", addons)))
+
+    /* const handleTotalRate = () => {
+        
+        const rate = 0;
+        let totalRate = selectedFilteredAddons.reduce((accumulator, currentValue) => {
+            let total = 0;
+            const hours = currentValue?.hours;
+            total = (total + currentValue?.rate) * hours;
+            return (total);
+        }, 0);
+
+        console.log("🚀 ~ totalRate ~ totalRate:", rate + totalRate);
+    } */
+
+    const [allRates, setAllRates] = useState([]);
+    const handleTotalRate = () => {
+        let totalRate = selectedFilteredAddons.reduce((accumulator, currentValue) => {
+
+            const hours = currentValue?.hours || 0;
+            const rate = currentValue?.rate || 0;
+
+            const addonTotal = rate * hours;
+
+            // return accumulator + addonTotal;
+            setAllRates(accumulator + addonTotal);
+        }, 0);
+
+        // console.log("Total Rate:", totalRate);
     };
 
     return (
@@ -489,8 +519,6 @@ const BookNow = () => {
                 </li>
             </ul>
             <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
-                {/*  */}
-
                 {/* icon only */}
                 <div className="panel">
                     <div className="mb-5 flex items-center justify-between">
@@ -549,14 +577,12 @@ const BookNow = () => {
                                                         <option value="Commercial">Commercial</option>
                                                         <option value="Corporate">Corporate</option>
                                                         <option value="Music">Music</option>
-                                                        <option value="Personal">Personal</option>
+                                                        <option value="Private">Private</option>
                                                         <option value="Wedding">Wedding</option>
                                                         <option value="Other">Other</option>
                                                     </select>
                                                 </div>
                                             </div>
-
-
 
                                             <div className="mt-5 flex items-center justify-between">
                                                 {/* Order Name */}
@@ -578,9 +604,9 @@ const BookNow = () => {
                                             </div>
                                             <div className="mt-8">
                                                 <div className="table-responsive">
-                                                    <div className="flex items-center justify-between">
+                                                    <div className="md:flex items-center justify-between">
                                                         {/* Starting Date and Time */}
-                                                        <div className="flex basis-[45%] flex-col sm:flex-row">
+                                                        <div className="flex basis-[45%] flex-col sm:flex-row md:mb-0 mb-3">
                                                             <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                                                 Starting Date
                                                             </label>
@@ -623,15 +649,10 @@ const BookNow = () => {
                                                                 {dateTimes.map((dateTime: FormData, index) => (
                                                                     <tr key={index}>
                                                                         <td>{index + 1}</td>
-                                                                        {/* <td>{formattedStartDateTime?.time}</td> */}
-                                                                        <td>{dateTime?.start_date_time}</td>
-                                                                        <td>{dateTime?.end_date_time} </td>
-                                                                        {/* <td>{dateTime?.end_date_time}</td>
-                                                                        <td>{calculateDuration(dateTime?.start_date_time, dateTime?.end_date_time)} Hour</td> */}
-                                                                        {/* <td>{useDateFormat(dateTime.end_date_time)}</td> */}
+                                                                        <td>{convertToEnglishDateFormat(dateTime?.start_date_time)}</td>
+                                                                        <td>{convertToEnglishDateFormat(dateTime?.end_date_time)} </td>
                                                                         <td>{calculateDuration(dateTime.start_date_time, dateTime.end_date_time)} Hour
                                                                         </td>
-
                                                                     </tr>
                                                                 ))}
                                                             </tbody>
@@ -677,55 +698,94 @@ const BookNow = () => {
                                                     <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
                                                 </div>
                                             </div>
-
-
                                         </>
                                     )}
 
                                     <div className="mb-5">
                                         {activeTab3 === 2 && (
                                             <div>
-
                                                 <div
                                                     className='mb-5 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-7 pb-7 pt-4'
                                                 >
-                                                    {/* <select
-                                                        className="form-select text-white-dark w-56 md:w-64"
-                                                        id="content_vertical"
-                                                        defaultValue="selectCategory"
-                                                        {...register('content_vertical')}
-                                                    >
-                                                        <option value="SelectCategory">Select Required Addons</option>
-                                                        <option value="Business">Business</option>
-                                                        <option value="Personal">Personal</option>
-                                                        <option value="Wedding">Wedding</option>
-                                                    </select> */}
-                                                    {/* <div className='text-red-400' onClick={handleShowAddonsData}>CLick me</div> */}
-
-                                                    <div className="flex basis-[45%] flex-col sm:flex-row">
-                                                        <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Select Addons</label>
+                                                    <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2">Select Addons</label>
+                                                    <div className="flex flex-col sm:flex-row">
                                                         <div className="flex-1">
-                                                            {/* Video */}
-                                                            {filteredAddonsData.map((addon, index) => (
-                                                                <div className="mb-2" key={index}>
-                                                                    <label className="flex items-center">
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            className="form-checkbox"
-                                                                            // name={`addon_${index}`}  
-                                                                            defaultValue={addon}
-                                                                            id={`addon_${index}`}
-                                                                            // {...register(`${addon.title}`, { required: `Select an addon` })}
-                                                                            onChange={() => handleCheckboxChange(addon)}
+                                                            <div className="table-responsive ">
+                                                                <table className='w-full'>
+                                                                    <thead>
+                                                                        <tr className="bg-gray-200 dark:bg-gray-800">
+                                                                            <th className="px-1 py-2 font-mono min-w-[20px]">Select</th>
+                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Title</th>
+                                                                            <th className="py-2 font-mono min-w-[20px]">Extend Rate Type</th>
+                                                                            <th className="py-2 font-mono min-w-[20px]">Add Hour</th>
+                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Rate</th>
+                                                                        </tr>
+                                                                    </thead>
 
-                                                                        />
-                                                                        <span className="text-white-dark">{addon?.title}</span>
-                                                                    </label>
-                                                                </div>
-                                                            ))}
+                                                                    <tbody>
+                                                                        {filteredAddonsData?.map((addon, index) => (
+                                                                            <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                                                <td className="px-4 py-2 min-w-[20px]">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        className="form-checkbox"
+                                                                                        defaultValue={addon}
+                                                                                        id={`addon_${index}`}
+                                                                                        onChange={() => handleCheckboxChange(addon)}
+                                                                                    />
+                                                                                </td>
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon?.title}
+                                                                                </td>
+
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon?.ExtendRateType ? addon?.ExtendRateType : "N/A"}
+                                                                                </td>
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon?.ExtendRateType ? <span>
+                                                                                        <input
+                                                                                            name='hour'
+                                                                                            type='number'
+
+                                                                                            className={` bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-16 w-12`}
+                                                                                            defaultValue={hours}
+                                                                                            onBlur={(e) => handleHours(addon, e.target.value)}
+                                                                                            onChange={handleTotalRate}
+                                                                                        />
+                                                                                    </span> : "N/A"}
+                                                                                </td>
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon?.rate}
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+
+                                                                        {/* Horizontal border */}
+
+                                                                        <tr>
+                                                                            <td colSpan="6" className=" border-t border-gray-500 w-full ">
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-600 w-full mt-[-10px]">
+                                                                            <td className="px-4 py-2 min-w-[20px]"></td>
+                                                                            <td className="px-4 py-2 min-w-[120px]">
+                                                                                <h2 className="text-xl font-bold">Total Addons Cost</h2>
+                                                                            </td>
+                                                                            <td className="px-4 py-2 min-w-[120px]"></td>
+                                                                            <td className="px-4 py-2 min-w-[120px]"></td>
+                                                                            <td className="px-4 py-2 min-w-[120px]">TotalRates</td>
+                                                                        </tr>
+
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+
 
                                                         </div>
                                                     </div>
+
+
 
                                                 </div>
 
@@ -898,6 +958,7 @@ const BookNow = () => {
         </div >
     );
 };
+
 
 
 export default BookNow;
