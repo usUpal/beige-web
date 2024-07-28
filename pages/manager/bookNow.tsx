@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { format, parseISO, differenceInHours } from 'date-fns';
 import 'tippy.js/dist/tippy.css';
@@ -10,12 +10,13 @@ import ReactApexChart from 'react-apexcharts';
 import Map from '@/components/Map';
 import { ChangeEvent } from 'react';
 import { useAuth } from '@/contexts/authContext';
-import { API_ENDPOINT } from '@/config';
 import Swal from 'sweetalert2';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import useDateFormat from '@/hooks/useDateFormat';
 import useAddons from '@/hooks/useAddons';
-import { Span } from 'next/dist/trace';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
+
 
 
 interface FormData {
@@ -71,29 +72,7 @@ const BookNow = () => {
     useEffect(() => {
         dispatch(setPageTitle('Client Dashboard'));
     });
-
-
-    // formatted date time 
-    /*  const formatDateAndTimes = (inputDateTime:any) => {
-         // const formattedStartDateTime = useDateFormat(inputDateTime);
-         // console.log("🚀 ~ BookNow ~ formattedStartDateTime:", formattedStartDateTime?.time, "Date:", formattedStartDateTime?.date)
-         // const formattedEndDateTime = useDateFormat(endDateTime);
-         // console.log("🚀 ~ BookNow ~ formattedEndDateTime:", formattedEndDateTime);
- 
-         // eslint-disable-next-line react-hooks/rules-of-hooks
-         const formattedStartDateTime = useDateFormat(inputDateTime);
-         console.log("input-date", formattedStartDateTime);
-         return inputDateTime;
- 
-     } */
-
-    // console.log(dateTimes);
-
-    /*  const formatDateAndTime = (inputDateTime: any) => {
-         dateTimes?.map()
-         const formatedEnd_date_time = useDateFormat(inputDateTime);
-         return formatedEnd_date_time;
-     } */
+    const [search, setSearch] = useState(false);
 
     useEffect(() => {
         const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')!) || [];
@@ -104,7 +83,6 @@ const BookNow = () => {
         const s_time = parseISO(e.target.value);
         const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         setStartDateTime(starting_date);
-        // console.log("🚀 ~ handleChangeStartDateTime ~ starting_date:", starting_date)
     };
 
     const handleChangeEndDateTime = (e: ChangeEvent<HTMLInputElement>) => {
@@ -135,9 +113,6 @@ const BookNow = () => {
         */
         return durationInHours;
     };
-
-    /* const duration = calculateDuration('2024-3-17T15:14:00.000', '2024-07-17T13:30:00');
-    console.log(duration); */
 
     const handleChangeMinBudget = (e: any) => {
         const value = e.target.value;
@@ -170,7 +145,7 @@ const BookNow = () => {
         console.log(newDateTime);
     };
 
-    // time format convarsion
+    // date and time format convarsion
     function convertToEnglishDateFormat(inputDateString: any) {
         let date = new Date(inputDateString);
 
@@ -185,8 +160,6 @@ const BookNow = () => {
 
         return formattedDate;
     }
-
-
 
     const logTotalDuration = (dateTimesArray: any[]) => {
         const totalDuration = dateTimesArray.reduce((acc, dateTime) => {
@@ -236,6 +209,8 @@ const BookNow = () => {
                     setActiveTab3(activeTab3 === 1 && 2);
                     setIsNext(true);
                     reset();
+                    console.log("Clicked safe --- formattedData-->", formattedData);
+
                 } else {
                     return false;
                 }
@@ -367,11 +342,9 @@ const BookNow = () => {
         },
     ];
 
-
     // all addons show
     const [addonsData, setAddonsData, addonsCategories] = useAddons();
     const [filteredAddonsData, setFilteredAddonsData] = useState([]);
-
 
     const handleShowAddonsData = () => {
         let shoot_type = formDataPageOne?.content_vertical;
@@ -451,59 +424,56 @@ const BookNow = () => {
         }
     }, [formDataPageOne?.content_type?.length])
 
-
-    // select unselect ADDONS -- steps -- form the checkbox
     const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
-    console.log("🚀 ~ BookNow ~ selectedFilteredAddons:", selectedFilteredAddons);
+    const [allRates, setAllRates] = useState(0);
+    const [hours, setHours] = useState({});
+    console.log("🚀 ~ BookNow ~ hours:", hours)
 
-
-    // hours
-    const [hours, setHours] = useState(1);
-
-    const handleHours = (addon: any, hoursInput: number) => {
-        addon.hours = hoursInput;
-        setHours(addon?.hours);
+    // ---> ---> test log starts
+    const consoleLog = () => {
+        if (selectedFilteredAddons.length !== 0) {
+            console.log("🚀 ~ BookNow ~ selectedFilteredAddons:", selectedFilteredAddons)
+        }
     }
+    consoleLog();
+    // ---> ---> test log ends
 
-    // Function to handle checkbox changes
-    const handleCheckboxChange = (addon: any) => {
-        addon.hours = hours;
-        const isAddonSelected = selectedFilteredAddons.some((selectedAddon) => selectedAddon?._id === addon?._id);
+    const handleHoursBlur = (addonId: string, hoursInput: number) => {
+        setHours((prevHours) => ({ ...prevHours, [addonId]: Number(hoursInput) }));
+    };
+
+    const handleCheckboxChange = (addon: never) => {
+        const isAddonSelected = selectedFilteredAddons.some((selectedAddon: addonTypes) => selectedAddon?._id === addon?._id);
         if (!isAddonSelected) {
             setSelectedFilteredAddons([...selectedFilteredAddons, addon]);
         } else {
-            setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon) => selectedAddon?._id !== addon?._id));
+            setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon: addonTypes) => selectedAddon?._id !== addon?._id));
         }
     };
 
-
-    /* const handleTotalRate = () => {
-        
-        const rate = 0;
-        let totalRate = selectedFilteredAddons.reduce((accumulator, currentValue) => {
-            let total = 0;
-            const hours = currentValue?.hours;
-            total = (total + currentValue?.rate) * hours;
-            return (total);
+    useEffect(() => {
+        const totalRate = selectedFilteredAddons?.reduce((accumulator, currentValue) => {
+            const addonHours = hours[currentValue?._id] || 0;
+            const extendedHoursRate = currentValue?.rate + (currentValue?.ExtendRateType ? addonHours * 250 : 0);
+            return accumulator + extendedHoursRate;
         }, 0);
 
-        console.log("🚀 ~ totalRate ~ totalRate:", rate + totalRate);
-    } */
+        setAllRates(totalRate);
+    }, [selectedFilteredAddons, hours]);
 
-    const [allRates, setAllRates] = useState([]);
-    const handleTotalRate = () => {
-        let totalRate = selectedFilteredAddons.reduce((accumulator, currentValue) => {
-
-            const hours = currentValue?.hours || 0;
-            const rate = currentValue?.rate || 0;
-
-            const addonTotal = rate * hours;
-
-            // return accumulator + addonTotal;
-            setAllRates(accumulator + addonTotal);
-        }, 0);
-
-        // console.log("Total Rate:", totalRate);
+    // onFinalSubmit
+    const onFinalSubmit = async (data: any) => {
+        if (data.content_type == false) {
+            coloredToast('danger', 'Please select content type!');
+            const order = [...selectedFilteredAddons,]
+        }
+        else {
+            try {
+                console.log("finalSubmit");
+            } catch (error) {
+                coloredToast('danger', 'error');
+            }
+        }
     };
 
     return (
@@ -700,257 +670,351 @@ const BookNow = () => {
                                             </div>
                                         </>
                                     )}
+                                </div>
 
-                                    <div className="mb-5">
-                                        {activeTab3 === 2 && (
-                                            <div>
-                                                <div
-                                                    className='mb-5 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-7 pb-7 pt-4'
-                                                >
-                                                    <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2">Select Addons</label>
-                                                    <div className="flex flex-col sm:flex-row">
-                                                        <div className="flex-1">
-                                                            <div className="table-responsive ">
-                                                                <table className='w-full'>
-                                                                    <thead>
-                                                                        <tr className="bg-gray-200 dark:bg-gray-800">
-                                                                            <th className="px-1 py-2 font-mono min-w-[20px]">Select</th>
-                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Title</th>
-                                                                            <th className="py-2 font-mono min-w-[20px]">Extend Rate Type</th>
-                                                                            <th className="py-2 font-mono min-w-[20px]">Add Hour</th>
-                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Rate</th>
-                                                                        </tr>
-                                                                    </thead>
+                                {activeTab3 === 1 &&
+                                    <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto">
+                                        Next
+                                    </button>
+                                }
+                            </form>
 
-                                                                    <tbody>
-                                                                        {filteredAddonsData?.map((addon, index) => (
-                                                                            <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                                                                <td className="px-4 py-2 min-w-[20px]">
-                                                                                    <input
-                                                                                        type="checkbox"
-                                                                                        className="form-checkbox"
-                                                                                        defaultValue={addon}
-                                                                                        id={`addon_${index}`}
-                                                                                        onChange={() => handleCheckboxChange(addon)}
-                                                                                    />
-                                                                                </td>
-                                                                                <td className="px-4 py-2 min-w-[120px]">
-                                                                                    {addon?.title}
-                                                                                </td>
+                            <form className="space-y-5" onSubmit={handleSubmit(onFinalSubmit)}>
+                                <div className="mb-5">
+                                    {activeTab3 === 2 && (
+                                        <div>
+                                            <div
+                                                className='mb-5 basis-[49%] rounded-[10px]  px-7 pb-1 pt-4'
+                                            >
+                                                <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2">Select Addons</label>
+                                                <div className="flex flex-col sm:flex-row">
+                                                    <div className="flex-1">
+                                                        <div className="table-responsive ">
+                                                            <table className='w-full'>
+                                                                <thead>
+                                                                    <tr className="bg-gray-200 dark:bg-gray-800">
+                                                                        <th className="px-1 py-2 font-mono min-w-[20px]">Select</th>
+                                                                        <th className="px-1 py-2 font-mono min-w-[120px]">Title</th>
+                                                                        <th className="py-2 font-mono min-w-[20px]">Extend Rate Type</th>
+                                                                        <th className="py-2 font-mono min-w-[20px]">Add Hour</th>
+                                                                        <th className="px-1 py-2 font-mono min-w-[120px]">Rate</th>
+                                                                    </tr>
+                                                                </thead>
 
-                                                                                <td className="px-4 py-2 min-w-[120px]">
-                                                                                    {addon?.ExtendRateType ? addon?.ExtendRateType : "N/A"}
-                                                                                </td>
-                                                                                <td className="px-4 py-2 min-w-[120px]">
-                                                                                    {addon?.ExtendRateType ? <span>
-                                                                                        <input
-                                                                                            name='hour'
-                                                                                            type='number'
-
-                                                                                            className={` bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-16 w-12`}
-                                                                                            defaultValue={hours}
-                                                                                            onBlur={(e) => handleHours(addon, e.target.value)}
-                                                                                            onChange={handleTotalRate}
-                                                                                        />
-                                                                                    </span> : "N/A"}
-                                                                                </td>
-                                                                                <td className="px-4 py-2 min-w-[120px]">
-                                                                                    {addon?.rate}
-                                                                                </td>
-                                                                            </tr>
-                                                                        ))}
-
-                                                                        {/* Horizontal border */}
-
-                                                                        <tr>
-                                                                            <td colSpan="6" className=" border-t border-gray-500 w-full ">
+                                                                <tbody>
+                                                                    {filteredAddonsData?.map((addon, index) => (
+                                                                        <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                                            <td className="px-4 py-2 min-w-[20px]">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    className="form-checkbox"
+                                                                                    defaultValue={addon}
+                                                                                    id={`addon_${index}`}
+                                                                                    onChange={() => handleCheckboxChange(addon)}
+                                                                                />
                                                                             </td>
-                                                                        </tr>
-                                                                        <tr className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-600 w-full mt-[-10px]">
-                                                                            <td className="px-4 py-2 min-w-[20px]"></td>
                                                                             <td className="px-4 py-2 min-w-[120px]">
-                                                                                <h2 className="text-xl font-bold">Total Addons Cost</h2>
+                                                                                {addon?.title}
                                                                             </td>
-                                                                            <td className="px-4 py-2 min-w-[120px]"></td>
-                                                                            <td className="px-4 py-2 min-w-[120px]"></td>
-                                                                            <td className="px-4 py-2 min-w-[120px]">TotalRates</td>
+
+                                                                            <td className="px-4 py-2 min-w-[120px]">
+                                                                                {addon?.ExtendRateType ? addon?.ExtendRateType : "N/A"}
+                                                                            </td>
+                                                                            <td className="px-4 py-2 min-w-[120px]">
+                                                                                {addon.ExtendRateType ? (
+                                                                                    <input
+                                                                                        name='hour'
+                                                                                        type='number'
+                                                                                        className="bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-16 w-12"
+                                                                                        defaultValue={hours[addon._id] || 0}
+                                                                                        onBlur={(e) => handleHoursBlur(addon._id, e.target.value)}
+                                                                                    />
+                                                                                ) : "N/A"}
+                                                                            </td>
+                                                                            <td className="px-4 py-2 min-w-[120px]">
+                                                                                {addon?.rate}
+                                                                            </td>
                                                                         </tr>
+                                                                    ))}
 
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-
-
-
-                                                        </div>
-                                                    </div>
-
-
-
-                                                </div>
-
-                                                <h2 className="mb-[30px] font-mono text-[24px] capitalize text-black">matching producer</h2>
-
-                                                <div className="mb-[30px]">
-                                                    <h3 className="mb-2 font-sans text-[18px] capitalize leading-none text-black">found few matches</h3>
-                                                    <p className="text-[14px] capitalize leading-none text-[#838383]">choose your beige photographer/videographer</p>
-                                                </div>
-
-                                                <div className="flex flex-wrap items-start justify-between">
-                                                    {/* match single */}
-                                                    <div className="single-match  mb-5 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-7 pb-7 pt-4">
-                                                        <div className="flex items-start justify-start">
-                                                            <div className="media relative">
-                                                                <img src="assets/images/producer-profile.png" alt="profile" className="mr-3 h-14 w-14 rounded-full" />
-                                                                <span className="absolute bottom-0 right-4 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
-                                                            </div>
-                                                            <div className="content">
-                                                                <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                                <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-                                                                <div className="location mt-2 flex items-center justify-start">
-                                                                    <img src="assets/images/location.svg" alt="location" className="mr-1" />
-                                                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
-                                                                </div>
-                                                                <div className="ratings mt-2">
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="mt-[30px]">
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                    view profile
-                                                                </span>
-                                                            </Link>
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                                                    select
-                                                                </span>
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* match single */}
-                                                    <div className="single-match  mb-5 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-7 pb-7 pt-4">
-                                                        <div className="flex items-start justify-start">
-                                                            <div className="media">
-                                                                <img src="assets/images/producer-profile.png" alt="profile" className="mr-3 rounded-full" />
-                                                                <span></span>
-                                                            </div>
-                                                            <div className="content">
-                                                                <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                                <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-                                                                <div className="location mt-2 flex items-center justify-start">
-                                                                    <img src="assets/images/location.svg" alt="location" className="mr-1" />
-                                                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
-                                                                </div>
-                                                                <div className="ratings mt-2">
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                    <i className="fa-solid fa-star mr-1 text-[#FFC700]"></i>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="mt-[30px]">
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                    view profile
-                                                                </span>
-                                                            </Link>
-                                                            <Link href={'/'}>
-                                                                <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[15px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                                                    select
-                                                                </span>
-                                                            </Link>
+                                                                    {/* Horizontal border */}
+                                                                    <tr>
+                                                                        <td colSpan="6" className=" border-t border-gray-500 w-full ">
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-600 w-full mt-[-10px]">
+                                                                        <td className="px-4 py-2 min-w-[20px]"></td>
+                                                                        <td className="px-4 py-2 min-w-[120px]">
+                                                                            <h2 className="text-[16px] font-semibold">Total Addons Cost</h2>
+                                                                        </td>
+                                                                        <td className="px-4 py-2 min-w-[120px]"></td>
+                                                                        <td className="px-4 py-2 min-w-[120px]"></td>
+                                                                        <td className="px-4 py-2 min-w-[120px]">{allRates} </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        )}
-                                    </div>
+
+                                            <div className='flex items-center justify-between'>
+                                                <div className=''>
+                                                    <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black">matching producer</h2>
+                                                    <div className="mb-[30px]">
+                                                        <h3 className="mb-2 font-sans text-[18px] capitalize leading-none text-black">found few matches</h3>
+                                                        <p className="text-[14px] capitalize leading-none text-[#838383]">choose your beige photographer/videographer</p>
+                                                    </div>
+                                                </div>
+                                                {/* search */}
+                                                <div className="search me-12">
+                                                    <div className=" items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2 mt-[30px]">
+                                                        <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
+                                                            {/* <form
+                                                                    className={`${search && '!block'} absolute inset-x-0 top-1/2 z-10 mx-4 hidden -translate-y-1/2 sm:relative sm:top-0 sm:mx-0 sm:block sm:translate-y-0`}
+                                                                    onSubmit={() => setSearch(false)}
+                                                                > */}
+                                                            <div className="relative">
+                                                                <input
+                                                                    type="text"
+                                                                    className="peer form-input bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pr-9 rtl:pl-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4 w-64"
+                                                                    placeholder="Search..."
+                                                                />
+                                                                <button type="button" className="absolute inset-0 h-9 w-9 appearance-none peer-focus:text-primary ltr:right-auto rtl:left-auto">
+                                                                    <svg className="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+                                                                        <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                                                    </svg>
+                                                                </button>
+                                                                <button type="button" className="absolute top-1/2 block -translate-y-1/2 hover:opacity-80 ltr:right-2 rtl:left-2 sm:hidden"
+                                                                    onClick={() => setSearch(false)}
+                                                                >
+                                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+                                                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                            {/* </form> */}
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setSearch(!search)}
+                                                                className="search_btn rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60 sm:hidden"
+                                                            >
+                                                                <svg className="mx-auto h-4.5 w-4.5 dark:text-[#d0d2d6]" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+                                                                    <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {/* search ends */}
+                                            </div>
+
+                                            {/* <div className="flex flex-wrap items-start justify-between"> */}
+                                            <div className="grid grid-cols-3 2xl:grid-cols-4 gap-6">
+                                                {/* match single */}
+                                                <div className="single-match  mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
+                                                    <div className="flex items-start justify-start">
+                                                        <div className="media relative">
+                                                            <Image
+                                                                src="/assets/images/producer-profile.png"
+                                                                className='mr-3 h-14 w-14 rounded-full'
+                                                                alt="Description of the image"
+                                                                width={500}
+                                                                height={300}
+                                                                layout="responsive" />
+
+                                                            <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                                        </div>
+                                                        <div className="content ms-2">
+                                                            <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
+                                                            <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
+                                                            <div className="location mt-2 flex items-center justify-start">
+
+                                                                {allSvgs.locationIcon}
+                                                                <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
+                                                            </div>
+
+                                                            <div className="ratings mt-2">
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-[30px] flex">
+                                                        <Link href={'/'}>
+                                                            <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                                                view profile
+                                                            </span>
+                                                        </Link>
+                                                        <Link href={'/'}>
+                                                            <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
+                                                                select
+                                                            </span>
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                                <div className="single-match  mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
+                                                    <div className="flex items-start justify-start">
+
+                                                        <div className="media relative">
+                                                            <Image
+                                                                src="/assets/images/producer-profile.png"
+                                                                className='mr-3 h-14 w-14 rounded-full'
+                                                                alt="Description of the image"
+                                                                width={500}
+                                                                height={300}
+                                                                layout="responsive" />
+
+                                                            <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                                        </div>
+
+                                                        <div className="content ms-1">
+                                                            <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
+                                                            <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
+                                                            <div className="location mt-2 flex items-center justify-start">
+                                                                <span className=''>
+                                                                    {allSvgs.locationIcon}
+                                                                </span>
+                                                                <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
+                                                            </div>
+
+                                                            <div className="ratings mt-2">
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-[30px] flex">
+                                                        <Link href={'/'}>
+                                                            <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                                                view profile
+                                                            </span>
+                                                        </Link>
+                                                        <Link href={'/'}>
+                                                            <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
+                                                                select
+                                                            </span>
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                                <div className="single-match  mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
+                                                    <div className="flex items-start justify-start">
+
+                                                        <div className="media relative">
+                                                            <Image
+                                                                src="/assets/images/producer-profile.png"
+                                                                className='mr-3 h-14 w-14 rounded-full'
+                                                                alt="Description of the image"
+                                                                width={500}
+                                                                height={300}
+                                                                layout="responsive" />
+                                                            <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                                        </div>
+
+                                                        <div className="content ms-2">
+                                                            <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
+                                                            <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
+                                                            <div className="location mt-2 flex items-center justify-start">
+                                                                {/* <img src="assets/images/location.svg" alt="location" className="mr-1" /> */}
+                                                                {allSvgs.locationIcon}
+                                                                <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
+                                                            </div>
+                                                            <div className="ratings mt-2">
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-[30px] flex">
+                                                        <Link href={'/'}>
+                                                            <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                                                view profile
+                                                            </span>
+                                                        </Link>
+                                                        <Link href={'/'}>
+                                                            <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
+                                                                select
+                                                            </span>
+                                                        </Link>
+                                                    </div>
+                                                </div>
+
+                                                {/* match single */}
+                                                <div className="single-match  mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
+                                                    <div className="flex items-start justify-start">
+                                                        <div className="media relative">
+                                                            <Image
+                                                                src="/assets/images/producer-profile.png"
+                                                                className='mr-3 h-14 w-14 rounded-full'
+                                                                alt="Description of the image"
+                                                                width={500}
+                                                                height={300}
+                                                                layout="responsive" />
+
+                                                            <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                                        </div>
+                                                        <div className="content ms-2">
+                                                            <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
+                                                            <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
+                                                            <div className="location mt-2 flex items-center justify-start">
+
+                                                                {allSvgs.locationIcon}
+                                                                <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
+                                                            </div>
+
+                                                            <div className="ratings mt-2">
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-[30px] flex">
+                                                        <Link href={'/'}>
+                                                            <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                                                view profile
+                                                            </span>
+                                                        </Link>
+                                                        <Link href={'/'}>
+                                                            <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
+                                                                select
+                                                            </span>
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                {/* <div className="flex justify-between">
-                                    <span
-                                        className={`btn btn-outline-dark h-10  border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab3 === 1 ? 'hidden' : ''}`}
-                                        onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}
-                                    >
-                                        Back
-                                    </span>
-                                    <span
-                                        className=" font-sans ltr:ml-auto rtl:mr-auto capitalize"
-                                        
-                                    >
-                                        {
-                                            activeTab3 === 2 ? <button
-                                                type='submit'
-                                                className='btn btn-outline-dark h-10 w-36 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l'
-                                            >
-                                                Place Order
-                                            </button>
-                                                :
-                                                activeTab3 === 1 &&
-                                                <span
-                                                    // type='submit'
-                                                    className='btn btn-outline-dark h-10 w-28 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l cursor-pointer'
-                                                >
-                                                    Next
-                                                </span>
-                                        }
-                                    </span>
-                                </div> */}
-
-                                {/* <div className="flex justify-between">
-                                    <span
-                                        className={`btn btn-outline-dark h-10  border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab3 === 1 ? 'hidden' : ''}`}
-                                        onClick={() => setActiveTab3(activeTab3 === 3 ? 2 : 1)}
-                                    >
-                                        Back
-                                    </span>
-                                    <span
-                                        className=" font-sans ltr:ml-auto rtl:mr-auto capitalize"
-
-                                    >
-                                        {
-                                            activeTab3 === 2 ? <button
-                                                type='submit'
-                                                className='btn btn-outline-dark h-10 w-36 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l'
-                                            >
-                                                Place Order
-                                            </button>
-                                                :
-                                                activeTab3 === 1 &&
-                                                <button
-                                                    type='submit'
-                                                    className='btn btn-outline-dark h-10 w-28 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l cursor-pointer'
-                                                    // onClick={() => setActiveTab3(activeTab3 === 1 ? 2 : 1)}
-                                                >
-                                                    Next
-                                                </button>
-                                        }
-                                    </span>
-                                </div> */}
-
                                 <div className="flex justify-between">
-                                    <button type="button" className={`btn btn-warning font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 2 && 1)}>
+                                    <button type="button" className={`btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 2 && 1)}>
                                         Back
                                     </button>
-                                    <button type="submit" className="btn btn-warning font-sans ltr:ml-auto rtl:mr-auto">
-                                        {activeTab3 === 2 ?
-                                            <span>Place Order</span>
-                                            :
-                                            <span
-                                            // onClick={() => handleToggleNext('nextBtn')}
-                                            >Next</span>
-                                        }
-                                    </button>
+
+                                    {activeTab3 === 2 &&
+                                        <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto">
+                                            Place Order
+                                        </button>
+                                    }
                                 </div>
                             </form>
+
                         </div>
                     </div>
                 </div>
