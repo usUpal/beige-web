@@ -427,39 +427,151 @@ const BookNow = () => {
     const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
     const [allRates, setAllRates] = useState(0);
     const [hours, setHours] = useState({});
-    console.log("🚀 ~ BookNow ~ hours:", hours)
+    const [computedRates, setComputedRates] = useState({});
+    const [finalSelectedAddons, setFinalSelectedAddons] = useState([]);
 
     // ---> ---> test log starts
     const consoleLog = () => {
         if (selectedFilteredAddons.length !== 0) {
-            console.log("🚀 ~ BookNow ~ selectedFilteredAddons:", selectedFilteredAddons)
+            // setFinalSelectedAddons([...selectedFilteredAddons, updatedAddon]);
+            console.log("🚀 ~ BookNow ~ selectedFilteredAddons:", selectedFilteredAddons);
         }
     }
     consoleLog();
     // ---> ---> test log ends
 
-    const handleHoursBlur = (addonId: string, hoursInput: number) => {
-        setHours((prevHours) => ({ ...prevHours, [addonId]: Number(hoursInput) }));
+    const handleHoursOnChange = (addonId: string, hoursInput: number) => {
+        if (hoursInput >= 0) {
+            setHours((prevHours) => ({ ...prevHours, [addonId]: Number(hoursInput) }));
+        }
+        else { return; }
     };
 
-    const handleCheckboxChange = (addon: never) => {
+    // 
+    /* const calculateUpdatedRate = (addon: addonTypes) => {
+        const addonHours = hours[addon?._id] || 0;
+        const newRate = addon?.rate + (addon?.ExtendRateType ? addonHours * addon?.ExtendRate : 0);
+        // return addon?.rate + (addon?.ExtendRateType ? addonHours * addon?.ExtendRate : 0);
+        // return { addonHours, newRate };
+        return newRate;
+    }; */
+
+    const handleCheckboxChange = (addon: addonTypes) => {
         const isAddonSelected = selectedFilteredAddons.some((selectedAddon: addonTypes) => selectedAddon?._id === addon?._id);
         if (!isAddonSelected) {
-            setSelectedFilteredAddons([...selectedFilteredAddons, addon]);
+            // const updatedAddon = { ...addon, computedRate: calculateUpdatedRate(addon), hours: hours[addon?._id] };
+            const updatedAddon = {
+                // ...addon,
+                _id: addon?._id,
+                title: addon?.title,
+                rate: addon?.rate,
+                ExtendRate: addon?.ExtendRate,
+                status: addon?.status,
+                // computedRate: calculateUpdatedRate(addon),
+                hours: hours[addon?._id]
+            };
+            // console.log("------------------>", updatedAddon);
+
+            setSelectedFilteredAddons([...selectedFilteredAddons, updatedAddon]);
         } else {
-            setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon: addonTypes) => selectedAddon?._id !== addon?._id));
+
+            setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon) => selectedAddon._id !== addon._id));
         }
     };
 
-    useEffect(() => {
-        const totalRate = selectedFilteredAddons?.reduce((accumulator, currentValue) => {
-            const addonHours = hours[currentValue?._id] || 0;
-            const extendedHoursRate = currentValue?.rate + (currentValue?.ExtendRateType ? addonHours * 250 : 0);
-            return accumulator + extendedHoursRate;
-        }, 0);
+    const calculateUpdatedRate = (addon: addonTypes) => {
+        const addonHours = hours[addon?._id] || 0;
+        const newRate = addon?.rate + (addon?.ExtendRateType ? addonHours * addon?.ExtendRate : 0);
+        // return addon?.rate + (addon?.ExtendRateType ? addonHours * addon?.ExtendRate : 0);
+        // return { addonHours, newRate };
+        return newRate;
+    };
 
+    /* useEffect(() => {
+        const calculateUpdatedRate = (addon) => {
+            if (!addon) return 0;
+            const addonHours = hours[addon._id] || 0;
+            const newRate = addon.rate + (addon.ExtendRateType ? (addonHours * addon.ExtendRate) : 0);
+            return newRate;
+        };
+
+        const updatedComputedRates = filteredAddonsData.reduce((prevAddon, addon) => {
+            if (!addon || !addon._id) {
+                console.error("Invalid addon or addon ID:", addon);
+                return prevAddon;
+            }
+            prevAddon[addon._id] = calculateUpdatedRate(addon);
+            return prevAddon;
+        }, {});
+
+        console.log("Updated Computed Rates:", updatedComputedRates);
+        setComputedRates(updatedComputedRates);
+
+        const updatedTotalAddonRates = selectedFilteredAddons.reduce((previousAddon, addon) => {
+            if (!addon || !addon._id) {
+                console.error("Invalid addon or addon ID:", addon);
+                return previousAddon;
+            }
+            previousAddon[addon._id] = calculateUpdatedRate(addon);
+            return previousAddon;
+        }, {});
+
+        console.log("Updated Total Addon Rates:", updatedTotalAddonRates);
+
+        const totalRate = Object.values(updatedTotalAddonRates).reduce((prevValue, currentValue) => prevValue + currentValue, 0);
+
+        console.log("Total Rate:", totalRate);
         setAllRates(totalRate);
-    }, [selectedFilteredAddons, hours]);
+
+    }, [selectedFilteredAddons, filteredAddonsData, hours, setComputedRates, setAllRates]); */
+
+
+     useEffect(() => {
+ 
+ 
+         const updatedComputedRates = filteredAddonsData.reduce((prevAddon: any, addon: addonTypes) => {
+             prevAddon[addon?._id] = calculateUpdatedRate(addon);
+             return prevAddon;
+         }, {});
+ 
+         setComputedRates(updatedComputedRates);
+ 
+         const updatedTotalAddonRates: UpdatedAddonRates = selectedFilteredAddons.reduce((previousAddon: any, addon: addonTypes) => {
+             // previousAddon[addon?._id] = calculateUpdatedRate(addon);
+             previousAddon[addon?._id] = calculateUpdatedRate(addon);
+             return previousAddon;
+         }, {} as UpdatedAddonRates);
+         console.log("🚀🚀🚀🚀", updatedTotalAddonRates);
+ 
+         const totalRate = Object.values(updatedTotalAddonRates).reduce((acc, currentValue) => acc + currentValue, 0);
+         setAllRates(totalRate);
+ 
+     }, [selectedFilteredAddons, filteredAddonsData, hours]);
+
+    /* useEffect(() => {
+        const calculateUpdatedRate = (addon: addonTypes) => {
+            const addonHours = hours[addon?._id] || 0;
+            const newRate = addon?.rate + (addon?.ExtendRateType ? (addonHours * addon?.ExtendRate) : 0);
+            return newRate;
+        };
+
+        const updatedComputedRates = filteredAddonsData.reduce((prevAddon: any, addon: addonTypes) => {
+            prevAddon[addon?._id] = calculateUpdatedRate(addon);
+            return prevAddon;
+        }, {});
+
+        setComputedRates(updatedComputedRates);
+
+        const updatedTotalAddonRates: UpdatedAddonRates = selectedFilteredAddons.reduce((previousAddon: any, addon: addonTypes) => {
+            previousAddon[addon?._id] = calculateUpdatedRate(addon);
+            return previousAddon;
+        }, {} as UpdatedAddonRates);
+        console.log("🚀 🚀🚀🚀🚀~ .reduce ~ updatedTotalAddonRates:", updatedTotalAddonRates);
+
+        const totalRate = Object.values(updatedTotalAddonRates).reduce((prevValue, currentValue) => prevValue + currentValue, 0);
+        setAllRates(totalRate);
+
+    }, [selectedFilteredAddons, filteredAddonsData, hours]); */
 
     // onFinalSubmit
     const onFinalSubmit = async (data: any) => {
@@ -702,7 +814,7 @@ const BookNow = () => {
                                                                 </thead>
 
                                                                 <tbody>
-                                                                    {filteredAddonsData?.map((addon, index) => (
+                                                                    {filteredAddonsData?.map((addon: addonTypes, index) => (
                                                                         <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                                                                             <td className="px-4 py-2 min-w-[20px]">
                                                                                 <input
@@ -726,20 +838,22 @@ const BookNow = () => {
                                                                                         name='hour'
                                                                                         type='number'
                                                                                         className="bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-16 w-12"
-                                                                                        defaultValue={hours[addon._id] || 0}
-                                                                                        onBlur={(e) => handleHoursBlur(addon._id, e.target.value)}
+                                                                                        defaultValue={(hours[addon?._id] || 0)}
+                                                                                        min="0"
+                                                                                        onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
+                                                                                    // disabled={disableInput}
                                                                                     />
                                                                                 ) : "N/A"}
                                                                             </td>
                                                                             <td className="px-4 py-2 min-w-[120px]">
-                                                                                {addon?.rate}
+                                                                                {computedRates[addon?._id] || addon?.rate}
                                                                             </td>
                                                                         </tr>
                                                                     ))}
 
                                                                     {/* Horizontal border */}
                                                                     <tr>
-                                                                        <td colSpan="6" className=" border-t border-gray-500 w-full ">
+                                                                        <td colSpan={6} className=" border-t border-gray-500 w-full ">
                                                                         </td>
                                                                     </tr>
                                                                     <tr className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-600 w-full mt-[-10px]">
