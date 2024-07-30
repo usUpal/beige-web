@@ -39,7 +39,7 @@ const SidebarManager = (props: any) => {
               <div className='flex items-center'>
                 {allSvgs.bookNowSvg}
                 <span
-                  className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Manual Book</span>
+                  className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Book Now</span>
               </div>
             </Link>
           </li>

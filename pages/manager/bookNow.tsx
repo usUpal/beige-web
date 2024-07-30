@@ -16,6 +16,7 @@ import useAddons from '@/hooks/useAddons';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
+import { API_ENDPOINT } from '@/config';
 
 
 
@@ -37,7 +38,7 @@ interface FormData {
 }
 const BookNow = () => {
 
-    const [activeTab3, setActiveTab3] = useState<any>(1);
+    const [activeTab, setActiveTab] = useState<any>(1);
     const [isMounted, setIsMounted] = useState(false);
     const [minBudget, setMinBudget] = useState<number>();
     const [minBudgetError, setMinBudgetError] = useState('');
@@ -45,6 +46,7 @@ const BookNow = () => {
     const [startDateTime, setStartDateTime] = useState('');
     const [endDateTime, setEndDateTime] = useState('');
     const [dateTimes, setDateTimes] = useState<FormData[]>([]);
+    // console.log("🚀 ~ BookNow ~ dateTimes:", dateTimes);
     const [showDateTimes, setShowDateTimes] = useState<any>();
     const [getTotalDuration, setTotalDuration] = useState<any>();
     const [items, setItems] = useState<any>([
@@ -142,7 +144,7 @@ const BookNow = () => {
         setEndDateTime('');
 
         logTotalDuration(newDateTimes);
-        console.log(newDateTime);
+        // console.log(newDateTime);
     };
 
     // date and time format convarsion
@@ -173,6 +175,7 @@ const BookNow = () => {
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
 
     // storing form one's data to this
     const [formDataPageOne, setFormDataPageOne] = useState({});
@@ -206,10 +209,11 @@ const BookNow = () => {
                 };
                 if (Object.keys(formattedData).length > 0) {
                     setFormDataPageOne(formattedData);
-                    setActiveTab3(activeTab3 === 1 && 2);
+                    // setActiveTab(activeTab === 1 && 2);
+                    setActiveTab(activeTab === 1 ? 2 : 3);
                     setIsNext(true);
                     reset();
-                    console.log("Clicked safe --- formattedData-->", formattedData);
+                    // console.log("Clicked safe --- formattedData-->", formattedData);
 
                 } else {
                     return false;
@@ -321,26 +325,26 @@ const BookNow = () => {
         },
     };
 
-    const tableData = [
-        {
-            id: 1,
-            costings: 'Team Crew Bill',
-            indicator: 1,
-            price: 234,
-        },
-        {
-            id: 2,
-            costings: 'Camera Cost',
-            indicator: 2,
-            price: 789,
-        },
-        {
-            id: 3,
-            costings: 'Transport',
-            indicator: 3,
-            price: 29876,
-        },
-    ];
+    /*  const tableData = [
+         {
+             id: 1,
+             costings: 'Team Crew Bill',
+             indicator: 1,
+             price: 234,
+         },
+         {
+             id: 2,
+             costings: 'Camera Cost',
+             indicator: 2,
+             price: 789,
+         },
+         {
+             id: 3,
+             costings: 'Transport',
+             indicator: 3,
+             price: 29876,
+         },
+     ]; */
 
     // all addons show
     const [addonsData, setAddonsData, addonsCategories] = useAddons();
@@ -426,9 +430,9 @@ const BookNow = () => {
 
     const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
     const [allRates, setAllRates] = useState(0);
+    // console.log("🚀 ~ BookNow ~ allRates:", allRates);
     const [hours, setHours] = useState({});
     const [computedRates, setComputedRates] = useState({});
-    const [finalSelectedAddons, setFinalSelectedAddons] = useState([]);
 
     // ---> ---> test log starts
     const consoleLog = () => {
@@ -446,15 +450,6 @@ const BookNow = () => {
         }
         else { return; }
     };
-
-    // 
-    /* const calculateUpdatedRate = (addon: addonTypes) => {
-        const addonHours = hours[addon?._id] || 0;
-        const newRate = addon?.rate + (addon?.ExtendRateType ? addonHours * addon?.ExtendRate : 0);
-        // return addon?.rate + (addon?.ExtendRateType ? addonHours * addon?.ExtendRate : 0);
-        // return { addonHours, newRate };
-        return newRate;
-    }; */
 
     const handleCheckboxChange = (addon: addonTypes) => {
         const isAddonSelected = selectedFilteredAddons.some((selectedAddon: addonTypes) => selectedAddon?._id === addon?._id);
@@ -474,85 +469,23 @@ const BookNow = () => {
 
             setSelectedFilteredAddons([...selectedFilteredAddons, updatedAddon]);
         } else {
-
-            setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon) => selectedAddon._id !== addon._id));
+            setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon) => selectedAddon?._id !== addon?._id));
         }
     };
 
-    const calculateUpdatedRate = (addon: addonTypes) => {
-        const addonHours = hours[addon?._id] || 0;
-        const newRate = addon?.rate + (addon?.ExtendRateType ? addonHours * addon?.ExtendRate : 0);
-        // return addon?.rate + (addon?.ExtendRateType ? addonHours * addon?.ExtendRate : 0);
-        // return { addonHours, newRate };
-        return newRate;
-    };
+    const [ordersInfo, setOrdersInfo] = useState<OrderInfo[]>([]);
+    // console.log("🚀 ~~~~!!!~~~~ orderAddons:", orderAddons);
+    // const [extendRateTypeChecks, setExtendRateTypeChecks] = useState<boolean[]>([]);
 
-    /* useEffect(() => {
-        const calculateUpdatedRate = (addon) => {
-            if (!addon) return 0;
-            const addonHours = hours[addon._id] || 0;
-            const newRate = addon.rate + (addon.ExtendRateType ? (addonHours * addon.ExtendRate) : 0);
-            return newRate;
-        };
-
-        const updatedComputedRates = filteredAddonsData.reduce((prevAddon, addon) => {
-            if (!addon || !addon._id) {
-                console.error("Invalid addon or addon ID:", addon);
-                return prevAddon;
-            }
-            prevAddon[addon._id] = calculateUpdatedRate(addon);
-            return prevAddon;
-        }, {});
-
-        console.log("Updated Computed Rates:", updatedComputedRates);
-        setComputedRates(updatedComputedRates);
-
-        const updatedTotalAddonRates = selectedFilteredAddons.reduce((previousAddon, addon) => {
-            if (!addon || !addon._id) {
-                console.error("Invalid addon or addon ID:", addon);
-                return previousAddon;
-            }
-            previousAddon[addon._id] = calculateUpdatedRate(addon);
-            return previousAddon;
-        }, {});
-
-        console.log("Updated Total Addon Rates:", updatedTotalAddonRates);
-
-        const totalRate = Object.values(updatedTotalAddonRates).reduce((prevValue, currentValue) => prevValue + currentValue, 0);
-
-        console.log("Total Rate:", totalRate);
-        setAllRates(totalRate);
-
-    }, [selectedFilteredAddons, filteredAddonsData, hours, setComputedRates, setAllRates]); */
-
-
-     useEffect(() => {
- 
- 
-         const updatedComputedRates = filteredAddonsData.reduce((prevAddon: any, addon: addonTypes) => {
-             prevAddon[addon?._id] = calculateUpdatedRate(addon);
-             return prevAddon;
-         }, {});
- 
-         setComputedRates(updatedComputedRates);
- 
-         const updatedTotalAddonRates: UpdatedAddonRates = selectedFilteredAddons.reduce((previousAddon: any, addon: addonTypes) => {
-             // previousAddon[addon?._id] = calculateUpdatedRate(addon);
-             previousAddon[addon?._id] = calculateUpdatedRate(addon);
-             return previousAddon;
-         }, {} as UpdatedAddonRates);
-         console.log("🚀🚀🚀🚀", updatedTotalAddonRates);
- 
-         const totalRate = Object.values(updatedTotalAddonRates).reduce((acc, currentValue) => acc + currentValue, 0);
-         setAllRates(totalRate);
- 
-     }, [selectedFilteredAddons, filteredAddonsData, hours]);
-
-    /* useEffect(() => {
+    useEffect(() => {
         const calculateUpdatedRate = (addon: addonTypes) => {
-            const addonHours = hours[addon?._id] || 0;
-            const newRate = addon?.rate + (addon?.ExtendRateType ? (addonHours * addon?.ExtendRate) : 0);
-            return newRate;
+            if (addon.ExtendRateType !== undefined || hours[addon._id] !== undefined) {
+                const addonHours = hours[addon?._id] || 0;
+                const newRate = (addon?.rate) + (addonHours * addon.ExtendRate);
+                return newRate;
+            } else {
+                return (addon?.rate);
+            }
         };
 
         const updatedComputedRates = filteredAddonsData.reduce((prevAddon: any, addon: addonTypes) => {
@@ -566,21 +499,36 @@ const BookNow = () => {
             previousAddon[addon?._id] = calculateUpdatedRate(addon);
             return previousAddon;
         }, {} as UpdatedAddonRates);
-        console.log("🚀 🚀🚀🚀🚀~ .reduce ~ updatedTotalAddonRates:", updatedTotalAddonRates);
 
-        const totalRate = Object.values(updatedTotalAddonRates).reduce((prevValue, currentValue) => prevValue + currentValue, 0);
+        const totalRate = Object.values(updatedTotalAddonRates).reduce((acc, currentValue) => acc + currentValue, 0);
         setAllRates(totalRate);
 
-    }, [selectedFilteredAddons, filteredAddonsData, hours]); */
+    }, [selectedFilteredAddons, filteredAddonsData, hours]);
 
-    // onFinalSubmit
-    const onFinalSubmit = async (data: any) => {
+    // onSubmitTabTwo
+    const onSubmitTabTwo = async (data: any) => {
         if (data.content_type == false) {
-            coloredToast('danger', 'Please select content type!');
-            const order = [...selectedFilteredAddons,]
+            coloredToast('danger', 'Please select CP!');
         }
         else {
             try {
+                const orderedCostInfo: OrderInfo[] = [
+                    {
+                        id: 1,
+                        costingsTitle: 'Addons Cost',
+                        indicator: 1,
+                        price: allRates,
+                    },
+                    {
+                        id: 1,
+                        costingsTitle: 'Shoot Cost',
+                        indicator: 2,
+                        price: 0,
+                    }
+                ];
+
+                setOrdersInfo(prev => [...orderedCostInfo, ...prev]);
+                setActiveTab(activeTab === 1 ? 2 : 3);
                 console.log("finalSubmit");
             } catch (error) {
                 coloredToast('danger', 'error');
@@ -606,12 +554,12 @@ const BookNow = () => {
                     <div className="mb-5 flex items-center justify-between">
                         <h5 className="text-lg font-semibold dark:text-white-light capitalize">Manual Booking By Manager</h5>
                     </div>
-                    <div className="mb-5">
+                    <div className="">
                         <div className="inline-block w-full">
 
                             <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                                 <div>
-                                    {activeTab3 === 1 && (
+                                    {activeTab === 1 && (
                                         <>
                                             <div className="flex items-center justify-between">
                                                 {/* Content Type */}
@@ -780,98 +728,19 @@ const BookNow = () => {
                                                     <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
                                                 </div>
                                             </div>
+
+                                            <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto mt-5">
+                                                Next
+                                            </button>
                                         </>
                                     )}
                                 </div>
-
-                                {activeTab3 === 1 &&
-                                    <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto">
-                                        Next
-                                    </button>
-                                }
                             </form>
 
-                            <form className="space-y-5" onSubmit={handleSubmit(onFinalSubmit)}>
+                            <form className="space-y-5" onSubmit={handleSubmit(onSubmitTabTwo)}>
                                 <div className="mb-5">
-                                    {activeTab3 === 2 && (
+                                    {activeTab === 2 && (
                                         <div>
-                                            <div
-                                                className='mb-5 basis-[49%] rounded-[10px]  px-7 pb-1 pt-4'
-                                            >
-                                                <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2">Select Addons</label>
-                                                <div className="flex flex-col sm:flex-row">
-                                                    <div className="flex-1">
-                                                        <div className="table-responsive ">
-                                                            <table className='w-full'>
-                                                                <thead>
-                                                                    <tr className="bg-gray-200 dark:bg-gray-800">
-                                                                        <th className="px-1 py-2 font-mono min-w-[20px]">Select</th>
-                                                                        <th className="px-1 py-2 font-mono min-w-[120px]">Title</th>
-                                                                        <th className="py-2 font-mono min-w-[20px]">Extend Rate Type</th>
-                                                                        <th className="py-2 font-mono min-w-[20px]">Add Hour</th>
-                                                                        <th className="px-1 py-2 font-mono min-w-[120px]">Rate</th>
-                                                                    </tr>
-                                                                </thead>
-
-                                                                <tbody>
-                                                                    {filteredAddonsData?.map((addon: addonTypes, index) => (
-                                                                        <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                                                            <td className="px-4 py-2 min-w-[20px]">
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className="form-checkbox"
-                                                                                    defaultValue={addon}
-                                                                                    id={`addon_${index}`}
-                                                                                    onChange={() => handleCheckboxChange(addon)}
-                                                                                />
-                                                                            </td>
-                                                                            <td className="px-4 py-2 min-w-[120px]">
-                                                                                {addon?.title}
-                                                                            </td>
-
-                                                                            <td className="px-4 py-2 min-w-[120px]">
-                                                                                {addon?.ExtendRateType ? addon?.ExtendRateType : "N/A"}
-                                                                            </td>
-                                                                            <td className="px-4 py-2 min-w-[120px]">
-                                                                                {addon.ExtendRateType ? (
-                                                                                    <input
-                                                                                        name='hour'
-                                                                                        type='number'
-                                                                                        className="bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-16 w-12"
-                                                                                        defaultValue={(hours[addon?._id] || 0)}
-                                                                                        min="0"
-                                                                                        onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                                                                    // disabled={disableInput}
-                                                                                    />
-                                                                                ) : "N/A"}
-                                                                            </td>
-                                                                            <td className="px-4 py-2 min-w-[120px]">
-                                                                                {computedRates[addon?._id] || addon?.rate}
-                                                                            </td>
-                                                                        </tr>
-                                                                    ))}
-
-                                                                    {/* Horizontal border */}
-                                                                    <tr>
-                                                                        <td colSpan={6} className=" border-t border-gray-500 w-full ">
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-600 w-full mt-[-10px]">
-                                                                        <td className="px-4 py-2 min-w-[20px]"></td>
-                                                                        <td className="px-4 py-2 min-w-[120px]">
-                                                                            <h2 className="text-[16px] font-semibold">Total Addons Cost</h2>
-                                                                        </td>
-                                                                        <td className="px-4 py-2 min-w-[120px]"></td>
-                                                                        <td className="px-4 py-2 min-w-[120px]"></td>
-                                                                        <td className="px-4 py-2 min-w-[120px]">{allRates} </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
                                             <div className='flex items-center justify-between'>
                                                 <div className=''>
                                                     <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black">matching producer</h2>
@@ -1008,6 +877,7 @@ const BookNow = () => {
                                                             </div>
                                                         </div>
                                                     </div>
+
                                                     <div className="mt-[30px] flex">
                                                         <Link href={'/'}>
                                                             <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
@@ -1021,6 +891,7 @@ const BookNow = () => {
                                                         </Link>
                                                     </div>
                                                 </div>
+
                                                 <div className="single-match  mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
                                                     <div className="flex items-start justify-start">
 
@@ -1116,14 +987,225 @@ const BookNow = () => {
                                         </div>
                                     )}
                                 </div>
+
+                                {/* tab=3 */}
+                                <div className="mb-5">
+                                    {activeTab === 3 && (
+                                        <div className="h-full">
+                                            <>
+                                                <div
+                                                    className='panel mb-5 basis-[49%] rounded-[10px] px-7 py-5'
+                                                >
+                                                    <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2">Select Addons</label>
+                                                    <div className="flex flex-col sm:flex-row">
+                                                        <div className="flex-1">
+                                                            <div className="table-responsive ">
+                                                                <table className='w-full'>
+                                                                    <thead>
+                                                                        <tr className="bg-gray-200 dark:bg-gray-800">
+                                                                            <th className="px-1 py-2 font-mono min-w-[20px]">Select</th>
+                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Title</th>
+                                                                            <th className="py-2 font-mono min-w-[20px]">Extend Rate Type</th>
+                                                                            <th className="py-2 font-mono min-w-[20px]">Extra Hour</th>
+                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Rate</th>
+                                                                        </tr>
+                                                                    </thead>
+
+                                                                    <tbody>
+                                                                        {filteredAddonsData?.map((addon: addonTypes, index) => (
+                                                                            <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                                                <td className="px-4 py-2 min-w-[20px]">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        className="form-checkbox"
+                                                                                        defaultValue={addon}
+                                                                                        id={`addon_${index}`}
+                                                                                        onChange={() => handleCheckboxChange(addon)}
+                                                                                    />
+                                                                                </td>
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon?.title}
+                                                                                </td>
+
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon?.ExtendRateType ? addon?.ExtendRateType : "N/A"}
+                                                                                </td>
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon.ExtendRateType ? (
+                                                                                        <input
+                                                                                            name='hour'
+                                                                                            type='number'
+                                                                                            className="bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-16 w-12"
+                                                                                            defaultValue={(hours[addon?._id] || 0)}
+                                                                                            min="0"
+                                                                                            onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
+                                                                                        // disabled={disableInput}
+                                                                                        />
+                                                                                    ) : "N/A"}
+                                                                                </td>
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {computedRates[addon?._id] || addon?.rate}
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+
+                                                                        {/* Horizontal border */}
+                                                                        <tr>
+                                                                            <td colSpan={6} className=" border-t border-gray-500 w-full ">
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-600 w-full mt-[-10px]">
+                                                                            <td className="px-4 py-2 min-w-[20px]"></td>
+                                                                            <td className="px-4 py-2 min-w-[120px]">
+                                                                                <h2 className="text-[16px] font-semibold">Total Addons Cost</h2>
+                                                                            </td>
+                                                                            <td className="px-4 py-2 min-w-[120px]"></td>
+                                                                            <td className="px-4 py-2 min-w-[120px]"></td>
+                                                                            <td className="px-4 py-2 min-w-[120px]">{allRates} </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </>
+
+                                            <>
+                                                <div className='panel mb-5'>
+                                                    {/* selected Cp section strats */}
+                                                    <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2 capitalize">Matched producer</label>
+                                                    <div className="flex flex-col items-start justify-between">
+                                                        {/* match single */}
+                                                        <div className='flex justify-between items-center gap-6'>
+                                                            <div className="single-match  mb-6 rounded-[10px] border px-6 py-4">
+                                                                <div className="flex items-center justify-center">
+                                                                    <div className="media relative">
+                                                                        <Image
+                                                                            src="/assets/images/producer-profile.png"
+                                                                            className='mr-3 h-24 w-24 rounded-full'
+                                                                            // className='h-12 w-12 rounded-full'
+                                                                            alt="Description of the image"
+                                                                            width={500}
+                                                                            height={300}
+                                                                            layout="responsive" />
+
+                                                                        <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                                                    </div>
+
+                                                                    <div className="content ms-3 mt-1">
+                                                                        <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
+                                                                        <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
+
+                                                                    </div>
+                                                                    <div className="ms-4 hover:text-red-500 duration-300" title='remove-cp'>
+                                                                        {allSvgs.closeModalSvg}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    {/* selected Cp section ends */}
+
+                                                </div>
+
+                                            </>
+
+                                            <>
+                                                <div
+                                                    className='panel mb-5 basis-[49%] rounded-[10px] px-7 py-5'
+                                                >
+                                                    <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2">Selected Addons</label>
+                                                    <div className="flex flex-col sm:flex-row">
+                                                        <div className="flex-1">
+                                                            <div className="table-responsive ">
+                                                                <table className='w-full'>
+                                                                    <thead>
+                                                                        <tr className="bg-gray-200 dark:bg-gray-800">
+
+                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Title</th>
+
+                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Base Rate</th>
+                                                                            <th className="py-2 font-mono min-w-[20px]">Extra Hour</th>
+                                                                            <th className="py-2 font-mono min-w-[20px]">Extra Rate</th>
+                                                                        </tr>
+                                                                    </thead>
+
+                                                                    <tbody>
+                                                                        {selectedFilteredAddons?.map((addon: addonTypes, index) => (
+                                                                            <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon?.title}
+                                                                                </td>
+
+
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon?.rate}
+                                                                                </td>
+
+                                                                                {/* <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {addon?.hour}
+                                                                                </td> */}
+                                                                                <td>{addon?.hours === undefined ? 0 : addon?.hours}</td>
+
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    {computedRates[addon?._id] || addon?.rate}
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+
+                                                                        {/* Horizontal border */}
+                                                                        <tr>
+                                                                            <td colSpan={6} className=" border-t border-gray-500 w-full ">
+                                                                            </td>
+                                                                        </tr>
+                                                                        {
+                                                                            selectedFilteredAddons.length > 0 &&
+                                                                            <tr className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-600 w-full mt-[-10px]">
+
+                                                                                <td className="px-4 py-2 min-w-[120px]">
+                                                                                    <h2 className="text-[16px] font-semibold">Total Addons Cost</h2>
+                                                                                </td>
+                                                                                <td className="px-4 py-2 min-w-[120px]"></td>
+                                                                                <td className="px-4 py-2 min-w-[120px]"></td>
+
+                                                                                <td className="px-4 py-2 min-w-[120px]">{allRates} </td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </>
+
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* page end buttons */}
                                 <div className="flex justify-between">
-                                    <button type="button" className={`btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab3 === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab3(activeTab3 === 2 && 1)}>
+                                    <button type="button" className={`btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab === 1 ? 'hidden' : ''}`}
+                                        // onClick={() => setActiveTab(activeTab === 2 && 1)}
+                                        onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}
+                                    >
                                         Back
                                     </button>
 
-                                    {activeTab3 === 2 &&
+                                    {/*  {activeTab3 === 3 ? 'Finish' : activeTab3 === 2 ? 'Place Order' : 'Next'} */}
+                                    {activeTab === 2 &&
                                         <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto">
                                             Place Order
+                                        </button>
+                                    }
+
+                                    {
+                                        activeTab === 3 &&
+                                        <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto">
+                                            Finish
                                         </button>
                                     }
                                 </div>

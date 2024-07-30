@@ -203,7 +203,6 @@ const IndexClient = () => {
           console.log('POST request successful!', responseData);
           coloredToast('success', 'Form submitted!');
           setActiveTab3(activeTab3 === 1 ? 2 : 3);
-          // Handle success if needed
         } else {
           console.error('Error:', response.statusText);
           coloredToast('danger', 'https://api.beigecorporation.io/v1/orders 500 (Internal Server Error)');

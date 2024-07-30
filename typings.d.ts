@@ -157,6 +157,19 @@ declare global {
     status: boolean;
     category: string;
     info: string
-    
+
   }
+
+  interface UpdatedAddonRates {
+    [key: string]: number;
+  }
+
+  interface OrderInfo {
+    id: number;
+    costingsTitle: string;
+    indicator: number;
+    price: number;
+  }
+
+
 }
