@@ -17,6 +17,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 import { API_ENDPOINT } from '@/config';
+import ResponsivePagination from 'react-responsive-pagination';
 
 
 
@@ -177,6 +178,49 @@ const BookNow = () => {
     }, []);
 
 
+    // --------> all cp starts
+    // const [selectedCpUser, setSelectedCpUser] = useState<any[]>([]);
+
+    // console.log("🚀 ~ BookNow ~ selectedCp:", selectedCpUser);
+
+    const [allCpUsers, setAllCpUsers] = useState<any[]>([]);
+    // console.log("🚀 ~ BookNow ~ allCpUsers:", allCpUsers)
+
+    const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
+    const [selectedProducers, setSelectedProducers] = useState([]);
+    console.log("🚀 ~ BookNow ~ selectedProducers:", selectedProducers)
+
+    // for pagination
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const getAllCpUsers = async () => {
+        try {
+            const response = await fetch(`${API_ENDPOINT}cp?limit=10&page=${currentPage}`);
+            const users = await response.json();
+            setAllCpUsers(users.results);
+            setTotalPagesCount(users?.totalPages);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        getAllCpUsers();
+    }, [currentPage]);
+
+    // handleSelectProducer
+    const handleSelectProducer = (producer: any) => {
+        setSelectedProducers((prevSelected: any) => [...prevSelected, producer]);
+        coloredToast('success', 'Cp Selected!');
+    };
+
+    // --------> all cp ends
+
+
     // storing form one's data to this
     const [formDataPageOne, setFormDataPageOne] = useState({});
     // go to next
@@ -241,110 +285,6 @@ const BookNow = () => {
         });
     };
 
-    //Cost Breakdown
-    const costingssByCategory: any = {
-        series: [985, 737, 270],
-        options: {
-            chart: {
-                type: 'donut',
-                height: 460,
-                fontFamily: 'Nunito, sans-serif',
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            stroke: {
-                show: true,
-                width: 25,
-                colors: '#fff',
-            },
-            colors: ['#ACA686', '#5c1ac3', '#e7515a'],
-            legend: {
-                position: 'bottom',
-                horizontalAlign: 'center',
-                fontSize: '14px',
-                markers: {
-                    width: 10,
-                    height: 10,
-                    offsetX: -2,
-                },
-                height: 50,
-                offsetY: 20,
-            },
-            plotOptions: {
-                pie: {
-                    donut: {
-                        size: '65%',
-                        background: 'transparent',
-                        labels: {
-                            show: true,
-                            name: {
-                                show: true,
-                                fontSize: '29px',
-                                offsetY: -10,
-                            },
-                            value: {
-                                show: true,
-                                fontSize: '26px',
-                                color: undefined,
-                                offsetY: 16,
-                                formatter: (val: any) => {
-                                    return val;
-                                },
-                            },
-                            total: {
-                                show: true,
-                                label: 'Total',
-                                color: '#888ea8',
-                                fontSize: '29px',
-                                formatter: (w: any) => {
-                                    return w.globals.seriesTotals.reduce(function (a: any, b: any) {
-                                        return a + b;
-                                    }, 0);
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            labels: ['Team Crew Bill', 'Camera Cost', 'Transport'],
-            states: {
-                hover: {
-                    filter: {
-                        type: 'none',
-                        value: 0.15,
-                    },
-                },
-                active: {
-                    filter: {
-                        type: 'none',
-                        value: 0.15,
-                    },
-                },
-            },
-        },
-    };
-
-    /*  const tableData = [
-         {
-             id: 1,
-             costings: 'Team Crew Bill',
-             indicator: 1,
-             price: 234,
-         },
-         {
-             id: 2,
-             costings: 'Camera Cost',
-             indicator: 2,
-             price: 789,
-         },
-         {
-             id: 3,
-             costings: 'Transport',
-             indicator: 3,
-             price: 29876,
-         },
-     ]; */
 
     // all addons show
     const [addonsData, setAddonsData, addonsCategories] = useAddons();
@@ -430,14 +370,12 @@ const BookNow = () => {
 
     const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
     const [allRates, setAllRates] = useState(0);
-    // console.log("🚀 ~ BookNow ~ allRates:", allRates);
     const [hours, setHours] = useState({});
     const [computedRates, setComputedRates] = useState({});
 
     // ---> ---> test log starts
     const consoleLog = () => {
         if (selectedFilteredAddons.length !== 0) {
-            // setFinalSelectedAddons([...selectedFilteredAddons, updatedAddon]);
             console.log("🚀 ~ BookNow ~ selectedFilteredAddons:", selectedFilteredAddons);
         }
     }
@@ -797,192 +735,71 @@ const BookNow = () => {
 
                                             {/* <div className="flex flex-wrap items-start justify-between"> */}
                                             <div className="grid grid-cols-3 2xl:grid-cols-4 gap-6">
-                                                {/* match single */}
-                                                <div className="single-match  mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
-                                                    <div className="flex items-start justify-start">
-                                                        <div className="media relative">
-                                                            <Image
-                                                                src="/assets/images/producer-profile.png"
-                                                                className='mr-3 h-14 w-14 rounded-full'
-                                                                alt="Description of the image"
-                                                                width={500}
-                                                                height={300}
-                                                                layout="responsive" />
-
-                                                            <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
-                                                        </div>
-                                                        <div className="content ms-2">
-                                                            <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                            <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-                                                            <div className="location mt-2 flex items-center justify-start">
-
-                                                                {allSvgs.locationIcon}
-                                                                <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
+                                                {allCpUsers.length !== 0 && allCpUsers.map((cp) => (
+                                                    <div
+                                                        key={cp?.userId?.id}
+                                                        className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4"
+                                                    >
+                                                        <div className="flex items-start justify-start">
+                                                            <div className="media relative">
+                                                                <Image
+                                                                    src="/assets/images/producer-profile.png"
+                                                                    className="mr-3 h-14 w-14 rounded-full"
+                                                                    alt="Description of the image"
+                                                                    width={500}
+                                                                    height={300}
+                                                                    layout="responsive"
+                                                                />
+                                                                <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
                                                             </div>
-
-                                                            <div className="ratings mt-2">
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                    <div className="mt-[30px] flex">
-                                                        <Link href={'/'}>
-                                                            <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                view profile
-                                                            </span>
-                                                        </Link>
-                                                        <Link href={'/'}>
-                                                            <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                                                select
-                                                            </span>
-                                                        </Link>
-                                                    </div>
-                                                </div>
-                                                <div className="single-match  mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
-                                                    <div className="flex items-start justify-start">
-
-                                                        <div className="media relative">
-                                                            <Image
-                                                                src="/assets/images/producer-profile.png"
-                                                                className='mr-3 h-14 w-14 rounded-full'
-                                                                alt="Description of the image"
-                                                                width={500}
-                                                                height={300}
-                                                                layout="responsive" />
-
-                                                            <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
-                                                        </div>
-
-                                                        <div className="content ms-1">
-                                                            <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                            <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-                                                            <div className="location mt-2 flex items-center justify-start">
-                                                                <span className=''>
-                                                                    {allSvgs.locationIcon}
+                                                            <div className="content ms-2">
+                                                                <h4 className="font-sans text-[16px] capitalize leading-none text-black">
+                                                                    {cp?.userId?.name}
+                                                                </h4>
+                                                                <span className="profession text-[12px] capitalize leading-none text-[#838383]">
+                                                                    {(cp?.userId?.role === 'cp') && "beige producer"}
                                                                 </span>
-                                                                <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
-                                                            </div>
-
-                                                            <div className="ratings mt-2">
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                                                <div className="location mt-2 flex items-center justify-start">
+                                                                    {allSvgs.locationIcon}
+                                                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">
+                                                                        {cp?.city}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="ratings mt-2">
+                                                                    {[...Array(5)].map((_, index) => (
+                                                                        <FontAwesomeIcon
+                                                                            key={index}
+                                                                            icon={faStar}
+                                                                            className="mr-1"
+                                                                            style={{ color: '#FFC700' }}
+                                                                        />
+                                                                    ))}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-
-                                                    <div className="mt-[30px] flex">
-                                                        <Link href={'/'}>
-                                                            <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                                        <div className="mt-[30px] flex">
+                                                            <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
                                                                 view profile
-                                                            </span>
-                                                        </Link>
-                                                        <Link href={'/'}>
-                                                            <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
+                                                            </p>
+                                                            <p
+                                                                onClick={() => handleSelectProducer(cp)}
+                                                                className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
                                                                 select
-                                                            </span>
-                                                        </Link>
-                                                    </div>
-                                                </div>
-
-                                                <div className="single-match  mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
-                                                    <div className="flex items-start justify-start">
-
-                                                        <div className="media relative">
-                                                            <Image
-                                                                src="/assets/images/producer-profile.png"
-                                                                className='mr-3 h-14 w-14 rounded-full'
-                                                                alt="Description of the image"
-                                                                width={500}
-                                                                height={300}
-                                                                layout="responsive" />
-                                                            <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
-                                                        </div>
-
-                                                        <div className="content ms-2">
-                                                            <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                            <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-                                                            <div className="location mt-2 flex items-center justify-start">
-                                                                {/* <img src="assets/images/location.svg" alt="location" className="mr-1" /> */}
-                                                                {allSvgs.locationIcon}
-                                                                <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
-                                                            </div>
-                                                            <div className="ratings mt-2">
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                            </div>
+                                                            </p>
                                                         </div>
                                                     </div>
-                                                    <div className="mt-[30px] flex">
-                                                        <Link href={'/'}>
-                                                            <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                view profile
-                                                            </span>
-                                                        </Link>
-                                                        <Link href={'/'}>
-                                                            <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                                                select
-                                                            </span>
-                                                        </Link>
-                                                    </div>
-                                                </div>
+                                                ))}
+                                            </div>
 
-                                                {/* match single */}
-                                                <div className="single-match  mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
-                                                    <div className="flex items-start justify-start">
-                                                        <div className="media relative">
-                                                            <Image
-                                                                src="/assets/images/producer-profile.png"
-                                                                className='mr-3 h-14 w-14 rounded-full'
-                                                                alt="Description of the image"
-                                                                width={500}
-                                                                height={300}
-                                                                layout="responsive" />
 
-                                                            <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
-                                                        </div>
-                                                        <div className="content ms-2">
-                                                            <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                            <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-                                                            <div className="location mt-2 flex items-center justify-start">
-
-                                                                {allSvgs.locationIcon}
-                                                                <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">los angeles, CA</span>
-                                                            </div>
-
-                                                            <div className="ratings mt-2">
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                                <FontAwesomeIcon icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                    <div className="mt-[30px] flex">
-                                                        <Link href={'/'}>
-                                                            <span className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                view profile
-                                                            </span>
-                                                        </Link>
-                                                        <Link href={'/'}>
-                                                            <span className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                                                select
-                                                            </span>
-                                                        </Link>
-                                                    </div>
-                                                </div>
+                                            {/* pagination */}
+                                            <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
+                                                <ResponsivePagination
+                                                    current={currentPage}
+                                                    total={totalPagesCount}
+                                                    onPageChange={handlePageChange}
+                                                    maxWidth={400}
+                                                />
                                             </div>
                                         </div>
                                     )}
@@ -1072,42 +889,43 @@ const BookNow = () => {
                                             </>
 
                                             <>
-                                                <div className='panel mb-5'>
-                                                    {/* selected Cp section strats */}
-                                                    <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2 capitalize">Matched producer</label>
-                                                    <div className="flex flex-col items-start justify-between">
-                                                        {/* match single */}
-                                                        <div className='flex justify-between items-center gap-6'>
-                                                            <div className="single-match  mb-6 rounded-[10px] border px-6 py-4">
-                                                                <div className="flex items-center justify-center">
-                                                                    <div className="media relative">
-                                                                        <Image
-                                                                            src="/assets/images/producer-profile.png"
-                                                                            className='mr-3 h-24 w-24 rounded-full'
-                                                                            // className='h-12 w-12 rounded-full'
-                                                                            alt="Description of the image"
-                                                                            width={500}
-                                                                            height={300}
-                                                                            layout="responsive" />
 
-                                                                        <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
-                                                                    </div>
 
-                                                                    <div className="content ms-3 mt-1">
-                                                                        <h4 className="font-sans text-[16px] capitalize leading-none text-black">michel backford</h4>
-                                                                        <span className="profession text-[12px] capitalize leading-none text-[#838383]">beige producer</span>
-
-                                                                    </div>
-                                                                    <div className="ms-4 hover:text-red-500 duration-300" title='remove-cp'>
-                                                                        {allSvgs.closeModalSvg}
-                                                                    </div>
+                                                <div className="panel mb-8">
+                                                    {selectedProducers.length !== 0 && selectedProducers.map((selectedProducer: any) => (
+                                                        <div
+                                                            key={selectedProducer?.userId?.id}
+                                                            className="single-match mb-6 basis-[49%] w-4/12 rounded-[10px] border px-6 py-4"
+                                                        >
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="media relative">
+                                                                    <Image
+                                                                        src="/assets/images/producer-profile.png"
+                                                                        className="mr-3 h-14 w-14 rounded-full"
+                                                                        alt="Description of the image"
+                                                                        width={500}
+                                                                        height={300}
+                                                                        layout="responsive"
+                                                                    />
+                                                                    <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
                                                                 </div>
+                                                                <div className="content ms-3">
+                                                                    <h4 className="font-sans text-[16px] capitalize leading-none text-black">
+                                                                        {selectedProducer?.userId?.name}
+                                                                    </h4>
+
+                                                                    <span className="profession text-[12px] capitalize leading-none text-[#838383]">
+                                                                        {(selectedProducer?.userId?.role === 'cp') && "beige producer"}
+                                                                    </span>
+
+                                                                </div>
+
+                                                                <span className='hover:text-red-500 duration-300 ms-4'>
+                                                                    {allSvgs.closeModalSvg}
+                                                                </span>
                                                             </div>
                                                         </div>
-
-                                                    </div>
-                                                    {/* selected Cp section ends */}
-
+                                                    ))}
                                                 </div>
 
                                             </>
