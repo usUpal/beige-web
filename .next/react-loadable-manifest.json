@@ -1,50 +1,58 @@
 {
   "../components/Dashboards/DashboardCP.tsx -> react-apexcharts": {
-    "id": "../components/Dashboards/DashboardCP.tsx -> react-apexcharts",
+    "id": 7229,
     "files": [
-      "static/chunks/node_modules_react-apexcharts_dist_react-apexcharts_min_js.js"
+      "static/chunks/6c44d60f.6685730560f8e015.js",
+      "static/chunks/229.b434f7624f5450f3.js"
     ]
   },
   "../components/Dashboards/DashboardManager.tsx -> react-apexcharts": {
-    "id": "../components/Dashboards/DashboardManager.tsx -> react-apexcharts",
+    "id": 7229,
     "files": [
-      "static/chunks/node_modules_react-apexcharts_dist_react-apexcharts_min_js.js"
+      "static/chunks/6c44d60f.6685730560f8e015.js",
+      "static/chunks/229.b434f7624f5450f3.js"
     ]
   },
   "../components/Layouts/Sidebar.tsx -> ./Sidebars/SidebarCP": {
-    "id": "../components/Layouts/Sidebar.tsx -> ./Sidebars/SidebarCP",
+    "id": 1089,
     "files": [
-      "static/chunks/components_Layouts_Sidebars_SidebarCP_tsx.js"
+      "static/chunks/89.ef382e85b6aea049.js"
     ]
   },
   "../components/Layouts/Sidebar.tsx -> ./Sidebars/SidebarClient": {
-    "id": "../components/Layouts/Sidebar.tsx -> ./Sidebars/SidebarClient",
+    "id": 8708,
     "files": [
-      "static/chunks/components_Layouts_Sidebars_SidebarClient_tsx.js"
+      "static/chunks/708.d639d3af8ef001ab.js"
     ]
   },
   "../components/Layouts/Sidebar.tsx -> ./Sidebars/SidebarManager": {
-    "id": "../components/Layouts/Sidebar.tsx -> ./Sidebars/SidebarManager",
+    "id": 4763,
     "files": [
-      "static/chunks/components_Layouts_Sidebars_SidebarManager_tsx.js"
+      "static/chunks/763.79a1541648b04233.js"
     ]
   },
   "index.tsx -> @/components/Dashboards/DashboardCP": {
-    "id": "index.tsx -> @/components/Dashboards/DashboardCP",
+    "id": 1151,
     "files": [
-      "static/chunks/components_Dashboards_DashboardCP_tsx.js"
+      "static/chunks/151.34724164c462f6f4.js"
     ]
   },
   "index.tsx -> @/components/Dashboards/DashboardClient": {
-    "id": "index.tsx -> @/components/Dashboards/DashboardClient",
+    "id": 8519,
     "files": [
-      "static/chunks/components_Dashboards_DashboardClient_tsx.js"
+      "static/chunks/6c44d60f.6685730560f8e015.js",
+      "static/chunks/7d0bf13e.7fe7919da83eca3d.js",
+      "static/chunks/455-29ea511dbd48c1a6.js",
+      "static/chunks/536-247eb5634253c65a.js",
+      "static/css/1f087ab83f4c0c58.css",
+      "static/chunks/973.e9e55a9954ac27c4.js",
+      "static/chunks/519.2dc649c58dfc94f5.js"
     ]
   },
   "index.tsx -> @/components/Dashboards/DashboardManager": {
-    "id": "index.tsx -> @/components/Dashboards/DashboardManager",
+    "id": 304,
     "files": [
-      "static/chunks/components_Dashboards_DashboardManager_tsx.js"
+      "static/chunks/304.fef3e45bd4d64bf6.js"
     ]
   }
 }
