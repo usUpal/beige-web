@@ -157,7 +157,7 @@ declare global {
     status: boolean;
     category: string;
     info: string
-
+    hours:number
   }
 
   interface UpdatedAddonRates {

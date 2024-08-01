@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 import { API_ENDPOINT } from '@/config';
 import ResponsivePagination from 'react-responsive-pagination';
+import useAllCp from '@/hooks/useAllCp';
 
 
 
@@ -39,28 +40,39 @@ interface FormData {
 }
 const BookNow = () => {
 
+    const [addonsData] = useAddons();
+    const [allCpUsers, totalPagesCount, currentPage, setCurrentPage] = useAllCp();
+    const { userData } = useAuth() as any;
     const [activeTab, setActiveTab] = useState<any>(1);
-    const [isMounted, setIsMounted] = useState(false);
-    const [minBudget, setMinBudget] = useState<number>();
+
+    // const [isMounted, setIsMounted] = useState(false);
+    // const [minBudget, setMinBudget] = useState<number>();
+
     const [minBudgetError, setMinBudgetError] = useState('');
     const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
+
     const [startDateTime, setStartDateTime] = useState('');
     const [endDateTime, setEndDateTime] = useState('');
     const [dateTimes, setDateTimes] = useState<FormData[]>([]);
-    // console.log("🚀 ~ BookNow ~ dateTimes:", dateTimes);
     const [showDateTimes, setShowDateTimes] = useState<any>();
     const [getTotalDuration, setTotalDuration] = useState<any>();
-    const [items, setItems] = useState<any>([
-        {
-            id: 1,
-            title: '',
-            description: '',
-            rate: 0,
-            quantity: 0,
-            amount: 0,
-        },
-    ]);
-    const { userData } = useAuth() as any;
+
+    const [filteredAddonsData, setFilteredAddonsData] = useState([]);
+    const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
+    const [allAddonRates, setAllAddonRates] = useState(0);
+    const [allRates, setAllRates] = useState(0);
+    const [computedRates, setComputedRates] = useState<any>({});
+    const [addonExtraHours, setAddonExtraHours] = useState<any>({});
+
+    const [shootCosts, setShootCosts] = useState<number>(0);
+    const [formDataPageOne, setFormDataPageOne] = useState({});
+
+    const [selectedProducers, setSelectedProducers] = useState([]);
+    const [cp_ids, setCp_ids] = useState([]);
+    const [search, setSearch] = useState(false);
+    const [conditionalDesign, setConditionalDesign] = useState({
+        cpSelect: false,
+    });
 
     const {
         register,
@@ -75,12 +87,85 @@ const BookNow = () => {
     useEffect(() => {
         dispatch(setPageTitle('Client Dashboard'));
     });
-    const [search, setSearch] = useState(false);
+    // console.log("🚀 ~ BookNow ~ conditionalDesign:", conditionalDesign);
 
     useEffect(() => {
         const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')!) || [];
         setDateTimes(storedDateTimes);
     }, []);
+
+    useEffect(() => {
+        if (formDataPageOne?.content_type?.length !== 0 && formDataPageOne?.content_vertical !== "") {
+            handleShowAddonsData();
+        }
+    }, [formDataPageOne?.content_type?.length]);
+
+
+    // shootCostCalculation
+    const shootCostCalculation = (shoot_duration: any, content_type: any, cp_ids: any, content_vertical: any) => {
+        let shootDuration = parseInt(shoot_duration, 10);
+
+        // If content type is photo and video booth, then per hour rate will be 375
+        let hourlyRate = content_type?.length === 2 ? 375 : 250;
+
+        // Calculate shoot duration cost
+        let shootDurationCost;
+        if (cp_ids?.length === 0) {
+            shootDurationCost = shootDuration * hourlyRate * 1;
+        } else {
+            shootDurationCost = shootDuration * hourlyRate * cp_ids?.length;
+        }
+        let total = shootDurationCost;
+
+        // Add wedding shoot cost only if content_vertical is 'Wedding' or 'Business'
+        if (['Wedding', 'Commercial', 'Corporate'].includes(content_vertical)) {
+            const weddingOrBusinessShootCost = 1000;
+            const preProductionCost = 500;
+            const postProductionCost = 500;
+            total =
+                shootDurationCost +
+                weddingOrBusinessShootCost +
+                preProductionCost +
+                postProductionCost;
+        }
+        setShootCosts(total);
+        return total;
+    }
+
+
+    useEffect(() => {
+        const calculateUpdatedRate = (addon: addonTypes) => {
+            if (addon.ExtendRateType !== undefined || addonExtraHours[addon._id] !== undefined) {
+                const addonHours = addonExtraHours[addon?._id] || 0;
+                const newRate = (addon?.rate) + (addonHours * addon.ExtendRate);
+                return newRate;
+            } else {
+                return (addon?.rate);
+            }
+        };
+
+        const updatedComputedRates = filteredAddonsData.reduce((prevAddon: any, addon: addonTypes) => {
+            prevAddon[addon?._id] = calculateUpdatedRate(addon);
+            return prevAddon;
+        }, {});
+
+        setComputedRates(updatedComputedRates);
+
+        const updatedTotalAddonRates: UpdatedAddonRates = selectedFilteredAddons.reduce((previousAddon: any, addon: addonTypes) => {
+            previousAddon[addon?._id] = calculateUpdatedRate(addon);
+            return previousAddon;
+        }, {} as UpdatedAddonRates);
+
+        const totalRate = Object.values(updatedTotalAddonRates).reduce((acc, currentValue) => acc + currentValue, 0);
+        setAllAddonRates(totalRate);
+
+        setAllRates(totalRate + shootCosts);
+
+        /* if (formDataPageOne?.shoot_duration !== 0 && formDataPageOne?.cp_ids?.length > 0) {
+            shootCostCalculation(formDataPageOne?.shoot_duration, formDataPageOne?.content_type, formDataPageOne?.cp_ids, formDataPageOne?.content_vertical);
+        } */
+
+    }, [selectedFilteredAddons, filteredAddonsData, addonExtraHours]);
 
     const handleChangeStartDateTime = (e: ChangeEvent<HTMLInputElement>) => {
         const s_time = parseISO(e.target.value);
@@ -98,28 +183,12 @@ const BookNow = () => {
         const startDateTime = parseISO(start_date_time);
         const endDateTime = parseISO(end_date_time);
         const durationInHours = differenceInHours(endDateTime, startDateTime);
-        // console.log(durationInHours);
-        /* 
-            let days = 0;
-            let remainingHours = 0;
-            if (durationInHours > 24) {
-                days = Math.floor(durationInHours / 24);
-                remainingHours = durationInHours % 24;
-            } else {
-                remainingHours = durationInHours;
-            }
-            console.log(`Days: ${days}, Hours: ${remainingHours}`);
-            return {
-                days,
-                hours: remainingHours,
-            }; 
-        */
         return durationInHours;
     };
 
     const handleChangeMinBudget = (e: any) => {
         const value = e.target.value;
-        setMinBudget(value);
+        // setMinBudget(value);
         if (e.target.value < 1000) {
             setMinBudgetError('border-[#ff0000] focus:border-[#ff0000]');
             setMinBudgetErrorText('Minimum budget must be greater than $1000');
@@ -145,20 +214,16 @@ const BookNow = () => {
         setEndDateTime('');
 
         logTotalDuration(newDateTimes);
-        // console.log(newDateTime);
     };
 
     // date and time format convarsion
     function convertToEnglishDateFormat(inputDateString: any) {
         let date = new Date(inputDateString);
-
         let months = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"];
-
         let year = date.getFullYear();
         let month = date.getMonth();
         let day = date.getDate();
-
         let formattedDate = `${months[month]} ${day}, ${year}`;
 
         return formattedDate;
@@ -173,59 +238,22 @@ const BookNow = () => {
         setTotalDuration(totalDuration);
     };
 
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-
-    // --------> all cp starts
-    // const [selectedCpUser, setSelectedCpUser] = useState<any[]>([]);
-
-    // console.log("🚀 ~ BookNow ~ selectedCp:", selectedCpUser);
-
-    const [allCpUsers, setAllCpUsers] = useState<any[]>([]);
-    // console.log("🚀 ~ BookNow ~ allCpUsers:", allCpUsers)
-
-    const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
-    const [currentPage, setCurrentPage] = useState<number>(1);
-
-    const [selectedProducers, setSelectedProducers] = useState([]);
-    console.log("🚀 ~ BookNow ~ selectedProducers:", selectedProducers)
+    /*   useEffect(() => {
+          setIsMounted(true);
+      }, []); */
 
     // for pagination
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
 
-    const getAllCpUsers = async () => {
-        try {
-            const response = await fetch(`${API_ENDPOINT}cp?limit=10&page=${currentPage}`);
-            const users = await response.json();
-            setAllCpUsers(users.results);
-            setTotalPagesCount(users?.totalPages);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    // handleDeleteCp
+    const handleDeleteSelectedCp = (cpId: string) => {
+        setSelectedProducers(prevCp => prevCp.filter((cp: any) => cp.userId?.id !== cpId));
+        setCp_ids((prev: any) => prev.filter((cp: any) => cp.id !== cpId));
+    }
 
-    useEffect(() => {
-        getAllCpUsers();
-    }, [currentPage]);
-
-    // handleSelectProducer
-    const handleSelectProducer = (producer: any) => {
-        setSelectedProducers((prevSelected: any) => [...prevSelected, producer]);
-        coloredToast('success', 'Cp Selected!');
-    };
-
-    // --------> all cp ends
-
-
-    // storing form one's data to this
-    const [formDataPageOne, setFormDataPageOne] = useState({});
-    // go to next
-    const [isNext, setIsNext] = useState(false);
-
+    // --------> onsubmit function
     const onSubmit = async (data: any) => {
         if (data.content_type == false) {
             coloredToast('danger', 'Please select content type!');
@@ -250,14 +278,18 @@ const BookNow = () => {
                         type: 'Point',
                     },
                     shoot_duration: getTotalDuration,
+                    addOns: selectedFilteredAddons,
+                    cp_ids: cp_ids,
+                    addOns_cost: allAddonRates,
+                    shoot_cost: allRates,
                 };
                 if (Object.keys(formattedData).length > 0) {
                     setFormDataPageOne(formattedData);
-                    // setActiveTab(activeTab === 1 && 2);
                     setActiveTab(activeTab === 1 ? 2 : 3);
-                    setIsNext(true);
-                    reset();
-                    // console.log("Clicked safe --- formattedData-->", formattedData);
+                    // reset();
+                    // console.log("Clicked safe --- formattedData-->", formattedData?.content_vertical);
+
+                    shootCostCalculation(formattedData?.shoot_duration, formattedData?.content_type, formattedData?.cp_ids, formattedData?.content_vertical);
 
                 } else {
                     return false;
@@ -268,7 +300,7 @@ const BookNow = () => {
         }
     };
 
-    // Toast
+    // Toast -16
     const coloredToast = (color: any, message: string) => {
         const toast = Swal.mixin({
             toast: true,
@@ -285,11 +317,7 @@ const BookNow = () => {
         });
     };
 
-
-    // all addons show
-    const [addonsData, setAddonsData, addonsCategories] = useAddons();
-    const [filteredAddonsData, setFilteredAddonsData] = useState([]);
-
+    // show addon data
     const handleShowAddonsData = () => {
         let shoot_type = formDataPageOne?.content_vertical;
         const photography = formDataPageOne?.content_type?.includes('photo');
@@ -362,29 +390,9 @@ const BookNow = () => {
         }
     }
 
-    useEffect(() => {
-        if (formDataPageOne?.content_type?.length !== 0 && formDataPageOne?.content_vertical !== "") {
-            handleShowAddonsData();
-        }
-    }, [formDataPageOne?.content_type?.length])
-
-    const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
-    const [allRates, setAllRates] = useState(0);
-    const [hours, setHours] = useState({});
-    const [computedRates, setComputedRates] = useState({});
-
-    // ---> ---> test log starts
-    const consoleLog = () => {
-        if (selectedFilteredAddons.length !== 0) {
-            console.log("🚀 ~ BookNow ~ selectedFilteredAddons:", selectedFilteredAddons);
-        }
-    }
-    consoleLog();
-    // ---> ---> test log ends
-
     const handleHoursOnChange = (addonId: string, hoursInput: number) => {
         if (hoursInput >= 0) {
-            setHours((prevHours) => ({ ...prevHours, [addonId]: Number(hoursInput) }));
+            setAddonExtraHours((prevHours: number) => ({ ...prevHours, [addonId]: Number(hoursInput) }));
         }
         else { return; }
     };
@@ -392,87 +400,70 @@ const BookNow = () => {
     const handleCheckboxChange = (addon: addonTypes) => {
         const isAddonSelected = selectedFilteredAddons.some((selectedAddon: addonTypes) => selectedAddon?._id === addon?._id);
         if (!isAddonSelected) {
-            // const updatedAddon = { ...addon, computedRate: calculateUpdatedRate(addon), hours: hours[addon?._id] };
             const updatedAddon = {
-                // ...addon,
                 _id: addon?._id,
                 title: addon?.title,
                 rate: addon?.rate,
                 ExtendRate: addon?.ExtendRate,
                 status: addon?.status,
-                // computedRate: calculateUpdatedRate(addon),
-                hours: hours[addon?._id]
+                hours: addonExtraHours[addon?._id]
             };
-            // console.log("------------------>", updatedAddon);
 
             setSelectedFilteredAddons([...selectedFilteredAddons, updatedAddon]);
         } else {
-            setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon) => selectedAddon?._id !== addon?._id));
+            setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon: addonTypes) => selectedAddon?._id !== addon?._id));
         }
     };
 
-    const [ordersInfo, setOrdersInfo] = useState<OrderInfo[]>([]);
-    // console.log("🚀 ~~~~!!!~~~~ orderAddons:", orderAddons);
-    // const [extendRateTypeChecks, setExtendRateTypeChecks] = useState<boolean[]>([]);
+    const handleSelectProducer = (producer: any) => {
+        setConditionalDesign(prev => {
 
-    useEffect(() => {
-        const calculateUpdatedRate = (addon: addonTypes) => {
-            if (addon.ExtendRateType !== undefined || hours[addon._id] !== undefined) {
-                const addonHours = hours[addon?._id] || 0;
-                const newRate = (addon?.rate) + (addonHours * addon.ExtendRate);
-                return newRate;
-            } else {
-                return (addon?.rate);
-            }
-        };
+            const producerId = producer?.userId?.id;
+            const isSelected = !conditionalDesign.cpSelect;
+            // Update cp_ids state
+            setCp_ids((prevIds: any) =>
+                isSelected
+                    ? [{ id: producerId, decision: "accepted" }, ...prevIds]
+                    : prevIds.filter((idObj: any) => idObj?.id !== producerId)
+            );
 
-        const updatedComputedRates = filteredAddonsData.reduce((prevAddon: any, addon: addonTypes) => {
-            prevAddon[addon?._id] = calculateUpdatedRate(addon);
-            return prevAddon;
-        }, {});
+            // Manage selectedProducers state
+            setSelectedProducers((prevSelected: any) => {
+                if (isSelected) {
+                    return [...prevSelected, producer];
+                } else {
+                    return prevSelected.filter((p: any) => p.userId !== producer.userId);
+                }
+            });
+            /*  setSelectedProducers((prevSelected: any) => {
+                 if (prevSelected.some((p: any) => p?.userId === producer?.userId)) {
+                     return prevSelected.filter((p: any) => p?.userId?.id !== producer?.userId?.id);
+                 } else {
+                     const producerId = producer?.userId?.id;
+                     const isSelected = !conditionalDesign.cpSelect;
+ 
+                     setCp_ids((prevIds: any) =>
+                         isSelected
+                             ? [{ id: producerId, decision: "accepted" }, ...prevIds]
+                             : prevIds.filter((idObj: any) => idObj?.id !== producerId)
+                     );
+                     coloredToast(isSelected ? 'success' : 'danger', isSelected ? 'Cp Selected!' : 'Cp Unselected!');
+                     return [...prevSelected, producer];
+ 
+                 }
+             }) */
 
-        setComputedRates(updatedComputedRates);
+            // Show toast based on new cpSelect state
+            coloredToast(isSelected ? 'success' : 'danger', isSelected ? 'Cp Selected!' : 'Cp Unselected!');
 
-        const updatedTotalAddonRates: UpdatedAddonRates = selectedFilteredAddons.reduce((previousAddon: any, addon: addonTypes) => {
-            previousAddon[addon?._id] = calculateUpdatedRate(addon);
-            return previousAddon;
-        }, {} as UpdatedAddonRates);
+            return {
+                ...prev,
+                cpSelect: isSelected
+            };
+        });
 
-        const totalRate = Object.values(updatedTotalAddonRates).reduce((acc, currentValue) => acc + currentValue, 0);
-        setAllRates(totalRate);
-
-    }, [selectedFilteredAddons, filteredAddonsData, hours]);
-
-    // onSubmitTabTwo
-    const onSubmitTabTwo = async (data: any) => {
-        if (data.content_type == false) {
-            coloredToast('danger', 'Please select CP!');
-        }
-        else {
-            try {
-                const orderedCostInfo: OrderInfo[] = [
-                    {
-                        id: 1,
-                        costingsTitle: 'Addons Cost',
-                        indicator: 1,
-                        price: allRates,
-                    },
-                    {
-                        id: 1,
-                        costingsTitle: 'Shoot Cost',
-                        indicator: 2,
-                        price: 0,
-                    }
-                ];
-
-                setOrdersInfo(prev => [...orderedCostInfo, ...prev]);
-                setActiveTab(activeTab === 1 ? 2 : 3);
-                console.log("finalSubmit");
-            } catch (error) {
-                coloredToast('danger', 'error');
-            }
-        }
     };
+
 
     return (
         <div>
@@ -673,9 +664,7 @@ const BookNow = () => {
                                         </>
                                     )}
                                 </div>
-                            </form>
 
-                            <form className="space-y-5" onSubmit={handleSubmit(onSubmitTabTwo)}>
                                 <div className="mb-5">
                                     {activeTab === 2 && (
                                         <div>
@@ -733,64 +722,65 @@ const BookNow = () => {
                                                 {/* search ends */}
                                             </div>
 
-                                            {/* <div className="flex flex-wrap items-start justify-between"> */}
                                             <div className="grid grid-cols-3 2xl:grid-cols-4 gap-6">
-                                                {allCpUsers.length !== 0 && allCpUsers.map((cp) => (
-                                                    <div
-                                                        key={cp?.userId?.id}
-                                                        className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4"
-                                                    >
-                                                        <div className="flex items-start justify-start">
-                                                            <div className="media relative">
-                                                                <Image
-                                                                    src="/assets/images/producer-profile.png"
-                                                                    className="mr-3 h-14 w-14 rounded-full"
-                                                                    alt="Description of the image"
-                                                                    width={500}
-                                                                    height={300}
-                                                                    layout="responsive"
-                                                                />
-                                                                <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
-                                                            </div>
-                                                            <div className="content ms-2">
-                                                                <h4 className="font-sans text-[16px] capitalize leading-none text-black">
-                                                                    {cp?.userId?.name}
-                                                                </h4>
-                                                                <span className="profession text-[12px] capitalize leading-none text-[#838383]">
-                                                                    {(cp?.userId?.role === 'cp') && "beige producer"}
-                                                                </span>
-                                                                <div className="location mt-2 flex items-center justify-start">
-                                                                    {allSvgs.locationIcon}
-                                                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">
-                                                                        {cp?.city}
+                                                {allCpUsers?.length !== 0 && allCpUsers?.map((cp) => {
+                                                    const isSelected = selectedProducers?.some(p => p?.userId === cp?.userId);
+                                                    return (
+                                                        <div
+                                                            key={cp?.userId?.id}
+                                                            className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4"
+                                                        >
+                                                            <div className="flex items-start justify-start">
+                                                                <div className="media relative">
+                                                                    <Image
+                                                                        src="/assets/images/producer-profile.png"
+                                                                        className="mr-3 h-14 w-14 rounded-full"
+                                                                        alt="Description of the image"
+                                                                        width={500}
+                                                                        height={300}
+                                                                        layout="responsive"
+                                                                    />
+                                                                    <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                                                </div>
+                                                                <div className="content ms-2">
+                                                                    <h4 className="font-sans text-[16px] capitalize leading-none text-black">
+                                                                        {cp?.userId?.name}
+                                                                    </h4>
+                                                                    <span className="profession text-[12px] capitalize leading-none text-[#838383]">
+                                                                        {cp?.userId?.role === 'cp' && "beige producer"}
                                                                     </span>
-                                                                </div>
-                                                                <div className="ratings mt-2">
-                                                                    {[...Array(5)].map((_, index) => (
-                                                                        <FontAwesomeIcon
-                                                                            key={index}
-                                                                            icon={faStar}
-                                                                            className="mr-1"
-                                                                            style={{ color: '#FFC700' }}
-                                                                        />
-                                                                    ))}
+                                                                    <div className="location mt-2 flex items-center justify-start">
+                                                                        {/* Your location icon here */}
+                                                                        <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">
+                                                                            {cp?.city}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="ratings mt-2">
+                                                                        {[...Array(5)].map((_, index) => (
+                                                                            <FontAwesomeIcon
+                                                                                key={index}
+                                                                                icon={faStar}
+                                                                                className="mr-1"
+                                                                                style={{ color: '#FFC700' }}
+                                                                            />
+                                                                        ))}
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                            <div className="mt-[30px] flex">
+                                                                <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                                                    view profile
+                                                                </p>
+                                                                <p
+                                                                    onClick={() => handleSelectProducer(cp)}
+                                                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'} px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}>
+                                                                    {isSelected ? "Unselect" : "Select"}
+                                                                </p>
+                                                            </div>
                                                         </div>
-                                                        <div className="mt-[30px] flex">
-                                                            <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                view profile
-                                                            </p>
-                                                            <p
-                                                                onClick={() => handleSelectProducer(cp)}
-                                                                className="single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid border-[#C4C4C4] bg-white px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-black">
-                                                                select
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
-
 
                                             {/* pagination */}
                                             <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
@@ -811,7 +801,7 @@ const BookNow = () => {
                                         <div className="h-full">
                                             <>
                                                 <div
-                                                    className='panel mb-5 basis-[49%] rounded-[10px] px-7 py-5'
+                                                    className='panel mb-8 basis-[49%] rounded-[10px] px-7 py-5'
                                                 >
                                                     <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2">Select Addons</label>
                                                     <div className="flex flex-col sm:flex-row">
@@ -853,7 +843,7 @@ const BookNow = () => {
                                                                                             name='hour'
                                                                                             type='number'
                                                                                             className="bg-gray-100 border rounded p-1 focus:outline-none focus:border-gray-500 ms-12 md:ms-0 h-9 text-[13px] border-gray-300 md:w-16 w-12"
-                                                                                            defaultValue={(hours[addon?._id] || 0)}
+                                                                                            defaultValue={(addonExtraHours[addon?._id] || 0)}
                                                                                             min="0"
                                                                                             onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
                                                                                         // disabled={disableInput}
@@ -878,7 +868,7 @@ const BookNow = () => {
                                                                             </td>
                                                                             <td className="px-4 py-2 min-w-[120px]"></td>
                                                                             <td className="px-4 py-2 min-w-[120px]"></td>
-                                                                            <td className="px-4 py-2 min-w-[120px]">{allRates} </td>
+                                                                            <td className="px-4 py-2 min-w-[120px]">{allAddonRates} </td>
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>
@@ -889,114 +879,134 @@ const BookNow = () => {
                                             </>
 
                                             <>
-
-
                                                 <div className="panel mb-8">
-                                                    {selectedProducers.length !== 0 && selectedProducers.map((selectedProducer: any) => (
-                                                        <div
-                                                            key={selectedProducer?.userId?.id}
-                                                            className="single-match mb-6 basis-[49%] w-4/12 rounded-[10px] border px-6 py-4"
-                                                        >
-                                                            <div className="flex items-center justify-between">
-                                                                <div className="media relative">
-                                                                    <Image
-                                                                        src="/assets/images/producer-profile.png"
-                                                                        className="mr-3 h-14 w-14 rounded-full"
-                                                                        alt="Description of the image"
-                                                                        width={500}
-                                                                        height={300}
-                                                                        layout="responsive"
-                                                                    />
-                                                                    <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                                    <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black"> Selected {selectedProducers.length > 1 ? "producers" : "producer"}</h2>
+                                                    <div className=''>
+                                                        {selectedProducers.length !== 0 && selectedProducers.map((selectedProducer: any) => (
+                                                            <div
+                                                                key={selectedProducer?.userId?.id}
+                                                                className="single-match mb-6 basis-[49%] w-5/12 rounded-[10px] border px-4 py-2"
+                                                            >
+                                                                <div className="flex items-center justify-between">
+                                                                    <div className='flex justify-start items-center'>
+                                                                        <div className="media relative">
+                                                                            <Image
+                                                                                src="/assets/images/producer-profile.png"
+                                                                                className="mr-3 h-14 w-14 rounded-full"
+                                                                                alt="Description of the image"
+                                                                                width={50}
+                                                                                height={30}
+                                                                                layout="responsive"
+                                                                            />
+                                                                            <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                                                        </div>
+
+                                                                        <div className="content ms-3">
+                                                                            <h4 className="font-sans text-[16px] capitalize leading-none text-black">
+                                                                                {selectedProducer?.userId?.name}
+                                                                            </h4>
+                                                                            <span className="profession text-[12px] capitalize leading-none text-[#838383]">
+                                                                                {(selectedProducer?.userId?.role === 'cp') && "beige producer"}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* <span
+                                                                        className='hover:text-red-500 duration-300 cursor-pointer'
+                                                                        onClick={() => handleDeleteSelectedCp(selectedProducer?.userId?.id)}
+
+                                                                    >
+                                                                        {allSvgs.closeModalSvg}
+                                                                    </span> */}
                                                                 </div>
-                                                                <div className="content ms-3">
-                                                                    <h4 className="font-sans text-[16px] capitalize leading-none text-black">
-                                                                        {selectedProducer?.userId?.name}
-                                                                    </h4>
-
-                                                                    <span className="profession text-[12px] capitalize leading-none text-[#838383]">
-                                                                        {(selectedProducer?.userId?.role === 'cp') && "beige producer"}
-                                                                    </span>
-
-                                                                </div>
-
-                                                                <span className='hover:text-red-500 duration-300 ms-4'>
-                                                                    {allSvgs.closeModalSvg}
-                                                                </span>
                                                             </div>
-                                                        </div>
-                                                    ))}
+                                                        ))}
+                                                    </div>
                                                 </div>
-
                                             </>
 
                                             <>
                                                 <div
-                                                    className='panel mb-5 basis-[49%] rounded-[10px] px-7 py-5'
-                                                >
-                                                    <label className="ml-2 sm:ml-0 sm:w-1/4 mr-2">Selected Addons</label>
-                                                    <div className="flex flex-col sm:flex-row">
-                                                        <div className="flex-1">
-                                                            <div className="table-responsive ">
-                                                                <table className='w-full'>
-                                                                    <thead>
-                                                                        <tr className="bg-gray-200 dark:bg-gray-800">
+                                                    className='panel mb-5 basis-[49%] rounded-[10px] px-2 py-5'>
+                                                    <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black"
+                                                    // onClick={() => shootCostCalculation()}
+                                                    > Total Calculation</h2>
 
-                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Title</th>
+                                                    <table className='table-responsive'>
+                                                        <tbody>
+                                                            {
+                                                                <tr className="">
+                                                                    <td className="">
+                                                                        <h2 className="text-[16px] font-semibold"> Shoot Cost</h2>
+                                                                    </td>
 
-                                                                            <th className="px-1 py-2 font-mono min-w-[120px]">Base Rate</th>
-                                                                            <th className="py-2 font-mono min-w-[20px]">Extra Hour</th>
-                                                                            <th className="py-2 font-mono min-w-[20px]">Extra Rate</th>
-                                                                        </tr>
-                                                                    </thead>
+                                                                    <td className=""></td>
+                                                                    <td className=""></td>
+                                                                    <td className=""></td>
 
-                                                                    <tbody>
-                                                                        {selectedFilteredAddons?.map((addon: addonTypes, index) => (
-                                                                            <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                                    <td className="">${shootCosts} </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                    {
+                                                        // selectedFilteredAddons.length !== 0 &&
+                                                        <>
+                                                            <div className="flex flex-col sm:flex-row">
+                                                                <div className="flex-1">
+                                                                    <div className="table-responsive ">
+                                                                        <table className='w-full'>
+                                                                            <tbody>
 
-                                                                                <td className="px-4 py-2 min-w-[120px]">
-                                                                                    {addon?.title}
-                                                                                </td>
+                                                                                {/*  {
+                                                                                    <tr className="">
+                                                                                        <td className="">
+                                                                                            <h2 className="text-[16px] font-semibold"> Shoot Cost</h2>
+                                                                                        </td>
+
+                                                                                        <td className=""></td>
+
+                                                                                        <td className="">${shootCosts} </td>
+                                                                                    </tr>
+                                                                                } */}
 
 
-                                                                                <td className="px-4 py-2 min-w-[120px]">
-                                                                                    {addon?.rate}
-                                                                                </td>
+                                                                                {selectedFilteredAddons?.map((addon: addonTypes, index) => (
+                                                                                    <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                                                        <td className="px-4 py-2 min-w-[120px]">
+                                                                                            {addon?.title}
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            {addon?.hours === undefined ? 0 : addonExtraHours[addon?._id]}
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            {computedRates[addon?._id] || addon?.rate}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                ))}
 
-                                                                                {/* <td className="px-4 py-2 min-w-[120px]">
-                                                                                    {addon?.hour}
-                                                                                </td> */}
-                                                                                <td>{addon?.hours === undefined ? 0 : addon?.hours}</td>
-
-                                                                                <td className="px-4 py-2 min-w-[120px]">
-                                                                                    {computedRates[addon?._id] || addon?.rate}
-                                                                                </td>
-                                                                            </tr>
-                                                                        ))}
-
-                                                                        {/* Horizontal border */}
-                                                                        <tr>
-                                                                            <td colSpan={6} className=" border-t border-gray-500 w-full ">
-                                                                            </td>
-                                                                        </tr>
-                                                                        {
-                                                                            selectedFilteredAddons.length > 0 &&
-                                                                            <tr className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-600 w-full mt-[-10px]">
-
-                                                                                <td className="px-4 py-2 min-w-[120px]">
-                                                                                    <h2 className="text-[16px] font-semibold">Total Addons Cost</h2>
-                                                                                </td>
-                                                                                <td className="px-4 py-2 min-w-[120px]"></td>
-                                                                                <td className="px-4 py-2 min-w-[120px]"></td>
-
-                                                                                <td className="px-4 py-2 min-w-[120px]">{allRates} </td>
-                                                                            </tr>
-                                                                        }
-                                                                    </tbody>
-                                                                </table>
+                                                                                <tr>
+                                                                                    <td colSpan={6} className=" border-t border-gray-500 w-full ">
+                                                                                    </td>
+                                                                                </tr>
+                                                                                {
+                                                                                    // selectedFilteredAddons.length > 0 &&
+                                                                                    <tr className="">
+                                                                                        <td className="">
+                                                                                            <h2 className="text-[16px] font-semibold">Total Costs</h2>
+                                                                                        </td>
+                                                                                        <td className=""> </td>
+                                                                                        {/* <td className="">{formDataPageOne?.cp_ids.length === 0   allRates} </td> */}
+                                                                                        <td className="">{selectedFilteredAddons.length > 0 ? allRates : shootCosts} </td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
+                                                        </>
+                                                    }
                                                 </div>
                                             </>
 
@@ -1007,16 +1017,14 @@ const BookNow = () => {
                                 {/* page end buttons */}
                                 <div className="flex justify-between">
                                     <button type="button" className={`btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab === 1 ? 'hidden' : ''}`}
-                                        // onClick={() => setActiveTab(activeTab === 2 && 1)}
                                         onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}
                                     >
                                         Back
                                     </button>
 
-                                    {/*  {activeTab3 === 3 ? 'Finish' : activeTab3 === 2 ? 'Place Order' : 'Next'} */}
                                     {activeTab === 2 &&
                                         <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto">
-                                            Place Order
+                                            Next
                                         </button>
                                     }
 
