@@ -6,7 +6,7 @@ import axios from 'axios';
 import { Dialog, Transition } from '@headlessui/react';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
-let uploadCancelFunc = () => { };
+let uploadCancelFunc = () => {};
 
 const initialUploadState = {
   files: [],
@@ -44,7 +44,7 @@ function uploadStateReducer(state: any, action: any) {
         error: true,
         uploading: false,
         progress: 100,
-        status: action.error + ' (preceding files successfully uploaded)',
+        status: action.error,
       };
     case 'setUploading':
       return { ...state, uploading: action.uploading };
@@ -73,6 +73,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
   const fileInput = createRef();
 
   const [state, dispatch] = useReducer(uploadStateReducer, initialUploadState);
+  console.log('🚀 ~ FileUploadModal ~ state:', state);
 
   const startUpload = async () => {
     const shouldBePublic = (await api.getSettings()).defaultPublicFiles;
@@ -93,8 +94,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
         });
         const uploadPolicy = await api
           .getNewUploadPolicy(file?.name, file?.type, file?.size) // Get upload policy for full file destination path.
-          .catch((err) => handleStepFail(err, `Unable to get upload policy for file ${i + 1}`));
-
+          .catch((err) => handleStepFail(err, `Unable to get upload info for files ( Make sure the order is exist )`));
         dispatch({
           type: 'setStatus',
           status: `Uploading file ${i + 1} of ${state.files.length}...`,
@@ -157,35 +157,29 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
     dispatch({ type: 'setFiles', files: fileArray });
   };
 
-  const fileList = state.files.map((file: any) => ((console.log(file)
-  ),
-    <li key={file.name}>
-      {/* <span className={styles.fileListName}>{file.name}</span> - {formatBytes(file.size)} */}
-      <span>{file.name}</span> - {formatBytes(file.size)}
-    </li>
-  ));
+  const fileList = state.files.map(
+    (file: any) => (
+      console.log('🚀 ~ FileUploadModal ~ file:', file),
+      (
+        <li key={file.name}>
+          <span>{file.name}</span> - {formatBytes(file.size)}
+        </li>
+      )
+    )
+  );
 
   return (
     <div>
-
       {/* Delete Modal */}
       <>
         <div className="mb-5">
           <Transition appear show={open} as={Fragment}>
-            <Dialog as="div" open={open} onClose={() => dispatch({ type: 'switchFolderUpload' })} >
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
+            <Dialog as="div" open={open} onClose={() => dispatch({ type: 'switchFolderUpload' })}>
+              <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
                 <div className="fixed inset-0" />
               </Transition.Child>
-              <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
-                <div className="flex items-center justify-center min-h-screen px-4">
+              <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                <div className="flex min-h-screen items-center justify-center px-4">
                   <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -195,41 +189,35 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Dialog.Panel as="div" className="panel my-24 w-3/6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark pb-6">
-                      <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
-                        <div className="text-lg font-bold capitalize text-red-600">
-                          Upload {state.folderUpload ? 'a Folder' : 'Files'}
-                        </div>
-                        <button type="button" className="text-white-dark hover:text-dark text-[16px]" onClick={() => {
-                          dispatch({ type: 'reset' });
-                          closeModal();
-                        }}>
+                    <Dialog.Panel as="div" className="panel my-24 w-3/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark">
+                      <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
+                        <div className="text-lg font-bold capitalize text-red-600">Upload {state.folderUpload ? 'a Folder' : 'Files'}</div>
+                        <button
+                          type="button"
+                          className="text-[16px] text-white-dark hover:text-dark"
+                          onClick={() => {
+                            dispatch({ type: 'reset' });
+                            closeModal();
+                          }}
+                        >
                           {allSvgs.closeModalSvg}
                         </button>
                       </div>
 
                       <div className="px-5">
-                        <p className='flex items-center'>
-                          <label
-                            className="w-12 h-6 relative"
-                            onClick={() => dispatch({ type: 'switchFolderUpload' })}
-                          >
-                            <input
-                              type="checkbox"
-                              className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
-                              id="custom_switch_checkbox1"
-                              checked={state.folderUpload}
-                            />
-                            <span
-                              className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"
-                            >
-                            </span>
+                        <p className="flex items-center">
+                          <label className="relative h-6 w-12" onClick={() => dispatch({ type: 'switchFolderUpload' })}>
+                            <input type="checkbox" className="custom_switch peer absolute z-10 h-full w-full cursor-pointer opacity-0" id="custom_switch_checkbox1" checked={state.folderUpload} />
+                            <span className="block h-full rounded-full bg-[#ebedf2] before:absolute before:bottom-1 before:left-1 before:h-4 before:w-4 before:rounded-full before:bg-white before:transition-all before:duration-300 peer-checked:bg-primary peer-checked:before:left-7 dark:bg-dark dark:before:bg-white-dark dark:peer-checked:before:bg-white"></span>
                           </label>
-                          <span className='ms-3 '>Select {!state.folderUpload ? 'a Folder' : 'Files'}</span>
+                          <span className="ms-3 ">Select {!state.folderUpload ? 'a Folder' : 'Files'}</span>
                         </p>
 
                         <p className=" font-semibold">
-                          <p>You can select multiple files or a single folder to upload. If you upload a folder, file structure will be preserved. Files will be uploaded to {(path || []).join('/') + '/'}.</p>
+                          <p>
+                            You can select multiple files or a single folder to upload. If you upload a folder, file structure will be preserved. Files will be uploaded to{' '}
+                            {(path || []).join('/') + '/'}.
+                          </p>
                         </p>
 
                         {/* <div className={styles.fileInputContainer}> */}
@@ -247,24 +235,26 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             onChange={onFilesChange}
                           />
 
-                          <button type="button" className="btn btn-dark text-[18px]" style={{ display: 'block', margin: '15px auto' }}
-                            onClick={() => fileInput.current.click()} disabled={state.uploading}
+                          <button
+                            type="button"
+                            className="btn btn-dark text-[18px]"
+                            style={{ display: 'block', margin: '15px auto' }}
+                            onClick={() => fileInput.current.click()}
+                            disabled={state.uploading}
                           >
                             Select {state.folderUpload ? 'a Folder' : 'Files'}
                           </button>
-
                         </div>
 
                         {/* <div className={styles.fileList}> */}
-                        <div >
-                          <li className='list-none'>{fileList}</li>
+                        <div>
+                          <li className="list-none">{fileList}</li>
                         </div>
 
                         {state.status && (
                           <div className="mb-5 space-y-5">
-                            <div className="w-full h-4 bg-[#ebedf2] dark:bg-dark/40 rounded-full">
-
-                              <div className={`bg-info h-4 rounded-full text-right text-white text-xs`} style={{ width: `${state.progress}%` }}>
+                            <div className="h-4 w-full rounded-full bg-[#ebedf2] dark:bg-dark/40">
+                              <div className={`h-4 rounded-full bg-info text-right text-xs text-white`} style={{ width: `${state.progress}%` }}>
                                 {state.uploading ? `${state.progress}%` : state.error ? 'Error!' : `${state.progress}%`}
                               </div>
                             </div>
@@ -281,9 +271,9 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                           <strong>{state.status}</strong>
                         </p>
 
-                        <div className="flex justify-end items-center mt-8">
+                        <div className="mt-8 flex items-center justify-end">
                           <button
-                            className='mr-3 btn btn-outline-dark text-[16px]'
+                            className="btn btn-outline-dark mr-3 text-[16px]"
                             color="black"
                             onClick={() => {
                               dispatch({ type: 'reset' });
@@ -293,21 +283,13 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             Cancel
                           </button>
 
-                          <button
-                            className=' flex items-center btn btn-outline-secondary relative text-[16px]'
-                            onClick={startUpload}
-                            disabled={!state.files.length || state.uploading}
-                          >
-                            <span className="flex items-center justify-center duration-300">
-                              {allSvgs.uploadIcon}
-                            </span>
+                          <button className=" btn btn-outline-secondary relative flex items-center text-[16px]" onClick={startUpload} disabled={!state.files.length || state.uploading}>
+                            <span className="flex items-center justify-center duration-300">{allSvgs.uploadIcon}</span>
                             {state.uploading ? 'Uploading...' : 'Start Upload'}
                           </button>
                         </div>
-
                       </div>
                     </Dialog.Panel>
-
                   </Transition.Child>
                 </div>
               </div>
@@ -315,10 +297,8 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
           </Transition>
         </div>
       </>
-    </div >
+    </div>
   );
 };
 
 export default FileUploadModal;
-
-
