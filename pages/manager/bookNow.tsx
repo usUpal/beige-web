@@ -958,19 +958,6 @@ const BookNow = () => {
                                                                         <table className='w-full'>
                                                                             <tbody>
 
-                                                                                {/*  {
-                                                                                    <tr className="">
-                                                                                        <td className="">
-                                                                                            <h2 className="text-[16px] font-semibold"> Shoot Cost</h2>
-                                                                                        </td>
-
-                                                                                        <td className=""></td>
-
-                                                                                        <td className="">${shootCosts} </td>
-                                                                                    </tr>
-                                                                                } */}
-
-
                                                                                 {selectedFilteredAddons?.map((addon: addonTypes, index) => (
                                                                                     <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                                                                                         <td className="px-4 py-2 min-w-[120px]">
