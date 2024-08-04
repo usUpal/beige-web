@@ -50,7 +50,7 @@ const CpUsers = () => {
 
     // User Single
     // Also unUsed Function For APi
-    const getUserDetails = async (singleUserId: string) => {
+    /* const getUserDetails = async (singleUserId: string) => {
         setLoading(true);
         try {
             const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
@@ -71,7 +71,7 @@ const CpUsers = () => {
             console.error(error);
             setLoading(false);
         }
-    };
+    }; */
 
     const dispatch = useDispatch();
     useEffect(() => {

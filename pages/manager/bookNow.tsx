@@ -19,6 +19,7 @@ import Image from 'next/image';
 import { API_ENDPOINT } from '@/config';
 import ResponsivePagination from 'react-responsive-pagination';
 import useAllCp from '@/hooks/useAllCp';
+import useClent from '@/hooks/useClent';
 
 
 
@@ -41,19 +42,27 @@ interface FormData {
 const BookNow = () => {
 
     const [addonsData] = useAddons();
-    const [allCpUsers, totalPagesCount, currentPage, setCurrentPage] = useAllCp();
+    const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails] = useAllCp();
+
+    const [allClients, onlyClients] = useClent();
+
+    console.log("🚀 ~ BookNow ~ onlyClients:", onlyClients)
+
     const { userData } = useAuth() as any;
     const [activeTab, setActiveTab] = useState<any>(1);
 
     // const [isMounted, setIsMounted] = useState(false);
-    // const [minBudget, setMinBudget] = useState<number>();
+    const [minBudget, setMinBudget] = useState<number>();
+    console.log("🚀 ~ BookNow ~ minBudget:", typeof (minBudget))
 
     const [minBudgetError, setMinBudgetError] = useState('');
     const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
-
+    const [maxBudgetErrorText, setMaxBudgetErrorText] = useState('');
+    // console.log(userData);
     const [startDateTime, setStartDateTime] = useState('');
     const [endDateTime, setEndDateTime] = useState('');
     const [dateTimes, setDateTimes] = useState<FormData[]>([]);
+    console.log("🚀 ~ BookNow ~ dateTimes:", dateTimes);
     const [showDateTimes, setShowDateTimes] = useState<any>();
     const [getTotalDuration, setTotalDuration] = useState<any>();
 
@@ -72,8 +81,10 @@ const BookNow = () => {
     const [search, setSearch] = useState(false);
     const [conditionalDesign, setConditionalDesign] = useState({
         cpSelect: false,
-    });
 
+    });
+    const [producerSelected, setProducerSelected] = useState(false);
+    // const [getUserDetails] = useAllCp();
     const {
         register,
         handleSubmit,
@@ -169,6 +180,7 @@ const BookNow = () => {
 
     const handleChangeStartDateTime = (e: ChangeEvent<HTMLInputElement>) => {
         const s_time = parseISO(e.target.value);
+        console.log("🚀 ~ handleChangeStartDateTime ~ s_time:", s_time)
         const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         setStartDateTime(starting_date);
     };
@@ -188,13 +200,26 @@ const BookNow = () => {
 
     const handleChangeMinBudget = (e: any) => {
         const value = e.target.value;
-        // setMinBudget(value);
+        setMinBudget(value);
         if (e.target.value < 1000) {
             setMinBudgetError('border-[#ff0000] focus:border-[#ff0000]');
             setMinBudgetErrorText('Minimum budget must be greater than $1000');
         } else {
             setMinBudgetError('');
             setMinBudgetErrorText('');
+        }
+    };
+    const handleChangeMaxBudget = (e: any) => {
+        const value = e.target.value;
+        const CopmareBudgetValue = parseInt(minBudget);
+        // console.log("🚀 ~ handleChangeMaxBudget ~ CopmareBudgetValue:", CopmareBudgetValue);
+        // setMinBudget(value);
+        if (e.target.value < CopmareBudgetValue) {
+            setMinBudgetError('border-[#ff0000] focus:border-[#ff0000]');
+            setMaxBudgetErrorText(`Maximum budget must be greater than ${CopmareBudgetValue}`);
+        } else {
+            setMinBudgetError('')
+            setMaxBudgetErrorText('')
         }
     };
 
@@ -205,15 +230,18 @@ const BookNow = () => {
             duration: calculateDuration(startDateTime, endDateTime),
             date_status: 'confirmed',
         };
-        const newDateTimes = [...dateTimes, newDateTime];
-        setDateTimes(newDateTimes);
+        console.log("🚀 ~ addDateTime ~ newDateTime:", newDateTime);
 
-        setShowDateTimes(JSON.stringify(newDateTimes));
+        if (newDateTime?.end_date_time !== '' && newDateTime?.start_date_time !== "") {
+            const newDateTimes = [...dateTimes, newDateTime];
+            setDateTimes(newDateTimes);
+            setShowDateTimes(JSON.stringify(newDateTimes));
+            logTotalDuration(newDateTimes);
 
-        setStartDateTime('');
-        setEndDateTime('');
+            setStartDateTime('');
+            setEndDateTime('');
+        }
 
-        logTotalDuration(newDateTimes);
     };
 
     // date and time format convarsion
@@ -238,9 +266,17 @@ const BookNow = () => {
         setTotalDuration(totalDuration);
     };
 
+    // handleTimeRemove
+    const handleTimeRemove = () => {
+        setDateTimes([])
+    }
+
     /*   useEffect(() => {
           setIsMounted(true);
-      }, []); */
+      }, []);
+      
+    //   ---->
+          */
 
     // for pagination
     const handlePageChange = (page: number) => {
@@ -253,52 +289,7 @@ const BookNow = () => {
         setCp_ids((prev: any) => prev.filter((cp: any) => cp.id !== cpId));
     }
 
-    // --------> onsubmit function
-    const onSubmit = async (data: any) => {
-        if (data.content_type == false) {
-            coloredToast('danger', 'Please select content type!');
-        }
-        else {
-            try {
-                const formattedData = {
-                    budget: {
-                        max: parseFloat(data.max_budget),
-                        min: parseFloat(data.min_budget),
-                    },
-                    client_id: userData.id,
-                    content_type: data.content_type,
-                    content_vertical: data.content_vertical,
-                    description: data.description,
-                    location: localStorage.getItem('location'),
-                    order_name: data.order_name,
-                    references: data.references,
-                    shoot_datetimes: JSON.parse(showDateTimes),
-                    geo_location: {
-                        coordinates: [parseFloat(localStorage.getItem('longitude') || '0'), parseFloat(localStorage.getItem('latitude') || '0')],
-                        type: 'Point',
-                    },
-                    shoot_duration: getTotalDuration,
-                    addOns: selectedFilteredAddons,
-                    cp_ids: cp_ids,
-                    addOns_cost: allAddonRates,
-                    shoot_cost: allRates,
-                };
-                if (Object.keys(formattedData).length > 0) {
-                    setFormDataPageOne(formattedData);
-                    setActiveTab(activeTab === 1 ? 2 : 3);
-                    // reset();
-                    // console.log("Clicked safe --- formattedData-->", formattedData?.content_vertical);
 
-                    shootCostCalculation(formattedData?.shoot_duration, formattedData?.content_type, formattedData?.cp_ids, formattedData?.content_vertical);
-
-                } else {
-                    return false;
-                }
-            } catch (error) {
-                coloredToast('danger', 'error');
-            }
-        }
-    };
 
     // Toast -16
     const coloredToast = (color: any, message: string) => {
@@ -416,52 +407,108 @@ const BookNow = () => {
     };
 
     const handleSelectProducer = (producer: any) => {
-        setConditionalDesign(prev => {
+        if (!producer) {
+            console.log("Producer is empty");
+            setProducerSelected(false);
+            setActiveTab(2); // Set active tab only if a producer is not selected
+            return; // Exit the function early to prevent further actions
+        } else {
+            setConditionalDesign(prev => {
+                const producerId = producer?.userId?.id;
+                const isSelected = !conditionalDesign.cpSelect;
+                // Update cp_ids state
+                setCp_ids((prevIds: any) =>
+                    isSelected
+                        ? [{ id: producerId, decision: "accepted" }, ...prevIds]
+                        : prevIds.filter((idObj: any) => idObj?.id !== producerId)
+                );
 
-            const producerId = producer?.userId?.id;
-            const isSelected = !conditionalDesign.cpSelect;
-            // Update cp_ids state
-            setCp_ids((prevIds: any) =>
-                isSelected
-                    ? [{ id: producerId, decision: "accepted" }, ...prevIds]
-                    : prevIds.filter((idObj: any) => idObj?.id !== producerId)
-            );
+                // Manage selectedProducers state
+                setSelectedProducers((prevSelected: any) => {
+                    if (isSelected) {
+                        return [...prevSelected, producer];
+                    } else {
+                        return prevSelected.filter((p: any) => p.userId !== producer.userId);
+                    }
+                });
+                /*  setSelectedProducers((prevSelected: any) => {
+                     if (prevSelected.some((p: any) => p?.userId === producer?.userId)) {
+                         return prevSelected.filter((p: any) => p?.userId?.id !== producer?.userId?.id);
+                     } else {
+                         const producerId = producer?.userId?.id;
+                         const isSelected = !conditionalDesign.cpSelect;
+         
+                         setCp_ids((prevIds: any) =>
+                             isSelected
+                                 ? [{ id: producerId, decision: "accepted" }, ...prevIds]
+                                 : prevIds.filter((idObj: any) => idObj?.id !== producerId)
+                         );
+                         coloredToast(isSelected ? 'success' : 'danger', isSelected ? 'Cp Selected!' : 'Cp Unselected!');
+                         return [...prevSelected, producer];
+                      }
+                 }) */
 
-            // Manage selectedProducers state
-            setSelectedProducers((prevSelected: any) => {
-                if (isSelected) {
-                    return [...prevSelected, producer];
-                } else {
-                    return prevSelected.filter((p: any) => p.userId !== producer.userId);
-                }
+                setProducerSelected(true);
+                // Show toast based on new cpSelect state
+                coloredToast(isSelected ? 'success' : 'danger', isSelected ? 'Cp Selected!' : 'Cp Unselected!');
+
+                return {
+                    ...prev,
+                    cpSelect: isSelected
+                };
             });
-            /*  setSelectedProducers((prevSelected: any) => {
-                 if (prevSelected.some((p: any) => p?.userId === producer?.userId)) {
-                     return prevSelected.filter((p: any) => p?.userId?.id !== producer?.userId?.id);
-                 } else {
-                     const producerId = producer?.userId?.id;
-                     const isSelected = !conditionalDesign.cpSelect;
- 
-                     setCp_ids((prevIds: any) =>
-                         isSelected
-                             ? [{ id: producerId, decision: "accepted" }, ...prevIds]
-                             : prevIds.filter((idObj: any) => idObj?.id !== producerId)
-                     );
-                     coloredToast(isSelected ? 'success' : 'danger', isSelected ? 'Cp Selected!' : 'Cp Unselected!');
-                     return [...prevSelected, producer];
- 
-                 }
-             }) */
+        }
+    };
 
-            // Show toast based on new cpSelect state
-            coloredToast(isSelected ? 'success' : 'danger', isSelected ? 'Cp Selected!' : 'Cp Unselected!');
+    // --------> onsubmit function
+    const onSubmit = async (data: any) => {
+        if (activeTab == 2 && !producerSelected) {
+            coloredToast('danger', 'Please select a producer!');
+            return; // Exit the function early if no producer is selected
+        }
+        if (data.content_type == false) {
+            coloredToast('danger', 'Please select content type!');
+        }
+        else {
+            try {
+                const formattedData = {
+                    budget: {
+                        max: parseFloat(data.max_budget),
+                        min: parseFloat(data.min_budget),
+                    },
+                    client_id: userData.id,
+                    content_type: data.content_type,
+                    content_vertical: data.content_vertical,
+                    description: data.description,
+                    location: localStorage.getItem('location'),
+                    order_name: data.order_name,
+                    references: data.references,
+                    shoot_datetimes: JSON.parse(showDateTimes),
+                    geo_location: {
+                        coordinates: [parseFloat(localStorage.getItem('longitude') || '0'), parseFloat(localStorage.getItem('latitude') || '0')],
+                        type: 'Point',
+                    },
+                    shoot_duration: getTotalDuration,
+                    addOns: selectedFilteredAddons,
+                    cp_ids: cp_ids,
+                    addOns_cost: allAddonRates,
+                    shoot_cost: allRates,
+                };
+                if (Object.keys(formattedData).length > 0) {
+                    setFormDataPageOne(formattedData);
+                    setActiveTab(activeTab === 1 ? 2 : 3);
+                    // reset();
+                    console.log("Clicked safe --- formattedData-->", formattedData);
 
-            return {
-                ...prev,
-                cpSelect: isSelected
-            };
-        });
+                    shootCostCalculation(formattedData?.shoot_duration, formattedData?.content_type, formattedData?.cp_ids, formattedData?.content_vertical);
 
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                coloredToast('danger', 'error');
+            }
+        }
     };
 
 
@@ -492,8 +539,8 @@ const BookNow = () => {
                                         <>
                                             <div className="flex items-center justify-between">
                                                 {/* Content Type */}
-                                                <div className="flex basis-[45%] flex-col sm:flex-row">
-                                                    <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Content Type</label>
+                                                <div className="flex basis-[35%] flex-col sm:flex-row">
+                                                    <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Content <br /> Type</label>
                                                     <div className="flex-1">
                                                         {/* Video */}
                                                         <div className="mb-2">
@@ -504,7 +551,7 @@ const BookNow = () => {
                                                                     defaultValue="video" id="videoShootType"
                                                                     {...register('content_type', { required: `Select a Content-type` })}
                                                                 />
-                                                                <span className="text-white-dark">Video</span>
+                                                                <span className="text-gray-600">Video</span>
                                                             </label>
                                                         </div>
                                                         {/* Photo */}
@@ -514,7 +561,7 @@ const BookNow = () => {
                                                                     id="photoShootType"
                                                                     {...register('content_type')}
                                                                 />
-                                                                <span className="text-white-dark">Photo</span>
+                                                                <span className="text-gray-600">Photo</span>
                                                             </label>
                                                         </div>
                                                     </div>
@@ -542,35 +589,73 @@ const BookNow = () => {
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div className="flex items-center justify-between my-5">
+                                                <div className="flex basis-[45%] flex-col sm:flex-row">
+                                                    <label htmlFor="content_vertical" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
+                                                        Client
+                                                    </label>
+                                                    <select
+                                                        className="form-select text-white-dark"
+                                                        id="content_vertical"
+                                                        defaultValue="SelectClient"
+                                                        {...register('client')}
+                                                    >
+                                                        <option value="SelectClient">Select Client</option>
+                                                        {onlyClients?.map((client: any) => (
+                                                            <option key={client.id} value={client.id}>
+                                                                {client.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
 
-                                            <div className="mt-5 flex items-center justify-between">
+                                                {/* Location */}
+                                                <div className="flex basis-[45%] flex-col sm:flex-row">
+                                                    <label htmlFor="location" className="mb-0 rtl:ml-2 sm:ltr:mr-2 capitalize 2xl:w-[138px] md:w-[87px]">
+                                                        Location
+                                                    </label>
+                                                    <div className="flex-grow">
+                                                        <Map />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-5 flex items-start justify-between">
                                                 {/* Order Name */}
                                                 <div className="flex basis-[45%] flex-col sm:flex-row">
                                                     <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                                         Order Name
                                                     </label>
-                                                    <input id="order_name" type="text" defaultValue="Order One" className="form-input" {...register('order_name')} />
-                                                    {errors.order_name && <p className="text-danger">{errors?.order_name.message}</p>}
+                                                    <input
+                                                        id="order_name"
+                                                        type="text"
+                                                        className="form-input flex-grow"
+                                                        placeholder="Order Name"
+                                                        {...register('order_name')}
+                                                    />
+                                                    {errors.order_name && <p className="text-danger mt-1">{errors.order_name.message}</p>}
                                                 </div>
 
-                                                {/* Location */}
-                                                <div className="flex basis-[45%] flex-col flex-wrap sm:flex-row">
-                                                    <label htmlFor="location" className="mb-3 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                                        Location
+                                                {/* references */}
+                                                <div className="flex basis-[45%] flex-col sm:flex-row">
+                                                    <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                                        References
                                                     </label>
-                                                    <Map />
+                                                    <input id="references" type="text" placeholder="https://sitename.com" className="form-input" {...register('references')} />
                                                 </div>
                                             </div>
-                                            <div className="mt-8">
+
+                                            <div className="mt-5">
                                                 <div className="table-responsive">
-                                                    <div className="md:flex items-center justify-between">
+                                                    <div className="mb-5 md:flex items-center justify-between">
                                                         {/* Starting Date and Time */}
                                                         <div className="flex basis-[45%] flex-col sm:flex-row md:mb-0 mb-3">
                                                             <label htmlFor="start_date_time" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                                                 Starting Date
                                                             </label>
                                                             <input id="start_date_time" type="datetime-local" className="form-input" onChange={handleChangeStartDateTime} required />
-                                                            {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                                                            {errors.start_date_time &&
+                                                                <p className="text-danger">{errors?.start_date_time.message}</p>}
                                                         </div>
 
                                                         {/* Ending Date and Time */}
@@ -590,62 +675,75 @@ const BookNow = () => {
                                                             />
                                                             {errors.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                                                         </div>
-
                                                     </div>
 
-                                                    {/* DateTime Output Table */}
-                                                    <div className="my-5">
-                                                        <table className="table-auto">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>#</th>
-                                                                    <th>Starting DateTime</th>
-                                                                    <th>Ending DateTime</th>
-                                                                    <th>Duration (Hours)</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {dateTimes.map((dateTime: FormData, index) => (
-                                                                    <tr key={index}>
-                                                                        <td>{index + 1}</td>
-                                                                        <td>{convertToEnglishDateFormat(dateTime?.start_date_time)}</td>
-                                                                        <td>{convertToEnglishDateFormat(dateTime?.end_date_time)} </td>
-                                                                        <td>{calculateDuration(dateTime.start_date_time, dateTime.end_date_time)} Hour
-                                                                        </td>
+                                                    {/* DateTime Output show Table */}
+                                                    {
+                                                        dateTimes.length !== 0 &&
+                                                        <div className="">
+                                                            <table className="table-auto">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>#</th>
+                                                                        <th>Starting DateTime</th>
+                                                                        <th>Ending DateTime</th>
+                                                                        <th>Duration (Hours)</th>
                                                                     </tr>
-                                                                ))}
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {dateTimes.map((dateTime: FormData, index) => (
+                                                                        <tr key={index}>
+                                                                            <td>{index + 1}</td>
+                                                                            <td>{convertToEnglishDateFormat(dateTime?.start_date_time)}</td>
+                                                                            <td>{convertToEnglishDateFormat(dateTime?.end_date_time)} </td>
+                                                                            <td className='flex justify-between items-center'>
+                                                                                <span>
+                                                                                    {calculateDuration(dateTime?.start_date_time, dateTime?.end_date_time)} Hour
+                                                                                </span>
+
+                                                                                <span className='text-gray-500'
+                                                                                    onClick={handleTimeRemove}
+                                                                                >
+                                                                                    {allSvgs.closeBtnCp}
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    }
+
                                                 </div>
                                             </div>
-                                            <div className="mb-5 flex items-center justify-between">
-                                                {/* references */}
-                                                <div className="flex basis-[45%] flex-col sm:flex-row">
-                                                    <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                                        References
-                                                    </label>
-                                                    <input id="references" type="text" placeholder="https://sitename.com" className="form-input" {...register('references')} />
-                                                </div>
-                                            </div>
+
                                             <div className="flex items-center justify-between">
                                                 {/* min_budget budget */}
                                                 <div className="flex basis-[45%] flex-col sm:flex-row">
                                                     <label htmlFor="min_budget" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                                         Min Budget
                                                     </label>
-                                                    <input id="min_budget" type="number" className={`form-input block ${minBudgetError}`} {...register('min_budget')} onChange={handleChangeMinBudget} />
-                                                    <p className="ml-5 text-danger">{minBudgetErrorText}</p>
-                                                    {errors.min_budget && <p className="text-danger">{errors?.min_budget.message}</p>}
+                                                    <div className="flex flex-col">
+                                                        <input id="min_budget" type="number" placeholder='Min Budget' className={`form-input md:ms-2 block 2xl:ml-[18px] 2xl:w-[560px] md:w-[355px] ${minBudgetError}`} {...register('min_budget')} onBlur={handleChangeMinBudget} />
+
+                                                        <p className="ml-5 text-danger">{minBudgetErrorText}</p>
+                                                        {errors.min_budget && <p className="text-danger">{errors?.min_budget.message}</p>}
+                                                    </div>
+
                                                 </div>
 
-                                                {/* max_budget budget */}
+
                                                 <div className="flex basis-[45%] flex-col sm:flex-row">
                                                     <label htmlFor="max_budget" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                                         Max Budget
                                                     </label>
-                                                    <input id="max_budget" type="number" className="form-input" {...register('max_budget')} />
-                                                    {errors.max_budget && <p className="text-danger">{errors?.max_budget.message}</p>}
+                                                    <div className="flex flex-col">
+                                                        <input id="max_budget" type="number" placeholder='Max Budget' className={`form-input md:ms-2 block 2xl:ml-[18px] 2xl:w-[560px] md:w-[355px] ${minBudgetError}`} {...register('max_budget')} onChange={handleChangeMaxBudget} />
+
+                                                        <p className="ml-5 text-danger">{maxBudgetErrorText}</p>
+                                                        {errors.max_budget && <p className="text-danger">{errors?.max_budget.message}</p>}
+                                                    </div>
+
                                                 </div>
                                             </div>
                                             <div className="mt-5 flex items-center justify-between">
@@ -658,7 +756,7 @@ const BookNow = () => {
                                                 </div>
                                             </div>
 
-                                            <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto mt-5">
+                                            <button type="submit" className="text-[14px] flex flex-col items-center justify-center rounded-lg text-black btn btn-outline-dark hover:text-white capitalize font-bold ltr:ml-auto rtl:mr-auto mt-5">
                                                 Next
                                             </button>
                                         </>
@@ -768,9 +866,11 @@ const BookNow = () => {
                                                                 </div>
                                                             </div>
                                                             <div className="mt-[30px] flex">
-                                                                <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
-                                                                    view profile
-                                                                </p>
+                                                                <Link href={`cp/${cp?.userId?.id}`}>
+                                                                    <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                                                        view profile
+                                                                    </p>
+                                                                </Link>
                                                                 <p
                                                                     onClick={() => handleSelectProducer(cp)}
                                                                     className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'} px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}>
@@ -956,7 +1056,7 @@ const BookNow = () => {
                                                                 <div className="flex-1">
                                                                     <div className="table-responsive ">
                                                                         <table className='w-full'>
-                                                                            <tbody>
+                                                                            <tbody className=' collapse fixed'>
 
                                                                                 {selectedFilteredAddons?.map((addon: addonTypes, index) => (
                                                                                     <tr key={index} className="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
@@ -1003,22 +1103,22 @@ const BookNow = () => {
 
                                 {/* page end buttons */}
                                 <div className="flex justify-between">
-                                    <button type="button" className={`btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ${activeTab === 1 ? 'hidden' : ''}`}
+                                    <button type="button" className={`text-[14px] flex flex-col items-center justify-center rounded-lg text-black btn btn-outline-dark hover:text-white capitalize font-bold ${activeTab === 1 ? 'hidden' : ''}`}
                                         onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}
                                     >
                                         Back
                                     </button>
 
                                     {activeTab === 2 &&
-                                        <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto">
+                                        <button type="submit" className="text-[14px] flex flex-col items-center justify-center rounded-lg text-black btn btn-outline-dark hover:text-white capitalize font-bold ">
                                             Next
                                         </button>
                                     }
 
                                     {
                                         activeTab === 3 &&
-                                        <button type="submit" className="btn border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l font-sans ltr:ml-auto rtl:mr-auto">
-                                            Finish
+                                        <button type="submit" className="text-[14px] flex flex-col items-center justify-center rounded-lg text-black btn btn-outline-dark hover:text-white capitalize font-bold">
+                                            Order now
                                         </button>
                                     }
                                 </div>

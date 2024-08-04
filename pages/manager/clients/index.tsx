@@ -10,15 +10,19 @@ import { Dialog, Transition } from '@headlessui/react';
 import useDateFormat from '@/hooks/useDateFormat';
 import StatusBg from '@/components/Status/StatusBg';
 import ResponsivePagination from 'react-responsive-pagination';
+import useClent from '@/hooks/useClent';
 
 
 const Users = () => {
+    const [allClients, setAllClients, totalPagesCount, setTotalPagesCount, currentPage, setCurrentPage] = useClent();
+
     const [isMounted, setIsMounted] = useState(false);
     const [userModalClient, setUserModalClient] = useState(false);
-    const [allClients, setAllClients] = useState<any[]>([]);
 
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
+    // const [allClients, setAllClients] = useState<any[]>([]);
+    // const [currentPage, setCurrentPage] = useState<number>(1);
+    // const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
+
     const [isLoading, setLoading] = useState<boolean>(true);
     const [showError, setShowError] = useState<boolean>(false);
     const [clientUserInfo, setClientUserInfo] = useState<any | null>(null);
@@ -275,7 +279,7 @@ const Users = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {allClients.filter((user) => {
+                                                {allClients?.filter((user) => {
                                                     return user.role === 'user';
                                                 })
                                                     ?.map((userClient) => (
