@@ -398,7 +398,7 @@ const DashboardManager = (props: any) => {
         <li>
           <Link href="/" className="text-primary hover:underline">
             Dashboard
-          </Link>
+          </Link>         
         </li>
         <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
           <span>Manager</span>

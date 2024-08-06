@@ -768,7 +768,7 @@ const pencilIcon_dropdown = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0
     <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
 </svg>;
 
-const trash_download = (
+const trash_download =
     <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -781,11 +781,40 @@ const trash_download = (
             clipRule="evenodd"
         />
     </svg>
-);
+
+const roundedPlusIconMd =
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+        width="22px" height="22px" viewBox="0 0 612 612" >
+        <g>
+            <g id="_x38__3_">
+                <g>
+                    <path d="M306,0C136.992,0,0,136.992,0,306s136.992,306,306,306s306-137.012,306-306S475.008,0,306,0z M306,573.75
+           C158.125,573.75,38.25,453.875,38.25,306C38.25,158.125,158.125,38.25,306,38.25c147.875,0,267.75,119.875,267.75,267.75
+           C573.75,453.875,453.875,573.75,306,573.75z M420.75,286.875h-95.625V191.25c0-10.557-8.568-19.125-19.125-19.125
+           c-10.557,0-19.125,8.568-19.125,19.125v95.625H191.25c-10.557,0-19.125,8.568-19.125,19.125c0,10.557,8.568,19.125,19.125,19.125
+           h95.625v95.625c0,10.557,8.568,19.125,19.125,19.125c10.557,0,19.125-8.568,19.125-19.125v-95.625h95.625
+           c10.557,0,19.125-8.568,19.125-19.125C439.875,295.443,431.307,286.875,420.75,286.875z"/>
+                </g>
+            </g>
+        </g>
+    </svg>
+
+const locationIcon = <svg fill="#9BA8A7" height="22px" width="22px" version="1.1" id="Layer_1" viewBox="-36.87 -36.87 442.41 442.41" stroke="#9BA8A7" strokeWidth="0.00368666" transform="rotate(0)matrix(1, 0, 0, 1, 0, 0)"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" stroke="#CCCCCC" strokeWidth="2.211996"></g><g id="SVGRepo_iconCarrier"> <g id="XMLID_2_"> <g> <g> <path d="M184.333,0C102.01,0,35.036,66.974,35.036,149.297c0,33.969,11.132,65.96,32.193,92.515 c27.27,34.383,106.572,116.021,109.934,119.479l7.169,7.375l7.17-7.374c3.364-3.46,82.69-85.116,109.964-119.51 c21.042-26.534,32.164-58.514,32.164-92.485C333.63,66.974,266.656,0,184.333,0z M285.795,229.355 c-21.956,27.687-80.92,89.278-101.462,110.581c-20.54-21.302-79.483-82.875-101.434-110.552 c-18.228-22.984-27.863-50.677-27.863-80.087C55.036,78.002,113.038,20,184.333,20c71.294,0,129.297,58.002,129.296,129.297 C313.629,178.709,304.004,206.393,285.795,229.355z"></path> <path d="M184.333,59.265c-48.73,0-88.374,39.644-88.374,88.374c0,48.73,39.645,88.374,88.374,88.374s88.374-39.645,88.374-88.374 S233.063,59.265,184.333,59.265z M184.333,216.013c-37.702,0-68.374-30.673-68.374-68.374c0-37.702,30.673-68.374,68.374-68.374 s68.373,30.673,68.374,68.374C252.707,185.341,222.035,216.013,184.333,216.013z"></path> </g> </g> </g> </g></svg>
+
+const downArrow = <svg fill="#000000" width="15px" height="15px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M512 666.5L367.2 521.7l36.2-36.2 83 83V256h51.2v312.5l83-83 36.2 36.2L512 666.5zm-204.8 50.3V768h409.6v-51.2H307.2z"></path></g></svg>;
+
+const starIcon = <svg width="20px" height="20px" viewBox="0 0 1024 1024" className="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#FFA200">
+    <path d="M541.44 103.68l126.72 256 282.88 42.24-204.8 198.4L794.88 883.2 541.44 750.08 288 883.2l48.64-282.88-204.8-198.4 282.88-42.24z" fill="#FFA200"></path>
+    <path d="M794.88 896c-2.56 0-3.84 0-6.4-1.28L541.44 764.16 294.4 894.72c-3.84 2.56-8.96 1.28-14.08-1.28-3.84-2.56-6.4-7.68-5.12-12.8l47.36-275.2L122.88 410.88c-3.84-3.84-5.12-8.96-3.84-12.8s5.12-7.68 10.24-8.96l276.48-39.68 124.16-250.88c3.84-8.96 19.2-8.96 23.04 0l124.16 250.88 276.48 39.68c5.12 1.28 8.96 3.84 10.24 8.96 1.28 5.12 0 10.24-3.84 12.8L760.32 605.44l47.36 275.2c1.28 5.12-1.28 10.24-5.12 12.8-2.56 1.28-5.12 2.56-7.68 2.56zM541.44 737.28c2.56 0 3.84 0 6.4 1.28l230.4 121.6-43.52-256c-1.28-3.84 1.28-8.96 3.84-11.52l185.6-181.76-257.28-37.12c-3.84 0-7.68-3.84-10.24-6.4l-115.2-232.96-115.2 232.96c-1.28 3.84-5.12 6.4-10.24 6.4l-257.28 37.12L345.6 591.36c2.56 2.56 3.84 7.68 3.84 11.52l-43.52 256 230.4-121.6h5.12z" fill="#FFA200"></path>
+</svg>
+
+// will be delete later
+const profileIcon = <svg width="22px" height="22px" viewBox="0 0 20 20" version="1.1" fill="#777777"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier">  <defs> </defs> <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-140.000000, -2159.000000)" fill="#777777"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M100.562548,2016.99998 L87.4381713,2016.99998 C86.7317804,2016.99998 86.2101535,2016.30298 86.4765813,2015.66198 C87.7127655,2012.69798 90.6169306,2010.99998 93.9998492,2010.99998 C97.3837885,2010.99998 100.287954,2012.69798 101.524138,2015.66198 C101.790566,2016.30298 101.268939,2016.99998 100.562548,2016.99998 M89.9166645,2004.99998 C89.9166645,2002.79398 91.7489936,2000.99998 93.9998492,2000.99998 C96.2517256,2000.99998 98.0830339,2002.79398 98.0830339,2004.99998 C98.0830339,2007.20598 96.2517256,2008.99998 93.9998492,2008.99998 C91.7489936,2008.99998 89.9166645,2007.20598 89.9166645,2004.99998 M103.955674,2016.63598 C103.213556,2013.27698 100.892265,2010.79798 97.837022,2009.67298 C99.4560048,2008.39598 100.400241,2006.33098 100.053171,2004.06998 C99.6509769,2001.44698 97.4235996,1999.34798 94.7348224,1999.04198 C91.0232075,1998.61898 87.8750721,2001.44898 87.8750721,2004.99998 C87.8750721,2006.88998 88.7692896,2008.57398 90.1636971,2009.67298 C87.1074334,2010.79798 84.7871636,2013.27698 84.044024,2016.63598 C83.7745338,2017.85698 84.7789973,2018.99998 86.0539717,2018.99998 L101.945727,2018.99998 C103.221722,2018.99998 104.226185,2017.85698 103.955674,2016.63598" id="profile_round-[#777777]"> </path> </g> </g> </g> </g></svg>
+
 
 
 
 
 export const allSvgs = {
-    emailSvg, passwordSvg, bookNowSvg, shootSvg, meetingsSvg, chatSvg, transactionsSvg, disputesSvg, settingsSvg, helpSvg, closeModalSvg, addonsSvgGeneral, addonsSvgModel, filesSvg, addonsSvg, greaterThanArrowSvg, mugSvg, goToTopArrowSvg, rightArrowSvg, viewAllActivitiesArrow, notificationCancelRoundXBtnSvg, invalidSvg, notificationBtnSvg, invalidNotificationCrossBtnSvg, toggleMenuExpandSvg, messageIconSvg, signOutSvg, horizontalMenuDashboardSvg, downArrowSvg, horizontalAppsIconSvg, diceForComponentsHorizontalMenuSvg, elementsSvg, tablesSvgIcon, formsSvgIcon, pagesIconSvg, revenueDayWkMonthSortBtnSvg, cartIconSvg, dolarIconSvg, threeDotDropDown, summaryIncomeIconSvg, summaryProfitIconSvg, summaryExpensesIconSvg, plusIconSvg, clientDashBoardBookSvg, bestOfLuckIconSvg, userLogoIconSvg, pencilIconForEdit, plusForAddCp, minusForDltCp, minusForHide, closeBtnCp, saveBtn, dataLoadingLoader, folderIcon, roundSpinIcon, invalidIcon, trashIcon, docEditIcon, uploadIcon, downloadIcon, linkify, trashIconSm, folderIconForFile, threeDotMenuIcon, imageIcon, vedio, docsIcon, quesMarkIcon, cloudIcon_Dropdown, lockIcon_Dropdown, arrowRight_dropdown, pencilIcon_dropdown, trash_download
+    emailSvg, passwordSvg, bookNowSvg, shootSvg, meetingsSvg, chatSvg, transactionsSvg, disputesSvg, settingsSvg, helpSvg, closeModalSvg, addonsSvgGeneral, addonsSvgModel, filesSvg, addonsSvg, greaterThanArrowSvg, mugSvg, goToTopArrowSvg, rightArrowSvg, viewAllActivitiesArrow, notificationCancelRoundXBtnSvg, invalidSvg, notificationBtnSvg, invalidNotificationCrossBtnSvg, toggleMenuExpandSvg, messageIconSvg, signOutSvg, horizontalMenuDashboardSvg, downArrowSvg, horizontalAppsIconSvg, diceForComponentsHorizontalMenuSvg, elementsSvg, tablesSvgIcon, formsSvgIcon, pagesIconSvg, revenueDayWkMonthSortBtnSvg, cartIconSvg, dolarIconSvg, threeDotDropDown, summaryIncomeIconSvg, summaryProfitIconSvg, summaryExpensesIconSvg, plusIconSvg, clientDashBoardBookSvg, bestOfLuckIconSvg, userLogoIconSvg, pencilIconForEdit, plusForAddCp, minusForDltCp, minusForHide, closeBtnCp, saveBtn, dataLoadingLoader, folderIcon, roundSpinIcon, invalidIcon, trashIcon, docEditIcon, uploadIcon, downloadIcon, linkify, trashIconSm, folderIconForFile, threeDotMenuIcon, imageIcon, vedio, docsIcon, quesMarkIcon, cloudIcon_Dropdown, lockIcon_Dropdown, arrowRight_dropdown, pencilIcon_dropdown, trash_download, roundedPlusIconMd, downArrow, locationIcon, starIcon, profileIcon
 } 
