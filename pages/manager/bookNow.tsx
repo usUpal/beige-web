@@ -22,6 +22,9 @@ import ResponsivePagination from 'react-responsive-pagination';
 import useAllCp from '@/hooks/useAllCp';
 import useClent from '@/hooks/useClent';
 import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation';
+import OrderApi from '@/Api/OrderApi';
+import { useRouter } from 'next/router';
+import Loader from '@/components/SharedComponent/Loader';
 
 interface FormData {
   content_type: string;
@@ -40,15 +43,14 @@ interface FormData {
   vst: string;
 }
 const BookNow = () => {
+  const router = useRouter();
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails] = useAllCp();
 
   const [allClients, onlyClients] = useClent();
-
-  const { userData } = useAuth() as any;
+  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
   const [minBudget, setMinBudget] = useState<number>();
-
   const [minBudgetError, setMinBudgetError] = useState('');
   const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
   const [maxBudgetErrorText, setMaxBudgetErrorText] = useState('');
@@ -57,7 +59,7 @@ const BookNow = () => {
   const [dateTimes, setDateTimes] = useState<FormData[]>([]);
   const [showDateTimes, setShowDateTimes] = useState<any>();
   const [getTotalDuration, setTotalDuration] = useState<any>();
-
+  const [client_id, setClient_id] = useState('');
   const [filteredAddonsData, setFilteredAddonsData] = useState([]);
   const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
   const [allAddonRates, setAllAddonRates] = useState(0);
@@ -147,13 +149,6 @@ const BookNow = () => {
     setEndDateTime(ending_date);
   };
 
-  const calculateDuration = (start_date_time: string, end_date_time: string) => {
-    const startDateTime = parseISO(start_date_time);
-    const endDateTime = parseISO(end_date_time);
-    const durationInHours = differenceInHours(endDateTime, startDateTime);
-    return durationInHours;
-  };
-
   const handleChangeMinBudget = (e: any) => {
     const value = e.target.value;
     setMinBudget(value);
@@ -200,23 +195,47 @@ const BookNow = () => {
   };
 
   // date and time format convarsion
-  function convertToEnglishDateFormat(inputDateString: any) {
+  function convertToEnglishDateFormat(inputDateString) {
+    // Create a new Date object from the input string
     let date = new Date(inputDateString);
+    // Arrays for months
     let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    let year = date.getFullYear();
-    let month = date.getMonth();
-    let day = date.getDate();
-    let formattedDate = `${months[month]} ${day}, ${year}`;
+    // Get year, month, day, hours, and minutes
+    let year = date.getUTCFullYear(); // Use UTC methods to avoid local timezone effects
+    let month = date.getUTCMonth();
+    let day = date.getUTCDate();
+    let hours = date.getUTCHours();
+    let minutes = date.getUTCMinutes();
 
+    // Determine AM or PM
+    let period = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert hours to 12-hour format
+    let formattedHours = hours % 12 || 12; // Converts 0 hours to 12
+    let formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+    // Create the formatted date and time string
+    let formattedDate = `${months[month]} ${day}, ${year} Time: ${formattedHours}:${formattedMinutes} ${period}`;
     return formattedDate;
   }
 
-  const logTotalDuration = (dateTimesArray: any[]) => {
+  const calculateDuration = (startDateTime, endDateTime) => {
+    // Convert date-time strings to Date objects
+    const start = new Date(startDateTime);
+    const end = new Date(endDateTime);
+    // Calculate the duration in milliseconds
+    const durationMs = end - start;
+    // Convert milliseconds to hours
+    const durationHours = durationMs / (1000 * 60 * 60); // 1 hour = 3600000 milliseconds
+    return durationHours;
+  };
+
+  // Function to log total duration from an array of date-time objects
+  const logTotalDuration = (dateTimesArray) => {
     const totalDuration = dateTimesArray.reduce((acc, dateTime) => {
-      const duration: number = calculateDuration(dateTime.start_date_time, dateTime.end_date_time);
+      const duration = calculateDuration(dateTime.start_date_time, dateTime.end_date_time);
       return acc + duration;
     }, 0);
-
     setTotalDuration(totalDuration);
   };
 
@@ -381,7 +400,7 @@ const BookNow = () => {
             max: parseFloat(data.max_budget),
             min: parseFloat(data.min_budget),
           },
-          client_id: userData.id,
+          client_id,
           content_type: data.content_type,
           content_vertical: data.content_vertical,
           description: data.description,
@@ -399,7 +418,6 @@ const BookNow = () => {
           addOns_cost: allAddonRates,
           shoot_cost: allRates,
         };
-        console.log('🚀 ~ onSubmit ~ formattedData:', formattedData);
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
@@ -407,8 +425,20 @@ const BookNow = () => {
         } else {
           return false;
         }
+        if (activeTab === 3) {
+          const response = await OrderApi.handleOrderMake(formattedData);
+          if (response.status === 201) {
+            coloredToast('success', 'Order has been created successfully!');
+            router.push('/dashboard/shoots');
+            setIsLoading(false);
+          } else {
+            coloredToast('danger', 'Please check your order details!');
+            setIsLoading(false);
+          }
+        }
       } catch (error) {
         coloredToast('danger', 'error');
+        setIsLoading(false);
       }
     }
   };
@@ -422,14 +452,14 @@ const BookNow = () => {
           </Link>
         </li>
         <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span>Book </span>
+          <span>Shoot Booking</span>
         </li>
       </ul>
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
         {/* icon only */}
         <div className="panel">
           <div className="mb-5 flex items-center justify-between">
-            <h5 className="text-lg font-semibold capitalize dark:text-white-light">Manual Booking By Manager</h5>
+            <h5 className="text-lg font-semibold capitalize dark:text-white-light">Shoot Booking By Manager</h5>
           </div>
           <div className="">
             <div className="inline-block w-full">
@@ -440,22 +470,20 @@ const BookNow = () => {
                       <div className="flex items-center justify-between">
                         {/* Content Type */}
                         <div className="flex basis-[35%] flex-col sm:flex-row">
-                          <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Content <br /> Type
-                          </label>
+                          <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Content Type</label>
                           <div className="flex-1">
                             {/* Video */}
                             <div className="mb-2">
                               <label className="flex items-center">
                                 <input type="checkbox" className="form-checkbox" defaultValue="video" id="videoShootType" {...register('content_type', { required: `Select a Content-type` })} />
-                                <span className="text-gray-600">Video</span>
+                                <span className="text-black">Video</span>
                               </label>
                             </div>
                             {/* Photo */}
                             <div className="mb-2">
                               <label className="flex items-center">
                                 <input type="checkbox" className="form-checkbox" defaultValue="photo" id="photoShootType" {...register('content_type')} />
-                                <span className="text-gray-600">Photo</span>
+                                <span className="text-black">Photo</span>
                               </label>
                             </div>
                           </div>
@@ -483,9 +511,17 @@ const BookNow = () => {
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Client
                           </label>
-                          <select className="form-select text-white-dark" id="content_vertical" defaultValue="SelectClient" {...register('client')}>
+                          <select
+                            className="form-select text-white-dark"
+                            id="content_vertical"
+                            defaultValue="SelectClient"
+                            {...register('client')}
+                            onChange={(event) => {
+                              setClient_id(event.target.value);
+                            }}
+                          >
                             <option value="SelectClient">Select Client</option>
-                            {onlyClients?.map((client: any) => (
+                            {onlyClients?.map((client) => (
                               <option key={client.id} value={client.id}>
                                 {client.name}
                               </option>
@@ -528,20 +564,21 @@ const BookNow = () => {
                           <div className="mb-8 items-center justify-between md:flex">
                             {/* Starting Date and Time */}
                             <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
-                              <label htmlFor="start_date_time" className="mb-0 mt-4 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                              <label htmlFor="start_date_time" className="mb-0 mt-4 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
                                 Shoot Time
                               </label>
+
                               <div>
                                 <p className="text-xs font-bold">Start Time</p>
-                                <input id="start_date_time" type="datetime-local" className="form-input w-[180px]" onChange={handleChangeStartDateTime} required={dateTimes?.length === 0} />
+                                <input id="start_date_time" type="datetime-local" className="form-input w-[220px]" onBlur={handleChangeStartDateTime} required={dateTimes?.length === 0} />
                               </div>
                               <div>
                                 <p className="ml-1 text-xs font-bold">End Time</p>
                                 <input
                                   id="end_date_time"
                                   type="datetime-local"
-                                  className="form-input ml-1 w-[180px]"
-                                  onChange={handleChangeEndDateTime}
+                                  className="form-input ml-1 w-[220px]"
+                                  onBlur={handleChangeEndDateTime}
                                   //   onBlur={addDateTime}
                                   required={dateTimes?.length === 0}
                                 />
@@ -554,15 +591,15 @@ const BookNow = () => {
                           </div>
 
                           {/* DateTime Output show Table */}
-                          {dateTimes.length !== 0 && (
+                          {dateTimes?.length !== 0 && (
                             <div className="">
                               <table className="table-auto">
                                 <thead>
                                   <tr>
                                     <th>#</th>
-                                    <th>Starting DateTime</th>
-                                    <th>Ending DateTime</th>
-                                    <th>Duration (Hours)</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Duration</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -590,7 +627,7 @@ const BookNow = () => {
                       <div className="flex items-center justify-between">
                         {/* min_budget budget */}
                         <div className="flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="min_budget" className="mb-0 rtl:ml-2 sm:ltr:mr-2">
+                          <label htmlFor="min_budget" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-32">
                             Min Budget
                           </label>
                           <div className="flex flex-col">
@@ -598,7 +635,7 @@ const BookNow = () => {
                               id="min_budget"
                               type="number"
                               placeholder="Min Budget"
-                              className={`form-input block md:ms-2 md:w-[355px] 2xl:ml-[18px] 2xl:w-[560px] ${minBudgetError}`}
+                              className={`form-input block md:ms-2 md:w-[355px] 2xl:ml-[18px] 2xl:w-[550px] ${minBudgetError}`}
                               {...register('min_budget')}
                               onBlur={handleChangeMinBudget}
                             />
@@ -609,7 +646,7 @@ const BookNow = () => {
                         </div>
 
                         <div className="flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="max_budget" className="mb-0 rtl:ml-2 sm:ltr:mr-2">
+                          <label htmlFor="max_budget" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-32">
                             Max Budget
                           </label>
                           <div className="flex flex-col">
@@ -875,62 +912,44 @@ const BookNow = () => {
                             {' '}
                             Total Calculation
                           </h2>
-
-                          <table className="table-responsive">
-                            <tbody>
-                              {
-                                <tr className="">
-                                  <td className="">
-                                    <h2 className="text-[16px] font-semibold"> Shoot Cost</h2>
-                                  </td>
-
-                                  <td className=""></td>
-                                  <td className=""></td>
-                                  <td className=""></td>
-                                  <td className=""></td>
-                                  <td className=""></td>
-                                  <td className=""></td>
-
-                                  <td className="font-bold">${shootCosts} </td>
-                                </tr>
-                              }
-                            </tbody>
-                          </table>
-                          {selectedFilteredAddons?.length !== 0 && (
-                            <>
-                              <div className="flex flex-col sm:flex-row">
-                                <div className="flex-1">
-                                  <div className="table-responsive">
-                                    <table className="w-full">
-                                      <tbody>
-                                        {selectedFilteredAddons?.map((addon: addonTypes, index) => {
-                                          return (
+                          <>
+                            <div className="flex flex-col sm:flex-row">
+                              <div className="flex-1">
+                                <div className="table-responsive">
+                                  <table className="w-full">
+                                    <tbody>
+                                      {selectedFilteredAddons?.map((addon: addonTypes, index) => {
+                                        return (
+                                          <>
                                             <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                               <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
                                               <td>{addon?.hours === undefined ? 0 : addonExtraHours[addon?._id]} hours</td>
                                               <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
                                             </tr>
-                                          );
-                                        })}
-                                        <tr>
-                                          <td colSpan={6} className="w-full border-t border-gray-500"></td>
-                                        </tr>
-                                        {selectedFilteredAddons?.length > 0 && (
-                                          <tr>
-                                            <td>
-                                              <h2 className="text-[16px] font-semibold">Total Costs</h2>
-                                            </td>
-                                            <td></td>
-                                            <td className="font-bold">${selectedFilteredAddons.length > 0 ? allRates : shootCosts}</td>
-                                          </tr>
-                                        )}
-                                      </tbody>
-                                    </table>
-                                  </div>
+                                          </>
+                                        );
+                                      })}
+                                      <tr className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                        <td className="py-2font-bold min-w-[120px] px-4 font-bold">Shoot Cost</td>
+                                        <td>{getTotalDuration || 0} hours</td>
+                                        <td className="font-bold">${shootCosts} </td>
+                                      </tr>
+                                      <tr>
+                                        <td colSpan={6} className="w-full border-t border-gray-500"></td>
+                                      </tr>
+                                      <tr>
+                                        <td>
+                                          <h2 className="text-[16px] font-semibold">Total Costs</h2>
+                                        </td>
+                                        <td></td>
+                                        <td className="font-bold">${selectedFilteredAddons.length > 0 ? allRates : shootCosts}</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
                                 </div>
                               </div>
-                            </>
-                          )}
+                            </div>
+                          </>
                         </div>
                       </>
                     </div>
@@ -954,8 +973,18 @@ const BookNow = () => {
                   )}
 
                   {activeTab === 3 && (
-                    <button type="submit" className="btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none">
-                      Confirm Shoot{' '}
+                    <button
+                      type="submit"
+                      onClick={() => setIsLoading(true)}
+                      className="btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none"
+                    >
+                      {isLoading ? (
+                        <span>
+                          <Loader />
+                        </span>
+                      ) : (
+                        'Confirm Shoot'
+                      )}
                     </button>
                   )}
                 </div>

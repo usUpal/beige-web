@@ -273,7 +273,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
 
                         <div className="mt-8 flex items-center justify-end">
                           <button
-                            className="btn btn-outline-dark mr-3 text-[16px]"
+                            className="btn btn-outline-dark mr-3 text-[16px] text-black"
                             color="black"
                             onClick={() => {
                               dispatch({ type: 'reset' });
