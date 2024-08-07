@@ -10,7 +10,10 @@ import useAddons from '@/hooks/useAddons';
 
 const Addons = () => {
   const [addonsData, setAddonsData, addonsCategories, handleFilterCategory] = useAddons();
-  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  // const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
+  // const [addonsData, setAddonsData] = useAddons();
+
   const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
   const [addonsModal, setAddonsModal] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -51,6 +54,24 @@ const Addons = () => {
 
   // setAddonsAddBtnModal
   const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
+
+  /* useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch(`${API_ENDPOINT}addOns`);
+                if (!res.ok) {
+                    throw new Error(`Error: ${res.status}`);
+                }
+                const jsonData = await res.json();
+                setAddonsData(jsonData);
+            } catch (error) {
+                console.error(`Error fetching data`);
+            }
+        };
+
+        fetchData();
+    }, []);
+ */
 
   // theme functionality
   useEffect(() => {
@@ -158,6 +179,7 @@ const Addons = () => {
 
     console.log(newAddonsData);
   };
+
   return (
     <div>
       <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -186,7 +208,7 @@ const Addons = () => {
           </div>
 
           <div className="my-5 flex flex-col sm:flex-row">
-            <Tab.Group selectedIndex={selectedIndex} onChange={(index) => setSelectedIndex(index)}>
+            <Tab.Group>
               <div className="mx-3 mb-5 sm:mb-0">
                 <Tab.List className="mb-5 grid w-44 grid-cols-4 flex-col gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center">
                   {allCategory.map((category, index) => (
