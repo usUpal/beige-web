@@ -26,7 +26,6 @@ const Auth = () => {
 
   const router = useRouter();
 
-
   const submitForm = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
@@ -58,40 +57,34 @@ const Auth = () => {
 
         //Store user data to the cookie storage
         Cookies.set('userData', JSON.stringify(userData), {
-          expires: 7
+          expires: 7,
         });
-
 
         //Store access token to the cookie storage
         Cookies.set('accessToken', JSON.stringify(accessToken), {
-          expires: 7
+          expires: 7,
         });
 
         //Store refresh token to the cookie storage
         Cookies.set('refreshToken', JSON.stringify(refreshToken), {
-          expires: new Date(refreshToken?.expires)
+          expires: new Date(refreshToken?.expires),
         });
 
         //Redirect user to the dashboard
         // await router.push('/');
         await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
-        setIsLoading(false)
-      }
-      else {
+        setIsLoading(false);
+      } else {
         toast.error(data.message, {
           position: toast.POSITION.TOP_CENTER,
-        }
-        );
-        setIsLoading(false)
+        });
+        setIsLoading(false);
       }
       console.log(data);
-
     } catch (error) {
       console.error('Login error:', error);
-      setIsLoading(false)
-
+      setIsLoading(false);
     }
-
   };
 
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -107,8 +100,6 @@ const Auth = () => {
   useEffect(() => {
     setLocale(localStorage.getItem('i18nextLng') || themeConfig.locale);
   }, []);
-
-
 
   return (
     <div>
@@ -135,9 +126,7 @@ const Auth = () => {
                   </label>
                   <div className="relative text-white-dark">
                     <input id="Email" name="email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]" />
-                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
-                      {allSvgs.emailSvg}
-                    </span>
+                    <span className="absolute start-4 top-1/2 -translate-y-1/2">{allSvgs.emailSvg}</span>
                   </div>
                 </div>
                 <div>
@@ -146,34 +135,23 @@ const Auth = () => {
                   </label>
                   <div className="relative text-white-dark">
                     <input id="Password" name="password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark focus:border-[#E7D4BC]" />
-                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
-                      {allSvgs.passwordSvg}
-                    </span>
+                    <span className="absolute start-4 top-1/2 -translate-y-1/2">{allSvgs.passwordSvg}</span>
                   </div>
                 </div>
                 <button
                   type="submit"
                   className="btn !mt-6 w-full border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
-                > {
-                    isLoading ?
-                      <span role="status" className="flex h-5 items-center space-x-2">
-                        <Loader />
-                      </span>
-                      :
-                      'Sign In'
-                  }
+                >
+                  {' '}
+                  {isLoading ? (
+                    <span role="status" className="flex h-5 items-center space-x-2">
+                      <Loader />
+                    </span>
+                  ) : (
+                    'Sign In'
+                  )}
                 </button>
               </form>
-              <div className="relative my-7 text-center md:mb-9">
-                <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
-                <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-[#888EA8]">or</span>
-              </div>
-              <div className="text-center dark:text-white">
-                Don't have an account ?&nbsp;
-                <Link href="/auth/boxed-signup" className="uppercase text-[#ACA686] underline transition hover:text-black dark:hover:text-white">
-                  SIGN UP
-                </Link>
-              </div>
             </div>
           </div>
         </div>
