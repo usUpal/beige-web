@@ -22,6 +22,8 @@ const CpUsers = () => {
     const [userInfo, setUserInfo] = useState<any | null>(null);
     const [formData, setFormData] = useState<any>({});
 
+    
+
     useEffect(() => {
         getAllCpUsers();
     }, [currentPage]);
@@ -48,7 +50,7 @@ const CpUsers = () => {
 
     // User Single
     // Also unUsed Function For APi
-    const getUserDetails = async (singleUserId: string) => {
+    /* const getUserDetails = async (singleUserId: string) => {
         setLoading(true);
         try {
             const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
@@ -69,7 +71,7 @@ const CpUsers = () => {
             console.error(error);
             setLoading(false);
         }
-    };
+    }; */
 
     const dispatch = useDispatch();
     useEffect(() => {
@@ -215,8 +217,6 @@ const CpUsers = () => {
 
                                                             <td>
                                                                 <Link href={`cp/${cpUser?.userId?.id}`}>
-                                                                    {/* getUserDetails */}
-                                                                    {/* onClick={() => getUserDetails(cpUser?.id)} */}
                                                                     <button type="button" className="p-0">
                                                                         {allSvgs.pencilIconForEdit}
                                                                     </button>
@@ -226,8 +226,6 @@ const CpUsers = () => {
                                                     ))}
                                             </tbody>
                                         </table>
-                                        {/*  */}
-                                        {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
 
                                         <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
                                             <ResponsivePagination
@@ -235,7 +233,6 @@ const CpUsers = () => {
                                                 total={totalPagesCount}
                                                 onPageChange={handlePageChange}
                                                 maxWidth={400}
-                                            // styles={styles}
                                             />
                                         </div>
                                     </div>

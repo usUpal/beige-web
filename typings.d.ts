@@ -147,4 +147,29 @@ declare global {
     id: string;
     name: string;
   }
+
+  interface addonTypes {
+    _id: string;
+    title: string;
+    rate: number;
+    ExtendRate: number;
+    ExtendRateType: string;
+    status: boolean;
+    category: string;
+    info: string
+    hours:number
+  }
+
+  interface UpdatedAddonRates {
+    [key: string]: number;
+  }
+
+  interface OrderInfo {
+    id: number;
+    costingsTitle: string;
+    indicator: number;
+    price: number;
+  }
+
+
 }

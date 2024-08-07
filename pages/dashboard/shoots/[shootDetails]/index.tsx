@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { API_ENDPOINT } from '@/config';
 import Image from 'next/image';
+import Swal from 'sweetalert2';
 
 const ShootDetails = () => {
   const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
@@ -29,6 +30,14 @@ const ShootDetails = () => {
   };
 
   useEffect(() => {
+    Swal.fire({
+      text: 'This Screen is under development',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Okay',
+    });
     getShootDetails(shootId);
   }, []);
 

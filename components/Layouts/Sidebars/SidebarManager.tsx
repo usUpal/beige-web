@@ -33,6 +33,16 @@ const SidebarManager = (props: any) => {
       <li className="nav-item">
         <ul>
           <li className="nav-item">
+            {/* <Link href='/dashboard/bookNow' className='group'> */}
+            <Link href="/manager/bookNow" className="group">
+              <div className="flex items-center">
+                {allSvgs.bookNowSvg}
+                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Book Now</span>
+              </div>
+            </Link>
+          </li>
+
+          <li className="nav-item">
             <Link href="/dashboard/shoots" className="group">
               <div className="flex items-center">
                 {allSvgs.shootSvg}
@@ -40,14 +50,16 @@ const SidebarManager = (props: any) => {
               </div>
             </Link>
           </li>
-          {/* <li className="nav-item">
+
+          <li className="nav-item">
             <Link href="/manager/addons" className="group">
               <div className="flex items-center">
                 {allSvgs.addonsSvg}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Add-ons</span>
               </div>
             </Link>
-          </li> */}
+          </li>
+
           <li className="nav-item">
             <Link href="/dashboard/meetings" className="group">
               <div className="flex items-center">
@@ -80,14 +92,14 @@ const SidebarManager = (props: any) => {
               </div>
             </Link>
           </li>
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <Link href="/dashboard/transactions" className="group">
               <div className="flex items-center">
                 {allSvgs.transactionsSvg}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Transactions</span>
               </div>
             </Link>
-          </li>
+          </li> */}
           <li className="nav-item">
             <Link href="/dashboard/disputes" className="group">
               <div className="flex items-center">
@@ -111,19 +123,18 @@ const SidebarManager = (props: any) => {
             </button>
 
             <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
-              <ul className="sub-menu text-gray-500">
+              <ul className="sub-menu flex flex-col text-gray-500 ">
                 <li>
                   <Link href="/dashboard/searchingParams">Set Searching Params</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
-                </li>
+                </li> */}
               </ul>
             </AnimateHeight>
           </li>
 
           <li className="nav-item">
-
             <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('users')}>
               <div className="flex items-center">
                 {allSvgs.helpSvg}
@@ -138,41 +149,30 @@ const SidebarManager = (props: any) => {
             </button>
 
             <AnimateHeight duration={300} height={currentMenu === 'users' ? 'auto' : 0}>
-              <ul className="sub-menu text-gray-500">
-                {/* <li>
-                  <Link href="/manager/users" className="group">
+              <ul className="sub-menu flex flex-col leading-3 text-gray-500 ">
+                <li>
+                  <Link href="/manager/allUsers">
                     <span>All Users</span>
                   </Link>
-                </li> */}
-
-                <li>
-                  <Link href="/manager/allUsers">All Users</Link>
                 </li>
-
+                {/* <Link href="/manager/allUsers">All Users</Link> */}
                 <li>
                   <Link href="/manager/cp">Content Provider</Link>
                 </li>
-
                 <li>
                   <Link href="/manager/clients">Client</Link>
                 </li>
-
               </ul>
             </AnimateHeight>
 
-
-            <li>
-              {/* <Link href="/manager/users" className="group">
+            {/*           
+              <Link href="/manager/users" className="group">
                 <div className="flex items-center">
                   {allSvgs.helpSvg}
                   <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Users</span>
                 </div>
               </Link> */}
-            </li>
-
-
           </li>
-
         </ul>
       </li>
     </ul>

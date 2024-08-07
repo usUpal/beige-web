@@ -15,7 +15,6 @@ const Shoots = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [myShoots, setMyShoots] = useState<ShootTypes[]>([]);
 
-
   // All Shoots
   const { userData } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : 'cp';
@@ -29,7 +28,7 @@ const Shoots = () => {
     try {
       const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}`);
       const allShots = await response.json();
-      console.log("🚀 ~ getAllMyShoots ~ allShots:", allShots);
+      console.log('🚀 ~ getAllMyShoots ~ allShots:', allShots);
       setTotalPagesCount(allShots?.totalPages);
       setMyShoots(allShots?.results);
     } catch (error) {
@@ -59,12 +58,12 @@ const Shoots = () => {
           <table>
             <thead>
               <tr>
-                <th className="ltr:rounded-l-md rtl:rounded-r-md font-semibold text-[16px]">Order Name</th>
-                <th className='text-[16px] font-semibold'>Order ID</th>
-                <th className='text-[16px] font-semibold'>Price</th>
-                <th className='text-[16px] font-semibold'>Files</th>
+                <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
+                <th className="text-[16px] font-semibold">Order ID</th>
+                <th className="text-[16px] font-semibold">Price</th>
+                <th className="text-[16px] font-semibold">Files</th>
                 <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                <th className='text-[16px] font-semibold'>View</th>
+                <th className="text-[16px] font-semibold">View</th>
               </tr>
             </thead>
             <tbody>
@@ -80,7 +79,7 @@ const Shoots = () => {
                     </div>
                   </td>
                   <td>{shoot.id}</td>
-                  <td>$ {shoot?.budget?.max}</td>
+                  <td>$ {shoot?.shoot_cost}</td>
 
                   <td className="text-success">
                     {shoot?.file_path && (
@@ -114,16 +113,15 @@ const Shoots = () => {
           </table>
 
           {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
-          <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
+          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
             <ResponsivePagination
               current={currentPage}
               total={totalPagesCount}
               onPageChange={handlePageChange}
               maxWidth={400}
-            // styles={styles}
+              // styles={styles}
             />
           </div>
-
         </div>
       </div>
     </div>

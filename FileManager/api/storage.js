@@ -17,8 +17,7 @@ export default {
   getFiles(userId) {
     try {
       return axios.get(`/get-files/${userId}`, reqConfig(this));
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error in getFiles:', error);
       throw error; // Rethrow the error to propagate it to the caller
     }
@@ -27,7 +26,7 @@ export default {
     try {
       const res = await axios.head(config.BucketUrl + path + `?bc_timestamp=${new Date().getTime()}`); // Append unused query param to ensure that browser cache is bypassed.
       if (!res.ok) {
-        console.log("Bad");
+        console.log('Bad');
       }
       return res.status === 200;
     } catch (error) {
@@ -44,8 +43,7 @@ export default {
         },
         reqConfig(this)
       );
-    }
-    catch (error) {
+    } catch (error) {
       console.error(`Error in setPublicOrPrivate for ${filepath}:`, error);
       throw error;
     }
@@ -62,8 +60,7 @@ export default {
         reqConfig(this)
       );
       return res.data;
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error in getSharableUrl:', error);
       throw error;
     }
@@ -78,8 +75,7 @@ export default {
         },
         reqConfig(this)
       );
-    }
-    catch (error) {
+    } catch (error) {
       console.error(`Error in addFolder for ${folderpath}:`, error);
       throw error;
     }
@@ -93,8 +89,7 @@ export default {
         },
         reqConfig(this)
       );
-    }
-    catch (error) {
+    } catch (error) {
       console.error(`Error in deleteFile for ${filepath}:`, error);
       throw error;
     }
@@ -115,7 +110,6 @@ export default {
       console.error(`Error in moveFile for ${filepath} to ${destination}:`, error);
       throw error;
     }
-
   },
   async getNewUploadPolicy(filepath, fileContentType, fileSize) {
     try {
@@ -135,6 +129,7 @@ export default {
     }
   },
   postFile(uploadPolicy, file, progressCb) {
+    console.log('🚀 ~ postFile ~ file:', file);
     try {
       const data = new FormData();
       for (const [key, value] of Object.entries(uploadPolicy.fields)) {
@@ -151,7 +146,6 @@ export default {
       });
 
       return [uploadPromise, () => cancelTokenSource.cancel()];
-
     } catch (error) {
       console.error('Error in postFile:', error);
       throw error;
@@ -162,8 +156,7 @@ export default {
     try {
       const res = await axios.get('/get-settings', reqConfig(this));
       return res.data.settings;
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error in getSettings:', error);
       throw error;
     }
@@ -178,8 +171,7 @@ export default {
         reqConfig(this)
       );
       return res.data;
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error in saveSettings:', error);
       throw error;
     }
@@ -201,8 +193,7 @@ export default {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-    }
-    catch (error) {
+    } catch (error) {
       console.error(`Error in downloadFolder for ${folderpath}:`, error);
       throw error;
     }
