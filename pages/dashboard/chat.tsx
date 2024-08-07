@@ -9,6 +9,7 @@ import Dropdown from '../../components/Dropdown';
 import { IRootState } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import Link from 'next/link';
+import Swal from 'sweetalert2';
 // types
 
 const Chat = () => {
@@ -38,7 +39,16 @@ const Chat = () => {
   const { userData } = useAuth() as any;
   const socket = useRef<any | null>(null);
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
-
+  useEffect(() => {
+    Swal.fire({
+      text: 'This Screen is under development',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Okay',
+    });
+  }, []);
   const fetchChats = async () => {
     try {
       setIsLoading(true);

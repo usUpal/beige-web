@@ -32,14 +32,12 @@ const SidebarManager = (props: any) => {
 
       <li className="nav-item">
         <ul>
-
-          <li className='nav-item'>
+          <li className="nav-item">
             {/* <Link href='/dashboard/bookNow' className='group'> */}
-            <Link href='/manager/bookNow' className='group'>
-              <div className='flex items-center'>
+            <Link href="/manager/bookNow" className="group">
+              <div className="flex items-center">
                 {allSvgs.bookNowSvg}
-                <span
-                  className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Book Now</span>
+                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Book Now</span>
               </div>
             </Link>
           </li>
@@ -125,13 +123,13 @@ const SidebarManager = (props: any) => {
             </button>
 
             <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
-              <ul className="sub-menu text-gray-500 flex flex-col ">
+              <ul className="sub-menu flex flex-col text-gray-500 ">
                 <li>
                   <Link href="/dashboard/searchingParams">Set Searching Params</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
-                </li>
+                </li> */}
               </ul>
             </AnimateHeight>
           </li>
@@ -151,7 +149,7 @@ const SidebarManager = (props: any) => {
             </button>
 
             <AnimateHeight duration={300} height={currentMenu === 'users' ? 'auto' : 0}>
-              <ul className="sub-menu text-gray-500 flex flex-col leading-3 ">
+              <ul className="sub-menu flex flex-col leading-3 text-gray-500 ">
                 <li>
                   <Link href="/manager/allUsers">
                     <span>All Users</span>
@@ -175,7 +173,6 @@ const SidebarManager = (props: any) => {
                 </div>
               </Link> */}
           </li>
-
         </ul>
       </li>
     </ul>

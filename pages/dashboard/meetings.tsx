@@ -12,8 +12,6 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePagination from 'react-responsive-pagination';
 
-
-
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   // console.log("🚀 ~ Meeting ~ totalPagesCount:", totalPagesCount)
@@ -30,7 +28,7 @@ const Meeting = () => {
   // --> All SVG files imports
 
   // times and date
-  const myInputDate = (meetingInfo?.meeting_date_time);
+  const myInputDate = meetingInfo?.meeting_date_time;
   const myFormattedDateTime = useDateFormat(myInputDate);
 
   useEffect(() => {
@@ -99,6 +97,7 @@ const Meeting = () => {
     try {
       const response = await fetch(`${API_ENDPOINT}meetings/${meetingId}`);
       const meetingDetailsRes = await response.json();
+      console.log('🚀 ~ getMeetingDetails ~ meetingDetailsRes:', meetingDetailsRes);
 
       if (!meetingDetailsRes) {
         setShowError(true);
@@ -142,7 +141,7 @@ const Meeting = () => {
 
     return {
       date: formattedDate,
-      time: formattedTime
+      time: formattedTime,
     };
   }
 
@@ -159,47 +158,37 @@ const Meeting = () => {
         <div className="table-responsive">
           <table>
             <thead>
-              <tr className=''>
-                <th className='font-semibold text-[16px]'>Order Name</th>
-                <th className='font-semibold text-[16px]'>Meeting Date / Time</th>
-                <th className='font-semibold text-[16px]'>Attendings</th>
-                <th className="ltr:rounded-r-md rtl:rounded-l-md font-semibold text-[16px]">Status</th>
-                <th className='font-semibold text-[16px]'>View</th>
+              <tr className="">
+                <th className="text-[16px] font-semibold">Order Name</th>
+                <th className="text-[16px] font-semibold">Meeting Date / Time</th>
+                <th className="text-[16px] font-semibold">Attendings</th>
+                <th className="text-[16px] font-semibold ltr:rounded-r-md rtl:rounded-l-md">Status</th>
+                <th className="text-[16px] font-semibold">View</th>
               </tr>
             </thead>
-            <div>
-
-            </div>
+            <div></div>
             <tbody>
               {myMeetings?.map((meeting) => (
                 <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                   <td className=" min-w-[150px] text-black dark:text-white">
                     <div className="flex items-center">
-                      <p className="whitespace-nowrap break-words" >{(meeting?.order?.name).length > 10 ? (meeting?.order?.name) : 'less than 10 character'}</p>
+                      <p className="whitespace-nowrap break-words">{(meeting?.order?.name).length > 10 ? meeting?.order?.name : 'less than 10 character'}</p>
                     </div>
                   </td>
 
                   <td>
                     {/* {myFormattedDateTime?.date} */}
 
-                    <span className='ps-2'>Date:{makeDateFormat(meeting?.meeting_date_time)?.date}
-                    </span>
-                    <span className='ps-2'>Time:{makeDateFormat(meeting?.meeting_date_time)?.time}
-                    </span>
+                    <span className="ps-2">Date:{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
+                    <span className="ps-2">Time:{makeDateFormat(meeting?.meeting_date_time)?.time}</span>
                     {/* <span className='ps-2'>Time: {myFormattedDateTime?.time}</span> */}
                     {/* {useDateFormat(meeting?.meeting_date_time)} */}
-
-
                   </td>
 
                   <td>
                     <p className="whitespace-nowrap">
                       {meeting?.client?.name} with
-                      <span className='ps-1'>{
-                        (meeting?.cps[1]?.name) ?
-                          (meeting?.cps[1]?.name) : (meeting?.cps[0]?.name)
-                      }
-                      </span>
+                      <span className="ps-1">{meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}</span>
                     </p>
                   </td>
 
@@ -219,13 +208,8 @@ const Meeting = () => {
             </tbody>
           </table>
           {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
-          <div className='mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16'>
-            <ResponsivePagination
-              current={currentPage}
-              total={totalPagesCount}
-              onPageChange={handlePageChange}
-              maxWidth={400}
-            />
+          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
           </div>
         </div>
       </div>
@@ -234,63 +218,66 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setmeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark space-x-6">
-
-                <div className="flex my-2 items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
-                  <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-6">Meeting Details</div>
-                  <button type="button" className="text-white-dark hover:text-dark me-4 text-[16px]" onClick={() => setmeetingModal(false)}>
-
+              <Dialog.Panel as="div" className="panel my-24 w-2/5 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
+                  <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
+                  <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setmeetingModal(false)}>
                     {allSvgs.closeModalSvg}
-
                   </button>
                 </div>
 
                 <div className="basis-[50%]">
+                  <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">
+                    Meeting with <span className="capitalize text-[#ACA686]">{meetingInfo?.client?.name}</span>
+                  </h2>
 
-                  <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Meeting with <span className='text-[#ACA686] capitalize'>{meetingInfo?.client?.name}</span></h2>
-
-                  <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  justify-between pb-6 w-5/6 space-y-6`}>
-
+                  <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  w-5/6 justify-between space-y-6 pb-6`}>
                     <div className="leftdata">
                       <p>
-                        <span className='text-[14px] font-light leading-none capitalize text-[#000000] '>
-                          Order : <span className='text-[14px] font-normal text-[#000000]'>{meetingInfo?.order?.name}</span>
-                        </span>
-                      </p>
-
-                      <p className='mt-2'>
-                        <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
-                          Time : <span className='text-[14px] font-normal leading-[28px] text-[#000000]'> {myFormattedDateTime?.time}</span>
+                        <span className="text-[14px] font-light capitalize leading-none text-[#000000] ">
+                          Order : <span className="text-[14px] font-normal text-[#000000]">{meetingInfo?.order?.name}</span>
                         </span>
                       </p>
 
                       <p>
-                        <span className='text-[14px] font-light leading-none capitalize text-[#000000]'>
-                          Date : <span className='text-[14px] font-normal leading-[28px] text-[#000000]'> {myFormattedDateTime?.date}</span>
+                        <span className="text-[14px] font-light capitalize leading-none text-[#000000] ">
+                          Meeting Link :{' '}
+                          <a href={meetingInfo?.meetLink || ''} target={0} className="text-[14px] font-normal text-blue-600 underline">
+                            {meetingInfo?.meetLink}
+                          </a>
                         </span>
                       </p>
-                      <div className="flex justify-between mt-3">
-                        <span className=" text-[14px] font-light leading-none capitalize text-[#000000]">
-                          Status: <span className='ps-2 text-[#0E1726] font-normal'><StatusBg>{meetingInfo?.meeting_status}</StatusBg></span>
+
+                      <p className="mt-2">
+                        <span className="text-[14px] font-light capitalize leading-none text-[#000000]">
+                          Time : <span className="text-[14px] font-normal leading-[28px] text-[#000000]"> {myFormattedDateTime?.time}</span>
                         </span>
-                        {meetingInfo.link ?
-                          <span className=" block font-sans text-[14px] leading-[18.2px] text-[#000000]">
-                            Link: {meetingInfo.link}
+                      </p>
+
+                      <p>
+                        <span className="text-[14px] font-light capitalize leading-none text-[#000000]">
+                          Date : <span className="text-[14px] font-normal leading-[28px] text-[#000000]"> {myFormattedDateTime?.date}</span>
+                        </span>
+                      </p>
+                      <div className="mt-3 flex justify-between">
+                        <span className=" text-[14px] font-light capitalize leading-none text-[#000000]">
+                          Status:{' '}
+                          <span className="ps-2 font-normal text-[#0E1726]">
+                            <StatusBg>{meetingInfo?.meeting_status}</StatusBg>
                           </span>
-                          : ''
-                        }
+                        </span>
+                        {meetingInfo.link ? <span className=" block font-sans text-[14px] leading-[18.2px] text-[#000000]">Link: {meetingInfo.link}</span> : ''}
                       </div>
                     </div>
 
                     {/* Resheduling */}
                     <div>
-                      {
-                        meetingInfo?.meeting_status === 'pending' &&
-                        <div className='flex flex-col items-start'>
+                      {meetingInfo?.meeting_status === 'pending' && (
+                        <div className="flex flex-col items-start">
                           <h2 className="text-[14px] font-semibold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
-                          <form action="" className='flex flex-col'>
+                          <form action="" className="flex flex-col">
                             <input
-                              className="rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd] w-60"
+                              className="w-60 rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]"
                               type="datetime-local"
                               name="dateTime"
                               id="datetime"
@@ -298,24 +285,21 @@ const Meeting = () => {
                               onChange={handleButtonChange}
                             />
 
-                            <button type="submit" className="btn my-5 font-light bg-black font-sans text-white float-left w-60 capitalize text-[16px]">
+                            <button type="submit" className="btn float-left my-5 w-60 bg-black font-sans text-[16px] font-light capitalize text-white">
                               Save date
                             </button>
                           </form>
                         </div>
-                      }
+                      )}
 
-
-                      <button onClick={() => setmeetingModal(false)} type="submit" className="btn bg-black font-sans text-white mx-auto md:me-0 mt-0 hidden md:block text-[16px]">
+                      {/* <button onClick={() => setmeetingModal(false)} type="submit" className="btn mx-auto mt-0 hidden bg-black font-sans text-[16px] text-white md:me-0 md:block">
                         Close
-                      </button>
+                      </button> */}
                     </div>
 
                     {/* Resheduling */}
-
                   </div>
                 </div>
-
               </Dialog.Panel>
             </div>
           </div>
