@@ -1,1 +1,6 @@
-{"/_app":"pages/_app.js","/_document":"pages/_document.js","/cp/test":"pages/cp/test.html","/dashboard/chat":"pages/dashboard/chat.html","/dashboard/fileManager":"pages/dashboard/fileManager.html","/dashboard/disputes":"pages/dashboard/disputes.html","/dashboard/files":"pages/dashboard/files.html","/dashboard/modals":"pages/dashboard/modals.html","/dashboard/meetings":"pages/dashboard/meetings.html","/dashboard/pricingParams":"pages/dashboard/pricingParams.html","/dashboard/searchingParams":"pages/dashboard/searchingParams.html","/dashboard/settings":"pages/dashboard/settings.html","/dashboard/shoots/[shootDetails]":"pages/dashboard/shoots/[shootDetails].html","/dashboard/shoots":"pages/dashboard/shoots.html","/dashboard/transactions":"pages/dashboard/transactions.html","/":"pages/index.html","/dashboard/profile":"pages/dashboard/profile.html","/manager/addons":"pages/manager/addons.html","/manager/bookNow":"pages/manager/bookNow.html","/manager/allUsers":"pages/manager/allUsers.html","/manager/clients":"pages/manager/clients.html","/manager/cp":"pages/manager/cp.html","/manager/cp/[cp]":"pages/manager/cp/[cp].html","/manager/test":"pages/manager/test.html","/users/user-account-settings":"pages/users/user-account-settings.html","/users/profile":"pages/users/profile.html","/_error":"pages/_error.js","/404":"pages/404.html"}
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/": "pages/index.js"
+}
