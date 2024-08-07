@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { use, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { format, parseISO, differenceInHours } from 'date-fns';
+import { format, parseISO, isValid } from 'date-fns';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import Link from 'next/link';
@@ -25,6 +25,9 @@ import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation'
 import OrderApi from '@/Api/OrderApi';
 import { useRouter } from 'next/router';
 import Loader from '@/components/SharedComponent/Loader';
+import { swalToast } from '@/utils/Toast/SwalToast';
+import { BookingFormValidator } from '@/utils/ErrorHandler/BookingError';
+import { tr } from 'date-fns/locale';
 
 interface FormData {
   content_type: string;
@@ -60,6 +63,7 @@ const BookNow = () => {
   const [showDateTimes, setShowDateTimes] = useState<any>();
   const [getTotalDuration, setTotalDuration] = useState<any>();
   const [client_id, setClient_id] = useState('');
+  const [clientName, setClientName] = useState('');
   const [filteredAddonsData, setFilteredAddonsData] = useState([]);
   const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
   const [allAddonRates, setAllAddonRates] = useState(0);
@@ -77,12 +81,17 @@ const BookNow = () => {
     setValue,
     watch,
     reset,
+    getValues,
     formState: { errors },
   } = useForm<FormData>({ defaultValues: {} });
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setPageTitle('Manager Dashboard'));
+    if (activeTab === 1) {
+      localStorage.removeItem('longitude');
+      localStorage.removeItem('latitude');
+    }
   });
 
   useEffect(() => {
@@ -138,15 +147,38 @@ const BookNow = () => {
   }, [selectedFilteredAddons, filteredAddonsData, addonExtraHours]);
 
   const handleChangeStartDateTime = (e: ChangeEvent<HTMLInputElement>) => {
-    const s_time = parseISO(e.target.value);
-    const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    setStartDateTime(starting_date);
+    try {
+      const inputValue = e.target.value;
+      const s_time = parseISO(inputValue);
+
+      // Check if the parsed date is valid
+      if (!isValid(s_time)) {
+        return;
+      }
+      // Format the date if valid
+      const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      setStartDateTime(starting_date);
+    } catch (error) {
+      console.error('Error parsing date:', error);
+      // Handle the error, e.g., set an error state or display an error message
+    }
   };
 
   const handleChangeEndDateTime = (e: ChangeEvent<HTMLInputElement>) => {
-    const e_time = parseISO(e.target.value);
-    const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    setEndDateTime(ending_date);
+    try {
+      const inputValue = e.target.value;
+      const e_time = parseISO(inputValue);
+      // Check if the parsed date is valid
+      if (!isValid(e_time)) {
+        return;
+      }
+      // Format the date if valid
+      const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      setEndDateTime(ending_date);
+    } catch (error) {
+      console.error('Error parsing end date:', error);
+      // Handle the error, e.g., set an error state or display an error message
+    }
   };
 
   const handleChangeMinBudget = (e: any) => {
@@ -180,7 +212,7 @@ const BookNow = () => {
       date_status: 'confirmed',
     };
     if (calculateDuration(startDateTime, endDateTime) <= 0) {
-      coloredToast('danger', 'End time must be greater than start time!');
+      swalToast('danger', 'End time must be greater than start time!');
       return;
     }
     if (newDateTime?.end_date_time !== '' && newDateTime?.start_date_time !== '') {
@@ -249,23 +281,6 @@ const BookNow = () => {
   // for pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-  };
-
-  // Toast -16
-  const coloredToast = (color: any, message: string) => {
-    const toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      showCloseButton: true,
-      customClass: {
-        popup: `color-${color}`,
-      },
-    });
-    toast.fire({
-      title: message,
-    });
   };
 
   // show addon data
@@ -387,12 +402,20 @@ const BookNow = () => {
 
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
+    if (!localStorage.getItem('longitude') || !localStorage.getItem('latitude')) {
+      return swalToast('danger', 'Please select shoot location!');
+    }
+    const longitude = parseFloat(localStorage.getItem('longitude') as any);
+    const latitude = parseFloat(localStorage.getItem('latitude') as any);
+    if (isNaN(longitude) || isNaN(latitude)) {
+      return swalToast('danger', 'Please select shoot location!');
+    }
     if (activeTab == 2 && !cp_ids?.length === 0) {
-      coloredToast('danger', 'Please select a producer!');
+      swalToast('danger', 'Please select a producer!');
       return; // Exit the function early if no producer is selected
     }
     if (data.content_type == false) {
-      coloredToast('danger', 'Please select content type!');
+      swalToast('danger', 'Please select content type!');
     } else {
       try {
         const formattedData = {
@@ -405,7 +428,7 @@ const BookNow = () => {
           content_vertical: data.content_vertical,
           description: data.description,
           location: localStorage.getItem('location'),
-          order_name: data.order_name,
+          order_name: orderName(),
           references: data.references,
           shoot_datetimes: JSON.parse(showDateTimes),
           geo_location: {
@@ -416,7 +439,7 @@ const BookNow = () => {
           addOns: selectedFilteredAddons,
           cp_ids: cp_ids,
           addOns_cost: allAddonRates,
-          shoot_cost: allRates,
+          shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
@@ -428,19 +451,45 @@ const BookNow = () => {
         if (activeTab === 3) {
           const response = await OrderApi.handleOrderMake(formattedData);
           if (response.status === 201) {
-            coloredToast('success', 'Order has been created successfully!');
+            swalToast('success', 'Order has been created successfully!');
             router.push('/dashboard/shoots');
             setIsLoading(false);
           } else {
-            coloredToast('danger', 'Please check your order details!');
+            swalToast('danger', 'Please check your order details!');
             setIsLoading(false);
           }
         }
       } catch (error) {
-        coloredToast('danger', 'error');
+        swalToast('danger', 'error');
         setIsLoading(false);
       }
     }
+  };
+  const contentTypes = watch('content_type', []);
+  const contentVertical = watch('content_vertical');
+  //
+  const handleClientChange = (event) => {
+    const selectedOption = event.target.options[event.target.selectedIndex];
+    setClient_id(selectedOption.value);
+    setClientName(selectedOption.getAttribute('data-name'));
+  };
+  //
+  const orderName = () => {
+    const contentType: any = getValues('content_type') || [];
+    let contentVertical = getValues('content_vertical');
+    let type = '';
+    if (contentType.includes('video') && contentType.includes('photo')) {
+      type = 'Photography and Videography';
+    } else if (contentType.includes('video')) {
+      type = 'Videography';
+    } else if (contentType.includes('photo')) {
+      type = 'Photography';
+    }
+    if (contentVertical === 'SelectCategory') {
+      contentVertical = 'Category';
+    }
+    const concateOrderName = `${clientName || 'Name'}'s ${contentVertical} ${type || 'Type'}`;
+    return concateOrderName;
   };
 
   return (
@@ -475,14 +524,23 @@ const BookNow = () => {
                             {/* Video */}
                             <div className="mb-2">
                               <label className="flex items-center">
-                                <input type="checkbox" className="form-checkbox" defaultValue="video" id="videoShootType" {...register('content_type', { required: `Select a Content-type` })} />
+                                <input
+                                  type="checkbox"
+                                  className={`form-checkbox ${errors.content_type && 'border border-danger'}`}
+                                  value="video"
+                                  {...register('content_type', {
+                                    validate: {
+                                      required: () => contentTypes.length > 0 || 'Select at least one content type',
+                                    },
+                                  })}
+                                />
                                 <span className="text-black">Video</span>
                               </label>
                             </div>
                             {/* Photo */}
                             <div className="mb-2">
                               <label className="flex items-center">
-                                <input type="checkbox" className="form-checkbox" defaultValue="photo" id="photoShootType" {...register('content_type')} />
+                                <input type="checkbox" className={`form-checkbox ${errors.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
                                 <span className="text-black">Photo</span>
                               </label>
                             </div>
@@ -493,9 +551,16 @@ const BookNow = () => {
                         <div className="flex basis-[45%] flex-col sm:flex-row">
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Category
-                            {/* content vertical */}
                           </label>
-                          <select className="form-select text-white-dark" id="content_vertical" defaultValue="selectCategory" {...register('content_vertical')}>
+                          <select
+                            className={`form-select text-black ${errors.content_vertical ? 'border-red-500' : ''}`}
+                            id="content_vertical"
+                            defaultValue="SelectCategory"
+                            {...register('content_vertical', {
+                              required: 'Category is required',
+                              validate: (value) => value !== 'SelectCategory' || 'Please select a valid category',
+                            })}
+                          >
                             <option value="SelectCategory">Select Category</option>
                             <option value="Commercial">Commercial</option>
                             <option value="Corporate">Corporate</option>
@@ -512,17 +577,18 @@ const BookNow = () => {
                             Client
                           </label>
                           <select
-                            className="form-select text-white-dark"
+                            className={`form-select text-black ${errors.client ? 'border-red-500' : ''}`}
                             id="content_vertical"
                             defaultValue="SelectClient"
-                            {...register('client')}
-                            onChange={(event) => {
-                              setClient_id(event.target.value);
-                            }}
+                            {...register('client', {
+                              required: 'Client is required',
+                              validate: (value) => value !== 'SelectClient' || 'Please select a Client',
+                            })}
+                            onChange={handleClientChange}
                           >
                             <option value="SelectClient">Select Client</option>
                             {onlyClients?.map((client) => (
-                              <option key={client.id} value={client.id}>
+                              <option key={client.id} value={client.id} data-name={client.name}>
                                 {client.name}
                               </option>
                             ))}
@@ -542,12 +608,20 @@ const BookNow = () => {
 
                       <div className="mt-5 flex items-start justify-between">
                         {/* Order Name */}
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <div className="flex basis-[45%] flex-col  sm:flex-row">
                           <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Order Name
                           </label>
-                          <input id="order_name" type="text" className="form-input flex-grow" placeholder="Order Name" {...register('order_name')} />
-                          {errors.order_name && <p className="mt-1 text-danger">{errors.order_name.message}</p>}
+                          <input
+                            id="order_name"
+                            title="Shoot name automatically Generate based on you information"
+                            disabled
+                            value={orderName()}
+                            type="text"
+                            className="form-input flex-grow bg-slate-100"
+                            placeholder="Order Name"
+                            {...register('order_name')}
+                          />
                         </div>
 
                         {/* references */}
@@ -635,13 +709,19 @@ const BookNow = () => {
                               id="min_budget"
                               type="number"
                               placeholder="Min Budget"
-                              className={`form-input block md:ms-2 md:w-[355px] 2xl:ml-[18px] 2xl:w-[550px] ${minBudgetError}`}
-                              {...register('min_budget')}
+                              className={`form-input block md:ms-2 md:w-[355px] 2xl:ml-[18px] 2xl:w-[550px] ${errors.min_budget ? 'border-red-500' : ''}`}
+                              {...register('min_budget', {
+                                required: 'Min Budget is required',
+                                min: {
+                                  value: 1000,
+                                  message: 'Min Budget must be at least $1000',
+                                },
+                                validate: (value) => value > 0 || 'Min Budget must be greater than 0',
+                              })}
                               onBlur={handleChangeMinBudget}
                             />
 
-                            <p className="ml-5 text-danger">{minBudgetErrorText}</p>
-                            {errors.min_budget && <p className="text-danger">{errors?.min_budget.message}</p>}
+                            {errors.min_budget && <p className="ml-4 text-danger">{errors?.min_budget.message}</p>}
                           </div>
                         </div>
 
@@ -654,13 +734,22 @@ const BookNow = () => {
                               id="max_budget"
                               type="number"
                               placeholder="Max Budget"
-                              className={`form-input block md:ms-2 md:w-[355px] 2xl:ml-[18px] 2xl:w-[560px] ${minBudgetError}`}
-                              {...register('max_budget')}
+                              className={`form-input block md:ms-2 md:w-[355px] 2xl:ml-[18px] 2xl:w-[560px] ${errors.max_budget ? 'border-red-500' : ''}`}
+                              {...register('max_budget', {
+                                required: 'Max Budget is required',
+                                min: {
+                                  value: 1000,
+                                  message: 'Max Budget must be greater than Min Budget',
+                                },
+                                validate: (value) => {
+                                  const minBudget = getValues('min_budget');
+                                  return value >= minBudget || 'Max Budget must be greater than or equal to Min Budget';
+                                },
+                              })}
                               onBlur={handleChangeMaxBudget}
                             />
 
-                            <p className="ml-5 text-danger">{maxBudgetErrorText}</p>
-                            {errors.max_budget && <p className="text-danger">{errors?.max_budget.message}</p>}
+                            {errors.max_budget && <p className="ml-4 text-danger">{errors?.max_budget.message}</p>}
                           </div>
                         </div>
                       </div>
