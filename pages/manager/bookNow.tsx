@@ -89,10 +89,10 @@ const BookNow = () => {
   useEffect(() => {
     dispatch(setPageTitle('Manager Dashboard'));
     if (activeTab === 1) {
-      localStorage.removeItem('longitude');
-      localStorage.removeItem('latitude');
+      // localStorage.removeItem('longitude');
+      // localStorage.removeItem('latitude');
     }
-  });
+  }, []);
 
   useEffect(() => {
     const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')!) || [];
@@ -259,7 +259,7 @@ const BookNow = () => {
     const durationMs = end - start;
     // Convert milliseconds to hours
     const durationHours = durationMs / (1000 * 60 * 60); // 1 hour = 3600000 milliseconds
-    return durationHours;
+    return Math.ceil(durationHours);
   };
 
   // Function to log total duration from an array of date-time objects
