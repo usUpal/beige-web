@@ -620,7 +620,7 @@ const BookNow = () => {
                                 />
                               </div>
                               <p className="btn btn-success ml-2 mt-4 h-9" onClick={addDateTime}>
-                                Add time
+                                Add
                               </p>
                               {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
