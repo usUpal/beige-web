@@ -31,7 +31,7 @@ const Shoots = () => {
     } else if (userRole === 'cp') {
       url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&cp_id=${userData?.id}`;
     }
-    console.log('🚀 ~ getAllMyShoots ~ url:', url);
+    // console.log('🚀 ~ getAllMyShoots ~ url:', url);
     try {
       const response = await fetch(url);
       const allShots = await response.json();
