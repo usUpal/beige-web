@@ -11,9 +11,7 @@ import { useAuth } from '../../contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition, Tab } from '@headlessui/react';
 
-
 const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
-
   const { userData } = useAuth();
   const [state, setState] = useState({
     loading: false,
@@ -26,7 +24,6 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   const [view, setView] = useState('list');
 
   const [modal, setModal] = useState(false);
-
 
   const [ignoringFileStructure, setIgnoringFileStructure] = useState(false);
 
@@ -123,7 +120,6 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
     setFileToRename({});
   };
 
-
   const moveFile = (moveToParent: any) => {
     let destFolder = fileMoveDestination.splitPath;
     if (moveToParent) destFolder = fileToMove.splitPath.slice(0, -2);
@@ -141,7 +137,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   const fileCards = () => {
     return filesInPath(path, ignoringFileStructure).map((file) => (
       // console.log(file);
-      < FileCard
+      <FileCard
         key={file.id}
         id={file.id}
         selectFileIds={selectFileIds}
@@ -149,12 +145,10 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         cardType={view}
         fileType={file.contentType}
         isFolder={file.isFolder}
-        lastMod={formatDatetime(file.updated)
-        }
+        lastMod={formatDatetime(file.updated)}
         name={ignoringFileStructure ? file.path : file.name}
         size={formatBytes(file.size)}
-        isDimmed={!!fileToMove.path && !file.isFolder
-        }
+        isDimmed={!!fileToMove.path && !file.isFolder}
         onDelete={() => {
           // If the folder isn't empty then don't delete (TODO recursive folder deletion)
           // if (file.isFolder && filesInPath(file.path.split('/').slice(0, -1)).length) return toast('❌ You must delete all files from this folder first.');
@@ -188,8 +182,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                     autoClose: 10000,
                   });
                 });
-            }
-            else {
+            } else {
               const { url, duration } = await api.getSharableUrl(file.path, true);
               if (!url) toast("🚫 Couldn't get sharable URL. Try making the file public instead.");
               navigator.clipboard
@@ -226,7 +219,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             } else {
               // If it's a file, get the sharable URL and open it
               const { url } = await api.getSharableUrl(file.path, true);
-              console.log("🚀 ~ onDownload={ ~ url:", url)
+              console.log('🚀 ~ onDownload={ ~ url:', url);
               window.open(url, '_blank');
             }
           }
@@ -244,7 +237,6 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             });
         }}
         handleDropDown={handleDropDown}
-
       />
     ));
   };
@@ -252,11 +244,11 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
 
   const handleDropDown = (id: any) => {
     if (selectFileIds.includes(id)) {
-      setSelecFileIds([])
+      setSelecFileIds([]);
     } else {
-      setSelecFileIds([id])
+      setSelecFileIds([id]);
     }
-  }
+  };
   return (
     <div>
       <div>
@@ -264,14 +256,14 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
       </div>
 
       <div className="flex items-center justify-start gap-4">
-        <label className="flex items-center cursor-pointer">
+        <label className="flex cursor-pointer items-center">
           <input
             type="checkbox"
-            className="form-checkbox h-4 w-4 border-black focus:outline-black text-black"
+            className="form-checkbox h-4 w-4 border-black text-black focus:outline-black"
             checked={ignoringFileStructure}
             onChange={() => setIgnoringFileStructure(!ignoringFileStructure)}
           />
-          <span className="ml-2 text-lg text-gray-900 font-normal">Ignore Folder Structure</span>
+          <span className="ml-2 text-lg font-normal text-gray-900">Ignore Folder Structure</span>
         </label>
 
         <p className="mb-0 flex items-center gap-2 px-4	 text-lg" onClick={getFiles}>
@@ -284,19 +276,13 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
       {/* Folder breadcrumbs */}
       <div className="">
         <nav className="flex" aria-label="Breadcrumb">
-          <ol className="flex items-center mt-3 mb-5">
+          <ol className="mb-5 mt-3 flex items-center">
             <li className="mr-2">
-              <span className="text-gray-500">
-                {allSvgs.folderIcon}
-              </span>
+              <span className="text-gray-500">{allSvgs.folderIcon}</span>
             </li>
 
             <li>
-              <a
-                href="#"
-                className={`text-gray-500 ${!path.length ? 'font-bold' : 'hover:text-blue-600'}`}
-                onClick={() => setPath([])}
-              >
+              <a href="#" className={`text-gray-500 ${!path.length ? 'font-bold' : 'hover:text-blue-600'}`} onClick={() => setPath([])}>
                 {state.bucketName ? 'Beige' : ''}
               </a>
             </li>
@@ -309,11 +295,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
 
                 {path.map((folderName, folderDepth) => (
                   <li key={folderDepth}>
-                    <a
-                      href="#"
-                      className={`text-gray-500 ${path.length === folderDepth + 1 ? 'font-bold' : 'hover:text-blue-600'}`}
-                      onClick={() => setPath(path.slice(0, folderDepth + 1))}
-                    >
+                    <a href="#" className={`text-gray-500 ${path.length === folderDepth + 1 ? 'font-bold' : 'hover:text-blue-600'}`} onClick={() => setPath(path.slice(0, folderDepth + 1))}>
                       {folderName}
                     </a>
                     {folderDepth !== path.length - 1 && <span className="mx-2 text-gray-300">/</span>}
@@ -327,31 +309,29 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
 
       {/* File Explorer */}
       <div className="files">
-        <div className='message'>
-          {(state.loading) && (
-            <div className="  border px-4 py-3 rounded relative flex items-center mb-10" role="alert">
+        <div className="message">
+          {state.loading && (
+            <div className="  relative mb-10 flex items-center rounded border px-4 py-3" role="alert">
               <div className="h-12 w-20">
-                <div className='h-12 w-12'>{allSvgs.roundSpinIcon}</div>
+                <div className="h-12 w-12">{allSvgs.roundSpinIcon}</div>
               </div>
-              <div className='mt-2'>
-                <span className="block sm:inline font-bold">Please wait...</span>
+              <div className="mt-2">
+                <span className="block font-bold sm:inline">Please wait...</span>
                 <span className="block sm:inline">We are gathering your files... </span>
               </div>
             </div>
           )}
 
-          {(state.loadingError) && (
-            <div className=" border px-4 py-3 rounded relative flex items-center mb-10" role="alert">
+          {state.loadingError && (
+            <div className=" relative mb-10 flex items-center rounded border px-4 py-3" role="alert">
               <div className="h-12 w-20">
-                <div className=' h-12 w-12 flex justify-center items-center'>{allSvgs.invalidIcon}</div>
+                <div className=" flex h-12 w-12 items-center justify-center">{allSvgs.invalidIcon}</div>
               </div>
-              <div className='mt-2'>
-                <span className="block sm:inline font-bold">
-                  Something went wrong.
-                </span>
-                <span className="block sm:inline pe-4">
+              <div className="mt-2">
+                <span className="block font-bold sm:inline">Something went wrong.</span>
+                <span className="block pe-4 sm:inline">
                   Either the request failed or you are not authorized to access these files.
-                  <a href="#" className='ps-6' onClick={getFiles}>
+                  <a href="#" className="ps-6" onClick={getFiles}>
                     Try again.
                   </a>
                 </span>
@@ -359,7 +339,6 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             </div>
           )}
         </div>
-
 
         {/* {ignoringFileStructure && (
           <p className="mb-4 w-full border py-3 px-6 sm:py-4 sm:px-8 text-warning ">
@@ -369,49 +348,43 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
 
         {!filesInPath().length && !state.loading && !ignoringFileStructure && <p>There are no files here : </p>}
 
-        <div className=''>
-          {view === 'list' ?
-            (
-              <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
-              >
-                {fileCards().map((card, index) => (
-                  <li key={index} className="relative">
-                    {card}
-                  </li>
-                ))}
-              </ul>
-            ) :
-            (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 ">
-                {fileCards().map((card, index) => (
-                  <div key={index} className="file-card relative shadow-md rounded-lg">
-                    {card}
-                  </div>
-                ))}
-              </div>
-            )}
+        <div className="">
+          {view === 'list' ? (
+            <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+              {fileCards().map((card, index) => (
+                <li key={index} className="relative">
+                  {card}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 ">
+              {fileCards().map((card, index) => (
+                <div key={index} className="file-card relative rounded-lg shadow-md">
+                  {card}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-
       </div>
 
       <>
         {/* Delete Modal */}
         <div className="mb-5">
           <Transition appear show={deletionState.open} as={Fragment}>
-            <Dialog as="div" open={deletionState.open} onClose={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
+            <Dialog
+              as="div"
+              open={deletionState.open}
+              onClose={() => {
+                setDeletionState({ ...deletionState, open: false, error: false, saving: false });
+              }}
+            >
+              <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
                 <div className="fixed inset-0" />
               </Transition.Child>
-              <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
-                <div className="flex items-center justify-center min-h-screen px-4">
+              <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                <div className="flex min-h-screen items-center justify-center px-4">
                   <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -421,34 +394,45 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Dialog.Panel as="div" className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg my-8 text-black dark:text-white-dark">
-                      <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
-                        <div className="text-lg font-bold capitalize text-red-600">
-                          Delete {deletionState.isFolder ? 'folder' : 'file'}
-                        </div>
-                        <button type="button" className="text-white-dark hover:text-dark text-[16px]" onClick={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
+                    <Dialog.Panel as="div" className="panel my-8 w-full max-w-lg overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                      <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
+                        <div className="text-lg font-bold capitalize text-red-600">Delete {deletionState.isFolder ? 'folder' : 'file'}</div>
+                        <button
+                          type="button"
+                          className="text-[16px] text-white-dark hover:text-dark"
+                          onClick={() => {
+                            setDeletionState({ ...deletionState, open: false, error: false, saving: false });
+                          }}
+                        >
                           {allSvgs.closeModalSvg}
                         </button>
                       </div>
-                      <div className="p-5 "> {/* Added flex and items-center classes here */}
-                        <p className='bg-rose-100 flex flex-col items-center text-danger'>
-                          {allSvgs.trashIcon}
+                      <div className="p-5 ">
+                        {' '}
+                        {/* Added flex and items-center classes here */}
+                        <p className="flex flex-col items-center bg-rose-100 text-danger">{allSvgs.trashIcon}</p>
+                        <p className=" font-semibold">
+                          {' '}
+                          {/* Added text-red-600 class for red color */}
+                          Are you sure you want to delete <span className="text-danger"> {deletionState.file}</span>?
                         </p>
-                        <p className=" font-semibold"> {/* Added text-red-600 class for red color */}
-                          Are you sure you want to delete <span className='text-danger'> {deletionState.file}</span>?
-                        </p>
-                        <div className="flex justify-end items-center mt-8">
-                          <button type="button" className="btn btn-outline-danger text-[16px]" onClick={() => { setDeletionState({ ...deletionState, open: false, error: false, saving: false }) }}>
+                        <div className="mt-8 flex items-center justify-end">
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger text-[16px]"
+                            onClick={() => {
+                              setDeletionState({ ...deletionState, open: false, error: false, saving: false });
+                            }}
+                          >
                             No
                           </button>
 
-                          <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4 text-[16px]" onClick={() => deleteFile()}>
+                          <button type="button" className="btn btn-primary text-[16px] ltr:ml-4 rtl:mr-4" onClick={() => deleteFile()}>
                             {deletionState.saving ? 'Deleting...' : 'Yes'}
                           </button>
                         </div>
                       </div>
                     </Dialog.Panel>
-
                   </Transition.Child>
                 </div>
               </div>
@@ -458,20 +442,12 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
       </>
 
       <Transition appear show={!!fileToRename.path} as={Fragment}>
-        <Dialog as="div" open={!!fileToRename.path} onClose={() => setFileToRename({})} >
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
+        <Dialog as="div" open={!!fileToRename.path} onClose={() => setFileToRename({})}>
+          <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
             <div className="fixed inset-0" />
           </Transition.Child>
-          <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
-            <div className="flex items-center justify-center min-h-screen px-4">
+          <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+            <div className="flex min-h-screen items-center justify-center px-4">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -481,37 +457,47 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel as="div" className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg my-8 text-black dark:text-white-dark">
-                  <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
-                    <h5 className="font-bold text-lg">Rename</h5>
-                    <button type="button" className="text-white-dark hover:text-dark text-[16px]" onClick={() => {
-                      setFileToRename({});
-                      setRenameInputValue('');
-                    }}>
+                <Dialog.Panel as="div" className="panel my-8 w-full max-w-lg overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                  <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
+                    <h5 className="text-lg font-bold">Rename</h5>
+                    <button
+                      type="button"
+                      className="text-[16px] text-white-dark hover:text-dark"
+                      onClick={() => {
+                        setFileToRename({});
+                        setRenameInputValue('');
+                      }}
+                    >
                       {allSvgs.closeBtnCp}
                     </button>
                   </div>
-                  <div className="px-5 pb-5 flex flex-col items-center">
-                    <p className='flex flex-col items-center text-info'>
-                      {allSvgs.docEditIcon}
-                    </p>
-                    <p className='font-semibold'>
-                      Rename <span className='text-blue-400'> {fileToRename.name}</span>
+                  <div className="flex flex-col items-center px-5 pb-5">
+                    <p className="flex flex-col items-center text-info">{allSvgs.docEditIcon}</p>
+                    <p className="font-semibold">
+                      Rename <span className="text-blue-400"> {fileToRename.name}</span>
                     </p>
                     <p>
-                      <input className='border p-3 rounded capitalize focus:outline-none focus:border-gray-600' placeholder="New name" value={renameInputValue} onChange={(e) => setRenameInputValue(e.target.value)} />
+                      <input
+                        className="rounded border p-3 capitalize focus:border-gray-600 focus:outline-none"
+                        placeholder="New name"
+                        value={renameInputValue}
+                        onChange={(e) => setRenameInputValue(e.target.value)}
+                      />
                     </p>
 
-                    <div className="flex justify-end items-center mt-8">
-                      <button type="button" className="btn btn-outline-danger text-[16px]"
+                    <div className="mt-8 flex items-center justify-end">
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger text-[16px]"
                         onClick={() => {
                           setFileToRename({});
                           setRenameInputValue('');
-                        }}>
+                        }}
+                      >
                         Cancel
                       </button>
 
-                      <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4 text-[16px]" onClick={renameFile}>
+                      <button type="button" className="btn btn-primary text-[16px] ltr:ml-4 rtl:mr-4" onClick={renameFile}>
                         Rename
                       </button>
                     </div>
@@ -539,7 +525,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           </Segment>
         </div>
       </Portal> */}
-    </div >
+    </div>
   );
 };
 
