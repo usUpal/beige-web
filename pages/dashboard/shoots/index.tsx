@@ -17,7 +17,7 @@ const Shoots = () => {
 
   // All Shoots
   const { userData } = useAuth();
-  const userRole = userData?.role === 'user' ? 'client' : 'cp';
+  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
   useEffect(() => {
     getAllMyShoots();
@@ -25,10 +25,16 @@ const Shoots = () => {
 
   // All Shoots
   const getAllMyShoots = async () => {
+    let url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
+    if (userRole === 'client') {
+      url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&client_id=${userData?.id}`;
+    } else if (userRole === 'cp') {
+      url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&cp_id=${userData?.id}`;
+    }
+    // console.log('🚀 ~ getAllMyShoots ~ url:', url);
     try {
-      const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}`);
+      const response = await fetch(url);
       const allShots = await response.json();
-      console.log('🚀 ~ getAllMyShoots ~ allShots:', allShots);
       setTotalPagesCount(allShots?.totalPages);
       setMyShoots(allShots?.results);
     } catch (error) {
