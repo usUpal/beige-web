@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Dropdown from '@/components/Dropdown';
 import StatusBg from '@/components/Status/StatusBg';
 import { API_ENDPOINT } from '@/config';
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 const ReactApexChart = dynamic(() => import('react-apexcharts'), {
@@ -10,7 +10,6 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), {
 });
 
 const DashboardManager = (props: any) => {
-
   const { isDark, isRtl, isMounted } = props;
 
   //Revenue Chart
@@ -212,7 +211,7 @@ const DashboardManager = (props: any) => {
                 show: true,
                 label: 'Total',
                 color: '#888ea8',
-                fontSize: '29px'
+                fontSize: '29px',
               },
             },
           },
@@ -231,87 +230,6 @@ const DashboardManager = (props: any) => {
             type: 'none',
             value: 0.15,
           },
-        },
-      },
-    },
-  };
-
-  //Monthly Sales
-  const dailySales: any = {
-    series: [
-      {
-        name: 'Sales',
-        data: [44, 55, 41, 67, 22, 43, 21, 56, 97, 88, 12, 67],
-      },
-      {
-        name: 'Last Week',
-        data: [13, 23, 20, 8, 13, 27, 33, 44, 55, 41, 67, 22],
-      },
-    ],
-    options: {
-      chart: {
-        height: 160,
-        type: 'bar',
-        fontFamily: 'Nunito, sans-serif',
-        toolbar: {
-          show: false,
-        },
-        stacked: true,
-        stackType: '100%',
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
-        show: true,
-        width: 1,
-      },
-      colors: ['#ACA686', '#e0e6ed'],
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            legend: {
-              position: 'bottom',
-              offsetX: -10,
-              offsetY: 0,
-            },
-          },
-        },
-      ],
-      xaxis: {
-        labels: {
-          show: false,
-        },
-        categories: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      },
-      yaxis: {
-        show: false,
-      },
-      fill: {
-        opacity: 1,
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '25%',
-        },
-      },
-      legend: {
-        show: false,
-      },
-      grid: {
-        show: false,
-        xaxis: {
-          lines: {
-            show: false,
-          },
-        },
-        padding: {
-          top: 10,
-          right: -20,
-          bottom: -20,
-          left: -20,
         },
       },
     },
@@ -398,7 +316,7 @@ const DashboardManager = (props: any) => {
         <li>
           <Link href="/" className="text-primary hover:underline">
             Dashboard
-          </Link>         
+          </Link>
         </li>
         <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
           <span>Manager</span>
@@ -411,13 +329,7 @@ const DashboardManager = (props: any) => {
             <div className="mb-5 flex items-center justify-between dark:text-white-light">
               <h5 className="text-lg font-semibold">Revenue</h5>
               <div className="dropdown">
-                <Dropdown
-                  offset={[0, 1]}
-                  placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                  button={
-                    allSvgs.revenueDayWkMonthSortBtnSvg
-                  }
-                >
+                <Dropdown offset={[0, 1]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} button={allSvgs.revenueDayWkMonthSortBtnSvg}>
                   <ul>
                     <li>
                       <button type="button">Weekly</button>
@@ -471,9 +383,7 @@ const DashboardManager = (props: any) => {
           <div className="panel h-full p-0">
             <div className="absolute flex w-full items-center justify-between p-5">
               <div className="relative">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-success-light text-success dark:bg-success dark:text-success-light">
-                  {allSvgs.cartIconSvg}
-                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-success-light text-success dark:bg-success dark:text-success-light">{allSvgs.cartIconSvg}</div>
               </div>
               <h5 className="text-2xl font-semibold ltr:text-right rtl:text-left dark:text-white-light">
                 3,192
@@ -489,264 +399,6 @@ const DashboardManager = (props: any) => {
                   <span className="inline-flex h-5 w-5 animate-spin rounded-full  border-2 border-black !border-l-transparent dark:border-white"></span>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-
-        {/* Summary and Total orders */}
-        <div className="mb-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-2">
-          {/* Monthly Orders */}
-          <div className="panel h-full sm:col-span-2 xl:col-span-1">
-            <div className="mb-5 flex items-center">
-              <h5 className="text-lg font-semibold dark:text-white-light">
-                Monthly Orders
-                <span className="block text-sm font-normal text-white-dark">Go to columns for details.</span>
-              </h5>
-              <div className="relative ltr:ml-auto rtl:mr-auto">
-                <div className="grid h-11 w-11 place-content-center rounded-full bg-[#ffeccb] text-warning dark:bg-warning dark:text-[#ffeccb]">
-                  {allSvgs.dolarIconSvg}
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="rounded-lg bg-white dark:bg-black">
-                {isMounted ? (
-                  <ReactApexChart series={dailySales.series} options={dailySales.options} type="bar" height={160} width={'100%'} />
-                ) : (
-                  <div className="grid min-h-[325px] place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] ">
-                    <span className="inline-flex h-5 w-5 animate-spin rounded-full  border-2 border-black !border-l-transparent dark:border-white"></span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div className="panel h-full sm:col-span-2 xl:col-span-1">
-            <div className="mb-5 flex items-center justify-between dark:text-white-light">
-              <h5 className="text-lg font-semibold">Summary</h5>
-              <div className="dropdown">
-                <Dropdown
-                  placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                  button={
-                    allSvgs.threeDotDropDown
-                  }
-                >
-                  <ul>
-                    <li>
-                      <button type="button">View Report</button>
-                    </li>
-                    <li>
-                      <button type="button">Edit Report</button>
-                    </li>
-                    <li>
-                      <button type="button">Mark as Done</button>
-                    </li>
-                  </ul>
-                </Dropdown>
-              </div>
-            </div>
-            <div className="space-y-9">
-              <div className="flex items-center">
-                <div className="h-9 w-9 ltr:mr-3 rtl:ml-3">
-                  <div className="grid h-9 w-9 place-content-center  rounded-full bg-secondary-light text-secondary dark:bg-secondary dark:text-secondary-light">
-                    {allSvgs.summaryIncomeIconSvg}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="mb-2 flex font-semibold text-white-dark">
-                    <h6>Income</h6>
-                    <p className="ltr:ml-auto rtl:mr-auto">$92,600</p>
-                  </div>
-                  <div className="h-2 rounded-full bg-dark-light shadow dark:bg-[#1b2e4b]">
-                    <div className="h-full w-11/12 rounded-full bg-gradient-to-r from-[#7579ff] to-[#b224ef]"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <div className="h-9 w-9 ltr:mr-3 rtl:ml-3">
-                  <div className="grid h-9 w-9 place-content-center rounded-full bg-success-light text-success dark:bg-success dark:text-success-light">
-                    {allSvgs.summaryProfitIconSvg}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="mb-2 flex font-semibold text-white-dark">
-                    <h6>Profit</h6>
-                    <p className="ltr:ml-auto rtl:mr-auto">$37,515</p>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-dark-light shadow dark:bg-[#1b2e4b]">
-                    <div className="h-full w-full rounded-full bg-gradient-to-r from-[#3cba92] to-[#0ba360]" style={{ width: '65%' }}></div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <div className="h-9 w-9 ltr:mr-3 rtl:ml-3">
-                  <div className="grid h-9 w-9 place-content-center rounded-full bg-warning-light text-warning dark:bg-warning dark:text-warning-light">
-                    {allSvgs.summaryExpensesIconSvg}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="mb-2 flex font-semibold text-white-dark">
-                    <h6>Expenses</h6>
-                    <p className="ltr:ml-auto rtl:mr-auto">$55,085</p>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-dark-light shadow dark:bg-[#1b2e4b]">
-                    <div className="h-full w-full rounded-full bg-gradient-to-r from-[#f09819] to-[#ff5858]" style={{ width: '80%' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Transactions */}
-        <div className="mb-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-2">
-          <div className="panel h-full">
-            <div className="mb-5 flex items-center justify-between dark:text-white-light">
-              <h5 className="text-lg font-semibold">Transactions</h5>
-              <div className="dropdown">
-                <Dropdown
-                  placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                  button={
-                    allSvgs.threeDotDropDown
-                  }
-                >
-                  <ul>
-                    <li>
-                      <button type="button">View Report</button>
-                    </li>
-                    <li>
-                      <button type="button">Edit Report</button>
-                    </li>
-                    <li>
-                      <button type="button">Mark as Done</button>
-                    </li>
-                  </ul>
-                </Dropdown>
-              </div>
-            </div>
-            <div>
-              <div className="space-y-6">
-                <div className="flex">
-                  <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-success-light text-base text-success dark:bg-success dark:text-success-light">
-                    VS
-                  </span>
-                  <div className="flex-1 px-3">
-                    <div>Video Shoot</div>
-                    <div className="text-xs text-white-dark dark:text-gray-500">10 Jan 1:00PM</div>
-                  </div>
-                  <span className="whitespace-pre px-1 text-base text-success ltr:ml-auto rtl:mr-auto">+$36.11</span>
-                </div>
-                <div className="flex">
-                  <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-warning-light text-warning dark:bg-warning dark:text-warning-light">IS</span>
-                  <div className="flex-1 px-3">
-                    <div>Image Shoot</div>
-                    <div className="text-xs text-white-dark dark:text-gray-500">04 Jan 1:00PM</div>
-                  </div>
-                  <span className="whitespace-pre px-1 text-base text-danger ltr:ml-auto rtl:mr-auto">-$16.44</span>
-                </div>
-                <div className="flex">
-                  <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-danger-light text-danger dark:bg-danger dark:text-danger-light">IS</span>
-                  <div className="flex-1 px-3">
-                    <div>Image Shoot</div>
-                    <div className="text-xs text-white-dark dark:text-gray-500">10 Jan 1:00PM</div>
-                  </div>
-                  <span className="whitespace-pre px-1 text-base text-success ltr:ml-auto rtl:mr-auto">+$66.44</span>
-                </div>
-                <div className="flex">
-                  <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-secondary-light text-secondary dark:bg-secondary dark:text-secondary-light">WS</span>
-                  <div className="flex-1 px-3">
-                    <div>Wedding Shoot</div>
-                    <div className="text-xs text-white-dark dark:text-gray-500">04 Jan 1:00PM</div>
-                  </div>
-                  <span className="whitespace-pre px-1 text-base text-danger ltr:ml-auto rtl:mr-auto">-$32.00</span>
-                </div>
-                <div className="flex">
-                  <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-info-light text-base text-info dark:bg-info dark:text-info-light">CS</span>
-                  <div className="flex-1 px-3">
-                    <div>Commercial Shoot</div>
-                    <div className="text-xs text-white-dark dark:text-gray-500">10 Jan 1:00PM</div>
-                  </div>
-                  <span className="whitespace-pre px-1 text-base text-success ltr:ml-auto rtl:mr-auto">+$10.08</span>
-                </div>
-                <div className="flex">
-                  <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-primary-light text-primary dark:bg-primary dark:text-primary-light">VS</span>
-                  <div className="flex-1 px-3">
-                    <div>Video Shoot</div>
-                    <div className="text-xs text-white-dark dark:text-gray-500">04 Jan 1:00PM</div>
-                  </div>
-                  <span className="whitespace-pre px-1 text-base text-danger ltr:ml-auto rtl:mr-auto">-$22.00</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="panel h-full overflow-hidden border-0 p-0">
-            <div className="min-h-[190px] bg-gradient-to-r from-[#EEBE43] to-[#6B510F] p-6">
-              <div className="mb-6 flex items-center justify-between">
-                <div className="flex items-center rounded-full bg-black/50 p-1 font-semibold text-white ltr:pr-3 rtl:pl-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img className="block h-8 w-8 rounded-full border-2 border-white/50 object-cover ltr:mr-1 rtl:ml-1" src="/assets/images/profile-34.jpeg" alt="avatar" />
-                  Alan Green
-                </div>
-                <button type="button" className="flex h-9 w-9 items-center justify-between rounded-md bg-[#164F57] text-white hover:opacity-80 ltr:ml-auto rtl:mr-auto">
-                  {allSvgs.plusIconSvg}
-                </button>
-              </div>
-              <div className="flex items-center justify-between text-white">
-                <p className="text-xl">Wallet Balance</p>
-                <h5 className="text-2xl ltr:ml-auto rtl:mr-auto">
-                  <span className="text-white-light">$</span>2953
-                </h5>
-              </div>
-            </div>
-            <div className="-mt-12 grid grid-cols-2 gap-2 px-8">
-              <div className="rounded-md bg-white px-4 py-2.5 shadow dark:bg-[#060818]">
-                <span className="mb-4 flex items-center justify-between dark:text-white">
-                  Received
-                  <svg className="h-4 w-4 text-success" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 15L12 9L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-                <div className="btn w-full  border-0 bg-[#ebedf2] py-1 text-base text-[#515365] shadow-none dark:bg-black dark:text-[#bfc9d4]">$97.99</div>
-              </div>
-              <div className="rounded-md bg-white px-4 py-2.5 shadow dark:bg-[#060818]">
-                <span className="mb-4 flex items-center justify-between dark:text-white">
-                  Spent
-                  <svg className="h-4 w-4 text-danger" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 9L12 15L5 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-                <div className="btn w-full  border-0 bg-[#ebedf2] py-1 text-base text-[#515365] shadow-none dark:bg-black dark:text-[#bfc9d4]">$53.00</div>
-              </div>
-            </div>
-            <div className="p-5">
-              <div className="mb-5">
-                <span className="rounded-full bg-[#1b2e4b] px-4 py-1.5 text-xs text-white before:inline-block before:h-1.5 before:w-1.5 before:rounded-full before:bg-white ltr:before:mr-2 rtl:before:ml-2">
-                  Pending
-                </span>
-              </div>
-              <div className="mb-5 space-y-1">
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold text-[#515365]">Photo Shoot</p>
-                  <p className="text-base">
-                    <span>$</span> <span className="font-semibold">13.85</span>
-                  </p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold text-[#515365]">Video Shoot</p>
-                  <p className="text-base">
-                    <span>$</span> <span className="font-semibold ">15.66</span>
-                  </p>
-                </div>
-              </div>
-              <div className="flex justify-around px-2 text-center">
-                <button type="button" className="btn btn-secondary ltr:mr-2 rtl:ml-2">
-                  View Details
-                </button>
-                <button type="button" className="btn btn-success">
-                  Pay Now $29.51
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -891,7 +543,6 @@ const DashboardManager = (props: any) => {
       </div>
     </div>
   );
-
 };
 
 export default DashboardManager;

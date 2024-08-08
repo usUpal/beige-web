@@ -1,33 +1,27 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { use, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { format, parseISO, isValid } from 'date-fns';
-import 'tippy.js/dist/tippy.css';
-import { setPageTitle } from '../../store/themeConfigSlice';
-import Link from 'next/link';
-import 'flatpickr/dist/flatpickr.css';
-import { useForm } from 'react-hook-form';
-import ReactApexChart from 'react-apexcharts';
+import OrderApi from '@/Api/OrderApi';
 import Map from '@/components/Map';
-import { ChangeEvent } from 'react';
-import { useAuth } from '@/contexts/authContext';
-import Swal from 'sweetalert2';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import Loader from '@/components/SharedComponent/Loader';
 import useAddons from '@/hooks/useAddons';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Image from 'next/image';
-import { API_ENDPOINT } from '@/config';
-import ResponsivePagination from 'react-responsive-pagination';
 import useAllCp from '@/hooks/useAllCp';
 import useClent from '@/hooks/useClent';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation';
-import OrderApi from '@/Api/OrderApi';
-import { useRouter } from 'next/router';
-import Loader from '@/components/SharedComponent/Loader';
 import { swalToast } from '@/utils/Toast/SwalToast';
-import { BookingFormValidator } from '@/utils/ErrorHandler/BookingError';
-import { tr } from 'date-fns/locale';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { format, isValid, parseISO } from 'date-fns';
+import 'flatpickr/dist/flatpickr.css';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import ResponsivePagination from 'react-responsive-pagination';
+import 'tippy.js/dist/tippy.css';
+import { setPageTitle } from '../../store/themeConfigSlice';
 
 interface FormData {
   content_type: string;
@@ -53,10 +47,6 @@ const BookNow = () => {
   const [allClients, onlyClients] = useClent();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
-  const [minBudget, setMinBudget] = useState<number>();
-  const [minBudgetError, setMinBudgetError] = useState('');
-  const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
-  const [maxBudgetErrorText, setMaxBudgetErrorText] = useState('');
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
   const [dateTimes, setDateTimes] = useState<FormData[]>([]);
@@ -70,7 +60,7 @@ const BookNow = () => {
   const [allRates, setAllRates] = useState(0);
   const [computedRates, setComputedRates] = useState<any>({});
   const [addonExtraHours, setAddonExtraHours] = useState<any>({});
-
+  const [geo_location, setGeo_location] = useState({ coordinates: [], type: 'Point' });
   const [shootCosts, setShootCosts] = useState<number>(0);
   const [formDataPageOne, setFormDataPageOne] = useState<any>({});
   const [cp_ids, setCp_ids] = useState([]);
@@ -88,10 +78,7 @@ const BookNow = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setPageTitle('Manager Dashboard'));
-    if (activeTab === 1) {
-      // localStorage.removeItem('longitude');
-      // localStorage.removeItem('latitude');
-    }
+    localStorage.removeItem('location');
   }, []);
 
   useEffect(() => {
@@ -140,10 +127,6 @@ const BookNow = () => {
     setAllAddonRates(totalRate);
 
     setAllRates(totalRate + shootCosts);
-
-    /* if (formDataPageOne?.shoot_duration !== 0 && formDataPageOne?.cp_ids?.length > 0) {
-            shootCostCalculation(formDataPageOne?.shoot_duration, formDataPageOne?.content_type, formDataPageOne?.cp_ids, formDataPageOne?.content_vertical);
-        } */
   }, [selectedFilteredAddons, filteredAddonsData, addonExtraHours]);
 
   const handleChangeStartDateTime = (e: ChangeEvent<HTMLInputElement>) => {
@@ -180,30 +163,6 @@ const BookNow = () => {
       // Handle the error, e.g., set an error state or display an error message
     }
   };
-
-  const handleChangeMinBudget = (e: any) => {
-    const value = e.target.value;
-    setMinBudget(value);
-    if (e.target.value < 1000) {
-      setMinBudgetError('border-[#ff0000] focus:border-[#ff0000]');
-      setMinBudgetErrorText('Minimum budget must be greater than $1000');
-    } else {
-      setMinBudgetError('');
-      setMinBudgetErrorText('');
-    }
-  };
-  const handleChangeMaxBudget = (e: any) => {
-    const value = e.target.value;
-    const CopmareBudgetValue = parseInt(minBudget);
-    if (e.target.value < CopmareBudgetValue) {
-      setMinBudgetError('border-[#ff0000] focus:border-[#ff0000]');
-      setMaxBudgetErrorText(`Maximum budget must be greater than ${CopmareBudgetValue}`);
-    } else {
-      setMinBudgetError('');
-      setMaxBudgetErrorText('');
-    }
-  };
-
   const addDateTime = () => {
     const newDateTime: FormData = {
       start_date_time: startDateTime,
@@ -402,16 +361,11 @@ const BookNow = () => {
 
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
-    if (!localStorage.getItem('longitude') || !localStorage.getItem('latitude')) {
+    if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
-    const longitude = parseFloat(localStorage.getItem('longitude') as any);
-    const latitude = parseFloat(localStorage.getItem('latitude') as any);
-    if (isNaN(longitude) || isNaN(latitude)) {
-      return swalToast('danger', 'Please select shoot location!');
-    }
-    if (activeTab == 2 && !cp_ids?.length === 0) {
-      swalToast('danger', 'Please select a producer!');
+    if (activeTab == 2 && cp_ids?.length === 0) {
+      swalToast('danger', 'Please select at least one producer!');
       return; // Exit the function early if no producer is selected
     }
     if (data.content_type == false) {
@@ -424,6 +378,7 @@ const BookNow = () => {
             min: parseFloat(data.min_budget),
           },
           client_id,
+          order_status: 'pre_production',
           content_type: data.content_type,
           content_vertical: data.content_vertical,
           description: data.description,
@@ -431,10 +386,7 @@ const BookNow = () => {
           order_name: orderName(),
           references: data.references,
           shoot_datetimes: JSON.parse(showDateTimes),
-          geo_location: {
-            coordinates: [parseFloat(localStorage.getItem('longitude') || '0'), parseFloat(localStorage.getItem('latitude') || '0')],
-            type: 'Point',
-          },
+          geo_location,
           shoot_duration: getTotalDuration,
           addOns: selectedFilteredAddons,
           cp_ids: cp_ids,
@@ -601,7 +553,7 @@ const BookNow = () => {
                             Location
                           </label>
                           <div className="flex-grow">
-                            <Map />
+                            <Map setGeo_location={setGeo_location} />
                           </div>
                         </div>
                       </div>
@@ -718,7 +670,6 @@ const BookNow = () => {
                                 },
                                 validate: (value) => value > 0 || 'Min Budget must be greater than 0',
                               })}
-                              onBlur={handleChangeMinBudget}
                             />
 
                             {errors.min_budget && <p className="ml-4 text-danger">{errors?.min_budget.message}</p>}
@@ -746,7 +697,6 @@ const BookNow = () => {
                                   return value >= minBudget || 'Max Budget must be greater than or equal to Min Budget';
                                 },
                               })}
-                              onBlur={handleChangeMaxBudget}
                             />
 
                             {errors.max_budget && <p className="ml-4 text-danger">{errors?.max_budget.message}</p>}
@@ -778,9 +728,8 @@ const BookNow = () => {
                     <div>
                       <div className="flex items-center justify-between">
                         <div className="">
-                          <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black">matching producer</h2>
                           <div className="mb-[30px]">
-                            <h3 className="mb-2 font-sans text-[18px] capitalize leading-none text-black">found few matches</h3>
+                            <h2 className="mb-2 font-sans text-[18px] capitalize leading-none text-black">Select Producer</h2>
                             <p className="text-[14px] capitalize leading-none text-[#838383]">choose your beige photographer/videographer</p>
                           </div>
                         </div>
@@ -788,10 +737,6 @@ const BookNow = () => {
                         <div className="search me-12">
                           <div className=" mt-[30px] items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
                             <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
-                              {/* <form
-                                                                    className={`${search && '!block'} absolute inset-x-0 top-1/2 z-10 mx-4 hidden -translate-y-1/2 sm:relative sm:top-0 sm:mx-0 sm:block sm:translate-y-0`}
-                                                                    onSubmit={() => setSearch(false)}
-                                                                > */}
                               <div className="relative">
                                 <input
                                   type="text"
@@ -835,17 +780,11 @@ const BookNow = () => {
                             return (
                               <div key={cp?.userId?.id} className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
                                 <div className="flex items-start justify-start">
-                                  <div className="media relative">
-                                    <Image
-                                      src="/assets/images/producer-profile.png"
-                                      className="mr-3 h-14 w-14 rounded-full"
-                                      alt="Description of the image"
-                                      width={500}
-                                      height={300}
-                                      layout="responsive"
-                                    />
+                                  <div className="media relative h-14 w-14">
+                                    <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} style={{ width: '100%', height: '100%' }} className="mr-3 rounded-full" alt="img" />
                                     <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
                                   </div>
+
                                   <div className="content ms-2">
                                     <h4 className="font-sans text-[16px] capitalize leading-none text-black">{cp?.userId?.name}</h4>
                                     <span className="profession text-[12px] capitalize leading-none text-[#838383]">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
@@ -967,17 +906,9 @@ const BookNow = () => {
                                 <div key={cp?.id} className="single-match mb-6 w-5/12 basis-[49%] rounded-[10px] border px-4 py-2">
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center justify-start">
-                                      <div className="media relative">
-                                        <Image
-                                          src={cp?.profile_picture ? cp.profile_picture : '/assets/images/Vector.png'}
-                                          className="mr-3 h-14 w-14 rounded-full"
-                                          alt="img"
-                                          width={50}
-                                          height={30}
-                                          layout="responsive"
-                                        />
-
-                                        <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                      <div className="relative h-14 w-14">
+                                        <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="h-full w-full rounded-full object-cover" alt="img" />
+                                        <span className="absolute bottom-0 right-0 block h-4 w-4 rounded-full border border-solid border-white bg-success"></span>
                                       </div>
 
                                       <div className="content ms-3">
@@ -1012,7 +943,7 @@ const BookNow = () => {
                                           <>
                                             <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                               <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
-                                              <td>{addon?.hours === undefined ? 0 : addonExtraHours[addon?._id]} hours</td>
+                                              <td>{addon?.hours && `${addonExtraHours[addon?._id]} hours`}</td>
                                               <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
                                             </tr>
                                           </>
