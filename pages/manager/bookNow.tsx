@@ -315,6 +315,16 @@ const BookNow = () => {
   };
 
   const handleHoursOnChange = (addonId: string, hoursInput: number) => {
+    // Create a new array with the updated addon
+    const updatedAddons: any = selectedFilteredAddons.map((addon: any) => {
+      if (addon._id === addonId) {
+        return { ...addon, hours: hoursInput };
+      }
+      return addon;
+    });
+    setSelectedFilteredAddons(updatedAddons);
+
+    // Extra code i keep it for addOn rate calculator
     if (hoursInput >= 0) {
       setAddonExtraHours((prevHours: number) => ({ ...prevHours, [addonId]: Number(hoursInput) }));
     } else {
@@ -331,7 +341,7 @@ const BookNow = () => {
         rate: addon?.rate,
         ExtendRate: addon?.ExtendRate,
         status: addon?.status,
-        hours: addonExtraHours[addon?._id],
+        hours: addonExtraHours[addon?._id] || 1,
       };
 
       setSelectedFilteredAddons([...selectedFilteredAddons, updatedAddon]);
@@ -609,8 +619,8 @@ const BookNow = () => {
                                   required={dateTimes?.length === 0}
                                 />
                               </div>
-                              <p className="ml-2 mt-6" onClick={addDateTime}>
-                                {allSvgs.plusForAddCp}
+                              <p className="btn btn-success ml-2 mt-4 h-9" onClick={addDateTime}>
+                                Add time
                               </p>
                               {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
@@ -863,7 +873,7 @@ const BookNow = () => {
                                               name="hour"
                                               type="number"
                                               className="ms-12 h-9 w-12 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-16"
-                                              defaultValue={addonExtraHours[addon?._id] || 0}
+                                              defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
                                               // disabled={disableInput}
@@ -943,7 +953,7 @@ const BookNow = () => {
                                           <>
                                             <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                               <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
-                                              <td>{addon?.hours && `${addonExtraHours[addon?._id]} hours`}</td>
+                                              <td>{addon?.hours ? `${addon?.hours} hours` : ''}</td>
                                               <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
                                             </tr>
                                           </>

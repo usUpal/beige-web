@@ -34,7 +34,6 @@ const IndexClient = () => {
   const [activeTab3, setActiveTab3] = useState<any>(1);
   const [isMounted, setIsMounted] = useState(false);
   const [minBudget, setMinBudget] = useState<number>();
-  const [formData, setFormData] = useState({});
   const [minBudgetError, setMinBudgetError] = useState('');
   const [minBudgetErrorText, setMinBudgetErrorText] = useState('');
   const [startDateTime, setStartDateTime] = useState('');
@@ -42,18 +41,19 @@ const IndexClient = () => {
   const [dateTimes, setDateTimes] = useState<FormData[]>([]);
   const [showDateTimes, setShowDateTimes] = useState<any>();
   const [getTotalDuration, setTotalDuration] = useState<any>();
-  const [items, setItems] = useState<any>([
-    {
-      id: 1,
-      title: '',
-      description: '',
-      rate: 0,
-      quantity: 0,
-      amount: 0,
-    },
-  ]);
+
   const { userData } = useAuth() as any;
 
+  useEffect(() => {
+    Swal.fire({
+      text: 'This Screen is under development',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Okay',
+    });
+  }, []);
   useEffect(() => {
     const storedDateTimes = JSON.parse(localStorage.getItem('dateTimes')!) || [];
     setDateTimes(storedDateTimes);
@@ -781,14 +781,15 @@ const IndexClient = () => {
                                       <tr key={data.id}>
                                         <td>
                                           <div
-                                            className={`whitespace-nowrap ${data.indicator === 1
-                                              ? 'h-3 w-3 bg-success text-success'
-                                              : data.indicator === 2
+                                            className={`whitespace-nowrap ${
+                                              data.indicator === 1
+                                                ? 'h-3 w-3 bg-success text-success'
+                                                : data.indicator === 2
                                                 ? 'h-3 w-3 bg-secondary'
                                                 : data.indicator === 3
-                                                  ? 'h-3 w-3 bg-info'
-                                                  : 'h-3 w-3 bg-success'
-                                              }`}
+                                                ? 'h-3 w-3 bg-info'
+                                                : 'h-3 w-3 bg-success'
+                                            }`}
                                           ></div>
                                         </td>
                                         <td>{data.costings}</td>
