@@ -1,13 +1,23 @@
-import { useMemo } from 'react';
-import { useLoadScript, } from '@react-google-maps/api';
-import usePlacesAutocomplete, { getGeocode, getLatLng, } from 'use-places-autocomplete';
+import { useMemo, useState } from 'react';
+import { useLoadScript } from '@react-google-maps/api';
+import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
 
-const PlacesAutocomplete = ({
-  onAddressSelect,
-}: {
-  locationName?: (value: string) => void;
-  onAddressSelect?: (address: string) => void;
-}, props: any) => {
+const PlacesAutocomplete = (
+  {
+    onAddressSelect,
+    handleAddressChange,
+    defaultValue,
+  }: {
+    locationName?: (value: string) => void;
+    onAddressSelect?: (address: string) => void;
+    handleAddressChange?: (address: string) => void;
+    defaultValue: string;
+  },
+  props: any
+) => {
+  const storedValue = localStorage.getItem('location') || defaultValue || '';
+  const [initialValue, setInitialValue] = useState(storedValue);
+
   const {
     ready,
     value,
@@ -17,6 +27,7 @@ const PlacesAutocomplete = ({
   } = usePlacesAutocomplete({
     debounce: 300,
     cache: 86400,
+    defaultValue: initialValue,
   });
 
   const renderSuggestions = () => {
@@ -30,39 +41,41 @@ const PlacesAutocomplete = ({
 
       return (
         <li
-        key={place_id}
-        onClick={() => {
-          setValue(description, false);
-          clearSuggestions();
-          onAddressSelect && onAddressSelect(description);
-          localStorage.setItem("location", description);
-        }}
-      >
-        <strong>{main_text}</strong> <small>{secondary_text}</small>
-      </li>
+          key={place_id}
+          onClick={() => {
+            setValue(description, false);
+            clearSuggestions();
+            onAddressSelect && onAddressSelect(description);
+            localStorage.setItem('location', description);
+          }}
+          className="flex items-center py-1"
+        >
+          <p className="text-sm font-bold">{main_text},</p>
+          <p className="text-sm"> {secondary_text}</p>{' '}
+        </li>
       );
     });
   };
 
   return (
-    <div className='block w-full'>
+    <div className="block w-full">
       <input
         value={value}
         disabled={!ready}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="123 Stariway To Heaven"
+        onChange={(e) => {
+          setValue(e.target.value);
+          handleAddressChange && handleAddressChange(e.target.value);
+        }}
+        placeholder="Location"
         className="form-input"
       />
 
-      {status === 'OK' && (
-        <ul>{renderSuggestions()}</ul>
-      )}
+      {status === 'OK' && <ul>{renderSuggestions()}</ul>}
     </div>
   );
 };
 
-const Map = () => {
-
+const Map = ({ setGeo_location }: { setGeo_location: (location: any) => void }) => {
   const libraries = useMemo(() => ['places'], []);
 
   const { isLoaded } = useLoadScript({
@@ -73,22 +86,27 @@ const Map = () => {
   if (!isLoaded) {
     return <p>Loading...</p>;
   }
-
+  const handleAddressChange = (value: string) => {
+    if (!value) {
+      setGeo_location({ coordinates: [], type: 'Point' });
+    }
+  };
   return (
     <div>
-      <div>
-        
+      <div className={``}>
         <PlacesAutocomplete
           onAddressSelect={(address) => {
             getGeocode({ address: address }).then((results) => {
               const { lat, lng } = getLatLng(results[0]);
-
-              localStorage.setItem("latitude", lat.toString());
-              localStorage.setItem("longitude", lng.toString());
+              setGeo_location({
+                coordinates: [lng, lat],
+                type: 'Point',
+              });
             });
           }}
+          handleAddressChange={handleAddressChange}
+          defaultValue={localStorage.getItem('location') || ''}
         />
-
       </div>
     </div>
   );

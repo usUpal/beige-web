@@ -83,13 +83,14 @@ const Shoots = () => {
 
                   <td className="text-success">
                     {shoot?.file_path && (
-                      <p
+                      <span
                         onClick={async () => {
                           await api.downloadFolder(`${shoot.order_name}/`);
                         }}
+                        className="badge text-md w-12 bg-success text-center"
                       >
-                        Download file
-                      </p>
+                        Download
+                      </span>
                     )}
                     {/* <Link href="/dashboard/files" className="rounded-[10px] border border-solid border-[#ddd] px-2 py-1 ring-1 ring-success">
                       Available

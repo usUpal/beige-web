@@ -14,9 +14,7 @@ const SidebarCP = (props: any) => {
             <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Dashboard</span>
           </div>
 
-          <div className={currentMenu === 'dashboard' ? 'rotate-90' : 'rtl:rotate-180'}>
-            {allSvgs.minusSvg}
-          </div>
+          <div className={currentMenu === 'dashboard' ? 'rotate-90' : 'rtl:rotate-180'}>{allSvgs.minusSvg}</div>
         </button>
 
         <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
@@ -55,10 +53,10 @@ const SidebarCP = (props: any) => {
             </Link>
           </li>
           <li className="nav-item">
-            <Link href="/dashboard/files" className="group">
+            <Link href="/dashboard/fileManager" className="group">
               <div className="flex items-center">
                 {allSvgs.filesSvg}
-                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Files</span>
+                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">File Manager</span>
               </div>
             </Link>
           </li>
@@ -86,7 +84,7 @@ const SidebarCP = (props: any) => {
               </div>
 
               <div className={currentMenu === 'settings' ? 'rotate-90' : 'rtl:rotate-180'}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
