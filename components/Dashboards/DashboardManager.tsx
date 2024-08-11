@@ -403,8 +403,6 @@ const DashboardManager = (props: any) => {
           </div>
         </div>
 
-        {/* Recent Orders and Top Rated Producer */}
-        
       </div>
     </div>
   );
