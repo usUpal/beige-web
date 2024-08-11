@@ -201,14 +201,14 @@ const Addons = () => {
           <div className="mx-3 mb-5 sm:mb-0">
             <button
               onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}
-              className={`btn btn-outline-dark } flex h-10 w-24 flex-col items-center  justify-center rounded-lg px-2 py-3 text-[13px] font-bold capitalize text-black hover:text-white`}
+              className={`btn btn-outline-fulldark flex h-10 w-24 flex-col items-center  justify-center rounded-lg px-2 py-3 text-[13px] font-bold capitalize text-black hover:text-white`}
             >
               add new
             </button>
           </div>
 
           <div className="my-5 flex flex-col sm:flex-row">
-            <Tab.Group>
+            <Tab.Group >
               <div className="mx-3 mb-5 sm:mb-0">
                 <Tab.List className="mb-5 grid w-44 grid-cols-4 flex-col gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center">
                   {allCategory.map((category, index) => (
@@ -304,14 +304,16 @@ const Addons = () => {
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
               <Dialog.Panel as="div" className="panel my-24 space-x-6  overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 md:px-0">
-                <div className="my-2 flex items-center justify-end bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
+                <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
+                  <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686] ms-7">Addons Details </h2>
+
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
                     {allSvgs.closeModalSvg}
                   </button>
                 </div>
 
                 <div className="basis-[50%]">
-                  <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Addons Details </h2>
+                  
                   <div className={`w-11/12 justify-between pb-6`}>
                     <form action="" onSubmit={handleSubmit(onSubmit)}>
                       <div className=" mt-3 flex flex-col md:flex md:flex-row md:justify-between ">

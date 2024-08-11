@@ -9,6 +9,7 @@ import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePagination from 'react-responsive-pagination';
+import { useAuth } from '@/contexts/authContext';
 
 
 const Disputes = () => {
@@ -29,18 +30,26 @@ const Disputes = () => {
         getAllDusputes();
     }, [currentPage]);
 
-    // All Meetings
-    const getAllDusputes = async () => {
-        try {
-            const response = await fetch(`${API_ENDPOINT}disputes?sortBy=createdAt:desc&limit=10&page=${currentPage}`);
-            const allDusputes = await response.json();
+    const { userData } = useAuth();
+    const userRole = userData?.role === 'user' ? 'client' : userData?.role;
+    console.log(userData);
+    
+    // all disputes user base 
+  const getAllDusputes = async () => {
+    let url = `${API_ENDPOINT}disputes?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
+    if (userRole === 'client' || userRole === 'cp') {
+      url = `${API_ENDPOINT}disputes/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
+    } 
+    // console.log('🚀 ~ getAllMyShoots ~ url:', url);
+    try {
+      const response = await fetch(url);
+      const allDusputes = await response.json();
             setTotalPagesCount(allDusputes?.totalPages);
             setDesputes(allDusputes.results);
-
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
     // get single despute dynamically
     const getSingleDesputeDetails = async (disputeId: string) => {
@@ -182,7 +191,7 @@ const Disputes = () => {
                                                 </span>
                                             </p>
 
-                                            <button onClick={() => setDisputeModal(false)} type="submit" className="btn md:mt-24 mt-8  bg-black font-sans text-white mx-auto md:me-0">
+                                            <button onClick={() => setDisputeModal(false)} type="submit" className="btn md:mt-24 mt-8 bg-black font-sans text-white mx-auto md:me-0">
                                                 Close
                                             </button>
                                             {/* </div> */}

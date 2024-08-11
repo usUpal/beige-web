@@ -6,7 +6,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
 import { API_ENDPOINT } from '@/config';
 import { useAuth } from '@/contexts/authContext';
-// import Pagination from '@/components/Pagination';
 import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
@@ -14,7 +13,6 @@ import ResponsivePagination from 'react-responsive-pagination';
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
-  // console.log("🚀 ~ Meeting ~ totalPagesCount:", totalPagesCount)
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [myMeetings, setMyMeetings] = useState<MeetingResponsTypes[]>([]);
   const [rescheduleMeetingTime, setrescheduleMeetingTime] = useState('');
@@ -25,7 +23,6 @@ const Meeting = () => {
   const { userData } = useAuth();
   const dispatch = useDispatch();
 
-  // --> All SVG files imports
 
   // times and date
   const myInputDate = meetingInfo?.meeting_date_time;
@@ -76,18 +73,32 @@ const Meeting = () => {
       }
     }
   };
+  // {{beige_localhost}}/meetings/user/:userId?sortBy=createdAt:desc&limit=10&page=1
 
-  // All Meetings
+  // All meetings - user base 
+  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
+  console.log(userData);
+  
   const getAllMyMeetings = async () => {
+    let url = `${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
+    if (userRole === 'client' || userRole === 'cp') {
+      url = `${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
+    } 
+    // console.log('🚀 ~ getAllMyShoots ~ url:', url);
     try {
-      const response = await fetch(`${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}`);
-      const allMeetings = await response.json();
+      const response = await fetch(url);
+       const allMeetings = await response.json();
+       console.log("allMeetings", allMeetings);
+       
       setTotalPagesCount(allMeetings?.totalPages);
       setMyMeetings(allMeetings.results);
     } catch (error) {
       console.error(error);
     }
   };
+
+  console.log("myMeetings", myMeetings);
+  
 
   // Meeting Single
   const router = useRouter();
