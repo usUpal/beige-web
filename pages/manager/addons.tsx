@@ -9,10 +9,9 @@ import { useForm } from 'react-hook-form';
 import useAddons from '@/hooks/useAddons';
 
 const Addons = () => {
-  const [addonsData, setAddonsData, addonsCategories, handleFilterCategory] = useAddons();
+  // const [addonsData, setAddonsData, addonsCategories, handleFilterCategory] = useAddons();
 
-  // const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
-  // const [addonsData, setAddonsData] = useAddons();
+  const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
 
   const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
   const [addonsModal, setAddonsModal] = useState(false);
@@ -23,6 +22,12 @@ const Addons = () => {
   const [allCategory, setAllCategory] = useState([]);
   const [newCategory, setNewCategory] = useState('');
   const dispatch = useDispatch();
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   reset,
+  //   formState: { errors },
+  // } = useForm();
   const {
     register,
     handleSubmit,
@@ -30,11 +35,13 @@ const Addons = () => {
     formState: { errors },
   } = useForm();
 
+  // setAddonsAddBtnModal
+  const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
+
   useEffect(() => {
     const handleFilterCategory = () => {
       if (addonsData) {
         const uniqueCategories = addonsData?.map((addon: any) => addon.category)?.filter((category: string, index: any, array: any) => array.indexOf(category) === index);
-        console.log('Unique Categories:', uniqueCategories);
         setAllCategory(uniqueCategories);
       }
     };
@@ -49,29 +56,24 @@ const Addons = () => {
       setNewCategory('');
     }
     showDesignElement.showNewCategoryInput = false;
-    console.log(newCategory, allCategory);
   };
 
-  // setAddonsAddBtnModal
-  const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${API_ENDPOINT}addOns`);
+        if (!res.ok) {
+          throw new Error(`Error: ${res.status}`);
+        }
+        const jsonData = await res.json();
+        setAddonsData(jsonData);
+      } catch (error) {
+        console.error(`Error fetching data`);
+      }
+    };
 
-  /* useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch(`${API_ENDPOINT}addOns`);
-                if (!res.ok) {
-                    throw new Error(`Error: ${res.status}`);
-                }
-                const jsonData = await res.json();
-                setAddonsData(jsonData);
-            } catch (error) {
-                console.error(`Error fetching data`);
-            }
-        };
-
-        fetchData();
-    }, []);
- */
+    fetchData();
+  }, []);
 
   // theme functionality
   useEffect(() => {
@@ -103,9 +105,10 @@ const Addons = () => {
       [key]: value,
     });
   };
+  // console.log(addonsInfo);
 
-  //    update addons
-  const onSubmit = async (data: any) => {
+  const onUpdateSubmit = async (data: any) => {
+    console.log('Form data:', data);
     const updatedAddonDetails = {
       title: addonsInfo?.title || data?.title,
       rate: addonsInfo?.rate || data?.rate,
@@ -114,9 +117,58 @@ const Addons = () => {
       status: addonsInfo?.status || data?.status || false,
     };
     console.log('Updated Addon Details:', updatedAddonDetails);
+  };
 
+  //    update addons
+  // const onSubmit = async (data: any) => {
+  //   alert("0");
+  //   const updatedAddonDetails = {
+  //     title: addonsInfo?.title || data?.title,
+  //     rate: addonsInfo?.rate || data?.rate,
+  //     ExtendRate: addonsInfo?.ExtendRate || data?.ExtendRate,
+  //     ExtendRateType: addonsInfo?.ExtendRateType || data?.ExtendRateType,
+  //     status: addonsInfo?.status || data?.status || false,
+  //   };
+  //   console.log('Updated Addon Details:', updatedAddonDetails);
+
+  // try {
+  //   // const addonsId = addonsInfo?._id;
+  //   const patchResponse = await fetch(`${API_ENDPOINT}addons/${addonsInfo?._id}`, {
+  //     method: 'PATCH',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(updatedAddonDetails),
+  //   });
+
+  //   if (!patchResponse.ok) {
+  //     throw new Error('Failed to patch data');
+  //   }
+
+  //   const updatedAddon = await patchResponse.json(); //
+
+  //   const updatedAddonsData = addonsData.map((addon: any) => (addon._id === addonsInfo?._id ? updatedAddon : addon));
+  //   setAddonsData(updatedAddonsData);
+
+  //   setAddonsModal(false);
+  // } catch (error) {
+  //   console.error('Patch error:', error);
+  // }
+  // };
+
+  // --------------- submitsss
+
+  const handleUpdateTestSubmit = async (data: any) => {
+    const updatedAddonDetails = {
+      title: addonsInfo?.title || data?.title,
+      rate: addonsInfo?.rate || data?.rate,
+      ExtendRate: addonsInfo?.ExtendRate || data?.ExtendRate,
+      ExtendRateType: addonsInfo?.ExtendRateType || data?.ExtendRateType,
+      status: addonsInfo?.status || data?.status || false,
+    };
+    console.log('Updated Addon Details:', addonsInfo);
     try {
-      // const addonsId = addonsInfo?._id;
+      const addonsId = addonsInfo?._id;
       const patchResponse = await fetch(`${API_ENDPOINT}addons/${addonsInfo?._id}`, {
         method: 'PATCH',
         headers: {
@@ -140,7 +192,9 @@ const Addons = () => {
     }
   };
 
-  // add new addons
+  //  ---------------
+
+  // add- new addons
   const handleFormSubmit = async (data: any) => {
     const newAddonsData = {
       title: data?.title,
@@ -150,32 +204,32 @@ const Addons = () => {
       ExtendRateType: data?.ExtendRateType,
       status: data?.status || false,
     };
-    try {
-      setLoading(true);
-      const response = await fetch(`${API_ENDPOINT}addons`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newAddonsData),
-      });
+    // try {
+    //   setLoading(true);
+    //   const response = await fetch(`${API_ENDPOINT}addons`, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(newAddonsData),
+    //   });
 
-      if (!response.ok) {
-        throw new Error('Response: Failed to add new addon.');
-      }
-      const responseData = await response.json();
+    //   if (!response.ok) {
+    //     throw new Error('Response: Failed to add new addon.');
+    //   }
+    //   const responseData = await response.json();
 
-      console.log('Addon successfully added:', responseData);
-      // console.log("🚀 ~ handleFormSubmit ~ newAddonsData:", newAddonsData);
-      addonsData.push(newAddonsData);
-    } catch (error) {
-      setLoading(false);
-      console.error('Error submitting form:', error);
-    } finally {
-      setLoading(false);
-      setAddonsAddBtnModal(false);
-      reset();
-    }
+    //   console.log('Addon successfully added:', responseData);
+    //   // console.log("🚀 ~ handleFormSubmit ~ newAddonsData:", newAddonsData);
+    //   addonsData.push(newAddonsData);
+    // } catch (error) {
+    //   setLoading(false);
+    //   console.error('Error submitting form:', error);
+    // } finally {
+    //   setLoading(false);
+    //   setAddonsAddBtnModal(false);
+    //   reset();
+    // }
 
     console.log(newAddonsData);
   };
@@ -198,24 +252,26 @@ const Addons = () => {
         <div className="panel" id="pills_with_icon">
           {/* tab starts*/}
 
-          <div className="mx-3 mb-5 sm:mb-0">
+          <div className="_ mx-3 mb-5 flex sm:mb-0">
             <button
               onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}
-              className={`btn btn-outline-fulldark flex h-10 w-24 flex-col items-center  justify-center rounded-lg px-2 py-3 text-[13px] font-bold capitalize text-black hover:text-white`}
+              className={`btn btn-outline-darkness flex h-10 w-24 flex-col items-center justify-center rounded-lg px-2 py-3 text-[13px] font-bold capitalize text-black hover:text-white`}
             >
               add new
             </button>
+
+            {/* new ___ test */}
           </div>
 
           <div className="my-5 flex flex-col sm:flex-row">
-            <Tab.Group >
+            <Tab.Group>
               <div className="mx-3 mb-5 sm:mb-0">
                 <Tab.List className="mb-5 grid w-44 grid-cols-4 flex-col gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center">
                   {allCategory.map((category, index) => (
                     <Tab key={index}>
                       {({ selected }) => (
                         <button
-                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)] flex h-12 w-44 flex-col items-center justify-center rounded-lg bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${
+                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${
                             selected ? 'bg-success text-white outline-none' : ''
                           }`}
                           title={category}
@@ -305,7 +361,7 @@ const Addons = () => {
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
               <Dialog.Panel as="div" className="panel my-24 space-x-6  overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 md:px-0">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
-                  <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686] ms-7">Addons Details </h2>
+                  <h2 className=" ms-7 text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Addons Details </h2>
 
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
                     {allSvgs.closeModalSvg}
@@ -313,18 +369,18 @@ const Addons = () => {
                 </div>
 
                 <div className="basis-[50%]">
-                  
                   <div className={`w-11/12 justify-between pb-6`}>
-                    <form action="" onSubmit={handleSubmit(onSubmit)}>
-                      <div className=" mt-3 flex flex-col md:flex md:flex-row md:justify-between ">
+                    {/*  -------------------update------------- */}
+                    {/* <div className="w-11/12 space-y-2 pb-5 dark:text-white" onSubmit={handleSubmit(handleUpdateTestSubmit)}> */}
+                    <div className="w-11/12 space-y-2 pb-5 dark:text-white">
+                      <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between">
                         <p className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000] ">Title</span>
+                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Title</span>
                           <input
                             {...register('title')}
                             onChange={(e) => handleInputChange('title', e.target.value)}
                             value={addonsInfo?.title || ''}
-                            className={` ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72`}
-                            defaultValue={addonsInfo?.title}
+                            className="ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                           />
                         </p>
 
@@ -346,19 +402,18 @@ const Addons = () => {
                         {addonsInfo?.ExtendRate && (
                           <div className="mt-3 flex flex-col md:mt-0">
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Extend Rate</span>
-
                             <input
                               {...register('ExtendRate')}
                               onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
                               value={addonsInfo?.ExtendRate || 0}
-                              className={` ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72`}
+                              className="ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             />
                           </div>
                         )}
 
                         {addonsInfo?.ExtendRateType && (
-                          <p className=" mt-3 flex flex-col md:mt-0">
-                            <span className="text-[14px] font-light capitalize leading-none text-[#000000]"> Extend Rate Type</span>
+                          <p className="mt-3 flex flex-col md:mt-0">
+                            <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Extend Rate Type</span>
                             <select
                               {...register('ExtendRateType')}
                               className="ms-12 h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
@@ -382,24 +437,22 @@ const Addons = () => {
                       <div className="mt-3 flex flex-col justify-between md:flex md:flex-row">
                         <div className="mt-3 flex flex-col md:mt-0">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Rate</span>
-
                           <input
                             {...register('rate')}
                             onChange={(e) => handleInputChange('rate', e.target.value)}
                             value={addonsInfo?.rate || 0}
-                            className={` ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72`}
+                            className="ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                           />
                         </div>
                       </div>
+
                       <div className="mt-8 flex justify-end md:mt-0">
-                        <button
-                          type="submit"
-                          className="btn btn-outline-dark h-10 w-28 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
-                        >
+                        <button type="submit" className="btn flex items-center justify-center rounded-lg bg-black text-[13px] font-bold capitalize text-white" onClick={handleUpdateTestSubmit}>
                           Update
                         </button>
                       </div>
-                    </form>
+                    </div>
+                    {/* ---------------------------------------- */}
                   </div>
                 </div>
               </Dialog.Panel>
@@ -589,10 +642,7 @@ const Addons = () => {
                     </div>
 
                     <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        className="btn !mt-8 w-36 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
-                      >
+                      <button type="submit" className="btn btn-outline-darkness mt-8 flex flex-col items-center justify-center rounded-lg text-[13px] font-bold capitalize text-black hover:text-white">
                         {isLoading ? (
                           <span role="status" className="flex h-5 items-center space-x-2">
                             Loading...

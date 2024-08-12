@@ -23,7 +23,6 @@ const useAddons = () => {
     };
 
     // handleFilterCategory();
-
     useEffect(() => {
         const fetchData = async () => {
             try {
