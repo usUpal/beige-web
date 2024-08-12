@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Dropdown from '@/components/Dropdown';
-import StatusBg from '@/components/Status/StatusBg';
 import { API_ENDPOINT } from '@/config';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -402,7 +401,6 @@ const DashboardManager = (props: any) => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

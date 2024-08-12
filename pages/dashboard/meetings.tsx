@@ -23,7 +23,6 @@ const Meeting = () => {
   const { userData } = useAuth();
   const dispatch = useDispatch();
 
-
   // times and date
   const myInputDate = meetingInfo?.meeting_date_time;
   const myFormattedDateTime = useDateFormat(myInputDate);
@@ -73,23 +72,19 @@ const Meeting = () => {
       }
     }
   };
-  // {{beige_localhost}}/meetings/user/:userId?sortBy=createdAt:desc&limit=10&page=1
 
-  // All meetings - user base 
+  // All meetings - user base
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
-  console.log(userData);
-  
+
   const getAllMyMeetings = async () => {
     let url = `${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     if (userRole === 'client' || userRole === 'cp') {
       url = `${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
-    } 
-    // console.log('🚀 ~ getAllMyShoots ~ url:', url);
+    }
     try {
       const response = await fetch(url);
-       const allMeetings = await response.json();
-       console.log("allMeetings", allMeetings);
-       
+      const allMeetings = await response.json();
+
       setTotalPagesCount(allMeetings?.totalPages);
       setMyMeetings(allMeetings.results);
     } catch (error) {
@@ -97,8 +92,7 @@ const Meeting = () => {
     }
   };
 
-  console.log("myMeetings", myMeetings);
-  
+  console.log('myMeetings', myMeetings);
 
   // Meeting Single
   const router = useRouter();
@@ -108,7 +102,6 @@ const Meeting = () => {
     try {
       const response = await fetch(`${API_ENDPOINT}meetings/${meetingId}`);
       const meetingDetailsRes = await response.json();
-      console.log('🚀 ~ getMeetingDetails ~ meetingDetailsRes:', meetingDetailsRes);
 
       if (!meetingDetailsRes) {
         setShowError(true);
@@ -177,7 +170,7 @@ const Meeting = () => {
                 <th className="text-[16px] font-semibold">View</th>
               </tr>
             </thead>
-            <div></div>
+
             <tbody>
               {myMeetings?.map((meeting) => (
                 <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
@@ -188,12 +181,8 @@ const Meeting = () => {
                   </td>
 
                   <td>
-                    {/* {myFormattedDateTime?.date} */}
-
                     <span className="ps-2">Date:{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
                     <span className="ps-2">Time:{makeDateFormat(meeting?.meeting_date_time)?.time}</span>
-                    {/* <span className='ps-2'>Time: {myFormattedDateTime?.time}</span> */}
-                    {/* {useDateFormat(meeting?.meeting_date_time)} */}
                   </td>
 
                   <td>
@@ -218,7 +207,6 @@ const Meeting = () => {
               ))}
             </tbody>
           </table>
-          {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
           <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
             <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
           </div>
@@ -302,10 +290,6 @@ const Meeting = () => {
                           </form>
                         </div>
                       )}
-
-                      {/* <button onClick={() => setmeetingModal(false)} type="submit" className="btn mx-auto mt-0 hidden bg-black font-sans text-[16px] text-white md:me-0 md:block">
-                        Close
-                      </button> */}
                     </div>
 
                     {/* Resheduling */}

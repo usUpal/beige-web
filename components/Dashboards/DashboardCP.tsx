@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import Dropdown from '@/components/Dropdown';
-import StatusBg from '@/components/Status/StatusBg';
 import { API_ENDPOINT } from '@/config';
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
@@ -11,7 +10,6 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), {
 });
 
 const DashboardCP = (props: any) => {
-
   const { isDark, isRtl, isMounted } = props;
   const { userData } = useAuth();
 
@@ -427,13 +425,7 @@ const DashboardCP = (props: any) => {
             <div className="mb-5 flex items-center justify-between dark:text-white-light">
               <h5 className="text-lg font-semibold">Revenue</h5>
               <div className="dropdown">
-                <Dropdown
-                  offset={[0, 1]}
-                  placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                  button={
-                    allSvgs.revenueDayWkMonthSortBtnSvg
-                  }
-                >
+                <Dropdown offset={[0, 1]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} button={allSvgs.revenueDayWkMonthSortBtnSvg}>
                   <ul>
                     <li>
                       <button type="button">Weekly</button>
@@ -487,9 +479,7 @@ const DashboardCP = (props: any) => {
           <div className="panel h-full p-0">
             <div className="absolute flex w-full items-center justify-between p-5">
               <div className="relative">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-success-light text-success dark:bg-success dark:text-success-light">
-                  {allSvgs.cartIconSvg}
-                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-success-light text-success dark:bg-success dark:text-success-light">{allSvgs.cartIconSvg}</div>
               </div>
               <h5 className="text-2xl font-semibold ltr:text-right rtl:text-left dark:text-white-light">
                 3,192
@@ -519,9 +509,7 @@ const DashboardCP = (props: any) => {
                 <span className="block text-sm font-normal text-white-dark">Go to columns for details.</span>
               </h5>
               <div className="relative ltr:ml-auto rtl:mr-auto">
-                <div className="grid h-11 w-11 place-content-center rounded-full bg-[#ffeccb] text-warning dark:bg-warning dark:text-[#ffeccb]">
-                  {allSvgs.dolarIconSvg}
-                </div>
+                <div className="grid h-11 w-11 place-content-center rounded-full bg-[#ffeccb] text-warning dark:bg-warning dark:text-[#ffeccb]">{allSvgs.dolarIconSvg}</div>
               </div>
             </div>
             <div>
@@ -542,12 +530,7 @@ const DashboardCP = (props: any) => {
             <div className="mb-5 flex items-center justify-between dark:text-white-light">
               <h5 className="text-lg font-semibold">Summary</h5>
               <div className="dropdown">
-                <Dropdown
-                  placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                  button={
-                    allSvgs.threeDotDropDown
-                  }
-                >
+                <Dropdown placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} button={allSvgs.threeDotDropDown}>
                   <ul>
                     <li>
                       <button type="button">View Report</button>
@@ -565,9 +548,7 @@ const DashboardCP = (props: any) => {
             <div className="space-y-9">
               <div className="flex items-center">
                 <div className="h-9 w-9 ltr:mr-3 rtl:ml-3">
-                  <div className="grid h-9 w-9 place-content-center  rounded-full bg-secondary-light text-secondary dark:bg-secondary dark:text-secondary-light">
-                    {allSvgs.summaryIncomeIconSvg}
-                  </div>
+                  <div className="grid h-9 w-9 place-content-center  rounded-full bg-secondary-light text-secondary dark:bg-secondary dark:text-secondary-light">{allSvgs.summaryIncomeIconSvg}</div>
                 </div>
                 <div className="flex-1">
                   <div className="mb-2 flex font-semibold text-white-dark">
@@ -581,9 +562,7 @@ const DashboardCP = (props: any) => {
               </div>
               <div className="flex items-center">
                 <div className="h-9 w-9 ltr:mr-3 rtl:ml-3">
-                  <div className="grid h-9 w-9 place-content-center rounded-full bg-success-light text-success dark:bg-success dark:text-success-light">
-                    {allSvgs.summaryProfitIconSvg}
-                  </div>
+                  <div className="grid h-9 w-9 place-content-center rounded-full bg-success-light text-success dark:bg-success dark:text-success-light">{allSvgs.summaryProfitIconSvg}</div>
                 </div>
                 <div className="flex-1">
                   <div className="mb-2 flex font-semibold text-white-dark">
@@ -597,9 +576,7 @@ const DashboardCP = (props: any) => {
               </div>
               <div className="flex items-center">
                 <div className="h-9 w-9 ltr:mr-3 rtl:ml-3">
-                  <div className="grid h-9 w-9 place-content-center rounded-full bg-warning-light text-warning dark:bg-warning dark:text-warning-light">
-                    {allSvgs.summaryExpensesIconSvg}
-                  </div>
+                  <div className="grid h-9 w-9 place-content-center rounded-full bg-warning-light text-warning dark:bg-warning dark:text-warning-light">{allSvgs.summaryExpensesIconSvg}</div>
                 </div>
                 <div className="flex-1">
                   <div className="mb-2 flex font-semibold text-white-dark">
@@ -621,12 +598,7 @@ const DashboardCP = (props: any) => {
             <div className="mb-5 flex items-center justify-between dark:text-white-light">
               <h5 className="text-lg font-semibold">Transactions</h5>
               <div className="dropdown">
-                <Dropdown
-                  placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                  button={
-                    allSvgs.threeDotDropDown
-                  }
-                >
+                <Dropdown placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} button={allSvgs.threeDotDropDown}>
                   <ul>
                     <li>
                       <button type="button">View Report</button>
@@ -644,9 +616,7 @@ const DashboardCP = (props: any) => {
             <div>
               <div className="space-y-6">
                 <div className="flex">
-                  <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-success-light text-base text-success dark:bg-success dark:text-success-light">
-                    VS
-                  </span>
+                  <span className="grid h-9 w-9 shrink-0 place-content-center rounded-md bg-success-light text-base text-success dark:bg-success dark:text-success-light">VS</span>
                   <div className="flex-1 px-3">
                     <div>Video Shoot</div>
                     <div className="text-xs text-white-dark dark:text-gray-500">10 Jan 1:00PM</div>
@@ -768,7 +738,6 @@ const DashboardCP = (props: any) => {
       </div>
     </div>
   );
-
 };
 
 export default DashboardCP;

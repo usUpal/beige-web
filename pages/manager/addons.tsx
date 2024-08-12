@@ -9,9 +9,9 @@ import { useForm } from 'react-hook-form';
 import useAddons from '@/hooks/useAddons';
 
 const Addons = () => {
-  // const [addonsData, setAddonsData, addonsCategories, handleFilterCategory] = useAddons();
-
-  const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
+  const [addonsData, setAddonsData, addonsCategories] = useAddons();
+  // const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
+  // const [allCategory, setAllCategory] = useState([]);
 
   const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
   const [addonsModal, setAddonsModal] = useState(false);
@@ -19,15 +19,9 @@ const Addons = () => {
   const [showDesignElement, setShowDesignElement] = useState({
     showNewCategoryInput: false,
   });
-  const [allCategory, setAllCategory] = useState([]);
   const [newCategory, setNewCategory] = useState('');
   const dispatch = useDispatch();
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   reset,
-  //   formState: { errors },
-  // } = useForm();
+
   const {
     register,
     handleSubmit,
@@ -38,21 +32,10 @@ const Addons = () => {
   // setAddonsAddBtnModal
   const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
 
-  useEffect(() => {
-    const handleFilterCategory = () => {
-      if (addonsData) {
-        const uniqueCategories = addonsData?.map((addon: any) => addon.category)?.filter((category: string, index: any, array: any) => array.indexOf(category) === index);
-        setAllCategory(uniqueCategories);
-      }
-    };
-
-    handleFilterCategory();
-  }, [addonsData]);
-
   // add category to the allcategory
   const handleAddCategory = () => {
     if (newCategory.trim() !== '') {
-      allCategory.push(newCategory);
+      addonsCategories.push(newCategory);
       setNewCategory('');
     }
     showDesignElement.showNewCategoryInput = false;
@@ -105,58 +88,6 @@ const Addons = () => {
       [key]: value,
     });
   };
-  // console.log(addonsInfo);
-
-  const onUpdateSubmit = async (data: any) => {
-    console.log('Form data:', data);
-    const updatedAddonDetails = {
-      title: addonsInfo?.title || data?.title,
-      rate: addonsInfo?.rate || data?.rate,
-      ExtendRate: addonsInfo?.ExtendRate || data?.ExtendRate,
-      ExtendRateType: addonsInfo?.ExtendRateType || data?.ExtendRateType,
-      status: addonsInfo?.status || data?.status || false,
-    };
-    console.log('Updated Addon Details:', updatedAddonDetails);
-  };
-
-  //    update addons
-  // const onSubmit = async (data: any) => {
-  //   alert("0");
-  //   const updatedAddonDetails = {
-  //     title: addonsInfo?.title || data?.title,
-  //     rate: addonsInfo?.rate || data?.rate,
-  //     ExtendRate: addonsInfo?.ExtendRate || data?.ExtendRate,
-  //     ExtendRateType: addonsInfo?.ExtendRateType || data?.ExtendRateType,
-  //     status: addonsInfo?.status || data?.status || false,
-  //   };
-  //   console.log('Updated Addon Details:', updatedAddonDetails);
-
-  // try {
-  //   // const addonsId = addonsInfo?._id;
-  //   const patchResponse = await fetch(`${API_ENDPOINT}addons/${addonsInfo?._id}`, {
-  //     method: 'PATCH',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify(updatedAddonDetails),
-  //   });
-
-  //   if (!patchResponse.ok) {
-  //     throw new Error('Failed to patch data');
-  //   }
-
-  //   const updatedAddon = await patchResponse.json(); //
-
-  //   const updatedAddonsData = addonsData.map((addon: any) => (addon._id === addonsInfo?._id ? updatedAddon : addon));
-  //   setAddonsData(updatedAddonsData);
-
-  //   setAddonsModal(false);
-  // } catch (error) {
-  //   console.error('Patch error:', error);
-  // }
-  // };
-
-  // --------------- submitsss
 
   const handleUpdateTestSubmit = async (data: any) => {
     const updatedAddonDetails = {
@@ -166,9 +97,8 @@ const Addons = () => {
       ExtendRateType: addonsInfo?.ExtendRateType || data?.ExtendRateType,
       status: addonsInfo?.status || data?.status || false,
     };
-    console.log('Updated Addon Details:', addonsInfo);
+
     try {
-      const addonsId = addonsInfo?._id;
       const patchResponse = await fetch(`${API_ENDPOINT}addons/${addonsInfo?._id}`, {
         method: 'PATCH',
         headers: {
@@ -192,8 +122,6 @@ const Addons = () => {
     }
   };
 
-  //  ---------------
-
   // add- new addons
   const handleFormSubmit = async (data: any) => {
     const newAddonsData = {
@@ -204,34 +132,30 @@ const Addons = () => {
       ExtendRateType: data?.ExtendRateType,
       status: data?.status || false,
     };
-    // try {
-    //   setLoading(true);
-    //   const response = await fetch(`${API_ENDPOINT}addons`, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(newAddonsData),
-    //   });
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_ENDPOINT}addons`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newAddonsData),
+      });
 
-    //   if (!response.ok) {
-    //     throw new Error('Response: Failed to add new addon.');
-    //   }
-    //   const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error('Response: Failed to add new addon.');
+      }
+      const responseData = await response.json();
 
-    //   console.log('Addon successfully added:', responseData);
-    //   // console.log("🚀 ~ handleFormSubmit ~ newAddonsData:", newAddonsData);
-    //   addonsData.push(newAddonsData);
-    // } catch (error) {
-    //   setLoading(false);
-    //   console.error('Error submitting form:', error);
-    // } finally {
-    //   setLoading(false);
-    //   setAddonsAddBtnModal(false);
-    //   reset();
-    // }
-
-    console.log(newAddonsData);
+      addonsData.push(newAddonsData);
+    } catch (error) {
+      setLoading(false);
+      console.error('Error submitting form:', error);
+    } finally {
+      setLoading(false);
+      setAddonsAddBtnModal(false);
+      reset();
+    }
   };
 
   return (
@@ -260,15 +184,13 @@ const Addons = () => {
             >
               add new
             </button>
-
-            {/* new ___ test */}
           </div>
 
           <div className="my-5 flex flex-col sm:flex-row">
             <Tab.Group>
               <div className="mx-3 mb-5 sm:mb-0">
                 <Tab.List className="mb-5 grid w-44 grid-cols-4 flex-col gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center">
-                  {allCategory.map((category, index) => (
+                  {addonsCategories.map((category: any, index: any) => (
                     <Tab key={index}>
                       {({ selected }) => (
                         <button
@@ -287,7 +209,7 @@ const Addons = () => {
 
               <div className="ms-4 w-full">
                 <Tab.Panels>
-                  {allCategory?.map((category, index) => (
+                  {addonsCategories?.map((category: any, index: any) => (
                     <Tab.Panel key={index}>
                       <div className="active">
                         <div className="table-responsive mb-5">
@@ -355,25 +277,23 @@ const Addons = () => {
         </div>
       </div>
 
-      {/* modal for add button starts */}
+      {/* modal for update  button starts */}
       <Transition appear show={addonsModal} as={Fragment}>
         <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
               <Dialog.Panel as="div" className="panel my-24 space-x-6  overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 md:px-0">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
-                  <h2 className=" ms-7 text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Addons Details </h2>
+                  <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
 
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
                     {allSvgs.closeModalSvg}
                   </button>
                 </div>
 
-                <div className="basis-[50%]">
-                  <div className={`w-11/12 justify-between pb-6`}>
-                    {/*  -------------------update------------- */}
-                    {/* <div className="w-11/12 space-y-2 pb-5 dark:text-white" onSubmit={handleSubmit(handleUpdateTestSubmit)}> */}
-                    <div className="w-11/12 space-y-2 pb-5 dark:text-white">
+                <div className="basis-[49%]">
+                  <div className={`w-12/12 me-6 justify-between `}>
+                    <div className="w-12/12 space-y-2 pb-5 dark:text-white">
                       <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between">
                         <p className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Title</span>
@@ -381,7 +301,7 @@ const Addons = () => {
                             {...register('title')}
                             onChange={(e) => handleInputChange('title', e.target.value)}
                             value={addonsInfo?.title || ''}
-                            className="ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                           />
                         </p>
 
@@ -389,7 +309,7 @@ const Addons = () => {
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Status</span>
                           <select
                             {...register('status')}
-                            className="ms-12 h-9 w-28 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
+                            className=" h-9 w-28 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
                             value={addonsInfo?.status || ''}
                             onChange={(e) => handleInputChange('status', e.target.value)}
                           >
@@ -407,7 +327,7 @@ const Addons = () => {
                               {...register('ExtendRate')}
                               onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
                               value={addonsInfo?.ExtendRate || 0}
-                              className="ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             />
                           </div>
                         )}
@@ -417,7 +337,7 @@ const Addons = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Extend Rate Type</span>
                             <select
                               {...register('ExtendRateType')}
-                              className="ms-12 h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
+                              className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
                               value={addonsInfo?.ExtendRateType || ''}
                               onChange={(e) => handleInputChange('ExtendRateType', e.target.value)}
                             >
@@ -442,7 +362,7 @@ const Addons = () => {
                             {...register('rate')}
                             onChange={(e) => handleInputChange('rate', e.target.value)}
                             value={addonsInfo?.rate || 0}
-                            className="ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                           />
                         </div>
                       </div>
@@ -453,7 +373,6 @@ const Addons = () => {
                         </button>
                       </div>
                     </div>
-                    {/* ---------------------------------------- */}
                   </div>
                 </div>
               </Dialog.Panel>
@@ -469,11 +388,11 @@ const Addons = () => {
 
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center px-4">
-              <Dialog.Panel as="div" className="panel my-8 w-full overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-6/12 2xl:w-5/12">
-                {/* max-w-lg */}
-                <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
-                  <div className="text-[18px] font-bold capitalize leading-none text-[#000000]">Add Addons</div>
-                  <button type="button" className="text-white-dark hover:text-dark" onClick={() => setAddonsAddBtnModal(false)}>
+              <Dialog.Panel as="div" className="panel my-24 w-full overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-6/12 2xl:w-5/12">
+                <div className="my-2 box-border flex items-center justify-between bg-[#fbfbfb] px-6 py-3 dark:bg-[#121c2c]">
+                  <h2 className="text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Add Addons </h2>
+
+                  <button type="button" className=" text-white-dark hover:text-dark" onClick={() => setAddonsAddBtnModal(false)}>
                     {allSvgs.closeModalSvg}
                   </button>
                 </div>
@@ -529,7 +448,7 @@ const Addons = () => {
                           <option className=" capitalize text-primary" value="">
                             select form here
                           </option>
-                          {allCategory.map((category, index) => (
+                          {addonsCategories.map((category: any, index: any) => (
                             <option value={category} key={index} className="capitalize">
                               {category}
                             </option>
@@ -643,7 +562,11 @@ const Addons = () => {
                     </div>
 
                     <div className="flex justify-end">
-                      <button type="submit" className="btn btn-outline-darkness mt-8 flex flex-col items-center justify-center rounded-lg text-[13px] font-bold capitalize text-black hover:text-white">
+                      <button
+                        type="submit"
+                        // btn md:mt-24 mt-8 bg-black font-sans text-white mx-auto md:me-0
+                        className="btn btn-black mt-8 flex flex-col items-center justify-center rounded-lg bg-black text-[13px] font-bold capitalize text-white"
+                      >
                         {isLoading ? (
                           <span role="status" className="flex h-5 items-center space-x-2">
                             Loading...
