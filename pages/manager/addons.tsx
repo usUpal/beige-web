@@ -247,8 +247,9 @@ const Addons = () => {
         </li>
       </ul>
 
-      <div className="mb-5">
+      <div className="mb-5 ">
         {/* buttons for adds ends*/}
+
         <div className="panel" id="pills_with_icon">
           {/* tab starts*/}
 
