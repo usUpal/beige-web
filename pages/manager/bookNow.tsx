@@ -450,17 +450,17 @@ const BookNow = () => {
         } else {
           return false;
         }
-        // if (activeTab === 3) {
-        //   // const response = await OrderApi.handleOrderMake(formattedData);
-        //   if (response.status === 201) {
-        //     swalToast('success', 'Order has been created successfully!');
-        //     router.push('/dashboard/shoots');
-        //     setIsLoading(false);
-        //   } else {
-        //     swalToast('danger', 'Please check your order details!');
-        //     setIsLoading(false);
-        //   }
-        // }
+        if (activeTab === 3) {
+          const response = await OrderApi.handleOrderMake(formattedData);
+          if (response.status === 201) {
+            swalToast('success', 'Order has been created successfully!');
+            router.push('/dashboard/shoots');
+            setIsLoading(false);
+          } else {
+            swalToast('danger', 'Please check your order details!');
+            setIsLoading(false);
+          }
+        }
       } catch (error) {
         swalToast('danger', 'error');
         setIsLoading(false);
