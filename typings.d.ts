@@ -171,5 +171,23 @@ declare global {
     price: number;
   }
 
+   interface Payouts {
+    id: string;
+    date:string;
+    status: string;
+    accountType:string;
+    accountHolder: string;
+    expireDate: string;
+    cardNumber: number;
+    cvc: number;
+    userId: number;
+    withdrawAmount: number;
+    createdAt:string;
+    updatedAt: string;
+    bankName:string;
+    branchName:string;
+    phoneNumber: number;
+    accountNumber: number
+  }
 
 }
