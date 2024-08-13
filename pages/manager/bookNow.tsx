@@ -16,12 +16,16 @@ import 'flatpickr/dist/flatpickr.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
+
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import Flatpickr from 'react-flatpickr';
 
 interface FormData {
   content_type: string;
@@ -129,40 +133,64 @@ const BookNow = () => {
     setAllRates(totalRate + shootCosts);
   }, [selectedFilteredAddons, filteredAddonsData, addonExtraHours]);
 
-  const handleChangeStartDateTime = (e: ChangeEvent<HTMLInputElement>) => {
-    try {
-      const inputValue = e.target.value;
-      const s_time = parseISO(inputValue);
 
-      // Check if the parsed date is valid
+  const startDateTimeRef = useRef(null);
+  const endDateTimeRef = useRef(null);
+
+  useEffect(() => {
+    if (startDateTimeRef.current) {
+      flatpickr(startDateTimeRef.current, {
+        altInput: true,
+        altFormat: "F j, Y h:i K",
+        dateFormat: "Y-m-d H:i",
+        enableTime: true,
+        time_24hr: false,
+        onChange: (selectedDates, dateStr) => {
+          handleChangeStartDateTime(dateStr);
+        },
+      });
+    }
+
+    if (endDateTimeRef.current) {
+      flatpickr(endDateTimeRef.current, {
+        altInput: true,
+        altFormat: "F j, Y h:i K",
+        dateFormat: "Y-m-d H:i",
+        enableTime: true,
+        time_24hr: false,
+        onChange: (selectedDates, dateStr) => {
+          handleChangeEndDateTime(dateStr);
+        },
+      });
+    }
+  }, []);
+
+  const handleChangeStartDateTime = (dateStr) => {
+    try {
+      const s_time = parseISO(dateStr);
       if (!isValid(s_time)) {
         return;
       }
-      // Format the date if valid
       const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setStartDateTime(starting_date);
     } catch (error) {
       console.error('Error parsing date:', error);
-      // Handle the error, e.g., set an error state or display an error message
     }
   };
 
-  const handleChangeEndDateTime = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeEndDateTime = (dateStr) => {
     try {
-      const inputValue = e.target.value;
-      const e_time = parseISO(inputValue);
-      // Check if the parsed date is valid
+      const e_time = parseISO(dateStr);
       if (!isValid(e_time)) {
         return;
       }
-      // Format the date if valid
       const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setEndDateTime(ending_date);
     } catch (error) {
       console.error('Error parsing end date:', error);
-      // Handle the error, e.g., set an error state or display an error message
     }
   };
+
   const addDateTime = () => {
     const newDateTime: FormData = {
       start_date_time: startDateTime,
@@ -369,8 +397,18 @@ const BookNow = () => {
     }
   };
 
+  const [meetingTime, setMeetingTime] = useState(null);
+  const convertToISO = (datetime:any) => {
+    const date = new Date(datetime);
+    const isoDate = date.toISOString();
+    return isoDate;
+  }
+
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
+    const meeting_time = convertToISO(data.meeting_time);
+
+    console.log("metting: ", meeting_time);
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
@@ -403,6 +441,8 @@ const BookNow = () => {
           addOns_cost: allAddonRates,
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
+        console.log(formattedData)
+        
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
@@ -410,17 +450,17 @@ const BookNow = () => {
         } else {
           return false;
         }
-        if (activeTab === 3) {
-          const response = await OrderApi.handleOrderMake(formattedData);
-          if (response.status === 201) {
-            swalToast('success', 'Order has been created successfully!');
-            router.push('/dashboard/shoots');
-            setIsLoading(false);
-          } else {
-            swalToast('danger', 'Please check your order details!');
-            setIsLoading(false);
-          }
-        }
+        // if (activeTab === 3) {
+        //   // const response = await OrderApi.handleOrderMake(formattedData);
+        //   if (response.status === 201) {
+        //     swalToast('success', 'Order has been created successfully!');
+        //     router.push('/dashboard/shoots');
+        //     setIsLoading(false);
+        //   } else {
+        //     swalToast('danger', 'Please check your order details!');
+        //     setIsLoading(false);
+        //   }
+        // }
       } catch (error) {
         swalToast('danger', 'error');
         setIsLoading(false);
@@ -496,7 +536,7 @@ const BookNow = () => {
                                     },
                                   })}
                                 />
-                                <span className="text-black">Video</span>
+                                <span className="text-black">Videography</span>
                               </label>
                             </div>
                             {/* Photo */}
@@ -606,23 +646,24 @@ const BookNow = () => {
 
                               <div>
                                 <p className="text-xs font-bold">Start Time</p>
-                                <input id="start_date_time" type="datetime-local" className="form-input w-[220px]" onBlur={handleChangeStartDateTime} required={dateTimes?.length === 0} />
-                              </div>
+                                <input id="start_date_time" ref={startDateTimeRef} type="datetime-local" className={`form-input w-[220px] ${errors?.start_date_time ? 'border-red-500' : ''}`} placeholder="Meeting date & time select ..."
+                                required={startDateTime?.length === 0} 
+                                
+                                />
+
+                                {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                              </div>                             
                               <div>
                                 <p className="ml-1 text-xs font-bold">End Time</p>
-                                <input
-                                  id="end_date_time"
-                                  type="datetime-local"
-                                  className="form-input ml-1 w-[220px]"
-                                  onBlur={handleChangeEndDateTime}
-                                  //   onBlur={addDateTime}
-                                  required={dateTimes?.length === 0}
-                                />
+                                <input id="end_date_time" ref={endDateTimeRef} type="datetime-local" className={`form-input ml-1 w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`} placeholder="Meeting date & time select ..." required={endDateTime?.length === 0} />
+
+                                {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
+
                               <p className="btn btn-success ml-2 mt-4 h-9" onClick={addDateTime}>
                                 Add
                               </p>
-                              {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                              {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
                           </div>
 
@@ -721,6 +762,41 @@ const BookNow = () => {
                           </label>
                           <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
                         </div>
+                        <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
+                          <label htmlFor="meeting_time" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
+                            Meeting time
+                          </label>
+
+                          <div className='w-[98%] pl-5'>
+
+                            <Flatpickr
+                              id="meeting_time"
+                              className={`form-input ${errors.meeting_time ? 'border-red-500' : ''}`}
+                              value={meetingTime}
+                              placeholder="Meeting date & time select ..."
+                              options={{
+                                altInput: true,
+                                altFormat: "F j, Y h:i K",
+                                dateFormat: "Y-m-d H:i",
+                                enableTime: true,
+                                time_24hr: false,
+                              }}
+                              onChange={(date) => {
+                                setMeetingTime(date[0]); // Set the selected date
+                                setValue('meeting_time', date[0]); // Update form value
+                              }}
+                            />
+                            <input
+                              type="hidden"
+                              {...register('meeting_time', { required: 'Meeting time is required' })}
+                            />
+                            {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
+
+
+
+                          </div>
+                        </div>
+
                       </div>
 
                       <button
@@ -953,7 +1029,7 @@ const BookNow = () => {
                                           <>
                                             <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                               <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
-                                              <td>{addon?.hours ? `${addon?.hours} hours` : ''}</td>
+                                              <td>{addon?.ExtendRate ? `${addon?.hours} hours` : ''}</td>
                                               <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
                                             </tr>
                                           </>

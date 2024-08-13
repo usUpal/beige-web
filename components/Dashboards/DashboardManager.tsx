@@ -5,6 +5,7 @@ import { API_ENDPOINT } from '@/config';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+
 const ReactApexChart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
 });
@@ -309,6 +310,7 @@ const DashboardManager = (props: any) => {
       console.error(error);
     }
   };
+
 
   return (
     <div>
