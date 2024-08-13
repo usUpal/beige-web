@@ -9,10 +9,8 @@ import Swal from 'sweetalert2';
 
 const ShootDetails = () => {
   const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
-  console.log(shootInfo);
   const router = useRouter();
   const shootId = router.query.shootDetails;
-  console.log(shootId);
 
   const getShootDetails = async (shootId: string) => {
     try {
@@ -30,16 +28,18 @@ const ShootDetails = () => {
   };
 
   useEffect(() => {
-    Swal.fire({
-      text: 'This Screen is under development',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Okay',
-    });
+    // Swal.fire({
+    //   text: 'This Screen is under development',
+    //   icon: 'warning',
+    //   showCancelButton: true,
+    //   confirmButtonColor: '#3085d6',
+    //   cancelButtonColor: '#d33',
+    //   confirmButtonText: 'Okay',
+    // });
     getShootDetails(shootId);
   }, []);
+
+  console.log("Shoot Info",shootInfo)
 
   return (
     <div className="pb-5 pl-5 pr-5">

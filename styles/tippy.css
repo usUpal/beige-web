@@ -53,3 +53,18 @@
 .tippy-box[data-theme~='dark'][data-placement^='top'] > .tippy-arrow::before {
     border-top-color: #3b3f5c;
 }
+.scrollbar {
+  --scrollbar-width: 5px;
+  --scrollbar-color: transparent;
+  --scrollbar-thumb-color: #666;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  background-color: var(--scrollbar-color);
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+  border-radius: 10px;
+}

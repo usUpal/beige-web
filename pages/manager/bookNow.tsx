@@ -534,11 +534,11 @@ const BookNow = () => {
                         </div>
                       </div>
                       <div className="my-5 flex items-center justify-between">
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <div className="flex basis-[45%] flex-col sm:flex-row relative">
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Client
                           </label>
-                          <select
+                          {/* <select
                             className={`form-select text-black ${errors.client ? 'border-red-500' : ''}`}
                             id="content_vertical"
                             defaultValue="SelectClient"
@@ -554,7 +554,14 @@ const BookNow = () => {
                                 {client.name}
                               </option>
                             ))}
-                          </select>
+                          </select> */}
+                          <input type="search" className="form-input flex-grow bg-slate-100" placeholder="Client" />
+                          {/* <div className='absolute bg-white w-[79%] p-1 rounded-md z-30 top-[43px] right-0 border-2 border-black-light '>
+                            <ul className='mt-2 mb-2 h-[300px] overflow-y-scroll overflow-x-hidden scrollbar'>
+                              <li className='px-3 py-2 hover:bg-[#dfdddd83] rounded-md text-[13px] font-medium leading-3'><a href="#">Searching Me</a></li>
+                              <li className='px-3 py-2 hover:bg-[#dfdddd83] rounded-md text-[13px] font-medium leading-3'><a href="#">Searching Me</a></li>
+                            </ul>
+                          </div> */}
                         </div>
 
                         {/* Location */}

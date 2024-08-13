@@ -522,7 +522,7 @@ const IndexClient = () => {
                     </div>
                     <div className="my-5 flex items-center justify-between">
                       <div className="flex basis-[45%] flex-col sm:flex-row">
-                        <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        {/* <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                           Client
                         </label>
                         <input
@@ -532,7 +532,7 @@ const IndexClient = () => {
                           value={userData?.name}
                           type="text"
                           className="form-input flex-grow bg-slate-100"
-                        />
+                        /> */}
                       </div>
 
                       {/* Location */}
@@ -597,7 +597,7 @@ const IndexClient = () => {
                                 required={dateTimes?.length === 0}
                               />
                             </div>
-                            <p className="btn btn-success ml-2 mt-4 h-9 " onClick={addDateTime}>
+                            <p className="btn btn-success ml-2 mt-4 h-9 cursor-pointer" onClick={addDateTime}>
                               Add
                             </p>
                             {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
