@@ -406,9 +406,8 @@ const BookNow = () => {
 
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
-    const meeting_time = convertToISO(data.meeting_time);
-
-    console.log("metting: ", meeting_time);
+    // const meeting_time = convertToISO(data.meeting_time);
+    // console.log("metting: ", meeting_time);
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
