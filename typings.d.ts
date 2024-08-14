@@ -190,4 +190,20 @@ declare global {
     accountNumber: number
   }
 
+  interface profileFormData{
+    name: string;
+    profession: string;
+    country: string;
+    address: string;
+    location: string;
+    phone: string;
+    email: string;
+    web: string;
+    defaultAddress: boolean;
+    linkedIn: string;
+    twitter: string;
+    facebook: string;
+    github: string;
+}
+
 }

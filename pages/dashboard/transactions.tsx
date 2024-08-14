@@ -6,6 +6,7 @@ import { setPageTitle } from '../../store/themeConfigSlice';
 import { API_ENDPOINT } from '@/config';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition } from '@headlessui/react';
+import useDateFormat from '@/hooks/useDateFormat';
 
 const Transactions = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,8 @@ const Transactions = () => {
   useEffect(() => {
     getAllPayouts();
   }, [currentPage]);
+
+  // 2024-07-03T12:22:20.145Z
 
   const getAllPayouts = async () => {
     let url = `${API_ENDPOINT}payout`;
@@ -59,6 +62,13 @@ const Transactions = () => {
     }
   };
 
+  // TIME FORMATING
+  const createdAtDate = useDateFormat(selectedPayoutInfo?.createdAt);
+  const payoutDate = useDateFormat(selectedPayoutInfo?.date);
+  const updatedDate = useDateFormat(selectedPayoutInfo?.updatedAt);
+
+  console.log(selectedPayoutInfo?.updatedAt);
+
   // update the status-only
   const handleUpdateTestSubmit = async (id: string) => {
     const selectedStatus = statusRef.current?.value;
@@ -94,26 +104,6 @@ const Transactions = () => {
       <div className="panel">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-lg font-semibold dark:text-white-light">Transactions Table</h5>
-          <button type="button" onClick={() => toggleCode('code1')} className="font-semibold hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-600">
-            <span className="flex items-center">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ltr:mr-2 rtl:ml-2">
-                <path
-                  d="M17 7.82959L18.6965 9.35641C20.239 10.7447 21.0103 11.4389 21.0103 12.3296C21.0103 13.2203 20.239 13.9145 18.6965 15.3028L17 16.8296"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-                <path opacity="0.5" d="M13.9868 5L10.0132 19.8297" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path
-                  d="M7.00005 7.82959L5.30358 9.35641C3.76102 10.7447 2.98975 11.4389 2.98975 12.3296C2.98975 13.2203 3.76102 13.9145 5.30358 15.3028L7.00005 16.8296"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              Code
-            </span>
-          </button>
         </div>
         <div className="table-responsive mb-5">
           <table>
@@ -326,18 +316,20 @@ const Transactions = () => {
 
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
                         <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">createdAt</span>
+                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">date</span>
                           <input
-                            value={selectedPayoutInfo?.createdAt}
+                            // value={selectedPayoutInfo?.date}
+                            value={payoutDate?.date}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
                         </div>
 
                         <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">expireDate</span>
+                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">created date</span>
                           <input
-                            value={selectedPayoutInfo?.expireDate}
+                            // value={selectedPayoutInfo?.createdAt}
+                            value={createdAtDate?.date}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
@@ -345,19 +337,22 @@ const Transactions = () => {
                       </div>
                       {/*  */}
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
-                        <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">date</span>
-                          <input
-                            value={selectedPayoutInfo?.date}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                            disabled
-                          />
-                        </div>
+                        {selectedPayoutInfo?.expireDate && (
+                          <div className="flex flex-col">
+                            <span className="text-[14px] font-light capitalize leading-none text-[#000000]">expireDate</span>
+                            <input
+                              value={selectedPayoutInfo?.expireDate}
+                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              disabled
+                            />
+                          </div>
+                        )}
 
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">updatedAt</span>
                           <input
-                            value={selectedPayoutInfo?.updatedAt}
+                            // value={selectedPayoutInfo?.updatedAt}
+                            value={updatedDate?.date}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
