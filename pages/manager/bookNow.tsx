@@ -22,6 +22,8 @@ import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
+import { API_ENDPOINT } from '@/config';
+import { clientNamespaces } from 'ni18n';
 
 interface FormData {
   content_type: string;
@@ -65,6 +67,9 @@ const BookNow = () => {
   const [formDataPageOne, setFormDataPageOne] = useState<any>({});
   const [cp_ids, setCp_ids] = useState([]);
   const [search, setSearch] = useState(false);
+  const [clients, setClients] = useState([]);
+  const [showClientDropdown, setShowClientDropdown] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -430,10 +435,37 @@ const BookNow = () => {
   const contentTypes = watch('content_type', []);
   const contentVertical = watch('content_vertical');
   //
-  const handleClientChange = (event) => {
-    const selectedOption = event.target.options[event.target.selectedIndex];
-    setClient_id(selectedOption.value);
-    setClientName(selectedOption.getAttribute('data-name'));
+  // const handleClientChange = (event) => {
+  //   const selectedOption = event.target.options[event.target.selectedIndex];
+  //   setClient_id(selectedOption.value);
+  //   setClientName(selectedOption.getAttribute('data-name'));
+  // };
+
+  const getAllClients = async () => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}users?limit=30&page=${1}`);
+      const users = await response.json();
+      console.log("Clients : ", users?.results);
+      setClients(users?.results);
+      setShowClientDropdown(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const searchGetClient = async (event) => {
+    console.log("client search event", event?.target?.value);
+    setClientName(event?.target?.value);
+
+  }
+
+
+  const handleClientChange = (client) => {
+    console.log("client", client);
+    //const selectedOption = event.target.options[event.target.selectedIndex];
+    setClient_id(client?.id);
+    setClientName(client?.name);
+    setShowClientDropdown(false)
   };
   //
   const orderName = () => {
@@ -555,13 +587,54 @@ const BookNow = () => {
                               </option>
                             ))}
                           </select> */}
-                          <input type="search" className="form-input flex-grow bg-slate-100" placeholder="Client" />
-                          {/* <div className='absolute bg-white w-[79%] p-1 rounded-md z-30 top-[43px] right-0 border-2 border-black-light '>
-                            <ul className='mt-2 mb-2 h-[300px] overflow-y-scroll overflow-x-hidden scrollbar'>
-                              <li className='px-3 py-2 hover:bg-[#dfdddd83] rounded-md text-[13px] font-medium leading-3'><a href="#">Searching Me</a></li>
-                              <li className='px-3 py-2 hover:bg-[#dfdddd83] rounded-md text-[13px] font-medium leading-3'><a href="#">Searching Me</a></li>
-                            </ul>
-                          </div> */}
+                          <input type="search" onFocus={getAllClients} onKeyUp={searchGetClient} className="form-input flex-grow bg-slate-100" value={clientName} placeholder="Client" />
+                          {showClientDropdown && (
+                            <>
+                              {clients && clients.length > 0 ? (
+                                <>
+                                  <div className='absolute bg-white w-[79%] p-1 rounded-md z-30 top-[43px] right-0 border-2 border-black-light '>
+                                    <ul className='mt-2 mb-2 h-[300px] overflow-y-scroll overflow-x-hidden scrollbar'>
+                                      {clients?.map((client) => (
+                                        <li key={client.id} onClick={() => handleClientChange(client)} className='px-3 py-2 hover:bg-[#dfdddd83] rounded-md text-[13px] font-medium leading-3 flex items-center cursor-pointer'>
+                                          <div className="m-1 mr-2 w-5 h-5 relative flex justify-center items-center rounded-full bg-gray-500 text-xl text-white">
+                                            <img src={client.profile_picture} className="rounded-full" />
+                                          </div>
+                                          <a href="#">{client.name}</a>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className='absolute bg-white w-[79%] p-1 rounded-md z-30 top-[43px] right-0 border-2 border-black-light '>
+                                    <div className='animate-pulse mt-2 mb-2 h-[190px] overflow-y-scroll overflow-x-hidden scrollbar'>
+                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
+                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
+                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
+                                      </div>
+                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
+                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
+                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
+                                      </div>
+                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
+                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
+                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
+                                      </div>
+                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
+                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
+                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
+                                      </div>
+                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
+                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
+                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                            </>
+                          )}
                         </div>
 
                         {/* Location */}
@@ -824,9 +897,8 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -883,7 +955,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -944,7 +1016,7 @@ const BookNow = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                            // onClick={() => shootCostCalculation()}
+                          // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation
