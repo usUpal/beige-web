@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import CodeHighlight from '../../components/Highlight';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
@@ -70,23 +70,15 @@ const Transactions = () => {
   const [allPayouts, setAllPayouts] = useState<Payouts[]>([]);
   const [payoutModal, setPayoutModal] = useState(false);
   const [payoutInfo, setPayoutInfo] = useState<any>({});
-
-  //console.log(allPayouts);
+  const [selectedPayoutInfo, setSelectedPayoutInfo] = useState<Payouts | null>(null);
+  const statusRef = useRef(null);
 
   useEffect(() => {
     getAllPayouts();
   }, [currentPage]);
 
-  const { userData } = useAuth();
-  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
-
-  //   payout?sortBy=createdAt:desc&userId=661e4b416970067f1739f61f&limit=1&page=2
   const getAllPayouts = async () => {
     let url = `${API_ENDPOINT}payout`;
-    if (userRole === 'client' || userRole === 'cp') {
-      // url = `${API_ENDPOINT}payout/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
-      //   url = `${API_ENDPOINT}payout?sortBy=createdAt:desc&${userData?.id}&limit=1&page=${currentPage}`;
-    }
 
     try {
       const response = await fetch(url);
@@ -113,40 +105,7 @@ const Transactions = () => {
     }
   };
 
-  // get single payout dynamically
-  const getSinglePayoutDetails = async (payoutId: number) => {
-    try {
-      const response = await fetch(`${API_ENDPOINT}payout?sortBy=createdAt:desc&${payoutId}&limit=1&page=${currentPage}`);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const payoutDetailsRes = await response.json();
-
-      if (payoutDetailsRes && payoutDetailsRes?.result) {
-        setPayoutModal(true);
-        setPayoutInfo(payoutDetailsRes?.result);
-      } else {
-        console.error('Unexpected response structure for payout details', payoutDetailsRes);
-      }
-    } catch (error) {
-      console.error('Error fetching payout details:', error);
-    }
-  };
-
-  //   const [selectedPayoutInfo, setSelectedPayoutInfo] = useState({});
-  //   const getSoloPayoutDetails = (id: string) => {
-  //     const filteredPayout: Payouts[] = allPayouts?.filter((payout) => payout?.id === id).map((payout) => payout);
-  //     console.log(filteredPayout[0]);
-
-  //     setSelectedPayoutInfo(filteredPayout[0]);
-  //     setPayoutModal(true);
-  //   };
-  //   console.log(selectedPayoutInfo);
-
-  const [selectedPayoutInfo, setSelectedPayoutInfo] = useState<Payouts | null>(null); // Assuming Payouts is the type of your payout object
-
+  // taking solo or single payout details to a state
   const getSoloPayoutDetails = (id: string) => {
     const selectedPayout = allPayouts?.find((payout) => payout?.id === id);
 
@@ -156,10 +115,35 @@ const Transactions = () => {
     }
   };
 
-  // Optionally, you can use an effect to log `selectedPayoutInfo` when it changes
-  useEffect(() => {
-    console.log(selectedPayoutInfo);
-  }, [selectedPayoutInfo]);
+  // update the status-only
+  const handleUpdateTestSubmit = async (id: string) => {
+    const selectedStatus = statusRef.current?.value;
+
+    try {
+      const patchResponse = await fetch(`${API_ENDPOINT}payout/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: selectedStatus }),
+      });
+
+      if (!patchResponse.ok) {
+        throw new Error('Failed to patch data');
+      }
+
+      const updatedPayoutRes = await patchResponse.json();
+
+      setAllPayouts((prevPayouts) => {
+        return prevPayouts.map((payout) => (payout.id === id ? { ...payout, status: updatedPayoutRes.status } : payout));
+      });
+
+      setPayoutModal(false);
+    } catch (error) {
+      console.error('Patch error:', error);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-1">
       {/* Simple */}
@@ -230,17 +214,7 @@ const Transactions = () => {
                       </div>
                     </td>
                     <td className="text-center">
-                      {/* <Tippy content="Edit"> */}
-                      {/* <button type="button" onClick={() => getSinglePayoutDetails(data?.id)}>
-                        {allSvgs.pencilIconForEdit}
-                      </button> */}
-                      {/* </Tippy> */}
-
-                      <button
-                        type="button"
-                        //   onClick={() => getSinglePayoutDetails(data?.id)}
-                        onClick={() => getSoloPayoutDetails(data?.id)}
-                      >
+                      <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
                         {allSvgs.pencilIconForEdit}
                       </button>
                     </td>
@@ -271,13 +245,10 @@ const Transactions = () => {
                 <div className="basis-[49%]">
                   <div className={`w-12/12 me-6 justify-between `}>
                     <div className="w-12/12 mx-6 space-y-2 pb-5 dark:text-white">
-                      {/* <h2 className="mb-[20px] text-[22px] font-bold capitalize leading-[28.6px] text-[#bcbaba]">Transaction of: {selectedPayoutInfo?.accountHolder}</h2> */}
-
                       <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between">
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Holder</span>
                           <input
-                            // {...register('accountHolder')}
                             value={selectedPayoutInfo?.accountHolder}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
@@ -285,25 +256,20 @@ const Transactions = () => {
                         </div>
                       </div>
 
-                      {/*  */}
-
                       <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between">
                         {selectedPayoutInfo?.accountNumber ? (
                           <div className="flex flex-col">
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Number</span>
                             <input
-                              // {...register('accountNumber')}
                               value={selectedPayoutInfo?.accountNumber}
                               className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
                             />
                           </div>
                         ) : (
-                          // {selectedPayoutInfo?.cardNumber && (
                           <div className="flex flex-col">
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">card Number</span>
                             <input
-                              // {...register('cardNumber')}
                               value={selectedPayoutInfo?.cardNumber}
                               className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
@@ -314,7 +280,6 @@ const Transactions = () => {
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Type </span>
                           <input
-                            // {...register('accountType')}
                             value={selectedPayoutInfo?.accountType}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
@@ -322,14 +287,11 @@ const Transactions = () => {
                         </div>
                       </div>
 
-                      {/*  */}
-
                       <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between">
                         {selectedPayoutInfo?.bankName && (
                           <div className="flex flex-col">
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Bank Name</span>
                             <input
-                              // {...register('bankName')}
                               value={selectedPayoutInfo?.bankName}
                               className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
@@ -341,7 +303,6 @@ const Transactions = () => {
                           <div className="flex flex-col">
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Branch Name </span>
                             <input
-                              // {...register('branchName')}
                               value={selectedPayoutInfo?.branchName}
                               className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
@@ -354,7 +315,6 @@ const Transactions = () => {
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Withdraw Amount</span>
                           <input
-                            // {...register('withdrawAmount')}
                             value={selectedPayoutInfo?.withdrawAmount}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
@@ -364,26 +324,23 @@ const Transactions = () => {
                         <div className="mt-3 flex flex-col md:mt-0">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Status</span>
                           <select
-                            {...register('status')}
+                            ref={statusRef}
                             className=" h-9 w-72 rounded border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
-                            // value={addonsInfo?.status || ''}
+                            name="status"
                             defaultValue={selectedPayoutInfo?.status}
                           >
                             <option value={'pending'}>Pending</option>
-                            <option value={'cancel'}>Cancel</option>
-                            <option value={'paid'}> Paid</option>
+                            <option value={'canceled'}>Canceled</option>
+                            <option value={'paid'}>Paid</option>
                           </select>
                         </div>
                       </div>
-
-                      {/*  */}
 
                       <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between">
                         {selectedPayoutInfo?.phoneNumber && (
                           <div className="flex flex-col">
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Phone Number</span>
                             <input
-                              // {...register('phoneNumber')}
                               value={selectedPayoutInfo?.phoneNumber}
                               className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
@@ -395,7 +352,6 @@ const Transactions = () => {
                           <div className="flex flex-col">
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">CVC</span>
                             <input
-                              // {...register('cvc')}
                               value={selectedPayoutInfo?.cvc}
                               className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
@@ -404,24 +360,19 @@ const Transactions = () => {
                         )}
                       </div>
 
-                      {/*  */}
-
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">user Id</span>
                           <input
-                            // {...register('userId')}
                             value={selectedPayoutInfo?.userId}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
                         </div>
 
-                        {/* {addonsInfo?.ExtendRateType && ( */}
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">id</span>
                           <input
-                            // {...register('id')}
                             value={selectedPayoutInfo?.id}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
@@ -429,23 +380,19 @@ const Transactions = () => {
                         </div>
                       </div>
 
-                      {/*  */}
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">createdAt</span>
                           <input
-                            // {...register('createdAt')}
                             value={selectedPayoutInfo?.createdAt}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
                         </div>
 
-                        {/* {addonsInfo?.ExtendRateType && ( */}
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">expireDate</span>
                           <input
-                            // {...register('expireDate')}
                             value={selectedPayoutInfo?.expireDate}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
@@ -457,18 +404,15 @@ const Transactions = () => {
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">date</span>
                           <input
-                            // {...register('date')}
                             value={selectedPayoutInfo?.date}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
                         </div>
 
-                        {/* {addonsInfo?.ExtendRateType && ( */}
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">updatedAt</span>
                           <input
-                            // {...register('updatedAt')}
                             value={selectedPayoutInfo?.updatedAt}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
@@ -480,7 +424,7 @@ const Transactions = () => {
                         <button
                           type="submit"
                           className="btn flex items-center justify-center rounded-lg bg-black text-[13px] font-bold capitalize text-white"
-                          // onClick={handleUpdateTestSubmit}
+                          onClick={() => handleUpdateTestSubmit(selectedPayoutInfo?.id)}
                         >
                           Update
                         </button>
