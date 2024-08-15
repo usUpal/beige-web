@@ -3,16 +3,25 @@ import { useAuth } from '@/contexts/authContext';
 import Map from '../Map';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_ENDPOINT } from '@/config';
+
+interface FormData {
+  name: string;
+  role: string;
+  location: string;
+  geo_location: { coordinates: number[]; type: 'Point' };
+  email: string;
+}
 
 const ProfileForm = () => {
-  const [geo_location, setGeo_location] = useState({ coordinates: [], type: 'Point' });
+  const [geo_location, setGeo_location] = useState<{ coordinates: number[]; type: 'Point' }>({ coordinates: [], type: 'Point' });
   const { userData } = useAuth();
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY; // Access API key from environment variables
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  const { register, handleSubmit, setValue, watch } = useForm({
+  const { register, handleSubmit, setValue, watch, reset } = useForm<FormData>({
     defaultValues: {
       name: userData?.name || '',
-      profession: userData?.role || '',
+      role: userData?.role || '',
       location: userData?.location || '',
       geo_location: userData?.geo_location || { coordinates: [], type: 'Point' },
       email: userData?.email || '',
@@ -21,12 +30,13 @@ const ProfileForm = () => {
 
   useEffect(() => {
     setValue('geo_location', geo_location);
+    setValue('location', userData?.location || '');
     localStorage.removeItem('location');
-  }, [geo_location, setValue]);
+  }, [geo_location, setValue, userData?.location]);
 
   const watchedGeoLocation = watch('geo_location');
 
-  const reverseGeocode = async (coordinates) => {
+  const reverseGeocode = async (coordinates: number[]) => {
     try {
       const [longitude, latitude] = coordinates;
       const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
@@ -47,18 +57,47 @@ const ProfileForm = () => {
     }
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: userData) => {
     const coordinates = geo_location?.coordinates;
 
     if (coordinates.length === 2) {
       data.location = await reverseGeocode(coordinates);
     } else {
-      data.location = 'Unknown Location';
+      data.location = userData?.location || 'Unknown Location';
     }
 
     data.geo_location = watchedGeoLocation;
+    console.log(userData);
 
-    console.log(data);
+    const updatedProfileInfo = {
+      name: data.name,
+      email: data.email,
+      location: data.location,
+    };
+
+    try {
+      // users/661e4b2d6970067f1739f61a
+      const patchResponse = await fetch(`${API_ENDPOINT}users/${userData?.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedProfileInfo),
+      });
+
+      if (!patchResponse.ok) {
+        throw new Error('Failed to patch data');
+      }
+
+      const updatedAddon = await patchResponse.json(); //
+
+      // const updatedAddonsData = addonsData.map((addon: any) => (addon._id === addonsInfo?._id ? updatedAddon : addon));
+      // setAddonsData(updatedAddonsData);
+
+      // setAddonsModal(false);
+    } catch (error) {
+      console.error('Patch error:', error);
+    }
   };
 
   return (
@@ -72,13 +111,12 @@ const ProfileForm = () => {
               <input id="name" {...register('name')} placeholder="Jimmy Turner" className="form-input" />
             </div>
             <div>
-              <label htmlFor="profession">Role</label>
-              <input id="profession" {...register('profession')} disabled placeholder="Web Developer" className="form-input bg-gray-200 capitalize" />
+              <label htmlFor="role">Role</label>
+              <input id="role" {...register('role')} disabled placeholder="Web Developer" className="form-input bg-gray-200 capitalize" />
             </div>
 
             <div className="flex-grow">
-              <label htmlFor="geo_location">Geo_location</label>
-              {/* Pass userData?.location as default value */}
+              <label htmlFor="geo_location">Location</label>
               <Map setGeo_location={setGeo_location} defaultValue={userData?.location || ''} />
             </div>
 

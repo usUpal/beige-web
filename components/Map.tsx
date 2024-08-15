@@ -1,27 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useLoadScript } from '@react-google-maps/api';
 import usePlacesAutocomplete, { getGeocode, getLatLng, Suggestion } from 'use-places-autocomplete';
+import { MapProps } from './types';
 
-// TypeScript interfaces
-interface GeoLocation {
-  coordinates: [number, number];
-  type: 'Point';
-}
-
-interface PlacesAutocompleteProps {
+const PlacesAutocomplete: React.FC<{
   onAddressSelect?: (address: string) => void;
   handleAddressChange?: (address: string) => void;
   defaultValue?: string;
-}
-
-interface MapProps {
-  setGeo_location: (location: GeoLocation) => void;
-  defaultValue?: string;
-}
-
-// PlacesAutocomplete Component
-const PlacesAutocomplete: React.FC<PlacesAutocompleteProps> = ({ onAddressSelect, handleAddressChange, defaultValue }) => {
-  const [initialValue, setInitialValue] = useState(defaultValue || '');
+}> = ({ onAddressSelect, handleAddressChange, defaultValue }) => {
+  const [initialValue] = React.useState(defaultValue || '');
 
   const {
     ready,
@@ -78,7 +65,6 @@ const PlacesAutocomplete: React.FC<PlacesAutocompleteProps> = ({ onAddressSelect
   );
 };
 
-// Map Component
 const Map: React.FC<MapProps> = ({ setGeo_location, defaultValue }) => {
   const libraries = useMemo(() => ['places'], []);
 
