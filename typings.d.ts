@@ -1,4 +1,4 @@
-export { };
+export {};
 declare global {
   interface ChatRoomTypes {
     order_id: OrderID;
@@ -156,8 +156,8 @@ declare global {
     ExtendRateType: string;
     status: boolean;
     category: string;
-    info: string
-    hours:number
+    info: string;
+    hours: number;
   }
 
   interface UpdatedAddonRates {
@@ -171,39 +171,58 @@ declare global {
     price: number;
   }
 
-   interface Payouts {
+  interface Payouts {
     id: string;
-    date:string;
+    date: string;
     status: string;
-    accountType:string;
+    accountType: string;
     accountHolder: string;
     expireDate: string;
     cardNumber: number;
     cvc: number;
     userId: number;
     withdrawAmount: number;
-    createdAt:string;
+    createdAt: string;
     updatedAt: string;
-    bankName:string;
-    branchName:string;
+    bankName: string;
+    branchName: string;
     phoneNumber: number;
-    accountNumber: number
+    accountNumber: number;
   }
 
-  interface profileFormData{
+  interface profileFormData {
     name: string;
     profession: string;
-    country: string;
-    address: string;
     location: string;
-    phone: string;
+    geo_location: object;
     email: string;
-    web: string;
-    defaultAddress: boolean;
-    linkedIn: string;
-    twitter: string;
-    facebook: string;
-    github: string;
-}
+  }
 
+  interface userData {
+    createdAt: string;
+    email: string;
+    id: string;
+    isEmailVerified: boolean;
+    location: string;
+    name: string;
+    role: string;
+    updatedAt: string;
+  }
+
+  // types.ts
+  interface GeoLocation {
+    coordinates: [number, number];
+    type: 'Point';
+  }
+
+  interface PlacesAutocompleteProps {
+    onAddressSelect?: (address: string) => void;
+    handleAddressChange?: (address: string) => void;
+    defaultValue?: string;
+  }
+
+  interface MapProps {
+    setGeo_location: (location: GeoLocation) => void;
+    defaultValue?: string;
+  }
 }
