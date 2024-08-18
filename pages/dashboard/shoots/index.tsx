@@ -124,7 +124,7 @@ const Shoots = () => {
               ) : (
               <tr>
                 <td colSpan={50} className="text-center">
-                  <span className="text-[red] font-semibold flex justify-center"> No transactions found </span>
+                      <span className="text-[red] font-semibold flex justify-center"> No shoots found </span>
                 </td>
               </tr>
               )}
