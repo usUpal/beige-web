@@ -92,7 +92,7 @@ const SidebarCP = (props: any) => {
 
             <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
               <ul className="sub-menu text-gray-500">
-                <Link href={'#'}>
+                <Link href="/dashboard/profile">
                   <li className="text-center">General Settings</li>
                 </Link>
               </ul>

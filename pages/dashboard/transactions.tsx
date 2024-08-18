@@ -7,9 +7,15 @@ import { API_ENDPOINT } from '@/config';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition } from '@headlessui/react';
 import useDateFormat from '@/hooks/useDateFormat';
+import StatusBg from '@/components/Status/StatusBg';
+import { useAuth } from '@/contexts/authContext';
+import Swal from 'sweetalert2';
 
 const Transactions = () => {
   const dispatch = useDispatch();
+  const { userData } = useAuth();
+  console.log(userData);
+  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   const [allPayouts, setAllPayouts] = useState<Payouts[]>([]);
@@ -25,7 +31,12 @@ const Transactions = () => {
   // 2024-07-03T12:22:20.145Z
 
   const getAllPayouts = async () => {
-    let url = `${API_ENDPOINT}payout`;
+    let url;
+    if (userRole == 'manager'){
+      url = `${API_ENDPOINT}payout`;
+    }else{
+      url = `${API_ENDPOINT}payout?userId=${userData?.id}`;
+    }
 
     try {
       const response = await fetch(url);
@@ -88,15 +99,34 @@ const Transactions = () => {
 
       const updatedPayoutRes = await patchResponse.json();
 
+      // console.log(updatedPayoutRes);
+
       setAllPayouts((prevPayouts) => {
         return prevPayouts.map((payout) => (payout.id === id ? { ...payout, status: updatedPayoutRes.status } : payout));
       });
-
       setPayoutModal(false);
+      coloredToast('success', 'Payment status update successfully');
     } catch (error) {
       console.error('Patch error:', error);
     }
   };
+
+  const coloredToast = (color: any, message: string) => {
+    const toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      showCloseButton: true,
+      customClass: {
+        popup: `color-${color}`,
+      },
+    });
+    toast.fire({
+      title: message,
+    });
+  };
+
 
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-1">
@@ -109,13 +139,12 @@ const Transactions = () => {
           <table>
             <thead>
               <tr>
-                <th>UserId</th>
-                <th>Withdraw Ammount</th>
-
+                <th>Account / Card Number</th>
                 <th>Account Type</th>
                 <th>Account Holder</th>
+                <th>Withdraw Ammount</th>
                 <th>Status</th>
-                <th className="text-center">Edit</th>
+                { (userRole === 'manager') ? <th className="text-center">Edit</th> : null } 
               </tr>
             </thead>
 
@@ -124,34 +153,21 @@ const Transactions = () => {
                 return (
                   <tr key={data.id}>
                     <td>
-                      <div className="whitespace-nowrap">{data?.userId}</div>
+                      <div className="whitespace-nowrap">{data?.cardNumber ? data?.cardNumber : data?.accountNumber}</div>
                     </td>
-                    <td>{data?.withdrawAmount}</td>
-                    <td>{data?.accountType}</td>
+                    <td>{data?.accountType == 'debitCard' ? 'Card' : 'Bank'}</td>
                     <td>{data?.accountHolder}</td>
+                    <td>{data?.withdrawAmount}</td>
 
                     <td>
-                      <div
-                        className={`whitespace-nowrap ${
-                          data.status === 'completed'
-                            ? 'text-success'
-                            : data.status === 'Pending'
-                            ? 'text-secondary'
-                            : data.status === 'In Progress'
-                            ? 'text-info'
-                            : data.status === 'Canceled'
-                            ? 'text-danger'
-                            : 'text-success'
-                        }`}
-                      >
-                        {data.status}
-                      </div>
+                      <StatusBg>{data?.status}</StatusBg>
                     </td>
+                    {(userRole === 'manager') ?
                     <td className="text-center">
                       <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
                         {allSvgs.pencilIconForEdit}
                       </button>
-                    </td>
+                    </td> : null }
                   </tr>
                 );
               })}
@@ -214,7 +230,7 @@ const Transactions = () => {
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Type </span>
                           <input
-                            value={selectedPayoutInfo?.accountType}
+                            value={selectedPayoutInfo?.accountType == 'debitCard' ? 'Card' : 'Bank'} 
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
@@ -294,7 +310,7 @@ const Transactions = () => {
                         )}
                       </div>
 
-                      <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
+                      {/* <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">user Id</span>
                           <input
@@ -312,7 +328,7 @@ const Transactions = () => {
                             disabled
                           />
                         </div>
-                      </div>
+                      </div> */}
 
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
                         <div className="flex flex-col">
@@ -325,7 +341,7 @@ const Transactions = () => {
                           />
                         </div>
 
-                        <div className="flex flex-col">
+                        {/* <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">created date</span>
                           <input
                             // value={selectedPayoutInfo?.createdAt}
@@ -333,7 +349,8 @@ const Transactions = () => {
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
-                        </div>
+                        </div> */}
+
                       </div>
                       {/*  */}
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
@@ -348,7 +365,7 @@ const Transactions = () => {
                           </div>
                         )}
 
-                        <div className="flex flex-col">
+                        {/* <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">updatedAt</span>
                           <input
                             // value={selectedPayoutInfo?.updatedAt}
@@ -356,7 +373,8 @@ const Transactions = () => {
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
-                        </div>
+                        </div> */}
+
                       </div>
 
                       <div className="mt-8 flex justify-end md:mt-0">

@@ -48,10 +48,10 @@ const Profile = () => {
 
                 <p className="text-xl font-semibold text-primary">{userData?.name}</p>
               </div>
-              <ul className="m-auto  mt-5 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
-                <li className="ml-8 flex items-center gap-2">
+              <ul className="m-auto  mt-2 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
+                <li className="ml-4 flex items-center gap-2">
                   {allSvgs.coffeeCupIcon}
-                  {userRole === 'user' ? 'Client' : userRole === 'manager' ? 'Manager' : 'Producer'}
+                  {userRole === 'user' ? 'Client' : userRole === 'manager' ? 'Manager' : 'Beige Producer'}
                 </li>
 
                 {/* <li className="flex items-center gap-2">
@@ -61,7 +61,7 @@ const Profile = () => {
                   </span>
                 </li> */}
               </ul>
-              <ul className="mt-7 flex items-center justify-center gap-2">
+              {/* <ul className="mt-7 flex items-center justify-center gap-2">
                 <li>
                   <button className="btn btn-info flex h-10 w-10 items-center justify-center rounded-full p-0">{allSvgs.twitterIcon}</button>
                 </li>
@@ -71,7 +71,7 @@ const Profile = () => {
                 <li>
                   <button className="btn btn-dark flex h-10 w-10 items-center justify-center rounded-full p-0">{allSvgs.githubIcon}</button>
                 </li>
-              </ul>
+              </ul> */}
             </div>
           </div>
           {/* working-section start*/}
