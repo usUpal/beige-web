@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/authContext';
 import Cookies from 'js-cookie';
 import Loader from './SharedComponent/Loader';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import Swal from 'sweetalert2';
 // import allauthSvg from '@/utils/allsvgs/allauthSvg';
 
 const Auth = () => {
@@ -75,16 +76,33 @@ const Auth = () => {
         await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
         setIsLoading(false);
       } else {
-        toast.error(data.message, {
-          position: toast.POSITION.TOP_CENTER,
-        });
+        // toast.error(data.message, {
+        //   position: toast.POSITION.TOP_CENTER,
+        // });
+        coloredToast('danger', data.message);
         setIsLoading(false);
       }
-      console.log(data);
+      // console.log(data);
     } catch (error) {
-      console.error('Login error:', error);
+      // console.error('Login error:', error);
       setIsLoading(false);
     }
+  };
+
+  const coloredToast = (color: any, message: string) => {
+    const toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      showCloseButton: true,
+      customClass: {
+        popup: `color-${color}`,
+      },
+    });
+    toast.fire({
+      title: message,
+    });
   };
 
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
