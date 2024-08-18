@@ -645,7 +645,7 @@ const BookNow = () => {
 
                               <div>
                                 <p className="text-xs font-bold">Start Time</p>
-                                <input id="start_date_time" ref={startDateTimeRef} type="datetime-local" className={`form-input w-[220px] ${errors?.start_date_time ? 'border-red-500' : ''}`} placeholder="Meeting date & time select ..."
+                                <input id="start_date_time" ref={startDateTimeRef} type="datetime-local" className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`} placeholder="Start time"
                                 required={startDateTime?.length === 0} 
                                 
                                 />
@@ -654,7 +654,7 @@ const BookNow = () => {
                               </div>                             
                               <div>
                                 <p className="ml-1 text-xs font-bold">End Time</p>
-                                <input id="end_date_time" ref={endDateTimeRef} type="datetime-local" className={`form-input ml-1 w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`} placeholder="Meeting date & time select ..." required={endDateTime?.length === 0} />
+                                <input id="end_date_time" ref={endDateTimeRef} type="datetime-local" className={`form-input ml-1 cursor-pointer w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`} placeholder="End time" required={endDateTime?.length === 0} />
 
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
