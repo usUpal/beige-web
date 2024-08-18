@@ -200,41 +200,41 @@ const ShootDetails = () => {
             </div>
 
             <div className="">
+
+              {/* <button className="px-2 py-1 bg-blue-500 rounded-sm font-semibold text-white">Meeting Schedule</button> */}
               <div className="flex justify-between items-center">
                 <span>Meting Information</span>
-                {userData?.role === 'manager' && (
-                  <span>
-                    {showNewMetingBox === true ? (
-                      <button type="button" onClick={() => setShowNewMetingBox(false)} className="text-bold text-[#f23636] p-0 font-bold cursor-pointer rounded-full">
-                        <span>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="font-bold w-5 h-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                          </svg>
-                        </span>
-                      </button>
-                    ) : (
-                      <button type="button" onClick={() => setShowNewMetingBox(true)} className="text-bold text-white-dark p-0 font-sans cursor-pointer">
-                        <span>
-                          <svg
-                            width="20px"
-                            height="20px"
-                            viewBox="0 0 48 48"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="#000000">
-                            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                            <g id="SVGRepo_iconCarrier">
-                              <title>Show or Add</title>
-                              <path d="M24,3A21,21,0,1,0,45,24,21,21,0,0,0,24,3Z" fill="#deeff7"></path>
-                              <path d="M32,26H16a2,2,0,0,1,0-4H32A2,2,0,0,1,32,26Z" fill="#36b6f2"></path>
-                              <path d="M24,34a2,2,0,0,1-2-2V16a2,2,0,0,1,4,0V32A2,2,0,0,1,24,34Z" fill="#36b6f2"></path>
-                            </g>
-                          </svg>
-                        </span>
-                      </button>
-                    )}
-                  </span>
-                )}
+                <span>
+                  {showNewMetingBox === true ? (
+                    <button type="button" onClick={() => setShowNewMetingBox(false)} className="text-bold text-[#f23636] p-0 font-bold cursor-pointer rounded-full">
+                      <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="font-bold w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                      </span>
+                    </button>
+                  ) : (
+                    <button type="button" onClick={() => setShowNewMetingBox(true)} className="text-bold text-white-dark p-0 font-sans cursor-pointer">
+                      <span>
+                        <svg
+                          width="20px"
+                          height="20px"
+                          viewBox="0 0 48 48"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="#000000">
+                          <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                          <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <title>Show or Add</title>
+                            <path d="M24,3A21,21,0,1,0,45,24,21,21,0,0,0,24,3Z" fill="#deeff7"></path>
+                            <path d="M32,26H16a2,2,0,0,1,0-4H32A2,2,0,0,1,32,26Z" fill="#36b6f2"></path>
+                            <path d="M24,34a2,2,0,0,1-2-2V16a2,2,0,0,1,4,0V32A2,2,0,0,1,24,34Z" fill="#36b6f2"></path>
+                          </g>
+                        </svg>
+                      </span>
+                    </button>
+                  )}
+                </span>
               </div>
               {showNewMetingBox && (
                 <div className="flex justify-between items-center gap-5 mt-4">
