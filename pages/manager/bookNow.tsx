@@ -5,7 +5,7 @@ import Map from '@/components/Map';
 import Loader from '@/components/SharedComponent/Loader';
 import useAddons from '@/hooks/useAddons';
 import useAllCp from '@/hooks/useAllCp';
-import useClent from '@/hooks/useClent';
+import useClient from '@/hooks/useClient';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation';
 import { swalToast } from '@/utils/Toast/SwalToast';
@@ -48,7 +48,7 @@ const BookNow = () => {
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails] = useAllCp();
 
-  const [allClients, onlyClients] = useClent();
+  const [allClients, onlyClients] = useClient();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
   const [startDateTime, setStartDateTime] = useState('');

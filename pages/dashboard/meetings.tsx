@@ -6,7 +6,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
 import { API_ENDPOINT } from '@/config';
 import { useAuth } from '@/contexts/authContext';
-// import Pagination from '@/components/Pagination';
 import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
@@ -14,7 +13,6 @@ import ResponsivePagination from 'react-responsive-pagination';
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
-  // console.log("🚀 ~ Meeting ~ totalPagesCount:", totalPagesCount)
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [myMeetings, setMyMeetings] = useState<MeetingResponsTypes[]>([]);
   const [rescheduleMeetingTime, setrescheduleMeetingTime] = useState('');
@@ -24,8 +22,6 @@ const Meeting = () => {
   const [meetingModal, setmeetingModal] = useState(false);
   const { userData } = useAuth();
   const dispatch = useDispatch();
-
-  // --> All SVG files imports
 
   // times and date
   const myInputDate = meetingInfo?.meeting_date_time;
@@ -77,17 +73,26 @@ const Meeting = () => {
     }
   };
 
-  // All Meetings
+  // All meetings - user base
+  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
+
   const getAllMyMeetings = async () => {
+    let url = `${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
+    if (userRole === 'client' || userRole === 'cp') {
+      url = `${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
+    }
     try {
-      const response = await fetch(`${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}`);
+      const response = await fetch(url);
       const allMeetings = await response.json();
+
       setTotalPagesCount(allMeetings?.totalPages);
       setMyMeetings(allMeetings.results);
     } catch (error) {
       console.error(error);
     }
   };
+
+  console.log('myMeetings', myMeetings);
 
   // Meeting Single
   const router = useRouter();
@@ -97,7 +102,6 @@ const Meeting = () => {
     try {
       const response = await fetch(`${API_ENDPOINT}meetings/${meetingId}`);
       const meetingDetailsRes = await response.json();
-      console.log('🚀 ~ getMeetingDetails ~ meetingDetailsRes:', meetingDetailsRes);
 
       if (!meetingDetailsRes) {
         setShowError(true);
@@ -166,7 +170,7 @@ const Meeting = () => {
                 <th className="text-[16px] font-semibold">View</th>
               </tr>
             </thead>
-            <div></div>
+
             <tbody>
               {myMeetings?.map((meeting) => (
                 <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
@@ -177,12 +181,8 @@ const Meeting = () => {
                   </td>
 
                   <td>
-                    {/* {myFormattedDateTime?.date} */}
-
                     <span className="ps-2">Date:{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
                     <span className="ps-2">Time:{makeDateFormat(meeting?.meeting_date_time)?.time}</span>
-                    {/* <span className='ps-2'>Time: {myFormattedDateTime?.time}</span> */}
-                    {/* {useDateFormat(meeting?.meeting_date_time)} */}
                   </td>
 
                   <td>
@@ -207,7 +207,6 @@ const Meeting = () => {
               ))}
             </tbody>
           </table>
-          {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
           <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
             <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
           </div>
@@ -291,10 +290,6 @@ const Meeting = () => {
                           </form>
                         </div>
                       )}
-
-                      {/* <button onClick={() => setmeetingModal(false)} type="submit" className="btn mx-auto mt-0 hidden bg-black font-sans text-[16px] text-white md:me-0 md:block">
-                        Close
-                      </button> */}
                     </div>
 
                     {/* Resheduling */}

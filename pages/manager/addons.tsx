@@ -9,10 +9,9 @@ import { useForm } from 'react-hook-form';
 import useAddons from '@/hooks/useAddons';
 
 const Addons = () => {
-  const [addonsData, setAddonsData, addonsCategories, handleFilterCategory] = useAddons();
-
+  const [addonsData, setAddonsData, addonsCategories] = useAddons();
   // const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
-  // const [addonsData, setAddonsData] = useAddons();
+  // const [allCategory, setAllCategory] = useState([]);
 
   const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
   const [addonsModal, setAddonsModal] = useState(false);
@@ -20,9 +19,9 @@ const Addons = () => {
   const [showDesignElement, setShowDesignElement] = useState({
     showNewCategoryInput: false,
   });
-  const [allCategory, setAllCategory] = useState([]);
   const [newCategory, setNewCategory] = useState('');
   const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
@@ -30,48 +29,34 @@ const Addons = () => {
     formState: { errors },
   } = useForm();
 
-  useEffect(() => {
-    const handleFilterCategory = () => {
-      if (addonsData) {
-        const uniqueCategories = addonsData?.map((addon: any) => addon.category)?.filter((category: string, index: any, array: any) => array.indexOf(category) === index);
-        console.log('Unique Categories:', uniqueCategories);
-        setAllCategory(uniqueCategories);
-      }
-    };
-
-    handleFilterCategory();
-  }, [addonsData]);
+  // setAddonsAddBtnModal
+  const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
 
   // add category to the allcategory
   const handleAddCategory = () => {
     if (newCategory.trim() !== '') {
-      allCategory.push(newCategory);
+      addonsCategories.push(newCategory);
       setNewCategory('');
     }
     showDesignElement.showNewCategoryInput = false;
-    console.log(newCategory, allCategory);
   };
 
-  // setAddonsAddBtnModal
-  const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${API_ENDPOINT}addOns`);
+        if (!res.ok) {
+          throw new Error(`Error: ${res.status}`);
+        }
+        const jsonData = await res.json();
+        setAddonsData(jsonData);
+      } catch (error) {
+        console.error(`Error fetching data`);
+      }
+    };
 
-  /* useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch(`${API_ENDPOINT}addOns`);
-                if (!res.ok) {
-                    throw new Error(`Error: ${res.status}`);
-                }
-                const jsonData = await res.json();
-                setAddonsData(jsonData);
-            } catch (error) {
-                console.error(`Error fetching data`);
-            }
-        };
-
-        fetchData();
-    }, []);
- */
+    fetchData();
+  }, []);
 
   // theme functionality
   useEffect(() => {
@@ -104,8 +89,7 @@ const Addons = () => {
     });
   };
 
-  //    update addons
-  const onSubmit = async (data: any) => {
+  const handleUpdateTestSubmit = async (data: any) => {
     const updatedAddonDetails = {
       title: addonsInfo?.title || data?.title,
       rate: addonsInfo?.rate || data?.rate,
@@ -113,10 +97,8 @@ const Addons = () => {
       ExtendRateType: addonsInfo?.ExtendRateType || data?.ExtendRateType,
       status: addonsInfo?.status || data?.status || false,
     };
-    console.log('Updated Addon Details:', updatedAddonDetails);
 
     try {
-      // const addonsId = addonsInfo?._id;
       const patchResponse = await fetch(`${API_ENDPOINT}addons/${addonsInfo?._id}`, {
         method: 'PATCH',
         headers: {
@@ -140,7 +122,7 @@ const Addons = () => {
     }
   };
 
-  // add new addons
+  // add- new addons
   const handleFormSubmit = async (data: any) => {
     const newAddonsData = {
       title: data?.title,
@@ -165,8 +147,6 @@ const Addons = () => {
       }
       const responseData = await response.json();
 
-      console.log('Addon successfully added:', responseData);
-      // console.log("🚀 ~ handleFormSubmit ~ newAddonsData:", newAddonsData);
       addonsData.push(newAddonsData);
     } catch (error) {
       setLoading(false);
@@ -176,8 +156,6 @@ const Addons = () => {
       setAddonsAddBtnModal(false);
       reset();
     }
-
-    console.log(newAddonsData);
   };
 
   return (
@@ -193,15 +171,16 @@ const Addons = () => {
         </li>
       </ul>
 
-      <div className="mb-5">
+      <div className="mb-5 ">
         {/* buttons for adds ends*/}
+
         <div className="panel" id="pills_with_icon">
           {/* tab starts*/}
 
-          <div className="mx-3 mb-5 sm:mb-0">
+          <div className="_ mx-3 mb-5 flex sm:mb-0">
             <button
               onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}
-              className={`btn btn-outline-dark } flex h-10 w-24 flex-col items-center  justify-center rounded-lg px-2 py-3 text-[13px] font-bold capitalize text-black hover:text-white`}
+              className={`btn btn-outline-darkness flex h-10 w-24 flex-col items-center justify-center rounded-lg px-2 py-3 text-[13px] font-bold capitalize text-black hover:text-white`}
             >
               add new
             </button>
@@ -211,11 +190,11 @@ const Addons = () => {
             <Tab.Group>
               <div className="mx-3 mb-5 sm:mb-0">
                 <Tab.List className="mb-5 grid w-44 grid-cols-4 flex-col gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center">
-                  {allCategory.map((category, index) => (
+                  {addonsCategories.map((category: any, index: any) => (
                     <Tab key={index}>
                       {({ selected }) => (
                         <button
-                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)] flex h-12 w-44 flex-col items-center justify-center rounded-lg bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${
+                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${
                             selected ? 'bg-success text-white outline-none' : ''
                           }`}
                           title={category}
@@ -230,7 +209,7 @@ const Addons = () => {
 
               <div className="ms-4 w-full">
                 <Tab.Panels>
-                  {allCategory?.map((category, index) => (
+                  {addonsCategories?.map((category: any, index: any) => (
                     <Tab.Panel key={index}>
                       <div className="active">
                         <div className="table-responsive mb-5">
@@ -298,31 +277,31 @@ const Addons = () => {
         </div>
       </div>
 
-      {/* modal for add button starts */}
+      {/* modal for update  button starts */}
       <Transition appear show={addonsModal} as={Fragment}>
         <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
               <Dialog.Panel as="div" className="panel my-24 space-x-6  overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 md:px-0">
-                <div className="my-2 flex items-center justify-end bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
+                <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
+                  <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
+
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
                     {allSvgs.closeModalSvg}
                   </button>
                 </div>
 
-                <div className="basis-[50%]">
-                  <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Addons Details </h2>
-                  <div className={`w-11/12 justify-between pb-6`}>
-                    <form action="" onSubmit={handleSubmit(onSubmit)}>
-                      <div className=" mt-3 flex flex-col md:flex md:flex-row md:justify-between ">
+                <div className="basis-[49%]">
+                  <div className={`w-12/12 me-6 justify-between `}>
+                    <div className="w-12/12 space-y-2 pb-5 dark:text-white">
+                      <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between">
                         <p className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000] ">Title</span>
+                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Title</span>
                           <input
                             {...register('title')}
                             onChange={(e) => handleInputChange('title', e.target.value)}
                             value={addonsInfo?.title || ''}
-                            className={` ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72`}
-                            defaultValue={addonsInfo?.title}
+                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                           />
                         </p>
 
@@ -330,7 +309,7 @@ const Addons = () => {
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Status</span>
                           <select
                             {...register('status')}
-                            className="ms-12 h-9 w-28 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
+                            className=" h-9 w-28 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
                             value={addonsInfo?.status || ''}
                             onChange={(e) => handleInputChange('status', e.target.value)}
                           >
@@ -344,22 +323,21 @@ const Addons = () => {
                         {addonsInfo?.ExtendRate && (
                           <div className="mt-3 flex flex-col md:mt-0">
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Extend Rate</span>
-
                             <input
                               {...register('ExtendRate')}
                               onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
                               value={addonsInfo?.ExtendRate || 0}
-                              className={` ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72`}
+                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             />
                           </div>
                         )}
 
                         {addonsInfo?.ExtendRateType && (
-                          <p className=" mt-3 flex flex-col md:mt-0">
-                            <span className="text-[14px] font-light capitalize leading-none text-[#000000]"> Extend Rate Type</span>
+                          <p className="mt-3 flex flex-col md:mt-0">
+                            <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Extend Rate Type</span>
                             <select
                               {...register('ExtendRateType')}
-                              className="ms-12 h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
+                              className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
                               value={addonsInfo?.ExtendRateType || ''}
                               onChange={(e) => handleInputChange('ExtendRateType', e.target.value)}
                             >
@@ -380,24 +358,21 @@ const Addons = () => {
                       <div className="mt-3 flex flex-col justify-between md:flex md:flex-row">
                         <div className="mt-3 flex flex-col md:mt-0">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Rate</span>
-
                           <input
                             {...register('rate')}
                             onChange={(e) => handleInputChange('rate', e.target.value)}
                             value={addonsInfo?.rate || 0}
-                            className={` ms-12 h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72`}
+                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                           />
                         </div>
                       </div>
+
                       <div className="mt-8 flex justify-end md:mt-0">
-                        <button
-                          type="submit"
-                          className="btn btn-outline-dark h-10 w-28 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
-                        >
+                        <button type="submit" className="btn flex items-center justify-center rounded-lg bg-black text-[13px] font-bold capitalize text-white" onClick={handleUpdateTestSubmit}>
                           Update
                         </button>
                       </div>
-                    </form>
+                    </div>
                   </div>
                 </div>
               </Dialog.Panel>
@@ -413,11 +388,11 @@ const Addons = () => {
 
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center px-4">
-              <Dialog.Panel as="div" className="panel my-8 w-full overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-6/12 2xl:w-5/12">
-                {/* max-w-lg */}
-                <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
-                  <div className="text-[18px] font-bold capitalize leading-none text-[#000000]">Add Addons</div>
-                  <button type="button" className="text-white-dark hover:text-dark" onClick={() => setAddonsAddBtnModal(false)}>
+              <Dialog.Panel as="div" className="panel my-24 w-full overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-6/12 2xl:w-5/12">
+                <div className="my-2 box-border flex items-center justify-between bg-[#fbfbfb] px-6 py-3 dark:bg-[#121c2c]">
+                  <h2 className="text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Add Addons </h2>
+
+                  <button type="button" className=" text-white-dark hover:text-dark" onClick={() => setAddonsAddBtnModal(false)}>
                     {allSvgs.closeModalSvg}
                   </button>
                 </div>
@@ -473,7 +448,7 @@ const Addons = () => {
                           <option className=" capitalize text-primary" value="">
                             select form here
                           </option>
-                          {allCategory.map((category, index) => (
+                          {addonsCategories.map((category: any, index: any) => (
                             <option value={category} key={index} className="capitalize">
                               {category}
                             </option>
@@ -589,7 +564,8 @@ const Addons = () => {
                     <div className="flex justify-end">
                       <button
                         type="submit"
-                        className="btn !mt-8 w-36 border-0 bg-gradient-to-r from-[#ACA686] to-[#735C38] uppercase text-white shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] hover:bg-gradient-to-l"
+                        // btn md:mt-24 mt-8 bg-black font-sans text-white mx-auto md:me-0
+                        className="btn btn-black mt-8 flex flex-col items-center justify-center rounded-lg bg-black text-[13px] font-bold capitalize text-white"
                       >
                         {isLoading ? (
                           <span role="status" className="flex h-5 items-center space-x-2">
