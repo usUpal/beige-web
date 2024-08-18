@@ -229,7 +229,7 @@ const ShootDetails = () => {
               <label htmlFor="reference" className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                 Shoot Name
               </label>
-              <span className="font-sans capitalize text-[#aca686]">{shootInfo?.order_name ?? ''}</span>
+              <span className="font-sans capitalize text-black">{shootInfo?.order_name ?? ''}</span>
             </div>
 
             {/* Content Vertical */}
@@ -237,7 +237,7 @@ const ShootDetails = () => {
               <label htmlFor="total_earnings" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                 Content Vertical
               </label>
-              <span className="font-sans capitalize text-[#aca686]">{shootInfo?.content_vertical ?? ''}</span>
+              <span className="font-sans capitalize text-black">{shootInfo?.content_vertical ?? ''}</span>
             </div>
           </div>
 
@@ -251,13 +251,13 @@ const ShootDetails = () => {
                     <ul className="flex-row items-center ms-6 list-disc w-48 text-white-dark group">
                       {shootInfo?.budget?.min && (
                         <li className=''>
-                          <span className="font-sans capitalize text-[#aca686]">Min : ${shootInfo?.budget?.min ?? ''}</span>
+                          <span className="font-sans capitalize text-black">Min : ${shootInfo?.budget?.min ?? ''}</span>
                         </li>
                       )}
 
                       {shootInfo?.budget?.max && (
                         <li >
-                          <span className="font-sans capitalize text-[#aca686]">Max : ${shootInfo?.budget?.max ?? ''}</span>
+                          <span className="font-sans capitalize text-black">Max : ${shootInfo?.budget?.max ?? ''}</span>
                         </li>
                       )}
                     </ul>
@@ -269,7 +269,7 @@ const ShootDetails = () => {
             <div className="md:flex basis-[45%] mb-4 md:mb-2">
               <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Location</label>
               <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
-                <span className="font-sans capitalize text-[#aca686]">{shootInfo?.location ?? ''}</span>
+                <span className="font-sans capitalize text-black">{shootInfo?.location ?? ''}</span>
               </div>
             </div>
           </div>
@@ -284,8 +284,8 @@ const ShootDetails = () => {
                 <div className="flex-row">
                   {shootInfo?.shoot_datetimes?.map((time, key) => (
                     <div key={key} className='space-x-4'>
-                      <span className="font-sans capitalize text-[#aca686]">{new Date(time?.start_date_time).toDateString() ?? ''} </span>
-                      <span className="font-sans capitalize text-[#aca686]">{new Date(time?.end_date_time).toDateString() ?? ''}</span>
+                      <span className="font-sans capitalize text-black">{new Date(time?.start_date_time).toDateString() ?? ''} </span>
+                      <span className="font-sans capitalize text-black">{new Date(time?.end_date_time).toDateString() ?? ''}</span>
                     </div>
                   ))}
                 </div>
@@ -302,14 +302,14 @@ const ShootDetails = () => {
             <div className="md:flex basis-[45%] mb-4 md:mb-2">
               <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Cost</label>
               <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
-                <span className="font-sans capitalize text-[#aca686]">${shootInfo?.shoot_cost ?? ''}</span>
+                <span className="font-sans capitalize text-black">${shootInfo?.shoot_cost ?? ''}</span>
               </div>
             </div>
             {/* Shoot Duration */}
             <div className="md:flex basis-[45%] mb-4 md:mb-2">
               <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Duration</label>
               <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
-                <span className="font-sans capitalize text-[#aca686]">{shootInfo?.shoot_duration ?? ''} Hours</span>
+                <span className="font-sans capitalize text-black">{shootInfo?.shoot_duration ?? ''} Hours</span>
               </div>
             </div>
           </div>
@@ -331,7 +331,7 @@ const ShootDetails = () => {
             <div className="md:flex basis-[45%] mb-4 md:mb-2">
               <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Description</label>
               <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
-                <span className="font-sans capitalize text-[#aca686]">{shootInfo?.description ?? ''}</span>
+                <span className="font-sans capitalize text-black">{shootInfo?.description ?? ''}</span>
               </div>
             </div>
           </div>
