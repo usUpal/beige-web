@@ -398,7 +398,7 @@ const BookNow = () => {
   };
 
   const [meetingTime, setMeetingTime] = useState(null);
-  const convertToISO = (datetime:any) => {
+  const convertToISO = (datetime: any) => {
     const date = new Date(datetime);
     const isoDate = date.toISOString();
     return isoDate;
@@ -441,7 +441,7 @@ const BookNow = () => {
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
         console.log(formattedData)
-        
+
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
@@ -643,19 +643,19 @@ const BookNow = () => {
                                 Shoot Time
                               </label>
 
-                              <div>
+                              <div className='relative'>
                                 <p className="text-xs font-bold">Start Time</p>
                                 <input id="start_date_time" ref={startDateTimeRef} type="datetime-local" className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`} placeholder="Start time"
-                                required={startDateTime?.length === 0} 
-                                
-                                />
+                                  required={startDateTime?.length === 0} />
+                                <p className='absolute right-[7px] top-[23px]'>🕒</p>
 
                                 {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
-                              </div>                             
-                              <div>
+                              </div>
+                              <div className='relative'>
                                 <p className="ml-1 text-xs font-bold">End Time</p>
                                 <input id="end_date_time" ref={endDateTimeRef} type="datetime-local" className={`form-input ml-1 cursor-pointer w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`} placeholder="End time" required={endDateTime?.length === 0} />
 
+                                <p className='absolute right-[7px] top-[23px]'>🕒</p>
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
@@ -766,7 +766,7 @@ const BookNow = () => {
                             Meeting time
                           </label>
 
-                          <div className='w-[98%] pl-5'>
+                          <div className='w-[98%] pl-5 relative'>
 
                             <Flatpickr
                               id="meeting_time"
@@ -789,6 +789,8 @@ const BookNow = () => {
                               type="hidden"
                               {...register('meeting_time', { required: 'Meeting time is required' })}
                             />
+
+                            <p className='absolute right-[7px] top-[8px]'>🕒</p>
                             {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
 
 
@@ -892,9 +894,8 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -951,7 +952,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1012,7 +1013,7 @@ const BookNow = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                            // onClick={() => shootCostCalculation()}
+                          // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation
