@@ -1,22 +1,14 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useLoadScript } from '@react-google-maps/api';
-import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
+import usePlacesAutocomplete, { getGeocode, getLatLng, Suggestion } from 'use-places-autocomplete';
+import { MapProps } from './types';
 
-const PlacesAutocomplete = (
-  {
-    onAddressSelect,
-    handleAddressChange,
-    defaultValue,
-  }: {
-    locationName?: (value: string) => void;
-    onAddressSelect?: (address: string) => void;
-    handleAddressChange?: (address: string) => void;
-    defaultValue: string;
-  },
-  props: any
-) => {
-  const storedValue = localStorage.getItem('location') || defaultValue || '';
-  const [initialValue, setInitialValue] = useState(storedValue);
+const PlacesAutocomplete: React.FC<{
+  onAddressSelect?: (address: string) => void;
+  handleAddressChange?: (address: string) => void;
+  defaultValue?: string;
+}> = ({ onAddressSelect, handleAddressChange, defaultValue }) => {
+  const [initialValue] = React.useState(defaultValue || '');
 
   const {
     ready,
@@ -31,12 +23,11 @@ const PlacesAutocomplete = (
   });
 
   const renderSuggestions = () => {
-    return data.map((suggestion) => {
+    return data.map((suggestion: Suggestion) => {
       const {
         place_id,
         structured_formatting: { main_text, secondary_text },
         description,
-        types,
       } = suggestion;
 
       return (
@@ -51,7 +42,7 @@ const PlacesAutocomplete = (
           className="flex items-center py-1"
         >
           <p className="text-sm font-bold">{main_text},</p>
-          <p className="text-sm"> {secondary_text}</p>{' '}
+          <p className="text-sm"> {secondary_text}</p>
         </li>
       );
     });
@@ -69,45 +60,44 @@ const PlacesAutocomplete = (
         placeholder="Location"
         className="form-input"
       />
-
       {status === 'OK' && <ul>{renderSuggestions()}</ul>}
     </div>
   );
 };
 
-const Map = ({ setGeo_location }: { setGeo_location: (location: any) => void }) => {
+const Map: React.FC<MapProps> = ({ setGeo_location, defaultValue }) => {
   const libraries = useMemo(() => ['places'], []);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
-    libraries: libraries as any,
+    libraries,
   });
 
   if (!isLoaded) {
     return <p>Loading...</p>;
   }
+
   const handleAddressChange = (value: string) => {
     if (!value) {
       setGeo_location({ coordinates: [], type: 'Point' });
     }
   };
+
   return (
     <div>
-      <div className={``}>
-        <PlacesAutocomplete
-          onAddressSelect={(address) => {
-            getGeocode({ address: address }).then((results) => {
-              const { lat, lng } = getLatLng(results[0]);
-              setGeo_location({
-                coordinates: [lng, lat],
-                type: 'Point',
-              });
+      <PlacesAutocomplete
+        onAddressSelect={(address) => {
+          getGeocode({ address }).then((results) => {
+            const { lat, lng } = getLatLng(results[0]);
+            setGeo_location({
+              coordinates: [lng, lat],
+              type: 'Point',
             });
-          }}
-          handleAddressChange={handleAddressChange}
-          defaultValue={localStorage.getItem('location') || ''}
-        />
-      </div>
+          });
+        }}
+        handleAddressChange={handleAddressChange}
+        defaultValue={defaultValue}
+      />
     </div>
   );
 };

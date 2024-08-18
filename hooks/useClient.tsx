@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { API_ENDPOINT } from '@/config';
+import { C } from '@fullcalendar/core/internal-common';
 import { useEffect, useState } from 'react';
 
-const useClent = () => {
+const useClient = () => {
   const [allClients, setAllClients] = useState<any[]>([]);
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -19,6 +20,9 @@ const useClent = () => {
   };
 
   const onlyClients = allClients?.filter((client) => client.role === 'user');
+  // const onlyCp = allClients.filter((cp) => cp.role === 'cp');
+  // console.log(onlyCp);
+
   useEffect(() => {
     getAllClients();
   }, [currentPage]);
@@ -26,4 +30,4 @@ const useClent = () => {
   return [allClients, onlyClients, setAllClients, totalPagesCount, setTotalPagesCount, currentPage, setCurrentPage];
 };
 
-export default useClent;
+export default useClient;

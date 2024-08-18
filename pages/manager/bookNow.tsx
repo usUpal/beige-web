@@ -5,7 +5,7 @@ import Map from '@/components/Map';
 import Loader from '@/components/SharedComponent/Loader';
 import useAddons from '@/hooks/useAddons';
 import useAllCp from '@/hooks/useAllCp';
-import useClent from '@/hooks/useClent';
+import useClient from '@/hooks/useClient';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation';
 import { swalToast } from '@/utils/Toast/SwalToast';
@@ -16,12 +16,16 @@ import 'flatpickr/dist/flatpickr.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
+
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import Flatpickr from 'react-flatpickr';
 
 interface FormData {
   content_type: string;
@@ -44,7 +48,7 @@ const BookNow = () => {
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails] = useAllCp();
 
-  const [allClients, onlyClients] = useClent();
+  const [allClients, onlyClients] = useClient();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
   const [startDateTime, setStartDateTime] = useState('');
@@ -129,40 +133,64 @@ const BookNow = () => {
     setAllRates(totalRate + shootCosts);
   }, [selectedFilteredAddons, filteredAddonsData, addonExtraHours]);
 
-  const handleChangeStartDateTime = (e: ChangeEvent<HTMLInputElement>) => {
-    try {
-      const inputValue = e.target.value;
-      const s_time = parseISO(inputValue);
 
-      // Check if the parsed date is valid
+  const startDateTimeRef = useRef(null);
+  const endDateTimeRef = useRef(null);
+
+  useEffect(() => {
+    if (startDateTimeRef.current) {
+      flatpickr(startDateTimeRef.current, {
+        altInput: true,
+        altFormat: "F j, Y h:i K",
+        dateFormat: "Y-m-d H:i",
+        enableTime: true,
+        time_24hr: false,
+        onChange: (selectedDates, dateStr) => {
+          handleChangeStartDateTime(dateStr);
+        },
+      });
+    }
+
+    if (endDateTimeRef.current) {
+      flatpickr(endDateTimeRef.current, {
+        altInput: true,
+        altFormat: "F j, Y h:i K",
+        dateFormat: "Y-m-d H:i",
+        enableTime: true,
+        time_24hr: false,
+        onChange: (selectedDates, dateStr) => {
+          handleChangeEndDateTime(dateStr);
+        },
+      });
+    }
+  }, []);
+
+  const handleChangeStartDateTime = (dateStr) => {
+    try {
+      const s_time = parseISO(dateStr);
       if (!isValid(s_time)) {
         return;
       }
-      // Format the date if valid
       const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setStartDateTime(starting_date);
     } catch (error) {
       console.error('Error parsing date:', error);
-      // Handle the error, e.g., set an error state or display an error message
     }
   };
 
-  const handleChangeEndDateTime = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeEndDateTime = (dateStr) => {
     try {
-      const inputValue = e.target.value;
-      const e_time = parseISO(inputValue);
-      // Check if the parsed date is valid
+      const e_time = parseISO(dateStr);
       if (!isValid(e_time)) {
         return;
       }
-      // Format the date if valid
       const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setEndDateTime(ending_date);
     } catch (error) {
       console.error('Error parsing end date:', error);
-      // Handle the error, e.g., set an error state or display an error message
     }
   };
+
   const addDateTime = () => {
     const newDateTime: FormData = {
       start_date_time: startDateTime,
@@ -369,8 +397,17 @@ const BookNow = () => {
     }
   };
 
+  const [meetingTime, setMeetingTime] = useState(null);
+  const convertToISO = (datetime: any) => {
+    const date = new Date(datetime);
+    const isoDate = date.toISOString();
+    return isoDate;
+  }
+
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
+    // const meeting_time = convertToISO(data.meeting_time);
+    // console.log("metting: ", meeting_time);
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
@@ -403,6 +440,8 @@ const BookNow = () => {
           addOns_cost: allAddonRates,
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
+        console.log(formattedData)
+
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
@@ -496,14 +535,14 @@ const BookNow = () => {
                                     },
                                   })}
                                 />
-                                <span className="text-black">Video</span>
+                                <span className="text-black">Videography</span>
                               </label>
                             </div>
                             {/* Photo */}
                             <div className="mb-2">
                               <label className="flex items-center">
                                 <input type="checkbox" className={`form-checkbox ${errors.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
-                                <span className="text-black">Photo</span>
+                                <span className="text-black">Photography</span>
                               </label>
                             </div>
                           </div>
@@ -604,25 +643,26 @@ const BookNow = () => {
                                 Shoot Time
                               </label>
 
-                              <div>
+                              <div className="relative">
                                 <p className="text-xs font-bold">Start Time</p>
-                                <input id="start_date_time" type="datetime-local" className="form-input w-[220px]" onBlur={handleChangeStartDateTime} required={dateTimes?.length === 0} />
+                                <input id="start_date_time" ref={startDateTimeRef} type="datetime-local" className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`} placeholder="Start time"
+                                  required={startDateTime?.length === 0} />
+                                <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">🗓️</span>
+
+                                {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                               </div>
-                              <div>
+                              <div className='relative'>
                                 <p className="ml-1 text-xs font-bold">End Time</p>
-                                <input
-                                  id="end_date_time"
-                                  type="datetime-local"
-                                  className="form-input ml-1 w-[220px]"
-                                  onBlur={handleChangeEndDateTime}
-                                  //   onBlur={addDateTime}
-                                  required={dateTimes?.length === 0}
-                                />
+                                <input id="end_date_time" ref={endDateTimeRef} type="datetime-local" className={`form-input ml-1 cursor-pointer w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`} placeholder="End time" required={endDateTime?.length === 0} />
+
+                                <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">🗓️</span>
+                                {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
+
                               <p className="btn btn-success ml-2 mt-4 h-9" onClick={addDateTime}>
                                 Add
                               </p>
-                              {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                              {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
                           </div>
 
@@ -721,6 +761,43 @@ const BookNow = () => {
                           </label>
                           <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
                         </div>
+                        <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
+                          <label htmlFor="meeting_time" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
+                            Meeting time
+                          </label>
+
+                          <div className='w-[98%] pl-5 relative'>
+
+                            <Flatpickr
+                              id="meeting_time"
+                              className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
+                              value={meetingTime}
+                              placeholder="Meeting time ..."
+                              options={{
+                                altInput: true,
+                                altFormat: "F j, Y h:i K",
+                                dateFormat: "Y-m-d H:i",
+                                enableTime: true,
+                                time_24hr: false,
+                              }}
+                              onChange={(date) => {
+                                setMeetingTime(date[0]); // Set the selected date
+                                setValue('meeting_time', date[0]); // Update form value
+                              }}
+                            />
+                            <input
+                              type="hidden"
+                              {...register('meeting_time', { required: 'Meeting time is required' })}
+                            />
+
+                            <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">🗓️</span>
+                            {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
+
+
+
+                          </div>
+                        </div>
+
                       </div>
 
                       <button
@@ -817,9 +894,8 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -876,7 +952,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -937,7 +1013,7 @@ const BookNow = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                            // onClick={() => shootCostCalculation()}
+                          // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation
@@ -953,7 +1029,7 @@ const BookNow = () => {
                                           <>
                                             <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                               <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
-                                              <td>{addon?.hours ? `${addon?.hours} hours` : ''}</td>
+                                              <td>{addon?.ExtendRate ? `${addon?.hours} hours` : ''}</td>
                                               <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
                                             </tr>
                                           </>
