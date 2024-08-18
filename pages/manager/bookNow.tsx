@@ -647,7 +647,7 @@ const BookNow = () => {
                                 <p className="text-xs font-bold">Start Time</p>
                                 <input id="start_date_time" ref={startDateTimeRef} type="datetime-local" className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`} placeholder="Start time"
                                   required={startDateTime?.length === 0} />
-                                <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">🗓️</span>
+                                <span className="absolute right-2 top-1/2 transform -translate-y-1/4 pointer-events-none">🗓️</span>
 
                                 {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                               </div>
@@ -655,7 +655,7 @@ const BookNow = () => {
                                 <p className="ml-1 text-xs font-bold">End Time</p>
                                 <input id="end_date_time" ref={endDateTimeRef} type="datetime-local" className={`form-input ml-1 cursor-pointer w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`} placeholder="End time" required={endDateTime?.length === 0} />
 
-                                <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">🗓️</span>
+                                <span className="absolute right-2 top-1/2 transform -translate-y-1/4 pointer-events-none">🗓️</span>
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
@@ -790,7 +790,7 @@ const BookNow = () => {
                               {...register('meeting_time', { required: 'Meeting time is required' })}
                             />
 
-                            <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">🗓️</span>
+                            <span className="absolute right-2 top-1 transform -translate-y-1/6 pointer-events-none">🗓️</span>
                             {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
 
 
