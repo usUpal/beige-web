@@ -10,11 +10,11 @@ import useDateFormat from '@/hooks/useDateFormat';
 import StatusBg from '@/components/Status/StatusBg';
 import { useAuth } from '@/contexts/authContext';
 import Swal from 'sweetalert2';
+import ResponsivePagination from 'react-responsive-pagination';
 
 const Transactions = () => {
   const dispatch = useDispatch();
   const { userData } = useAuth();
-  console.log(userData);
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -33,9 +33,9 @@ const Transactions = () => {
   const getAllPayouts = async () => {
     let url;
     if (userRole == 'manager'){
-      url = `${API_ENDPOINT}payout`;
+      url = `${API_ENDPOINT}payout?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     }else{
-      url = `${API_ENDPOINT}payout?userId=${userData?.id}`;
+      url = `${API_ENDPOINT}payout?userId=${userData?.id}&sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     }
 
     try {
@@ -47,6 +47,12 @@ const Transactions = () => {
       console.error(error);
     }
   };
+
+  // previous code
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
 
   useEffect(() => {
     dispatch(setPageTitle('Transactions'));
@@ -149,30 +155,53 @@ const Transactions = () => {
             </thead>
 
             <tbody>
-              {allPayouts.map((data) => {
-                return (
-                  <tr key={data.id}>
-                    <td>
-                      <div className="whitespace-nowrap">{data?.cardNumber ? data?.cardNumber : data?.accountNumber}</div>
-                    </td>
-                    <td>{data?.accountType == 'debitCard' ? 'Card' : 'Bank'}</td>
-                    <td>{data?.accountHolder}</td>
-                    <td>{data?.withdrawAmount}</td>
 
-                    <td>
-                      <StatusBg>{data?.status}</StatusBg>
-                    </td>
-                    {(userRole === 'manager') ?
-                    <td className="text-center">
-                      <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
-                        {allSvgs.pencilIconForEdit}
-                      </button>
-                    </td> : null }
-                  </tr>
-                );
-              })}
+              {allPayouts && allPayouts.length > 0 ? (
+                allPayouts.map((data) => {
+                  return (
+                    <tr key={data.id}>
+                      <td>
+                        <div className="whitespace-nowrap">{data?.cardNumber ? data?.cardNumber : data?.accountNumber}</div>
+                      </td>
+                      <td>{data?.accountType == 'debitCard' ? 'Card' : 'Bank'}</td>
+                      <td>{data?.accountHolder}</td>
+                      <td>{data?.withdrawAmount}</td>
+
+                      <td>
+                        <StatusBg>{data?.status}</StatusBg>
+                      </td>
+                      {(userRole === 'manager') ?
+                      <td className="text-center">
+                        <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
+                          {allSvgs.pencilIconForEdit}
+                        </button>
+                      </td> : null }
+                    </tr>
+                  );
+                })
+
+              ) : (
+                <tr>
+                  <td colSpan={50} className="text-center">
+                    <span className="text-[red] font-semibold flex justify-center"> No transactions found </span>
+                  </td>
+                </tr>
+              )}
+
+
             </tbody>
           </table>
+
+          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <ResponsivePagination
+              current={currentPage}
+              total={totalPagesCount}
+              onPageChange={handlePageChange}
+              maxWidth={400}
+            // styles={styles}
+            />
+          </div>
+
         </div>
         {/* show code part  starts */}
       </div>

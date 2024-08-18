@@ -172,39 +172,50 @@ const Meeting = () => {
             </thead>
 
             <tbody>
-              {myMeetings?.map((meeting) => (
-                <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td className=" min-w-[150px] text-black dark:text-white">
-                    <div className="flex items-center">
-                      <p className="whitespace-nowrap break-words">{(meeting?.order?.name).length > 10 ? meeting?.order?.name : 'less than 10 character'}</p>
-                    </div>
-                  </td>
+              {myMeetings && myMeetings.length > 0 ? (
 
-                  <td>
-                    <span className="ps-2">Date:{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
-                    <span className="ps-2">Time:{makeDateFormat(meeting?.meeting_date_time)?.time}</span>
-                  </td>
+                myMeetings?.map((meeting) => (
+                  <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                    <td className=" min-w-[150px] text-black dark:text-white">
+                      <div className="flex items-center">
+                        <p className="whitespace-nowrap break-words">{(meeting?.order?.name).length > 10 ? meeting?.order?.name : 'less than 10 character'}</p>
+                      </div>
+                    </td>
 
-                  <td>
-                    <p className="whitespace-nowrap">
-                      {meeting?.client?.name} with
-                      <span className="ps-1">{meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}</span>
-                    </p>
-                  </td>
+                    <td>
+                      <span className="ps-2">Date:{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
+                      <span className="ps-2">Time:{makeDateFormat(meeting?.meeting_date_time)?.time}</span>
+                    </td>
 
-                  <td>
-                    <div>
-                      <StatusBg>{meeting?.meeting_status}</StatusBg>
-                    </div>
-                  </td>
+                    <td>
+                      <p className="whitespace-nowrap">
+                        {meeting?.client?.name} with
+                        <span className="ps-1">{meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}</span>
+                      </p>
+                    </td>
 
-                  <td>
-                    <button type="button" className="p-0" onClick={() => getMeetingDetails(meeting.id)}>
-                      <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                    </button>
+                    <td>
+                      <div>
+                        <StatusBg>{meeting?.meeting_status}</StatusBg>
+                      </div>
+                    </td>
+
+                    <td>
+                      <button type="button" className="p-0" onClick={() => getMeetingDetails(meeting.id)}>
+                        <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+
+              ) : (
+                <tr>
+                  <td colSpan={50} className="text-center">
+                    <span className="text-[red] font-semibold flex justify-center"> No meetings found </span>
                   </td>
                 </tr>
-              ))}
+              )}
+
             </tbody>
           </table>
           <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
