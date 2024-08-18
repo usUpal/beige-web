@@ -145,6 +145,7 @@ const BookNow = () => {
         dateFormat: "Y-m-d H:i",
         enableTime: true,
         time_24hr: false,
+        minDate: "today",
         onChange: (selectedDates, dateStr) => {
           handleChangeStartDateTime(dateStr);
         },
@@ -158,6 +159,7 @@ const BookNow = () => {
         dateFormat: "Y-m-d H:i",
         enableTime: true,
         time_24hr: false,
+        minDate: "today",
         onChange: (selectedDates, dateStr) => {
           handleChangeEndDateTime(dateStr);
         },
@@ -779,6 +781,7 @@ const BookNow = () => {
                                 dateFormat: "Y-m-d H:i",
                                 enableTime: true,
                                 time_24hr: false,
+                                minDate: "today",
                               }}
                               onChange={(date) => {
                                 setMeetingTime(date[0]); // Set the selected date
