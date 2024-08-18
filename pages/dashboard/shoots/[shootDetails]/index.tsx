@@ -426,26 +426,28 @@ const ShootDetails = () => {
                 )}
 
               </div>
-              {shootInfo?.cp_ids?.length && (
-                <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
-                  <table className="table-auto">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Decision</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {shootInfo?.cp_ids?.map((cp, key) => (
-                        <tr key={key}>
-                          <td>{cp?._id ?? ''}</td>
-                          <td>{cp?.decision ?? ''}</td>
+              <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
+                {shootInfo?.cp_ids?.length > 0 && (
+                  <div className="overflow-y-auto max-h-[250px] overflow-x-hidden scrollbar">
+                    <table className="table-auto w-full">
+                      <thead>
+                        <tr>
+                          <th className="py-2 px-4 border-b">Name</th>
+                          <th className="py-2 px-4 border-b">Decision</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                      </thead>
+                      <tbody>
+                        {shootInfo?.cp_ids?.map((cp, key) => (
+                          <tr key={key}>
+                            <td className="py-2 px-4 border-b">{cp?._id ?? ''}</td>
+                            <td className="py-2 px-4 border-b">{cp?.decision ?? ''}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -613,7 +615,7 @@ const ShootDetails = () => {
                 </div>
                 <div className="basis-[50%] p-5">
                   <div className="flex justify-end mb-2">
-                    <input type="search" className='px-3 py-2 w-[20%] border border-black rounded-sm' placeholder='Search'/>
+                    <input type="search" className='px-3 py-2 w-[20%] border border-black rounded-sm' placeholder='Search' />
                   </div>
                   <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
                     {allCpUsers?.length !== 0 &&
