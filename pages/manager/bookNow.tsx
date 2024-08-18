@@ -542,7 +542,7 @@ const BookNow = () => {
                             <div className="mb-2">
                               <label className="flex items-center">
                                 <input type="checkbox" className={`form-checkbox ${errors.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
-                                <span className="text-black">Photo</span>
+                                <span className="text-black">Photography</span>
                               </label>
                             </div>
                           </div>
@@ -770,9 +770,9 @@ const BookNow = () => {
 
                             <Flatpickr
                               id="meeting_time"
-                              className={`form-input ${errors.meeting_time ? 'border-red-500' : ''}`}
+                              className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
                               value={meetingTime}
-                              placeholder="Meeting date & time select ..."
+                              placeholder="Meeting time ..."
                               options={{
                                 altInput: true,
                                 altFormat: "F j, Y h:i K",
