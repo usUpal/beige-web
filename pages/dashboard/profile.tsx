@@ -21,20 +21,12 @@ const ImageModal = ({ src, onClose }) => {
   return (
     <Transition appear show={!!src} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
+        <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
           <div className="fixed inset-0 bg-black bg-opacity-25" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center bg-[#0000009e]">
+          <div className="flex min-h-full items-center justify-center bg-[#0000009e] p-4 text-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -45,11 +37,8 @@ const ImageModal = ({ src, onClose }) => {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-transparent p-6 text-left align-middle transition-all">
-                <img src={src} alt="Full size" className="w-full h-auto" />
-                <button
-                  className="absolute top-0 right-0 text-gray-500 hover:text-gray-700"
-                  onClick={onClose}
-                >
+                <img src={src} alt="Full size" className="h-auto w-full" />
+                <button className="absolute right-0 top-0 text-gray-500 hover:text-gray-700" onClick={onClose}>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -71,6 +60,22 @@ const Profile = () => {
   const [reviews, setReviews] = useState<any[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showImage, setShowImage] = useState(true);
+  const profileDesignation = (role) => {
+    switch (role) {
+      case 'user':
+        return 'Beige User';
+        break;
+      case 'cp':
+        return 'Beige Producer';
+        break;
+      case 'manager':
+        return 'Beige Manager';
+        break;
+
+      default:
+        break;
+    }
+  };
 
   useEffect(() => {
     dispatch(setPageTitle('Profile'));
@@ -133,7 +138,7 @@ const Profile = () => {
               <ul className="m-auto mt-5 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
                 <li className="ml-4 flex items-center gap-2">
                   {allSvgs.coffeeCupIcon}
-                  {userRole === 'user' ? 'Client' : userRole === 'manager' ? 'Manager' : 'Beige Producer'}
+                  {profileDesignation(userData?.role)}
                 </li>
               </ul>
               {/* <ul className="mt-7 flex items-center justify-center gap-2">
@@ -158,54 +163,44 @@ const Profile = () => {
           <div className="grid grid-cols-1 gap-5">
             <div className="panel">
               <div className="mb-7 font-bold">All Reviews</div>
-              <Swiper
-                spaceBetween={30}
-                slidesPerView={3}
-                navigation={false}
-                pagination={{ clickable: true }}
-                className="mySwiper"
-              >
+              <Swiper spaceBetween={30} slidesPerView={3} navigation={false} pagination={{ clickable: true }} className="mySwiper">
                 {reviews.length > 0 ? (
-                  reviews.map((review, index) => (
-                    (console.log('gggg', review?.client_id?.profile_picture)),
-                    <SwiperSlide key={index}>
-                      <div className="p-5 m-auto bg-white text-center w-full max-w-[650px] mb-[50px] shadow-lg border border-info-light rounded-lg">
-                        <div className="flex gap-4">
+                  reviews.map(
+                    (review, index) => (
+                      console.log('gggg', review?.client_id?.profile_picture),
+                      (
+                        <SwiperSlide key={index}>
+                          <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
+                            <div className="flex gap-4">
+                              {!review?.client_id?.profile_picture ? (
+                                <MakeProfileImage>{review?.client_id?.name}</MakeProfileImage>
+                              ) : (
+                                <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="User profile picture" />
+                              )}
 
-                        
-                          {!review?.client_id?.profile_picture ? (<MakeProfileImage>{review?.client_id?.name}</MakeProfileImage>) :
-                            (<img src={review?.client_id?.profile_picture}
-                              className="mb-5 h-16 w-16 rounded-full object-cover"
-                              alt="User profile picture"
-                            />
-                          )}
-
-                          <div className='w-full'>
-                            <div className="flex justify-between items-center w-full">
-                              <div>
-                                <h2 className="text-[20px] leading-5 font-bold text-left">{review?.client_id?.name}</h2>
-                                <p className="text-[14px] mt-1 text-left text-[#928989] font-medium">{review?.client_id?.location}</p>
-                              </div>
-                              <div>
-                                <div className="flex items-center gap-1 justify-end">
-                                  <svg
-                                    className="h-4 w-4 text-center"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 576 512"
-                                    style={{ fill: '#c2ad36' }}
-                                  >
-                                    <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.7 18L202.6 95.1 59 116.3c-12 1.8-22.2 10.7-25.7 21.7s-0.7 24.3 7.9 32.7L166.6 329l-97.4 93.1c-2.2 12-0.6 24.1 6.6 32.5 6.6 7.7 15.7 12.1 24.2 12.7 6.3 0 12.7-1.5 18.5-4.6l146.1-82.8 146.1 82.8c5.9 3.1 12.2 4.6 18.5 4.6 9.1 0 18.2-3.6 24.8-10.2 9.4-8.4 14.5-20.5 12.7-32.5L438.2 329l104.4-96.2c8.6-8.5 11.9-20.8 7.9-32.7s-13.7-19.9-25.7-21.7l-143.6-21.2L316.9 18z" />
-                                  </svg>
-                                  <span className="font-bold">{review?.rating}</span>
+                              <div className="w-full">
+                                <div className="flex w-full items-center justify-between">
+                                  <div>
+                                    <h2 className="text-left text-[20px] font-bold leading-5">{review?.client_id?.name}</h2>
+                                    <p className="mt-1 text-left text-[14px] font-medium text-[#928989]">{review?.client_id?.location}</p>
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center justify-end gap-1">
+                                      <svg className="h-4 w-4 text-center" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style={{ fill: '#c2ad36' }}>
+                                        <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.7 18L202.6 95.1 59 116.3c-12 1.8-22.2 10.7-25.7 21.7s-0.7 24.3 7.9 32.7L166.6 329l-97.4 93.1c-2.2 12-0.6 24.1 6.6 32.5 6.6 7.7 15.7 12.1 24.2 12.7 6.3 0 12.7-1.5 18.5-4.6l146.1-82.8 146.1 82.8c5.9 3.1 12.2 4.6 18.5 4.6 9.1 0 18.2-3.6 24.8-10.2 9.4-8.4 14.5-20.5 12.7-32.5L438.2 329l104.4-96.2c8.6-8.5 11.9-20.8 7.9-32.7s-13.7-19.9-25.7-21.7l-143.6-21.2L316.9 18z" />
+                                      </svg>
+                                      <span className="font-bold">{review?.rating}</span>
+                                    </div>
+                                  </div>
                                 </div>
+                                <p className="mt-3 text-left text-[14px]">{review?.reviewText}</p>
                               </div>
                             </div>
-                            <p className="mt-3 text-[14px] text-left">{review?.reviewText}</p>
                           </div>
-                        </div>
-                      </div>
-                    </SwiperSlide>
-                  ))
+                        </SwiperSlide>
+                      )
+                    )
+                  )
                 ) : (
                   <p>No reviews available</p>
                 )}
@@ -217,17 +212,11 @@ const Profile = () => {
         <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
 
         <div className="panel mt-5">
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              className="py-2 px-4 bg-[#007aff] text-white text-[15px] font-bold rounded-md"
-              onClick={handleImageClick}
-            >
+          <div className="flex flex-wrap items-center gap-2">
+            <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleImageClick}>
               Image
             </button>
-            <button
-              className="py-2 px-4 bg-[#007aff] text-white text-[15px] font-bold rounded-md"
-              onClick={handleVideoClick}
-            >
+            <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleVideoClick}>
               Video
             </button>
             {/* {showImage &&
@@ -245,88 +234,43 @@ const Profile = () => {
           </div>
 
           {showImage && (
-            <div className="image-sec mt-6 flex items-center flex-wrap gap-4">
-              {[
-                "https://images.pexels.com/photos/27351031/pexels-photo-27351031/free-photo-of-essaouira-view.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
-                userData?.profile_picture
-              ].map((src, index) => (
-                <div key={index} className="mb-5 h-[250px] max-w-[250px] w-full object-cover rounded-md">
-                  <img
-                    src={src}
-                    className="mb-5 h-[250px] max-w-[250px] w-full object-cover rounded-md cursor-pointer"
-                    alt="User profile picture"
-                    onClick={() => setSelectedImage(src)}
-                  />
-                </div>
-              ))}
+            <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
+              {['https://images.pexels.com/photos/27351031/pexels-photo-27351031/free-photo-of-essaouira-view.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load', userData?.profile_picture].map(
+                (src, index) => (
+                  <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                    <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+                  </div>
+                )
+              )}
             </div>
           )}
 
-          <ImageModal
-            src={selectedImage}
-            onClose={() => setSelectedImage(null)}
-          />
+          <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
 
           {!showImage && (
-            <div className="video-section mt-6 flex items-center flex-wrap gap-2">
-              <div className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md">
-                <video
-                  className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md"
-                  src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4"
-                  autoplay
-                  controls
-                  loop
-                />
+            <div className="video-section mt-6 flex flex-wrap items-center gap-2">
+              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
               </div>
 
-              <div className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md">
-                <video
-                  className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md"
-                  src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4"
-                  autoplay
-                  controls
-                  loop
-                />
+              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
               </div>
 
-              <div className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md">
-                <video
-                  className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md"
-                  src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4"
-                  autoplay
-                  controls
-                  loop
-                />
+              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
               </div>
 
-              <div className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md">
-                <video
-                  className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md"
-                  src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4"
-                  autoplay
-                  controls
-                  loop
-                />
+              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
               </div>
 
-              <div className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md">
-                <video
-                  className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md"
-                  src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4"
-                  autoplay
-                  controls
-                  loop
-                />
+              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
               </div>
 
-              <div className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md">
-                <video
-                  className="mb-5 h-[250px] max-w-[304px] w-full object-cover rounded-md"
-                  src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4"
-                  autoplay
-                  controls
-                  loop
-                />
+              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
               </div>
             </div>
           )}

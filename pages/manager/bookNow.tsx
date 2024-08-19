@@ -48,7 +48,7 @@ interface FormData {
 const BookNow = () => {
   const router = useRouter();
   const [addonsData] = useAddons();
-  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails] = useAllCp();
+  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
 
   const [allClients, onlyClients] = useClient();
   const [isLoading, setIsLoading] = useState(false);
@@ -387,16 +387,16 @@ const BookNow = () => {
 
   const handleSelectProducer = (cp: any) => {
     const newCp = {
-      id: cp?.userId?.id,
+      id: cp?.userId?._id,
       name: cp?.userId?.name,
       decision: 'accepted',
       role: 'Beige Producer',
       url: cp?.userId?.profile_picture,
       location: cp?.city,
     };
-    const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?.id);
+    const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
     if (isCpSelected) {
-      const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?.id);
+      const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?._id);
       setCp_ids(updatedCps);
     } else {
       const updatedCps = [...cp_ids, newCp];
@@ -552,9 +552,6 @@ const BookNow = () => {
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
         {/* icon only */}
         <div className="panel">
-          <div className="mb-5 flex items-center justify-between">
-            <h5 className="text-lg font-semibold capitalize dark:text-white-light">Shoot Booking By Manager</h5>
-          </div>
           <div className="">
             <div className="inline-block w-full">
               <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
@@ -884,7 +881,7 @@ const BookNow = () => {
                   )}
                 </div>
 
-                <div className="mb-5">
+                <div className="">
                   {activeTab === 2 && (
                     <div>
                       <div className="flex items-center justify-between">
@@ -895,14 +892,16 @@ const BookNow = () => {
                           </div>
                         </div>
                         {/* search */}
-                        <div className="search me-12">
+                        {/* <div className="search me-12">
                           <div className=" mt-[30px] items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
                             <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
                               <div className="relative">
                                 <input
                                   type="text"
                                   className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
-                                  placeholder="Search..."
+                                  placeholder="Search... asdfasdf"
+                                  onChange={(event) => setQuery(event.target.value)}
+                                  value={query}
                                 />
                                 <button type="button" className="absolute inset-0 h-9 w-9 appearance-none peer-focus:text-primary ltr:right-auto rtl:left-auto">
                                   <svg className="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -917,7 +916,6 @@ const BookNow = () => {
                                   </svg>
                                 </button>
                               </div>
-                              {/* </form> */}
                               <button
                                 type="button"
                                 onClick={() => setSearch(!search)}
@@ -930,16 +928,26 @@ const BookNow = () => {
                               </button>
                             </div>
                           </div>
+                        </div> */}
+
+                        <div>
+                          <input
+                            type="text"
+                            className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
+                            placeholder="Search..."
+                            onChange={(event) => setQuery(event.target.value)}
+                            value={query}
+                          />
                         </div>
                         {/* search ends */}
                       </div>
                       {/* Showing all cps */}
                       <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
-                        {allCpUsers?.length !== 0 &&
+                        {allCpUsers?.length > 0 ?
                           allCpUsers?.map((cp) => {
-                            const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?.id);
+                            const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
-                              <div key={cp?.userId?.id} className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
+                              <div key={cp?.userId?._id} className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
                                 <div className="flex items-start justify-start">
                                   <div className="media relative h-14 w-14">
                                     <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} style={{ width: '100%', height: '100%' }} className="mr-3 rounded-full" alt="img" />
@@ -961,23 +969,28 @@ const BookNow = () => {
                                   </div>
                                 </div>
                                 <div className="mt-[30px] flex">
-                                  <Link href={`cp/${cp?.userId?.id}`}>
+                                  <Link href={`cp/${cp?.userId?._id}`}>
                                     <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
                                       view profile
                                     </p>
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
                                 </div>
                               </div>
                             );
-                          })}
+                          }) : (
+                            <>
+                              <div className="flex justify-center items-center">
+                                <h3 className='font-semibold text-center'>No Data Found</h3>
+                              </div>
+                            </>
+                          )}
                       </div>
 
                       {/* pagination */}
@@ -1027,7 +1040,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1088,7 +1101,7 @@ const BookNow = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                            // onClick={() => shootCostCalculation()}
+                          // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation
