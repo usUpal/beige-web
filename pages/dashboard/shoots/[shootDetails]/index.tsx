@@ -175,18 +175,33 @@ const ShootDetails = () => {
   };
 
   const handleSelectProducer = (cp: any) => {
+  console.log("🚀 ~ handleSelectProducer ~ cp:", cp)
+
+
+    // const newCp = {
+    //   id: cp?.userId?.id,
+    //   decision: 'accepted',
+    // };
+
     const newCp = {
-      id: cp?.userId?.id,
+      id:cp?._id,
       decision: 'accepted',
-    };
+    }
+
+    console.log("🚀 ~ handleSelectProducer ~ newCp:", newCp)
+
     const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?.id);
+    console.log("🚀 ~ handleSelectProducer ~ isCpSelected:", isCpSelected)
     if (isCpSelected) {
       const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?.id);
       setCp_ids(updatedCps);
     } else {
       const updatedCps = [...cp_ids, newCp];
+      console.log("🚀 ~ handleSelectProducer ~ updatedCps:", updatedCps)
       setCp_ids(updatedCps);
     }
+    console.log("🚀 ~ handleSelectProducer ~ cp_ids:", cp_ids)
+
   };
 
   const updateCps = async () => {
@@ -620,7 +635,7 @@ const ShootDetails = () => {
                   <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
                     {allCpUsers?.length !== 0 &&
                       allCpUsers?.map((cp) => {
-                        const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?.id);
+                        const isSelected = cp_ids.some((item: any) => item?.id === cp?._id);
                         return (
                           <div key={cp?.userId?.id} className="border border-black rounded-sm p-3">
                             <div className="flex items-start justify-start">

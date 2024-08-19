@@ -456,6 +456,7 @@ const BookNow = () => {
   const searchGetClient = async (event) => {
     console.log("client search event", event?.target?.value);
     setClientName(event?.target?.value);
+
   }
 
 
@@ -486,7 +487,7 @@ const BookNow = () => {
   };
 
   return (
-    <div onClick={()=>setShowClientDropdown(false)}>
+    <div>
       <ul className="flex space-x-2 rtl:space-x-reverse">
         <li>
           <Link href="/" className="text-warning hover:underline">
