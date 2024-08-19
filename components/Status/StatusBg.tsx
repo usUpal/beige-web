@@ -1,6 +1,6 @@
 import React from 'react';
 
-type Status = 'change_request' | 'pre_production' | 'open' | 'pending' | 'ongoing' | 'In Dispute' | 'cancelled' | 'upcoming' | 'rescheduled' | 'completed';
+type Status = 'change_request' | 'pre_production' | 'open' | 'pending' | 'ongoing' | 'In Dispute' | 'cancelled' | 'upcoming' | 'rescheduled' | 'completed' | 'paid';
 
 interface StatusBgProps {
   children: string;
@@ -23,6 +23,9 @@ const StatusBg: React.FC<any> = ({ children }) => {
     backgroundColor = '#DDF5F0';
   } else if (children === 'inactive' || children === 'InActive') {
     backgroundColor = '#E7CF02';
+  } else if (children === 'paid' || children === 'Paid') {
+    backgroundColor = '#5cb85c';
+    textColor = '#fff';
   }
 
   return (

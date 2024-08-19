@@ -94,32 +94,46 @@ const Disputes = () => {
               </tr>
             </thead>
             <tbody>
-              {desputes?.map((dispute) => (
-                <tr key={dispute.id ? dispute?.id : dispute?._id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td className=" min-w-[150px] text-black dark:text-white">
-                    <div className="flex items-center">
-                      <p className="whitespace-nowrap break-words">{dispute?.reason}</p>
-                    </div>
-                  </td>
 
-                  <td>{new Date(dispute?.createdAt).toLocaleString()}</td>
+              {desputes && desputes.length > 0 ? (
 
-                  <td className="">
-                    <StatusBg>{dispute?.status}</StatusBg>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      className="p-0"
-                      onClick={() => {
-                        dispute?.id ? getSingleDesputeDetails(dispute?.id) : getSingleDesputeDetails(dispute?._id);
-                      }}
-                    >
-                      <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                    </button>
+                desputes?.map((dispute) => (
+                  <tr key={dispute.id ? dispute?.id : dispute?._id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                    <td className=" min-w-[150px] text-black dark:text-white">
+                      <div className="flex items-center">
+                        <p className="whitespace-nowrap break-words">{dispute?.reason}</p>
+                      </div>
+                    </td>
+
+                    <td>{new Date(dispute?.createdAt).toLocaleString()}</td>
+
+                    <td className="">
+                      <StatusBg>{dispute?.status}</StatusBg>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        className="p-0"
+                        onClick={() => {
+                          dispute?.id ? getSingleDesputeDetails(dispute?.id) : getSingleDesputeDetails(dispute?._id);
+                        }}
+                      >
+                        <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+
+              ) : (
+                <tr>
+                  <td colSpan={50} className="text-center">
+                      <span className="text-[red] font-semibold flex justify-center"> No desputes found </span>
                   </td>
                 </tr>
-              ))}
+              )}
+
+
+
             </tbody>
           </table>
 

@@ -10,6 +10,10 @@ import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePagination from 'react-responsive-pagination';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import Flatpickr from 'react-flatpickr';
+import { swalToast } from '@/utils/Toast/SwalToast';
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -22,10 +26,10 @@ const Meeting = () => {
   const [meetingModal, setmeetingModal] = useState(false);
   const { userData } = useAuth();
   const dispatch = useDispatch();
-
-  // times and date
+  const [metingDate, setMetingDate] = useState();
   const myInputDate = meetingInfo?.meeting_date_time;
   const myFormattedDateTime = useDateFormat(myInputDate);
+
 
   useEffect(() => {
     getAllMyMeetings();
@@ -152,6 +156,37 @@ const Meeting = () => {
   const inputDate = '2024-05-29T21:00:00.000Z';
   const formattedDateTime = makeDateFormat(inputDate);
 
+  const handelRescheduleMeeting = async (id:any) => {
+    if (!metingDate) {
+      return swalToast('danger', 'Please select Meting Date & Time!');
+    }
+
+    try {
+      const requestBody = {
+        "requested_by": userData?.role,
+        "requested_time": metingDate
+    };
+      const response = await fetch(`${API_ENDPOINT}meetings/schedule/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      if (!response.ok) {
+        swalToast('danger', 'Something went wrong !');
+        throw new Error(`Error: ${response.statusp}`);
+      }
+      const updateShootDetails = await response.json();
+      swalToast('success','Reschedule Meeting Success');
+      setmeetingModal(false);
+    } catch (error) {
+      console.error('Error occurred while sending POST request:', error);
+    }
+
+
+  }
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Orders */}
@@ -172,39 +207,50 @@ const Meeting = () => {
             </thead>
 
             <tbody>
-              {myMeetings?.map((meeting) => (
-                <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td className=" min-w-[150px] text-black dark:text-white">
-                    <div className="flex items-center">
-                      <p className="whitespace-nowrap break-words">{(meeting?.order?.name).length > 10 ? meeting?.order?.name : 'less than 10 character'}</p>
-                    </div>
-                  </td>
+              {myMeetings && myMeetings.length > 0 ? (
 
-                  <td>
-                    <span className="ps-2">Date:{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
-                    <span className="ps-2">Time:{makeDateFormat(meeting?.meeting_date_time)?.time}</span>
-                  </td>
+                myMeetings?.map((meeting) => (
+                  <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                    <td className=" min-w-[150px] text-black dark:text-white">
+                      <div className="flex items-center">
+                        <p className="whitespace-nowrap break-words">{(meeting?.order?.name).length > 10 ? meeting?.order?.name : 'less than 10 character'}</p>
+                      </div>
+                    </td>
 
-                  <td>
-                    <p className="whitespace-nowrap">
-                      {meeting?.client?.name} with
-                      <span className="ps-1">{meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}</span>
-                    </p>
-                  </td>
+                    <td>
+                      <span className="ps-2">{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
+                      <span className="ps-2"> {makeDateFormat(meeting?.meeting_date_time)?.time}</span>
+                    </td>
 
-                  <td>
-                    <div>
-                      <StatusBg>{meeting?.meeting_status}</StatusBg>
-                    </div>
-                  </td>
+                    <td>
+                      <p className="whitespace-nowrap">
+                        {meeting?.client?.name} with
+                        <span className="ps-1">{meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}</span>
+                      </p>
+                    </td>
 
-                  <td>
-                    <button type="button" className="p-0" onClick={() => getMeetingDetails(meeting.id)}>
-                      <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                    </button>
+                    <td>
+                      <div>
+                        <StatusBg>{meeting?.meeting_status}</StatusBg>
+                      </div>
+                    </td>
+
+                    <td>
+                      <button type="button" className="p-0" onClick={() => getMeetingDetails(meeting.id)}>
+                        <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+
+              ) : (
+                <tr>
+                  <td colSpan={50} className="text-center">
+                    <span className="text-[red] font-semibold flex justify-center"> No meetings found </span>
                   </td>
                 </tr>
-              ))}
+              )}
+
             </tbody>
           </table>
           <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
@@ -274,20 +320,27 @@ const Meeting = () => {
                       {meetingInfo?.meeting_status === 'pending' && (
                         <div className="flex flex-col items-start">
                           <h2 className="text-[14px] font-semibold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
-                          <form action="" className="flex flex-col">
-                            <input
-                              className="w-60 rounded-[10px] border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]"
-                              type="datetime-local"
-                              name="dateTime"
-                              id="datetime"
-                              ref={dateTimeRef}
-                              onChange={handleButtonChange}
+                          <div className="flex flex-col">
+                            <Flatpickr
+                              id="meeting_time"
+                              className={`w-60 rounded-md border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
+                              value={metingDate}
+                              placeholder="Meeting time ..."
+                              options={{
+                                altInput: true,
+                                altFormat: 'F j, Y h:i K',
+                                dateFormat: 'Y-m-d H:i',
+                                enableTime: true,
+                                time_24hr: false,
+                                minDate: 'today',
+                              }}
+                              onChange={(date) => setMetingDate(date[0])}
                             />
 
-                            <button type="submit" className="btn float-left my-5 w-60 bg-black font-sans text-[16px] font-light capitalize text-white">
+                            <button onClick={()=>handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-[16px] font-light capitalize text-white">
                               Save date
                             </button>
-                          </form>
+                          </div>
                         </div>
                       )}
                     </div>

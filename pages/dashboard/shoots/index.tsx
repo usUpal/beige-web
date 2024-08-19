@@ -73,49 +73,63 @@ const Shoots = () => {
               </tr>
             </thead>
             <tbody>
-              {myShoots?.map((shoot) => (
-                <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td className="min-w-[150px] text-black dark:text-white">
-                    <div className="flex items-center">
-                      <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
-                      <p className="whitespace-nowrap">
-                        {shoot?.order_name}
-                        <span className="block text-xs text-[#888EA8]">{new Date(shoot?.shoot_datetimes[0]?.start_date_time).toDateString()}</span>
-                      </p>
-                    </div>
-                  </td>
-                  <td>{shoot.id}</td>
-                  <td>$ {shoot?.shoot_cost}</td>
 
-                  <td className="text-success">
-                    {shoot?.file_path && (
-                      <span
-                        onClick={async () => {
-                          await api.downloadFolder(`${shoot.order_name}/`);
-                        }}
-                        className="badge text-md w-12 bg-success text-center"
-                      >
-                        Download
-                      </span>
-                    )}
-                    {/* <Link href="/dashboard/files" className="rounded-[10px] border border-solid border-[#ddd] px-2 py-1 ring-1 ring-success">
-                      Available
-                    </Link> */}
-                  </td>
-                  <td>
-                    <div className="">
-                      <StatusBg>{shoot?.order_status}</StatusBg>
-                    </div>
-                  </td>
-                  <td>
-                    <Link href={`shoots/${shoot?.id}`}>
-                      <button type="button" className="p-0">
-                        <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                      </button>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {myShoots && myShoots.length > 0 ? (
+
+                myShoots?.map((shoot) => (
+                  <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                    <td className="min-w-[150px] text-black dark:text-white">
+                      <div className="flex items-center">
+                        <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
+                        <p className="whitespace-nowrap">
+                          {shoot?.order_name}
+                          <span className="block text-xs text-[#888EA8]">{new Date(shoot?.shoot_datetimes[0]?.start_date_time).toDateString()}</span>
+                        </p>
+                      </div>
+                    </td>
+                    <td>{shoot.id}</td>
+                    <td>$ {shoot?.shoot_cost}</td>
+
+                    <td className="text-success">
+                      {shoot?.file_path && (
+                        <span
+                          onClick={async () => {
+                            await api.downloadFolder(`${shoot.order_name}/`);
+                          }}
+                          className="badge text-md w-12 bg-success text-center"
+                        >
+                          Download
+                        </span>
+                      )}
+                      {/* <Link href="/dashboard/files" className="rounded-[10px] border border-solid border-[#ddd] px-2 py-1 ring-1 ring-success">
+                        Available
+                      </Link> */}
+                    </td>
+                    <td>
+                      <div className="">
+                        <StatusBg>{shoot?.order_status}</StatusBg>
+                      </div>
+                    </td>
+                    <td>
+                      <Link href={`shoots/${shoot?.id}`}>
+                        <button type="button" className="p-0">
+                          <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                        </button>
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+
+
+              ) : (
+              <tr>
+                <td colSpan={50} className="text-center">
+                      <span className="text-[red] font-semibold flex justify-center"> No shoots found </span>
+                </td>
+              </tr>
+              )}
+
+
             </tbody>
           </table>
 
