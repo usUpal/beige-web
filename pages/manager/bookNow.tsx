@@ -16,7 +16,7 @@ import 'flatpickr/dist/flatpickr.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState,useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
@@ -69,6 +69,7 @@ const BookNow = () => {
   const [search, setSearch] = useState(false);
   const [clients, setClients] = useState([]);
   const [showClientDropdown, setShowClientDropdown] = useState(false)
+  const dropdownRef = useRef(null);
 
   const {
     register,
@@ -443,21 +444,19 @@ const BookNow = () => {
 
   const getAllClients = async () => {
     try {
-      const response = await fetch(`${API_ENDPOINT}users?limit=30&page=${1}`);
-      const users = await response.json();
-      console.log("Clients : ", users?.results);
-      setClients(users?.results);
+      let res;
+      if (clientName) {
+        res = await fetch(`${API_ENDPOINT}users?role=user&search=${clientName}`);
+      } else {
+        res = await fetch(`${API_ENDPOINT}users?role=user`);
+      }
+      const users = await res.json();
+      setClients(users?.results || []);
       setShowClientDropdown(true);
     } catch (error) {
       console.error(error);
     }
   };
-
-  const searchGetClient = async (event) => {
-    console.log("client search event", event?.target?.value);
-    setClientName(event?.target?.value);
-
-  }
 
 
   const handleClientChange = (client) => {
@@ -485,6 +484,18 @@ const BookNow = () => {
     const concateOrderName = `${clientName || 'Name'}'s ${contentVertical} ${type || 'Type'}`;
     return concateOrderName;
   };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowClientDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   return (
     <div>
@@ -570,70 +581,46 @@ const BookNow = () => {
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Client
                           </label>
-                          {/* <select
-                            className={`form-select text-black ${errors.client ? 'border-red-500' : ''}`}
-                            id="content_vertical"
-                            defaultValue="SelectClient"
-                            {...register('client', {
-                              required: 'Client is required',
-                              validate: (value) => value !== 'SelectClient' || 'Please select a Client',
-                            })}
-                            onChange={handleClientChange}
-                          >
-                            <option value="SelectClient">Select Client</option>
-                            {onlyClients?.map((client) => (
-                              <option key={client.id} value={client.id} data-name={client.name}>
-                                {client.name}
-                              </option>
-                            ))}
-                          </select> */}
-                          <input type="search" onFocus={getAllClients} onKeyUp={searchGetClient} className="form-input flex-grow bg-slate-100" value={clientName} placeholder="Client" />
+                          <input
+                            type="search"
+                            onFocus={getAllClients}
+                            onChange={(event) => {
+                              setClientName(event?.target?.value);
+                              getAllClients(); // Fetch clients as user types
+                            }}
+                            className="form-input flex-grow bg-slate-100"
+                            value={clientName}
+                            placeholder="Client"
+                          />
                           {showClientDropdown && (
-                            <>
+                            <div  ref={dropdownRef} className="absolute bg-white w-[79%] p-1 rounded-md z-30 top-[43px] right-0 border-2 border-black-light">
                               {clients && clients.length > 0 ? (
-                                <>
-                                  <div className='absolute bg-white w-[79%] p-1 rounded-md z-30 top-[43px] right-0 border-2 border-black-light '>
-                                    <ul className='mt-2 mb-2 h-[300px] overflow-y-scroll overflow-x-hidden scrollbar'>
-                                      {clients?.map((client) => (
-                                        <li key={client.id} onClick={() => handleClientChange(client)} className='px-3 py-2 hover:bg-[#dfdddd83] rounded-md text-[13px] font-medium leading-3 flex items-center cursor-pointer'>
-                                          <div className="m-1 mr-2 w-5 h-5 relative flex justify-center items-center rounded-full bg-gray-500 text-xl text-white">
-                                            <img src={client.profile_picture} className="rounded-full" />
-                                          </div>
-                                          <a href="#">{client.name}</a>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                </>
+                                <ul className="mt-2 mb-2 h-[300px] overflow-y-scroll overflow-x-hidden scrollbar">
+                                  {clients.map((client) => (
+                                    <li
+                                      key={client.id}
+                                      onClick={() => handleClientChange(client)}
+                                      className="px-3 py-2 hover:bg-[#dfdddd83] rounded-md text-[13px] font-medium leading-3 flex items-center cursor-pointer"
+                                    >
+                                      <div className="m-1 mr-2 w-5 h-5 relative flex justify-center items-center rounded-full bg-gray-500 text-xl text-white">
+                                        <img src={client.profile_picture} className="rounded-full" />
+                                      </div>
+                                      <a href="#">{client.name}</a>
+                                    </li>
+                                  ))}
+                                </ul>
                               ) : (
-                                <>
-                                  <div className='absolute bg-white w-[79%] p-1 rounded-md z-30 top-[43px] right-0 border-2 border-black-light '>
-                                    <div className='animate-pulse mt-2 mb-2 h-[190px] overflow-y-scroll overflow-x-hidden scrollbar'>
-                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
-                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
-                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
-                                      </div>
-                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
-                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
-                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
-                                      </div>
-                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
-                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
-                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
-                                      </div>
-                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
-                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
-                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
-                                      </div>
-                                      <div className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
-                                        <div className="w-7 h-7 rounded-full bg-slate-200"></div>
-                                        <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
-                                      </div>
+                                <div className="animate-pulse mt-2 mb-2 h-[190px] overflow-y-scroll overflow-x-hidden scrollbar">
+                                  {/* Render loading skeleton here */}
+                                  {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="bg-white px-2 py-1 rounded-sm flex items-center gap-3">
+                                      <div className="w-7 h-7 rounded-full bg-slate-200"></div>
+                                      <div className="w-full h-7 bg-slate-200 rounded-sm"></div>
                                     </div>
-                                  </div>
-                                </>
+                                  ))}
+                                </div>
                               )}
-                            </>
+                            </div>
                           )}
                         </div>
 

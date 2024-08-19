@@ -81,11 +81,12 @@ const ShootDetails = () => {
 
   const getShootDetails = async (shootId: string) => {
     try {
-      const response = await fetch(`${API_ENDPOINT}orders/${shootId}`);
+      const response = await fetch(`${API_ENDPOINT}orders/${shootId}?populate=cp_ids`);
       if (!response.ok) {
         throw new Error(`Error: ${response.statusp}`);
       }
       const shootDetailsRes = await response.json();
+      console.log("🚀 ~ getShootDetails ~ shootDetailsRes:", shootDetailsRes)
       setShootInfo(shootDetailsRes);
     } catch (error) {
       console.error('Error fetching shoot details:', error);
@@ -177,23 +178,17 @@ const ShootDetails = () => {
   const handleSelectProducer = (cp: any) => {
   console.log("🚀 ~ handleSelectProducer ~ cp:", cp)
 
-
-    // const newCp = {
-    //   id: cp?.userId?.id,
-    //   decision: 'accepted',
-    // };
-
     const newCp = {
-      id:cp?._id,
+      id: cp?.userId?._id,
       decision: 'accepted',
-    }
+    };
 
     console.log("🚀 ~ handleSelectProducer ~ newCp:", newCp)
 
-    const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?.id);
+    const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
     console.log("🚀 ~ handleSelectProducer ~ isCpSelected:", isCpSelected)
     if (isCpSelected) {
-      const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?.id);
+      const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?._id);
       setCp_ids(updatedCps);
     } else {
       const updatedCps = [...cp_ids, newCp];
@@ -454,7 +449,7 @@ const ShootDetails = () => {
                       <tbody>
                         {shootInfo?.cp_ids?.map((cp, key) => (
                           <tr key={key}>
-                            <td className="py-2 px-4 border-b">{cp?._id ?? ''}</td>
+                            <td className="py-2 px-4 border-b">{cp?.id?.name ?? ''}</td>
                             <td className="py-2 px-4 border-b">{cp?.decision ?? ''}</td>
                           </tr>
                         ))}
@@ -635,9 +630,9 @@ const ShootDetails = () => {
                   <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
                     {allCpUsers?.length !== 0 &&
                       allCpUsers?.map((cp) => {
-                        const isSelected = cp_ids.some((item: any) => item?.id === cp?._id);
+                        const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                         return (
-                          <div key={cp?.userId?.id} className="border border-black rounded-sm p-3">
+                          <div key={cp?.userId?._id} className="border border-black rounded-sm p-3">
                             <div className="flex items-start justify-start">
                               <div className="media relative h-14 w-14 rounded-full">
                                 <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="mr-3 w-full h-full rounded-full object-cover" alt="img" />
@@ -659,7 +654,7 @@ const ShootDetails = () => {
                               </div>
                             </div>
                             <div className="mt-3 flex">
-                              <Link href={`cp/${cp?.userId?.id}`}>
+                              <Link href={`cp/${cp?.userId?._id}`}>
                                 <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-sm bg-black px-3 py-2 font-sans capitalize leading-none text-white">
                                   view profile
                                 </p>
