@@ -30,7 +30,7 @@ const ShootDetails = () => {
   const shootId = router.query.shootDetails as string;
   const { userData } = useAuth();
   const [cpModal, setCpModal] = useState(false);
-  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails] = useAllCp();
+  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails,query,setQuery] = useAllCp();
   const [cp_ids, setCp_ids] = useState([]);
   const [loadingSubmitMeting , setLoadingSubmitMeting] = useState(false);
 
@@ -276,6 +276,7 @@ const ShootDetails = () => {
       setCp_ids([]);
       setCpModal(false);
       getShootDetails(shootId);
+      setQuery('');
       swalToast('success', 'Assign CP Success!');
     } catch (error) {
       console.error('Error occurred while sending POST request:', error);
@@ -428,9 +429,9 @@ const ShootDetails = () => {
               </div>
               <div className='md:flex mb-4 md:mb-2 space-x-3'>
                 <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Current Order Status</label>
-                {shootInfo?.payment?.payment_status && (
+                {shootInfo?.order_status && (
                   <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
-                    <StatusBg>{shootInfo?.payment?.payment_status}</StatusBg>
+                    <StatusBg>{shootInfo?.order_status}</StatusBg>
                   </div>
                 )}
               </div>
@@ -575,7 +576,7 @@ const ShootDetails = () => {
                   {index < currentIndex && (
                     <>
                       <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300  lg:right-[-30px] lg:left-auto lg:top-[18px] lg:h-px lg:w-[calc(100%_-_72px)]"
+                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                         aria-hidden="true"
                       ></span>
                       <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full  text-white border border-gray-300 bg-green-500 transition-all duration-200">
@@ -732,10 +733,10 @@ const ShootDetails = () => {
                 </div>
                 <div className="basis-[50%] p-5">
                   <div className="flex justify-end mb-2">
-                    <input type="search" className='px-3 py-2 w-[20%] border border-black rounded-sm' placeholder='Search' />
+                    <input onChange={(event)=>setQuery(event.target.value)} type="search" value={query} className='px-3 py-2 w-[20%] border border-black rounded-sm' placeholder='Search' />
                   </div>
                   <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
-                    {allCpUsers?.length !== 0 &&
+                    {allCpUsers?.length  > 0 ?
                       allCpUsers?.map((cp) => {
                         const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                         return (
@@ -777,7 +778,13 @@ const ShootDetails = () => {
                             </div>
                           </div>
                         );
-                      })}
+                      }):(
+                        <>
+                          <div className="flex justify-center items-center">
+                            <h3 className='font-semibold text-center'>No Data Found</h3>
+                          </div>
+                        </>
+                      )}
                   </div>
 
                   <div className='flex justify-between'>

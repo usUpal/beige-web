@@ -48,7 +48,7 @@ interface FormData {
 const BookNow = () => {
   const router = useRouter();
   const [addonsData] = useAddons();
-  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails] = useAllCp();
+  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
 
   const [allClients, onlyClients] = useClient();
   const [isLoading, setIsLoading] = useState(false);
@@ -902,6 +902,8 @@ const BookNow = () => {
                                   type="text"
                                   className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
                                   placeholder="Search..."
+                                  onChange={(event) => setQuery(event.target.value)}
+                                  value={query}
                                 />
                                 <button type="button" className="absolute inset-0 h-9 w-9 appearance-none peer-focus:text-primary ltr:right-auto rtl:left-auto">
                                   <svg className="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -934,7 +936,7 @@ const BookNow = () => {
                       </div>
                       {/* Showing all cps */}
                       <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
-                        {allCpUsers?.length !== 0 &&
+                        {allCpUsers?.length > 0 ?
                           allCpUsers?.map((cp) => {
                             const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
@@ -967,16 +969,21 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
                                 </div>
                               </div>
                             );
-                          })}
+                          }) : (
+                            <>
+                              <div className="flex justify-center items-center">
+                                <h3 className='font-semibold text-center'>No Data Found</h3>
+                              </div>
+                            </>
+                          )}
                       </div>
 
                       {/* pagination */}
@@ -1026,7 +1033,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1087,7 +1094,7 @@ const BookNow = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                            // onClick={() => shootCostCalculation()}
+                          // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation

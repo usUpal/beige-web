@@ -14,7 +14,7 @@ const SidebarClient = (props: any) => {
       <li className='nav-item'>
         <ul>
           <li className='nav-item'>
-            <Link href='/' className='group'>
+            <Link href='/manager/bookNow' className='group'>
               <div className='flex items-center'>
                 {allSvgs.bookNowSvg}
                 <span
@@ -42,7 +42,7 @@ const SidebarClient = (props: any) => {
               </div>
             </Link>
           </li>
- 
+
           <li className='nav-item'>
             <Link href='/dashboard/chat' className='group'>
               <div className='flex items-center'>
@@ -52,7 +52,7 @@ const SidebarClient = (props: any) => {
               </div>
             </Link>
           </li>
- 
+
           <li className='nav-item'>
             <Link href='/dashboard/transactions' className='group'>
               <div className='flex items-center'>
@@ -72,7 +72,7 @@ const SidebarClient = (props: any) => {
               </div>
             </Link>
           </li>
- 
+
           <li className='menu nav-item'>
             <button type='button' className='nav-link group w-full' onClick={() => toggleMenu('settings')}>
               <div className='flex items-center'>
@@ -103,7 +103,7 @@ const SidebarClient = (props: any) => {
               </ul>
             </AnimateHeight>
           </li>
-          
+
           <li className='nav-item'>
             <Link href='/' className='group'>
               <div className='flex items-center'>
