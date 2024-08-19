@@ -51,7 +51,6 @@ const Chat = () => {
         setShowError(true);
         setIsLoading(false);
       } else {
-        console.log('newChats:', newChats.results[0])
         setFetchData(newChats);
         setChats(newChats.results);
       }
@@ -113,7 +112,6 @@ const Chat = () => {
       });
       socket.current.on('roomJoined', (data: any) => {
         getOldMessages(selectedChatRoom?.id);
-        console.log('JOINED CHAT ROOM Conversation screen  =====', data);
       });
       //   Listaning messages
       socket.current.on('message', (data: any) => {
@@ -397,7 +395,7 @@ const Chat = () => {
                     </Link>
                   </div>
                 </div>
-                <div className="flex gap-3 sm:gap-5">
+                {/* <div className="flex gap-3 sm:gap-5">
                   <div className="dropdown">
                     <Dropdown
                       placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -415,7 +413,7 @@ const Chat = () => {
                       }
                     ></Dropdown>
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
 
