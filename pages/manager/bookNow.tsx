@@ -387,16 +387,16 @@ const BookNow = () => {
 
   const handleSelectProducer = (cp: any) => {
     const newCp = {
-      id: cp?.userId?.id,
+      id: cp?.userId?._id,
       name: cp?.userId?.name,
       decision: 'accepted',
       role: 'Beige Producer',
       url: cp?.userId?.profile_picture,
       location: cp?.city,
     };
-    const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?.id);
+    const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
     if (isCpSelected) {
-      const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?.id);
+      const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?._id);
       setCp_ids(updatedCps);
     } else {
       const updatedCps = [...cp_ids, newCp];
@@ -936,9 +936,9 @@ const BookNow = () => {
                       <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
                         {allCpUsers?.length !== 0 &&
                           allCpUsers?.map((cp) => {
-                            const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?.id);
+                            const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
-                              <div key={cp?.userId?.id} className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
+                              <div key={cp?.userId?._id} className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
                                 <div className="flex items-start justify-start">
                                   <div className="media relative h-14 w-14">
                                     <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} style={{ width: '100%', height: '100%' }} className="mr-3 rounded-full" alt="img" />
@@ -960,7 +960,7 @@ const BookNow = () => {
                                   </div>
                                 </div>
                                 <div className="mt-[30px] flex">
-                                  <Link href={`cp/${cp?.userId?.id}`}>
+                                  <Link href={`cp/${cp?.userId?._id}`}>
                                     <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
                                       view profile
                                     </p>

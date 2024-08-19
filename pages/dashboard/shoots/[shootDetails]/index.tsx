@@ -12,9 +12,12 @@ import { swalToast } from '@/utils/Toast/SwalToast';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useAllCp from '@/hooks/useAllCp';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faL, faStar } from '@fortawesome/free-solid-svg-icons';
 import ResponsivePagination from 'react-responsive-pagination';
-
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import Flatpickr from 'react-flatpickr';
+import axios from 'axios';
 
 const ShootDetails = () => {
   const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
@@ -29,6 +32,7 @@ const ShootDetails = () => {
   const [cpModal, setCpModal] = useState(false);
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails] = useAllCp();
   const [cp_ids, setCp_ids] = useState([]);
+  const [loadingSubmitMeting , setLoadingSubmitMeting] = useState(false);
 
   const allStatus = [
     {
@@ -86,16 +90,68 @@ const ShootDetails = () => {
         throw new Error(`Error: ${response.statusp}`);
       }
       const shootDetailsRes = await response.json();
-      console.log("🚀 ~ getShootDetails ~ shootDetailsRes:", shootDetailsRes)
       setShootInfo(shootDetailsRes);
     } catch (error) {
       console.error('Error fetching shoot details:', error);
     }
   };
 
+  const createEvent = () => {
+    const requestData = {
+      summary: shootInfo?.order_name
+        ? shootInfo?.order_name
+        : 'Beige Meeting',
+      location: 'Online',
+      description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'
+        } order.`,
+      startDateTime: metingDate,
+      endDateTime: metingDate,
+      orderId: shootId,
+    };
+
+    axios
+      .post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData)
+      .then(response => {
+        if (response.data.authUrl) {
+          console.log('🚀  createEvent  authUrl:', response.data.authUrl);
+          // Linking.openURL(response.data.authUrl);
+        } else {
+          setMeetLink(response.data.meetLink);
+        }
+      })
+      .catch(error => {
+        console.log('Error creating event:', error.message);
+      })
+      .finally(() => {
+        console.log("Meet Link Create Success");
+      });
+  };
+
   const submitNewMeting = async () => {
+    setLoadingSubmitMeting(true);
     if (!metingDate) {
       return swalToast('danger', 'Please select Meting Date & Time!');
+    }
+
+    const requestData = {
+      summary: shootInfo?.order_name
+        ? shootInfo?.order_name
+        : 'Beige Meeting',
+      location: 'Online',
+      description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'
+        } order.`,
+      startDateTime: metingDate,
+      endDateTime: metingDate,
+      orderId: shootId,
+    };
+
+    const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData)
+    const myMeetLink = response?.data?.meetLink;
+
+
+    if (!myMeetLink) {
+      console.log("Doesn't create meet link");
+      return swalToast('danger', 'Something went wrong!');
     }
 
     try {
@@ -104,6 +160,7 @@ const ShootDetails = () => {
         meeting_status: 'pending',
         meeting_type: 'pre_production',
         order_id: shootId,
+        meetLink: myMeetLink,
       };
       const response = await fetch(`${API_ENDPOINT}meetings`, {
         method: 'POST',
@@ -117,10 +174,12 @@ const ShootDetails = () => {
         throw new Error(`Error: ${response.statusp}`);
       }
       const updateShootDetails = await response.json();
+      console.log("🚀 ~ submitNewMeting ~ updateShootDetails:", updateShootDetails)
       setMetingDate('')
       setShowNewMetingBox(false);
       getShootDetails(shootId);
       swalToast('success', 'Schedule Meeting Success!');
+      setLoadingSubmitMeting(false);
     } catch (error) {
       console.error('Error occurred while sending POST request:', error);
     }
@@ -176,26 +235,20 @@ const ShootDetails = () => {
   };
 
   const handleSelectProducer = (cp: any) => {
-  console.log("🚀 ~ handleSelectProducer ~ cp:", cp)
 
     const newCp = {
       id: cp?.userId?._id,
       decision: 'accepted',
     };
 
-    console.log("🚀 ~ handleSelectProducer ~ newCp:", newCp)
-
     const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
-    console.log("🚀 ~ handleSelectProducer ~ isCpSelected:", isCpSelected)
     if (isCpSelected) {
       const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?._id);
       setCp_ids(updatedCps);
     } else {
       const updatedCps = [...cp_ids, newCp];
-      console.log("🚀 ~ handleSelectProducer ~ updatedCps:", updatedCps)
       setCp_ids(updatedCps);
     }
-    console.log("🚀 ~ handleSelectProducer ~ cp_ids:", cp_ids)
 
   };
 
@@ -226,6 +279,44 @@ const ShootDetails = () => {
       swalToast('success', 'Assign CP Success!');
     } catch (error) {
       console.error('Error occurred while sending POST request:', error);
+    }
+  }
+
+  const statusMessage = (status)=> {
+    switch (status) {
+      case "Pending":
+        return 'The task is awaiting action and has not started yet'
+        break;
+
+        case "Pre_production":
+          return 'Preparations are being made before production begins'
+          break;
+
+          case "Production":
+            return 'The task is currently in progress'
+            break;
+
+            case "Post_production":
+            return 'The task is completed and in the final stages of review'
+            break;
+
+              case "Revision":
+              return 'The task requires revisions or corrections'
+              break;
+
+                case "Completed":
+                return 'The task has been successfully finished'
+                break;
+
+              case "In_dispute":
+                return 'There are issues or disagreements that need to be resolved'
+                break;
+
+                case "Cancelled":
+                return 'The task has been stopped and will not be completed'
+                break;
+      default:
+        break;
     }
   }
 
@@ -326,16 +417,23 @@ const ShootDetails = () => {
 
           <div className="md:flex items-center justify-between md:mb-4">
             {/* Payment Status */}
-            <div className="md:flex basis-[45%] mb-4 md:mb-2 space-x-3">
-              <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Payment Status</label>
-              {shootInfo?.payment?.payment_status && (
-                <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
-                  <span className="text-green-500 font-semibold bg-[#a8ff6e34] py-1 px-3 rounded-[25px]">
-                    {shootInfo?.payment?.payment_status}
-                  </span>
-                </div>
-              )}
-
+            <div className="basis-[45%] space-y-4">
+              <div className="md:flex mb-4 md:mb-2 space-x-3">
+                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Payment Status</label>
+                {shootInfo?.payment?.payment_status && (
+                  <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
+                    <StatusBg>{shootInfo?.payment?.payment_status}</StatusBg>
+                  </div>
+                )}
+              </div>
+              <div className='md:flex mb-4 md:mb-2 space-x-3'>
+                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Current Order Status</label>
+                {shootInfo?.payment?.payment_status && (
+                  <div className="flex-1 ml-10 md:ml-0 mt-1 md:mt-0">
+                    <StatusBg>{shootInfo?.payment?.payment_status}</StatusBg>
+                  </div>
+                )}
+              </div>
             </div>
             {/* Description */}
             <div className="md:flex basis-[45%] mb-4 md:mb-2">
@@ -353,15 +451,23 @@ const ShootDetails = () => {
                 <button className='px-3 py-1 rounded-sm bg-black text-white font-semibold font-sans lg:w-44' onClick={() => setShowNewMetingBox(!showNewMetingBox)} >Schedule Meeting</button>
                 {showNewMetingBox && (
                   <div className="flex space-x-2">
-                    <input
-                      id="start_date_time"
-                      type="datetime-local"
-                      onChange={(event) => setMetingDate(event.target.value)}
+                    <Flatpickr
+                      id="meeting_time"
+                      className={`border border-black rounded-sm px-2 lg:w-[240px] cursor-pointer`}
                       value={metingDate}
-                      className="border border-black rounded-sm px-2 lg:w-[240px]"
+                      placeholder="Meeting time ..."
+                      options={{
+                        altInput: true,
+                        altFormat: 'F j, Y h:i K',
+                        dateFormat: 'Y-m-d H:i',
+                        enableTime: true,
+                        time_24hr: false,
+                        minDate: 'today',
+                      }}
+                      onChange={(date) => setMetingDate(date[0])}
                     />
                     <button
-                      disabled={metingDate.length ? false : true}
+                      disabled={loadingSubmitMeting === true ? true : false}
                       onClick={submitNewMeting}
                       className="bg-black border border-black text-white rounded-sm px-1 flex items-center justify-center"
                     >
@@ -469,17 +575,17 @@ const ShootDetails = () => {
                   {index < currentIndex && (
                     <>
                       <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300  lg:right-0 lg:left-auto lg:top-[18px] lg:h-px lg:w-[calc(100%_-_72px)]"
+                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300  lg:right-[-30px] lg:left-auto lg:top-[18px] lg:h-px lg:w-[calc(100%_-_72px)]"
                         aria-hidden="true"
                       ></span>
-                      <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full  text-white border border-gray-300 bg-green-500 transition-all duration-200">
+                      <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full  text-white border border-gray-300 bg-green-500 transition-all duration-200">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
                           strokeWidth={1.5}
                           stroke="currentColor"
-                          className="w-5 h-5"
+                          className="w-4 h-4"
                         >
                           <path
                             strokeLinecap="round"
@@ -494,17 +600,17 @@ const ShootDetails = () => {
                   {index === currentIndex && (
                     <>
                       <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-0 lg:left-auto lg:top-[18px] lg:h-px lg:w-[calc(100%_-_72px)]"
+                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                         aria-hidden="true"
                       ></span>
-                      <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 bg-green-500 transition-all duration-200 ">
+                      <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 bg-green-500 transition-all duration-200 ">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
                           strokeWidth={1.5}
                           stroke="currentColor"
-                          className="w-5 h-5"
+                          className="w-4 h-4"
                         >
                           <path
                             strokeLinecap="round"
@@ -518,10 +624,10 @@ const ShootDetails = () => {
                   {index > currentIndex && (
                     <>
                       <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-0 lg:left-auto lg:top-[18px] lg:h-px lg:w-[calc(100%_-_72px)]"
+                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                         aria-hidden="true"
                       ></span>
-                      <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 transition-all duration-200" />
+                      <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 transition-all duration-200" />
                     </>
                   )}
 
@@ -529,8 +635,9 @@ const ShootDetails = () => {
                     <h3 className="text-xl font-bold text-gray-900 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500">
                       {status}
                     </h3>
+
                     <h4 className="mt-2 text-base text-gray-700">
-                      Use your own Notion databases or duplicate ours.
+                      {statusMessage(status)}
                     </h4>
                   </div>
                 </li>
@@ -542,12 +649,12 @@ const ShootDetails = () => {
                     {index < cancelIndex && (
                       <>
                         <span
-                          className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-0 lg:left-auto lg:top-[18px] lg:h-px lg:w-[calc(100%_-_72px)]"
-                          aria-hidden="true"
-                        ></span>
-                        <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-gray-50 transition-all duration-200">
+                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                        aria-hidden="true"
+                      ></span>
+                        <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-gray-50 transition-all duration-200">
                           {status === 'Cancelled' ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                             </svg>
                           ) : null}
@@ -558,12 +665,12 @@ const ShootDetails = () => {
                     {index === cancelIndex && (
                       <>
                         <span
-                          className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-0 lg:left-auto lg:top-[18px] lg:h-px lg:w-[calc(100%_-_72px)]"
-                          aria-hidden="true"
-                        ></span>
-                        <div className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'} transition-all duration-200`}>
+                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                        aria-hidden="true"
+                      ></span>
+                        <div className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'} transition-all duration-200`}>
                           {status === 'Cancelled' ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                             </svg>
                           ) : (
@@ -573,7 +680,7 @@ const ShootDetails = () => {
                               viewBox="0 0 24 24"
                               strokeWidth={1.5}
                               stroke="currentColor"
-                              className="w-5 h-5"
+                              className="w-4 h-4"
                             >
                               <path
                                 strokeLinecap="round"
@@ -589,10 +696,10 @@ const ShootDetails = () => {
                     {index > cancelIndex && (
                       <>
                         <span
-                          className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-0 lg:left-auto lg:top-[18px] lg:h-px lg:w-[calc(100%_-_72px)]"
-                          aria-hidden="true"
-                        ></span>
-                        <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 transition-all duration-200 " />
+                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                        aria-hidden="true"
+                      ></span>
+                        <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 transition-all duration-200 " />
                       </>
                     )}
 
@@ -601,7 +708,7 @@ const ShootDetails = () => {
                         {status}
                       </h3>
                       <h4 className="mt-2 text-base text-gray-700">
-                        Use your own Notion databases or duplicate ours.
+                        {statusMessage(status)}
                       </h4>
                     </div>
                   </li>
