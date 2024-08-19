@@ -11,6 +11,7 @@ import SwiperCore, { Navigation, Pagination, Autoplay } from 'swiper';
 import 'swiper/swiper-bundle.css';
 import { Dialog, Transition } from '@headlessui/react';
 import { API_ENDPOINT } from '@/config';
+import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
 
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 
@@ -130,7 +131,7 @@ const Profile = () => {
                 <p className="text-xl font-semibold text-primary">{userData?.name}</p>
               </div>
               <ul className="m-auto mt-5 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
-                <li className="ml-8 flex items-center gap-2">
+                <li className="ml-4 flex items-center gap-2">
                   {allSvgs.coffeeCupIcon}
                   {userRole === 'user' ? 'Client' : userRole === 'manager' ? 'Manager' : 'Beige Producer'}
                 </li>
@@ -166,18 +167,18 @@ const Profile = () => {
               >
                 {reviews.length > 0 ? (
                   reviews.map((review, index) => (
+                    (console.log('gggg', review?.client_id?.profile_picture)),
                     <SwiperSlide key={index}>
                       <div className="p-5 m-auto bg-white text-center w-full max-w-[650px] mb-[50px] shadow-lg border border-info-light rounded-lg">
                         <div className="flex gap-4">
 
                         
-
-                          <img src={review?.client_id?.profile_picture}
-                            className="mb-5 h-16 w-16 rounded-full object-cover"
-                            alt="User profile picture"
-                          />
-                          
-                          (console.log('dsf') )
+                          {!review?.client_id?.profile_picture ? (<MakeProfileImage>{review?.client_id?.name}</MakeProfileImage>) :
+                            (<img src={review?.client_id?.profile_picture}
+                              className="mb-5 h-16 w-16 rounded-full object-cover"
+                              alt="User profile picture"
+                            />
+                          )}
 
                           <div className='w-full'>
                             <div className="flex justify-between items-center w-full">
