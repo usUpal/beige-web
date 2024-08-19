@@ -13,7 +13,22 @@ const Profile = () => {
   const { userData } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
-  console.log(userData);
+  const profileDesignation = (role) => {
+    switch (role) {
+      case 'user':
+        return 'Beige User'
+        break;
+        case 'cp':
+          return 'Beige Producer'
+          break;
+            case 'manager':
+            return 'Beige Manager'
+            break;
+
+      default:
+        break;
+    }
+  }
 
   useEffect(() => {
     dispatch(setPageTitle('Profile'));
@@ -51,7 +66,7 @@ const Profile = () => {
               <ul className="m-auto  mt-2 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
                 <li className="ml-4 flex items-center gap-2">
                   {allSvgs.coffeeCupIcon}
-                  {userRole === 'user' ? 'Client' : userRole === 'manager' ? 'Manager' : 'Beige Producer'}
+                  {profileDesignation(userData?.role)}
                 </li>
 
                 {/* <li className="flex items-center gap-2">

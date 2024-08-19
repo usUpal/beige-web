@@ -551,9 +551,6 @@ const BookNow = () => {
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
         {/* icon only */}
         <div className="panel">
-          <div className="mb-5 flex items-center justify-between">
-            <h5 className="text-lg font-semibold capitalize dark:text-white-light">Shoot Booking By Manager</h5>
-          </div>
           <div className="">
             <div className="inline-block w-full">
               <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
@@ -883,7 +880,7 @@ const BookNow = () => {
                   )}
                 </div>
 
-                <div className="mb-5">
+                <div className="">
                   {activeTab === 2 && (
                     <div>
                       <div className="flex items-center justify-between">
@@ -894,14 +891,14 @@ const BookNow = () => {
                           </div>
                         </div>
                         {/* search */}
-                        <div className="search me-12">
+                        {/* <div className="search me-12">
                           <div className=" mt-[30px] items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
                             <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
                               <div className="relative">
                                 <input
                                   type="text"
                                   className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
-                                  placeholder="Search..."
+                                  placeholder="Search... asdfasdf"
                                   onChange={(event) => setQuery(event.target.value)}
                                   value={query}
                                 />
@@ -918,7 +915,6 @@ const BookNow = () => {
                                   </svg>
                                 </button>
                               </div>
-                              {/* </form> */}
                               <button
                                 type="button"
                                 onClick={() => setSearch(!search)}
@@ -931,6 +927,16 @@ const BookNow = () => {
                               </button>
                             </div>
                           </div>
+                        </div> */}
+
+                        <div>
+                          <input
+                            type="text"
+                            className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
+                            placeholder="Search..."
+                            onChange={(event) => setQuery(event.target.value)}
+                            value={query}
+                          />
                         </div>
                         {/* search ends */}
                       </div>

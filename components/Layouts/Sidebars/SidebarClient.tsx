@@ -63,7 +63,7 @@ const SidebarClient = (props: any) => {
             </Link>
           </li>
 
-          <li className='nav-item'>
+          {/* <li className='nav-item'>
             <Link href='/dashboard/disputes' className='group'>
               <div className='flex items-center'>
                 {allSvgs.disputesSvg}
@@ -71,7 +71,7 @@ const SidebarClient = (props: any) => {
                   className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Disputes</span>
               </div>
             </Link>
-          </li>
+          </li> */}
 
           <li className='menu nav-item'>
             <button type='button' className='nav-link group w-full' onClick={() => toggleMenu('settings')}>
@@ -92,19 +92,19 @@ const SidebarClient = (props: any) => {
             <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
               <ul className='sub-menu text-gray-500'>
                 <li>
-                  <Link href='/'>Payment Setting</Link>
+                  <Link href='/dashboard/profile'>Profile Setting</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href='/'>Notifications</Link>
                 </li>
                 <li>
                   <Link href='/'>Privacy</Link>
-                </li>
+                </li> */}
               </ul>
             </AnimateHeight>
           </li>
 
-          <li className='nav-item'>
+          {/* <li className='nav-item'>
             <Link href='/' className='group'>
               <div className='flex items-center'>
                 {allSvgs.helpSvg}
@@ -112,7 +112,7 @@ const SidebarClient = (props: any) => {
                   className='text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark'>Help</span>
               </div>
             </Link>
-          </li>
+          </li> */}
         </ul>
       </li>
     </ul>

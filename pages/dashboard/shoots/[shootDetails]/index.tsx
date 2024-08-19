@@ -18,6 +18,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import axios from 'axios';
+import GeoLocationMap from '@/components/GeoLocationMap';
 
 const ShootDetails = () => {
   const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
@@ -395,6 +396,7 @@ const ShootDetails = () => {
             </div>
             {/* Geo Location */}
             <div className="basis-[45%] md:flex items-center mb-6 md:mb-0">
+              {/* <GeoLocationMap/> */}
               <iframe className='w-full h-full' src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7298.405077158279!2d90.38216309560319!3d23.84694062734523!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c6a4cd8b5419%3A0x5ac8cf3c96294625!2sBaunia%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1723962056481!5m2!1sen!2sbd" loading="lazy"></iframe>
             </div>
           </div>

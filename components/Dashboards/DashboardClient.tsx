@@ -60,7 +60,7 @@ interface FormData {
 const IndexClient = () => {
   const router = useRouter();
   const [addonsData] = useAddons();
-  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails,query,setQuery] = useAllCp();
+  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
   console.log("🚀 ~ IndexClient ~ allCpUsers:", allCpUsers)
 
   const [allClients, onlyClients] = useClient();
@@ -87,7 +87,7 @@ const IndexClient = () => {
   const [clients, setClients] = useState([]);
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
-  const {userData} = useAuth();
+  const { userData } = useAuth();
 
   const {
     register,
@@ -431,7 +431,7 @@ const IndexClient = () => {
             max: parseFloat(data.max_budget),
             min: parseFloat(data.min_budget),
           },
-          client_id : userData?.id,
+          client_id: userData?.id,
           order_status: 'pending',
           content_type: data.content_type,
           content_vertical: data.content_vertical,
@@ -546,9 +546,6 @@ const IndexClient = () => {
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
         {/* icon only */}
         <div className="panel">
-          <div className="mb-5 flex items-center justify-between">
-            <h5 className="text-lg font-semibold capitalize dark:text-white-light">Shoot Booking By Manager</h5>
-          </div>
           <div className="">
             <div className="inline-block w-full">
               <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
@@ -842,43 +839,14 @@ const IndexClient = () => {
                           </div>
                         </div>
                         {/* search */}
-                        <div className="search me-12">
-                          <div className=" mt-[30px] items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
-                            <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
-                                  placeholder="Search..."
-                                  onChange={(event) => setQuery(event?.target?.value)}
-                                  value={query}
-                                />
-                                <button type="button" className="absolute inset-0 h-9 w-9 appearance-none peer-focus:text-primary ltr:right-auto rtl:left-auto">
-                                  <svg className="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
-                                    <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                  </svg>
-                                </button>
-                                <button type="button" className="absolute top-1/2 block -translate-y-1/2 hover:opacity-80 ltr:right-2 rtl:left-2 sm:hidden" onClick={() => setSearch(false)}>
-                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                                    <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                  </svg>
-                                </button>
-                              </div>
-                              {/* </form> */}
-                              <button
-                                type="button"
-                                onClick={() => setSearch(!search)}
-                                className="search_btn rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60 sm:hidden"
-                              >
-                                <svg className="mx-auto h-4.5 w-4.5 dark:text-[#d0d2d6]" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
-                                  <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
+                        <div className="">
+                          <input
+                            type="text"
+                            className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
+                            placeholder="Search..."
+                            onChange={(event) => setQuery(event?.target?.value)}
+                            value={query}
+                          />
                         </div>
                         {/* search ends */}
                       </div>
@@ -917,16 +885,15 @@ const IndexClient = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
                                 </div>
                               </div>
                             );
-                          }):(
+                          }) : (
                             <>
                               <div className='flex justify-center items-center'>
                                 <h3 className='font-semibold text-center'>No Data Found</h3>
@@ -982,7 +949,7 @@ const IndexClient = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1043,7 +1010,7 @@ const IndexClient = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                            // onClick={() => shootCostCalculation()}
+                          // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation
