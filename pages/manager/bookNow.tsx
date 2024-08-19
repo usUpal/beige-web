@@ -26,6 +26,8 @@ import { setPageTitle } from '../../store/themeConfigSlice';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
+import { API_ENDPOINT } from '@/config';
+import { clientNamespaces } from 'ni18n';
 
 interface FormData {
   content_type: string;
@@ -69,6 +71,10 @@ const BookNow = () => {
   const [formDataPageOne, setFormDataPageOne] = useState<any>({});
   const [cp_ids, setCp_ids] = useState([]);
   const [search, setSearch] = useState(false);
+  const [clients, setClients] = useState([]);
+  const [showClientDropdown, setShowClientDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
   const {
     register,
     handleSubmit,
@@ -133,7 +139,6 @@ const BookNow = () => {
     setAllRates(totalRate + shootCosts);
   }, [selectedFilteredAddons, filteredAddonsData, addonExtraHours]);
 
-
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
 
@@ -141,11 +146,11 @@ const BookNow = () => {
     if (startDateTimeRef.current) {
       flatpickr(startDateTimeRef.current, {
         altInput: true,
-        altFormat: "F j, Y h:i K",
-        dateFormat: "Y-m-d H:i",
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
         enableTime: true,
         time_24hr: false,
-        minDate: "today",
+        minDate: 'today',
         onChange: (selectedDates, dateStr) => {
           handleChangeStartDateTime(dateStr);
         },
@@ -155,11 +160,11 @@ const BookNow = () => {
     if (endDateTimeRef.current) {
       flatpickr(endDateTimeRef.current, {
         altInput: true,
-        altFormat: "F j, Y h:i K",
-        dateFormat: "Y-m-d H:i",
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
         enableTime: true,
         time_24hr: false,
-        minDate: "today",
+        minDate: 'today',
         onChange: (selectedDates, dateStr) => {
           handleChangeEndDateTime(dateStr);
         },
@@ -404,7 +409,7 @@ const BookNow = () => {
     const date = new Date(datetime);
     const isoDate = date.toISOString();
     return isoDate;
-  }
+  };
 
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
@@ -442,7 +447,7 @@ const BookNow = () => {
           addOns_cost: allAddonRates,
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
-        console.log(formattedData)
+        console.log(formattedData);
 
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
@@ -471,10 +476,34 @@ const BookNow = () => {
   const contentTypes = watch('content_type', []);
   const contentVertical = watch('content_vertical');
   //
-  const handleClientChange = (event) => {
-    const selectedOption = event.target.options[event.target.selectedIndex];
-    setClient_id(selectedOption.value);
-    setClientName(selectedOption.getAttribute('data-name'));
+  // const handleClientChange = (event) => {
+  //   const selectedOption = event.target.options[event.target.selectedIndex];
+  //   setClient_id(selectedOption.value);
+  //   setClientName(selectedOption.getAttribute('data-name'));
+  // };
+
+  const getAllClients = async () => {
+    try {
+      let res;
+      if (clientName) {
+        res = await fetch(`${API_ENDPOINT}users?role=user&search=${clientName}`);
+      } else {
+        res = await fetch(`${API_ENDPOINT}users?role=user`);
+      }
+      const users = await res.json();
+      setClients(users?.results || []);
+      setShowClientDropdown(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleClientChange = (client) => {
+    console.log('client', client);
+    //const selectedOption = event.target.options[event.target.selectedIndex];
+    setClient_id(client?.id);
+    setClientName(client?.name);
+    setShowClientDropdown(false);
   };
   //
   const orderName = () => {
@@ -494,6 +523,18 @@ const BookNow = () => {
     const concateOrderName = `${clientName || 'Name'}'s ${contentVertical} ${type || 'Type'}`;
     return concateOrderName;
   };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowClientDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   return (
     <div>
@@ -575,27 +616,51 @@ const BookNow = () => {
                         </div>
                       </div>
                       <div className="my-5 flex items-center justify-between">
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <div className="relative flex basis-[45%] flex-col sm:flex-row">
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Client
                           </label>
-                          <select
-                            className={`form-select text-black ${errors.client ? 'border-red-500' : ''}`}
-                            id="content_vertical"
-                            defaultValue="SelectClient"
-                            {...register('client', {
-                              required: 'Client is required',
-                              validate: (value) => value !== 'SelectClient' || 'Please select a Client',
-                            })}
-                            onChange={handleClientChange}
-                          >
-                            <option value="SelectClient">Select Client</option>
-                            {onlyClients?.map((client) => (
-                              <option key={client.id} value={client.id} data-name={client.name}>
-                                {client.name}
-                              </option>
-                            ))}
-                          </select>
+                          <input
+                            type="search"
+                            onFocus={getAllClients}
+                            onChange={(event) => {
+                              setClientName(event?.target?.value);
+                              getAllClients(); // Fetch clients as user types
+                            }}
+                            className="form-input flex-grow bg-slate-100"
+                            value={clientName}
+                            placeholder="Client"
+                          />
+                          {showClientDropdown && (
+                            <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
+                              {clients && clients.length > 0 ? (
+                                <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
+                                  {clients.map((client) => (
+                                    <li
+                                      key={client.id}
+                                      onClick={() => handleClientChange(client)}
+                                      className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
+                                    >
+                                      <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full bg-gray-500 text-xl text-white">
+                                        <img src={client.profile_picture} className="rounded-full" />
+                                      </div>
+                                      <a href="#">{client.name}</a>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
+                                  {/* Render loading skeleton here */}
+                                  {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
+                                      <div className="h-7 w-7 rounded-full bg-slate-200"></div>
+                                      <div className="h-7 w-full rounded-sm bg-slate-200"></div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         {/* Location */}
@@ -647,17 +712,30 @@ const BookNow = () => {
 
                               <div className="relative">
                                 <p className="text-xs font-bold">Start Time</p>
-                                <input id="start_date_time" ref={startDateTimeRef} type="datetime-local" className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`} placeholder="Start time"
-                                  required={startDateTime?.length === 0} />
-                                <span className="absolute right-2 top-1/2 transform -translate-y-1/4 pointer-events-none">🗓️</span>
+                                <input
+                                  id="start_date_time"
+                                  ref={startDateTimeRef}
+                                  type="datetime-local"
+                                  className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`}
+                                  placeholder="Start time"
+                                  required={startDateTime?.length === 0}
+                                />
+                                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/4 transform">🗓️</span>
 
                                 {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                               </div>
-                              <div className='relative'>
+                              <div className="relative">
                                 <p className="ml-1 text-xs font-bold">End Time</p>
-                                <input id="end_date_time" ref={endDateTimeRef} type="datetime-local" className={`form-input ml-1 cursor-pointer w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`} placeholder="End time" required={endDateTime?.length === 0} />
+                                <input
+                                  id="end_date_time"
+                                  ref={endDateTimeRef}
+                                  type="datetime-local"
+                                  className={`form-input ml-1 w-[220px] cursor-pointer ${errors?.end_date_time ? 'border-red-500' : ''}`}
+                                  placeholder="End time"
+                                  required={endDateTime?.length === 0}
+                                />
 
-                                <span className="absolute right-2 top-1/2 transform -translate-y-1/4 pointer-events-none">🗓️</span>
+                                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/4 transform">🗓️</span>
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
@@ -768,8 +846,7 @@ const BookNow = () => {
                             Meeting time
                           </label>
 
-                          <div className='w-[98%] pl-5 relative'>
-
+                          <div className="relative w-[98%] pl-5">
                             <Flatpickr
                               id="meeting_time"
                               className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
@@ -777,30 +854,23 @@ const BookNow = () => {
                               placeholder="Meeting time ..."
                               options={{
                                 altInput: true,
-                                altFormat: "F j, Y h:i K",
-                                dateFormat: "Y-m-d H:i",
+                                altFormat: 'F j, Y h:i K',
+                                dateFormat: 'Y-m-d H:i',
                                 enableTime: true,
                                 time_24hr: false,
-                                minDate: "today",
+                                minDate: 'today',
                               }}
                               onChange={(date) => {
                                 setMeetingTime(date[0]); // Set the selected date
                                 setValue('meeting_time', date[0]); // Update form value
                               }}
                             />
-                            <input
-                              type="hidden"
-                              {...register('meeting_time', { required: 'Meeting time is required' })}
-                            />
+                            <input type="hidden" {...register('meeting_time', { required: 'Meeting time is required' })} />
 
-                            <span className="absolute right-2 top-1 transform -translate-y-1/6 pointer-events-none">🗓️</span>
+                            <span className="-translate-y-1/6 pointer-events-none absolute right-2 top-1 transform">🗓️</span>
                             {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
-
-
-
                           </div>
                         </div>
-
                       </div>
 
                       <button
@@ -897,8 +967,9 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
+                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -955,7 +1026,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                            // disabled={disableInput}
+                                              // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1016,7 +1087,7 @@ const BookNow = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                          // onClick={() => shootCostCalculation()}
+                            // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation
