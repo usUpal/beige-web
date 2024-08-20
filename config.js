@@ -2,7 +2,9 @@
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_API_ENDPOINT;
 const HOSTNAME = process.env.NEXT_PUBLIC_HOSTNAME;
-export { API_ENDPOINT, HOSTNAME, SOCKET_URL };
+const MAPAPIKEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+export { API_ENDPOINT, HOSTNAME, SOCKET_URL, MAPAPIKEY };
 
 // GCP CREADENTIALS HERE
 const googleClientId = process.env.googleClientId;

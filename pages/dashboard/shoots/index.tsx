@@ -3,8 +3,7 @@ import 'tippy.js/dist/tippy.css';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import StatusBg from '@/components/Status/StatusBg';
-import Pagination from '@/components/Pagination';
-import { API_ENDPOINT } from '@/config';
+import { API_ENDPOINT, BucketUrl } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import Link from 'next/link';
 import api from '../../../FileManager/api/storage';
@@ -23,7 +22,7 @@ const Shoots = () => {
     getAllMyShoots();
   }, [currentPage]);
 
-  // All Shoots - user base 
+  // All Shoots - user base
   const getAllMyShoots = async () => {
     let url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     if (userRole === 'client') {
@@ -73,9 +72,7 @@ const Shoots = () => {
               </tr>
             </thead>
             <tbody>
-
-              {myShoots && myShoots.length > 0 ? (
-
+              {myShoots && myShoots?.length > 0 ? (
                 myShoots?.map((shoot) => (
                   <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                     <td className="min-w-[150px] text-black dark:text-white">
@@ -91,19 +88,18 @@ const Shoots = () => {
                     <td>$ {shoot?.shoot_cost}</td>
 
                     <td className="text-success">
-                      {shoot?.file_path && (
+                      {shoot?.file_path?.status ? (
                         <span
                           onClick={async () => {
-                            await api.downloadFolder(`${shoot.order_name}/`);
+                            await api.downloadFolder(`${shoot?.file_path?.dir_name}`);
                           }}
                           className="badge text-md w-12 bg-success text-center"
                         >
                           Download
                         </span>
+                      ) : (
+                        <span className="badge text-md w-12 bg-gray-300 text-center">Unavilable</span>
                       )}
-                      {/* <Link href="/dashboard/files" className="rounded-[10px] border border-solid border-[#ddd] px-2 py-1 ring-1 ring-success">
-                        Available
-                      </Link> */}
                     </td>
                     <td>
                       <div className="">
@@ -119,17 +115,13 @@ const Shoots = () => {
                     </td>
                   </tr>
                 ))
-
-
               ) : (
-              <tr>
-                <td colSpan={50} className="text-center">
-                      <span className="text-[red] font-semibold flex justify-center"> No shoots found </span>
-                </td>
-              </tr>
+                <tr>
+                  <td colSpan={50} className="text-center">
+                    <span className="flex justify-center font-semibold text-[red]"> No shoots found </span>
+                  </td>
+                </tr>
               )}
-
-
             </tbody>
           </table>
 
