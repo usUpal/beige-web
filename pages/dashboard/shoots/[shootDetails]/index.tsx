@@ -31,9 +31,9 @@ const ShootDetails = () => {
   const shootId = router.query.shootDetails as string;
   const { userData } = useAuth();
   const [cpModal, setCpModal] = useState(false);
-  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails,query,setQuery] = useAllCp();
+  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
   const [cp_ids, setCp_ids] = useState([]);
-  const [loadingSubmitMeting , setLoadingSubmitMeting] = useState(false);
+  const [loadingSubmitMeting, setLoadingSubmitMeting] = useState(false);
 
   const allStatus = [
     {
@@ -284,39 +284,39 @@ const ShootDetails = () => {
     }
   }
 
-  const statusMessage = (status)=> {
+  const statusMessage = (status) => {
     switch (status) {
       case "Pending":
         return 'The task is awaiting action and has not started yet'
         break;
 
-        case "Pre_production":
-          return 'Preparations are being made before production begins'
-          break;
+      case "Pre_production":
+        return 'Preparations are being made before production begins'
+        break;
 
-          case "Production":
-            return 'The task is currently in progress'
-            break;
+      case "Production":
+        return 'The task is currently in progress'
+        break;
 
-            case "Post_production":
-            return 'The task is completed and in the final stages of review'
-            break;
+      case "Post_production":
+        return 'The task is completed and in the final stages of review'
+        break;
 
-              case "Revision":
-              return 'The task requires revisions or corrections'
-              break;
+      case "Revision":
+        return 'The task requires revisions or corrections'
+        break;
 
-                case "Completed":
-                return 'The task has been successfully finished'
-                break;
+      case "Completed":
+        return 'The task has been successfully finished'
+        break;
 
-              case "In_dispute":
-                return 'There are issues or disagreements that need to be resolved'
-                break;
+      case "In_dispute":
+        return 'There are issues or disagreements that need to be resolved'
+        break;
 
-                case "Cancelled":
-                return 'The task has been stopped and will not be completed'
-                break;
+      case "Cancelled":
+        return 'The task has been stopped and will not be completed'
+        break;
       default:
         break;
     }
@@ -578,7 +578,7 @@ const ShootDetails = () => {
                   {index < currentIndex && (
                     <>
                       <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                        className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                         aria-hidden="true"
                       ></span>
                       <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full  text-white border border-gray-300 bg-green-500 transition-all duration-200">
@@ -603,7 +603,7 @@ const ShootDetails = () => {
                   {index === currentIndex && (
                     <>
                       <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                        className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                         aria-hidden="true"
                       ></span>
                       <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 bg-green-500 transition-all duration-200 ">
@@ -627,7 +627,7 @@ const ShootDetails = () => {
                   {index > currentIndex && (
                     <>
                       <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                        className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                         aria-hidden="true"
                       ></span>
                       <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 transition-all duration-200" />
@@ -652,9 +652,9 @@ const ShootDetails = () => {
                     {index < cancelIndex && (
                       <>
                         <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
-                        aria-hidden="true"
-                      ></span>
+                          className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                          aria-hidden="true"
+                        ></span>
                         <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-gray-50 transition-all duration-200">
                           {status === 'Cancelled' ? (
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -668,9 +668,9 @@ const ShootDetails = () => {
                     {index === cancelIndex && (
                       <>
                         <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
-                        aria-hidden="true"
-                      ></span>
+                          className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                          aria-hidden="true"
+                        ></span>
                         <div className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'} transition-all duration-200`}>
                           {status === 'Cancelled' ? (
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -699,9 +699,9 @@ const ShootDetails = () => {
                     {index > cancelIndex && (
                       <>
                         <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
-                        aria-hidden="true"
-                      ></span>
+                          className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:right-[-30px] lg:left-auto lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                          aria-hidden="true"
+                        ></span>
                         <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-white border-gray-300 transition-all duration-200 " />
                       </>
                     )}
@@ -735,10 +735,10 @@ const ShootDetails = () => {
                 </div>
                 <div className="basis-[50%] p-5">
                   <div className="flex justify-end mb-2">
-                    <input onChange={(event)=>setQuery(event.target.value)} type="search" value={query} className='px-3 py-2 w-[20%] border border-black rounded-sm' placeholder='Search' />
+                    <input onChange={(event) => setQuery(event.target.value)} type="search" value={query} className='px-3 py-2 w-[20%] border border-black rounded-sm' placeholder='Search' />
                   </div>
                   <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
-                    {allCpUsers?.length  > 0 ?
+                    {allCpUsers?.length > 0 ?
                       allCpUsers?.map((cp) => {
                         const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                         return (
@@ -780,7 +780,7 @@ const ShootDetails = () => {
                             </div>
                           </div>
                         );
-                      }):(
+                      }) : (
                         <>
                           <div className="flex justify-center items-center">
                             <h3 className='font-semibold text-center'>No Data Found</h3>
