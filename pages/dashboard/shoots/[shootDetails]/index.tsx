@@ -2,7 +2,6 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import Link from 'next/link';
 import StatusBg from '@/components/Status/StatusBg';
 import { useRouter } from 'next/router';
 import { API_ENDPOINT, MAPAPIKEY } from '@/config';
@@ -13,9 +12,8 @@ import { swalToast } from '@/utils/Toast/SwalToast';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useAllCp from '@/hooks/useAllCp';
-import { faL, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 import ResponsivePagination from 'react-responsive-pagination';
-import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import axios from 'axios';
@@ -241,7 +239,6 @@ const ShootDetails = () => {
   };
 
   const updateCps = async () => {
-    console.log('cp Ids : ', cp_ids);
     if (!cp_ids.length) {
       return swalToast('danger', 'Please select Cp !');
     }
@@ -311,200 +308,231 @@ const ShootDetails = () => {
   const coordinates = shootInfo?.geo_location?.coordinates;
   const isLocationAvailable = coordinates && coordinates.length === 2;
 
+  const cancelCp = async (cp) => {
+    if (!cp || !cp._id) {
+      return swalToast('danger', 'Invalid CP data.');
+    }
+
+    console.log('cp._id', cp);
+
+    try {
+      const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cp_ids: [
+            {
+              id: cp.id.id,
+              decision: 'cancelled',
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        swalToast('danger', `Error: ${errorMessage}`);
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      // Optionally: Get updated shoot details from the server if needed
+      const updatedShootDetails = await response.json();
+      setCp_ids((prevCpIds) => prevCpIds.filter((cpItem) => cpItem._id !== cp._id));
+      getShootDetails(shootId);
+
+      swalToast('success', 'CP cancelled successfully.');
+    } catch (error) {
+      console.error('Error occurred while sending PATCH request:', error);
+    }
+
+    // {
+    //   "decision": "pending",
+    //   "_id": "66c42e1b2cfd401f8f26d6d2",
+    //   "id": {
+    //     "role": "cp",
+    //     "isEmailVerified": false,
+    //     "name": "Sajjad",
+    //     "email": "sajjad@gmail.com",
+    //     "location": "Dhaka New Market, Mirpur Road, Dhaka, Bangladesh",
+    //     "createdAt": "2024-05-14T08:41:39.305Z",
+    //     "updatedAt": "2024-07-30T05:03:36.010Z",
+    //     "profile_picture": "https://storage.googleapis.com/beigestorage/ProfileInfo/664323c3d5bbe3164cb6b54f/ProfilePic/0EF6A685-3E72-4588-AEF5-4DE67ABA2C01.jpg",
+    //     "id": "664323c3d5bbe3164cb6b54f"
+    //   }
+    // }
+  };
+
   return (
     <>
-      <div className="p-5 sm:p-2">
-        <div className="flex flex-col">
-          <div className="md:mb-4 md:flex md:items-center md:justify-between">
-            {/* Shoot Name */}
-            <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
-              <label htmlFor="reference" className="mb-0 mt-2 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                Shoot Name
-              </label>
-              <span className="font-sans capitalize text-black">{shootInfo?.order_name ?? ''}</span>
-            </div>
+      <div className="panel">
+        <div className="p-5 sm:p-2">
+          <div className="flex flex-col">
+            <div className="md:mb-4 md:flex md:items-center md:justify-between">
+              {/* Shoot Name */}
+              <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
+                <label htmlFor="reference" className="mb-0 mt-2 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                  Shoot Name
+                </label>
+                <span className="font-sans capitalize text-black">{shootInfo?.order_name ?? ''}</span>
+              </div>
 
-            {/* Content Vertical */}
-            <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
-              <label htmlFor="total_earnings" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                Content Vertical
-              </label>
-              <span className="font-sans capitalize text-black">{shootInfo?.content_vertical ?? ''}</span>
-            </div>
-          </div>
-
-          <div className="items-center justify-between md:mb-4 md:flex">
-            {/* Budget */}
-            <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-              <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:whitespace-nowrap">Budget</label>
-              <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                <>
-                  <div className="mb-2">
-                    <ul className="group ms-6 w-48 list-disc flex-row items-center text-white-dark">
-                      {shootInfo?.budget?.min && (
-                        <li className="">
-                          <span className="font-sans capitalize text-black">Min : ${shootInfo?.budget?.min ?? ''}</span>
-                        </li>
-                      )}
-
-                      {shootInfo?.budget?.max && (
-                        <li>
-                          <span className="font-sans capitalize text-black">Max : ${shootInfo?.budget?.max ?? ''}</span>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                </>
+              {/* Content Vertical */}
+              <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
+                <label htmlFor="total_earnings" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                  Content Vertical
+                </label>
+                <span className="font-sans capitalize text-black">{shootInfo?.content_vertical ?? ''}</span>
               </div>
             </div>
-            {/* Location */}
-            <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-              <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Location</label>
-              <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                <span className="font-sans capitalize text-black">{shootInfo?.location ?? ''}</span>
-              </div>
-            </div>
-          </div>
 
-          <div className="md:mb-4 md:flex md:items-center md:justify-between">
-            {/* Shoot Date & Time */}
-            <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
-              <label htmlFor="reference" className="mb-0 mt-2 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                Shoot Date & Time
-              </label>
-              {shootInfo?.shoot_datetimes && (
-                <div className="flex-row">
-                  {shootInfo?.shoot_datetimes?.map((time, key) => (
-                    <div key={key} className="space-x-4">
-                      <span className="font-sans capitalize text-black">{new Date(time?.start_date_time).toDateString() ?? ''} </span>
-                      <span className="font-sans capitalize text-black">{new Date(time?.end_date_time).toDateString() ?? ''}</span>
+            <div className="items-center justify-between md:mb-4 md:flex">
+              {/* Budget */}
+              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
+                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:whitespace-nowrap">Budget</label>
+                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                  <>
+                    <div className="mb-2">
+                      <ul className="group ms-6 w-48 list-disc flex-row items-center text-white-dark">
+                        {shootInfo?.budget?.min && (
+                          <li className="">
+                            <span className="font-sans capitalize text-black">Min : ${shootInfo?.budget?.min ?? ''}</span>
+                          </li>
+                        )}
+
+                        {shootInfo?.budget?.max && (
+                          <li>
+                            <span className="font-sans capitalize text-black">Max : ${shootInfo?.budget?.max ?? ''}</span>
+                          </li>
+                        )}
+                      </ul>
                     </div>
-                  ))}
+                  </>
                 </div>
-              )}
-            </div>
-            {/* Geo Location */}
-            <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
-              <div style={{ height: '200px', width: '50%' }}>
-                {isLocationAvailable ? (
-                  <GoogleMapReact
-                    bootstrapURLKeys={{ key: MAPAPIKEY }}
-                    defaultCenter={{
-                      lat: coordinates[1], // Latitude
-                      lng: coordinates[0], // Longitude
-                    }}
-                    defaultZoom={11}
-                  >
-                    <div>
-                      <img src="/assets/images/marker-icon.png" alt="Marker Icon" style={{ height: '25px', width: '20px' }} />
-                    </div>
-                  </GoogleMapReact>
-                ) : (
-                  <p>Loading map...</p>
-                )}
+              </div>
+              {/* Location */}
+              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
+                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Location</label>
+                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                  <span className="font-sans capitalize text-black">{shootInfo?.location ?? ''}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="items-center justify-between md:mb-4 md:flex">
-            {/* Shoot Cost */}
-            <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-              <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Cost</label>
-              <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                <span className="font-sans capitalize text-black">${shootInfo?.shoot_cost ?? ''}</span>
-              </div>
-            </div>
-            {/* Shoot Duration */}
-            <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-              <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Duration</label>
-              <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                <span className="font-sans capitalize text-black">{shootInfo?.shoot_duration ?? ''} Hours</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="items-center justify-between md:mb-4 md:flex">
-            {/* Payment Status */}
-            <div className="basis-[45%] space-y-4">
-              <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Payment Status</label>
-                {shootInfo?.payment?.payment_status && (
-                  <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                    <StatusBg>{shootInfo?.payment?.payment_status}</StatusBg>
+            <div className="md:mb-4 md:flex md:items-center md:justify-between">
+              {/* Shoot Date & Time */}
+              <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
+                <label htmlFor="reference" className="mb-0 mt-2 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                  Shoot Date & Time
+                </label>
+                {shootInfo?.shoot_datetimes && (
+                  <div className="flex-row">
+                    {shootInfo?.shoot_datetimes?.map((time, key) => (
+                      <div key={key} className="space-x-4">
+                        <span className="font-sans capitalize text-black">{new Date(time?.start_date_time).toDateString() ?? ''} </span>
+                        <span className="font-sans capitalize text-black">{new Date(time?.end_date_time).toDateString() ?? ''}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-              <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Current Order Status</label>
-                {shootInfo?.order_status && (
-                  <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                    <StatusBg>{shootInfo?.order_status}</StatusBg>
-                  </div>
-                )}
-              </div>
-            </div>
-            {/* Description */}
-            <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-              <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Description</label>
-              <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                <span className="font-sans capitalize text-black">{shootInfo?.description ?? ''}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="items-center justify-between md:mb-4 md:flex">
-            {/* Schedule Meeting */}
-            <div className="mb-4 basis-[45%] flex-row space-y-5">
-              <div className="flex space-x-3">
-                <button className="rounded-sm bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewMetingBox(!showNewMetingBox)}>
-                  Schedule Meeting
-                </button>
-                {showNewMetingBox && (
-                  <div className="flex space-x-2">
-                    <Flatpickr
-                      id="meeting_time"
-                      className={`cursor-pointer rounded-sm border border-black px-2 lg:w-[240px]`}
-                      value={metingDate}
-                      placeholder="Meeting time ..."
-                      options={{
-                        altInput: true,
-                        altFormat: 'F j, Y h:i K',
-                        dateFormat: 'Y-m-d H:i',
-                        enableTime: true,
-                        time_24hr: false,
-                        minDate: 'today',
+              {/* Geo Location */}
+              <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
+                <div style={{ height: '200px', width: '50%' }}>
+                  {isLocationAvailable ? (
+                    <GoogleMapReact
+                      bootstrapURLKeys={{ key: MAPAPIKEY }}
+                      defaultCenter={{
+                        lat: coordinates[1], // Latitude
+                        lng: coordinates[0], // Longitude
                       }}
-                      onChange={(date) => setMetingDate(date[0])}
-                    />
-                    <button
-                      disabled={loadingSubmitMeting === true ? true : false}
-                      onClick={submitNewMeting}
-                      className="flex items-center justify-center rounded-sm border border-black bg-black px-1 text-white"
+                      defaultZoom={11}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
+                      <div>
+                        <img src="/assets/images/marker-icon.png" alt="Marker Icon" style={{ height: '25px', width: '20px' }} />
+                      </div>
+                    </GoogleMapReact>
+                  ) : (
+                    <p>Loading map...</p>
+                  )}
+                </div>
               </div>
-              {userData?.role === 'manager' && (
+            </div>
+
+            <div className="items-center justify-between md:mb-4 md:flex">
+              {/* Shoot Cost */}
+              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
+                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Cost</label>
+                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                  <span className="font-sans capitalize text-black">${shootInfo?.shoot_cost ?? ''}</span>
+                </div>
+              </div>
+              {/* Shoot Duration */}
+              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
+                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Duration</label>
+                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                  <span className="font-sans capitalize text-black">{shootInfo?.shoot_duration ?? ''} Hours</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="items-center justify-between md:mb-4 md:flex">
+              {/* Payment Status */}
+              <div className="basis-[45%] space-y-4">
+                <div className="mb-4 space-x-3 md:mb-2 md:flex">
+                  <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Payment Status</label>
+                  {shootInfo?.payment?.payment_status && (
+                    <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                      <StatusBg>{shootInfo?.payment?.payment_status}</StatusBg>
+                    </div>
+                  )}
+                </div>
+                <div className="mb-4 space-x-3 md:mb-2 md:flex">
+                  <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Current Order Status</label>
+                  {shootInfo?.order_status && (
+                    <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                      <StatusBg>{shootInfo?.order_status}</StatusBg>
+                    </div>
+                  )}
+                </div>
+              </div>
+              {/* Description */}
+              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
+                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Description</label>
+                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                  <span className="font-sans capitalize text-black">{shootInfo?.description ?? ''}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="items-center justify-between md:mb-4 md:flex">
+              {/* Schedule Meeting */}
+              <div className="mb-4 basis-[45%] flex-row space-y-5">
                 <div className="flex space-x-3">
-                  <button className="rounded-sm bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewStatusBox(!showNewStatusBox)}>
-                    Change Status
+                  <button className="rounded-sm bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewMetingBox(!showNewMetingBox)}>
+                    Schedule Meeting
                   </button>
-                  {showNewStatusBox && (
+                  {showNewMetingBox && (
                     <div className="flex space-x-2">
-                      <select name="" id="" onChange={(event) => setStatusDate(event?.target?.value)} className="rounded-sm border border-black px-2 lg:w-[240px]">
-                        {allStatus?.map((status, key) => (
-                          <option key={key} value={status?.key}>
-                            {status?.value}
-                          </option>
-                        ))}
-                      </select>
+                      <Flatpickr
+                        id="meeting_time"
+                        className={`cursor-pointer rounded-sm border border-black px-2 lg:w-[240px]`}
+                        value={metingDate}
+                        placeholder="Meeting time ..."
+                        options={{
+                          altInput: true,
+                          altFormat: 'F j, Y h:i K',
+                          dateFormat: 'Y-m-d H:i',
+                          enableTime: true,
+                          time_24hr: false,
+                          minDate: 'today',
+                        }}
+                        onChange={(date) => setMetingDate(date[0])}
+                      />
                       <button
-                        disabled={statusData.length ? false : true}
-                        onClick={submitUpdateStatus}
+                        disabled={loadingSubmitMeting === true ? true : false}
+                        onClick={submitNewMeting}
                         className="flex items-center justify-center rounded-sm border border-black bg-black px-1 text-white"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -514,242 +542,289 @@ const ShootDetails = () => {
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-
-            {/* Assigned Cp's */}
-            <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-              <div className="mb-0 flex items-center gap-4 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">
-                <div>Assigned Cp's</div>
                 {userData?.role === 'manager' && (
-                  <div className="">
-                    <button onClick={getCps} type="button" className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
-                      {allSvgs.plusForAddCp}
+                  <div className="flex space-x-3">
+                    <button className="rounded-sm bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewStatusBox(!showNewStatusBox)}>
+                      Change Status
                     </button>
+                    {showNewStatusBox && (
+                      <div className="flex space-x-2">
+                        <select name="" id="" onChange={(event) => setStatusDate(event?.target?.value)} className="rounded-sm border border-black px-2 lg:w-[240px]">
+                          {allStatus?.map((status, key) => (
+                            <option key={key} value={status?.key}>
+                              {status?.value}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          disabled={statusData.length ? false : true}
+                          onClick={submitUpdateStatus}
+                          className="flex items-center justify-center rounded-sm border border-black bg-black px-1 text-white"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-              <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                {shootInfo?.cp_ids?.length > 0 && (
-                  <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden">
-                    <table className="w-full table-auto">
-                      <thead>
-                        <tr>
-                          <th className="border-b px-4 py-2">Name</th>
-                          <th className="border-b px-4 py-2">Decision</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {shootInfo?.cp_ids?.map((cp, key) => (
-                          <tr key={key}>
-                            <td className="border-b px-4 py-2">{cp?.id?.name ?? ''}</td>
-                            <td className="border-b px-4 py-2">{cp?.decision ?? ''}</td>
+
+              {/* Assigned Cp's */}
+              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
+                <div className="mb-0 flex items-center gap-4 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">
+                  <div>Assigned Cp's</div>
+                  {userData?.role === 'manager' && (
+                    <div className="">
+                      <button onClick={getCps} type="button" className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
+                        {allSvgs.plusForAddCp}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                  {shootInfo?.cp_ids?.length > 0 && (
+                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden">
+                      <table className="w-full table-auto">
+                        <thead>
+                          <tr>
+                            <th className="border-b px-4 py-2">Name</th>
+                            <th className="border-b px-4 py-2">Decision</th>
+                            <th className="border-b px-4 py-2">Action</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                        </thead>
+                        <tbody>
+                          {shootInfo?.cp_ids?.map((cp, key) => (
+                            <tr key={key}>
+                              <td className="border-b px-4 py-2 font-bold">{cp?.id?.name ?? ''}</td>
+                              <td className="border-b px-4 py-2">
+                                <StatusBg>{cp?.decision ?? ''}</StatusBg>
+                              </td>
+                              <td className="border-b px-4 py-2">
+                                <button onClick={() => cancelCp(cp)} className="rounded bg-red-500 p-[5px] text-white">
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                  </svg>
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div>
-          <div className="mx-auto">
-            <ul className="mx-auto grid grid-cols-1 gap-10 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
-              {orderStatusArray.map((status, index) => (
-                <li key={status} className="flex-start group relative flex lg:flex-col">
-                  {index < currentIndex && (
-                    <>
-                      <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
-                        aria-hidden="true"
-                      ></span>
-                      <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full  border border-gray-300 bg-green-500 text-white transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>
-                      </div>
-                    </>
-                  )}
-
-                  {index === currentIndex && (
-                    <>
-                      <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
-                        aria-hidden="true"
-                      ></span>
-                      <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-green-500 text-white transition-all duration-200 ">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>
-                      </div>
-                    </>
-                  )}
-                  {index > currentIndex && (
-                    <>
-                      <span
-                        className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
-                        aria-hidden="true"
-                      ></span>
-                      <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white transition-all duration-200" />
-                    </>
-                  )}
-
-                  <div className="ml-6 lg:ml-0 lg:mt-10">
-                    <h3 className="text-xl font-bold text-gray-900 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500">{status}</h3>
-
-                    <h4 className="mt-2 text-base text-gray-700">{statusMessage(status)}</h4>
-                  </div>
-                </li>
-              ))}
-
-              {rejectStatus.map((status, index) => (
-                <div key={status}>
+          <div>
+            <div className="mx-auto">
+              <ul className="mx-auto grid grid-cols-1 gap-10 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+                {orderStatusArray.map((status, index) => (
                   <li key={status} className="flex-start group relative flex lg:flex-col">
-                    {index < cancelIndex && (
+                    {index < currentIndex && (
                       <>
                         <span
                           className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                           aria-hidden="true"
                         ></span>
-                        <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-gray-50 transition-all duration-200">
-                          {status === 'Cancelled' ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                          ) : null}
+                        <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full  border border-gray-300 bg-green-500 text-white transition-all duration-200">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                          </svg>
                         </div>
                       </>
                     )}
 
-                    {index === cancelIndex && (
+                    {index === currentIndex && (
                       <>
                         <span
                           className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                           aria-hidden="true"
                         ></span>
-                        <div
-                          className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
-                            status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
-                          } transition-all duration-200`}
-                        >
-                          {status === 'Cancelled' ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                          ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                            </svg>
-                          )}
+                        <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-green-500 text-white transition-all duration-200 ">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                          </svg>
                         </div>
                       </>
                     )}
-
-                    {index > cancelIndex && (
+                    {index > currentIndex && (
                       <>
                         <span
                           className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                           aria-hidden="true"
                         ></span>
-                        <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white transition-all duration-200 " />
+                        <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white transition-all duration-200" />
                       </>
                     )}
 
                     <div className="ml-6 lg:ml-0 lg:mt-10">
                       <h3 className="text-xl font-bold text-gray-900 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500">{status}</h3>
+
                       <h4 className="mt-2 text-base text-gray-700">{statusMessage(status)}</h4>
                     </div>
                   </li>
-                </div>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
+                ))}
 
-      <Transition appear show={cpModal} as={Fragment}>
-        <Dialog as="div" open={cpModal} onClose={() => setCpModal(false)}>
-          <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
-            <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 w-4/6 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
-                <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
-                  <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Assign CP's </div>
-                  <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setCpModal(false)}>
-                    {allSvgs.closeModalSvg}
-                  </button>
-                </div>
-                <div className="basis-[50%] p-5">
-                  <div className="mb-2 flex justify-end">
-                    <input onChange={(event) => setQuery(event.target.value)} type="search" value={query} className="w-[20%] rounded-sm border border-black px-3 py-2" placeholder="Search" />
-                  </div>
-                  <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
-                    {allCpUsers?.length > 0 ? (
-                      allCpUsers?.map((cp) => {
-                        const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
-                        return (
-                          <div key={cp?.userId?._id} className="rounded-sm border border-black p-3">
-                            <div className="flex items-start justify-start">
-                              <div className="media relative h-14 w-14 rounded-full">
-                                <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="mr-3 h-full w-full rounded-full object-cover" alt="img" />
-                                <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
-                              </div>
-
-                              <div className="content ms-2 min-h-[115px]">
-                                <h4 className="font-sans text-[16px] capitalize leading-none text-black">{cp?.userId?.name}</h4>
-                                <span className="profession text-[12px] capitalize leading-none text-[#838383]">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
-                                <div className="location mt-2 flex items-center justify-start">
-                                  {/* Your location icon here */}
-                                  <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">{cp?.city}</span>
-                                </div>
-                                <div className="ratings mt-2">
-                                  {[...Array(5)].map((_, index) => (
-                                    <FontAwesomeIcon key={index} icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="mt-3 flex">
-                              <Link href={`cp/${cp?.userId?._id}`}>
-                                <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-sm bg-black px-3 py-2 font-sans capitalize leading-none text-white">view profile</p>
-                              </Link>
-                              {/* ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                  } */}
-                              <p
-                                onClick={() => handleSelectProducer(cp)}
-                                className={`single-match-btn inline-block cursor-pointer rounded-sm ${isSelected ? 'bg-red-500' : 'bg-black'} px-3 py-2 font-sans capitalize leading-none text-white`}
-                              >
-                                {isSelected ? 'Remove' : 'Select'}
-                              </p>
-                            </div>
+                {rejectStatus.map((status, index) => (
+                  <div key={status}>
+                    <li key={status} className="flex-start group relative flex lg:flex-col">
+                      {index < cancelIndex && (
+                        <>
+                          <span
+                            className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                            aria-hidden="true"
+                          ></span>
+                          <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-gray-50 transition-all duration-200">
+                            {status === 'Cancelled' ? (
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                              </svg>
+                            ) : null}
                           </div>
-                        );
-                      })
-                    ) : (
-                      <>
-                        <div className="flex items-center justify-center">
-                          <h3 className="text-center font-semibold">No Data Found</h3>
-                        </div>
-                      </>
-                    )}
-                  </div>
+                        </>
+                      )}
 
-                  <div className="flex justify-between">
-                    {/* pagination */}
-                    <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                      <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
-                    </div>
-                    <button onClick={updateCps} className="mt-5 rounded-sm bg-black px-3 py-1 text-white">
-                      Submit
-                    </button>
+                      {index === cancelIndex && (
+                        <>
+                          <span
+                            className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                            aria-hidden="true"
+                          ></span>
+                          <div
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
+                              status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
+                            } transition-all duration-200`}
+                          >
+                            {status === 'Cancelled' ? (
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                              </svg>
+                            ) : (
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                              </svg>
+                            )}
+                          </div>
+                        </>
+                      )}
+
+                      {index > cancelIndex && (
+                        <>
+                          <span
+                            className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                            aria-hidden="true"
+                          ></span>
+                          <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white transition-all duration-200 " />
+                        </>
+                      )}
+
+                      <div className="ml-6 lg:ml-0 lg:mt-10">
+                        <h3 className="text-xl font-bold text-gray-900 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500">{status}</h3>
+                        <h4 className="mt-2 text-base text-gray-700">{statusMessage(status)}</h4>
+                      </div>
+                    </li>
                   </div>
-                </div>
-              </Dialog.Panel>
+                ))}
+              </ul>
             </div>
           </div>
-        </Dialog>
-      </Transition>
+        </div>
+
+        <Transition appear show={cpModal} as={Fragment}>
+          <Dialog as="div" open={cpModal} onClose={() => setCpModal(false)}>
+            <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+              <div className="flex min-h-screen items-start justify-center md:px-4 ">
+                <Dialog.Panel as="div" className="panel my-24 w-4/6 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                  <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
+                    <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Assign CP's </div>
+                    <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setCpModal(false)}>
+                      {allSvgs.closeModalSvg}
+                    </button>
+                  </div>
+                  <div className="basis-[50%] px-5 py-2">
+                    <div className="mb-2 flex justify-end">
+                      <input
+                        onChange={(event) => setQuery(event.target.value)}
+                        type="search"
+                        value={query}
+                        className="w-[20%] rounded-lg border border-solid border-[#ACA686] px-3 py-2"
+                        placeholder="Search"
+                      />
+                    </div>
+                    <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
+                      {allCpUsers?.length > 0 ? (
+                        allCpUsers?.map((cp) => {
+                          const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
+                          return (
+                            <div key={cp?.userId?._id} className="rounded-lg border border-solid border-[#ACA686] p-3 shadow">
+                              <div className="grid grid-cols-3 items-start justify-start">
+                                <div className="media relative h-14 w-14 rounded-full">
+                                  <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="mr-3 h-full w-full rounded-full object-cover" alt="img" />
+                                  <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                </div>
+
+                                <div className="content col-span-2 ms-2 min-h-[115px]">
+                                  <h4 className="font-sans text-[16px] capitalize leading-none text-black">{cp?.userId?.name}</h4>
+                                  <span className="profession text-[12px] capitalize leading-none text-[#838383]">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
+                                  <div className="location mt-2 flex items-center justify-start">
+                                    {/* Your location icon here */}
+                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">{cp?.city}</span>
+                                  </div>
+                                  <div className="ratings mt-2">
+                                    {[...Array(5)].map((_, index) => (
+                                      <FontAwesomeIcon key={index} icon={faStar} className="mr-1" style={{ color: '#FFC700' }} />
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="mt-3 flex">
+                                {/* <Link href={`cp/${cp?.userId?._id}`}>
+                                  <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-lg bg-black px-3 py-2 font-sans capitalize leading-none text-white">
+                                    view profile
+                                  </p>
+                                </Link> */}
+                                {/* ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                  } */}
+                                <p
+                                  onClick={() => handleSelectProducer(cp)}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
+                                    isSelected ? 'bg-red-500' : 'bg-black'
+                                  } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
+                                >
+                                  {isSelected ? 'Remove' : 'Select'}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-center">
+                            <h3 className="text-center font-semibold">No Data Found</h3>
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="flex justify-between">
+                      {/* pagination */}
+                      <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                        <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
+                      </div>
+                      <button onClick={updateCps} className="mt-5 rounded-sm bg-black px-3 py-1 text-white">
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
+      </div>
     </>
   );
 };
