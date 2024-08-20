@@ -181,7 +181,7 @@ export default {
     try {
       const res = await axios.get(`/download-folder?folderpath=${encodeURIComponent(folderpath)}`, {
         ...reqConfig(this),
-        responseType: 'blob', // Important for downloading files
+        responseType: 'blob',
       });
 
       const blob = new Blob([res.data], { type: 'application/zip' });
@@ -194,8 +194,8 @@ export default {
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error(`Error in downloadFolder for ${folderpath}:`, error);
-      throw error;
+      console.log(`Error in downloadFolder for ${folderpath}:`, error.message);
+      // Display user-friendly message or handle error appropriately
     }
   },
 };

@@ -413,7 +413,7 @@ const BookNow = () => {
 
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
-    // const meeting_time = convertToISO(data.meeting_time);
+    const meeting_time = convertToISO(data.meeting_time);
     // console.log("metting: ", meeting_time);
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
@@ -447,7 +447,6 @@ const BookNow = () => {
           addOns_cost: allAddonRates,
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
-        console.log(formattedData);
 
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
@@ -458,6 +457,8 @@ const BookNow = () => {
         }
         if (activeTab === 3) {
           const response = await OrderApi.handleOrderMake(formattedData);
+          console.log(meeting_time);
+          console.log(response);
           if (response.status === 201) {
             swalToast('success', 'Order has been created successfully!');
             router.push('/dashboard/shoots');

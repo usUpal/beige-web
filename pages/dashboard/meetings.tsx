@@ -14,6 +14,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import { swalToast } from '@/utils/Toast/SwalToast';
+import PreLoader from '@/components/ProfileImage/PreLoader';
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -81,6 +82,7 @@ const Meeting = () => {
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
   const getAllMyMeetings = async () => {
+    setLoading(true);
     let url = `${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     if (userRole === 'client' || userRole === 'cp') {
       url = `${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
@@ -91,12 +93,14 @@ const Meeting = () => {
 
       setTotalPagesCount(allMeetings?.totalPages);
       setMyMeetings(allMeetings.results);
+      setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(true);
     }
   };
 
-  console.log('myMeetings', myMeetings);
+  // console.log('myMeetings', myMeetings);
 
   // Meeting Single
   const router = useRouter();
@@ -207,6 +211,15 @@ const Meeting = () => {
             </thead>
 
             <tbody>
+
+              {isLoading ? (
+                <>
+                  <PreLoader></PreLoader>
+                </>
+              ) : (
+              <>
+                
+                
               {myMeetings && myMeetings.length > 0 ? (
 
                 myMeetings?.map((meeting) => (
@@ -250,6 +263,9 @@ const Meeting = () => {
                   </td>
                 </tr>
               )}
+
+            </>
+            )}
 
             </tbody>
           </table>
