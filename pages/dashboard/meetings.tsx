@@ -156,7 +156,7 @@ const Meeting = () => {
   const inputDate = '2024-05-29T21:00:00.000Z';
   const formattedDateTime = makeDateFormat(inputDate);
 
-  const handelRescheduleMeeting = async (id:any) => {
+  const handelRescheduleMeeting = async (id: any) => {
     if (!metingDate) {
       return swalToast('danger', 'Please select Meting Date & Time!');
     }
@@ -165,7 +165,7 @@ const Meeting = () => {
       const requestBody = {
         "requested_by": userData?.role,
         "requested_time": metingDate
-    };
+      };
       const response = await fetch(`${API_ENDPOINT}meetings/schedule/${id}`, {
         method: 'PATCH',
         headers: {
@@ -178,7 +178,7 @@ const Meeting = () => {
         throw new Error(`Error: ${response.statusp}`);
       }
       const updateShootDetails = await response.json();
-      swalToast('success','Reschedule Meeting Success');
+      swalToast('success', 'Reschedule Meeting Success');
       setmeetingModal(false);
     } catch (error) {
       console.error('Error occurred while sending POST request:', error);
@@ -271,21 +271,21 @@ const Meeting = () => {
                   </button>
                 </div>
 
-                <div className="basis-[50%]">
-                  <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">
+                <div className="basis-[100%]">
+                  {/* <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">
                     Meeting with <span className="capitalize text-[#ACA686]">{meetingInfo?.client?.name}</span>
-                  </h2>
+                  </h2> */}
 
-                  <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  w-5/6 justify-between space-y-6 pb-6`}>
+                  <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  w-full justify-between space-y-6 pb-6 `}>
                     <div className="leftdata">
                       <p>
-                        <span className="text-[14px] font-light capitalize leading-none text-[#000000] ">
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] ">
                           Order : <span className="text-[14px] font-normal text-[#000000]">{meetingInfo?.order?.name}</span>
                         </span>
                       </p>
 
                       <p>
-                        <span className="text-[14px] font-light capitalize leading-none text-[#000000] ">
+                        <span className="text-[14px]  capitalize leading-none text-[#000000] font-bold">
                           Meeting Link :{' '}
                           <a href={meetingInfo?.meetLink || ''} target={0} className="text-[14px] font-normal text-blue-600 underline">
                             {meetingInfo?.meetLink}
@@ -294,32 +294,32 @@ const Meeting = () => {
                       </p>
 
                       <p className="mt-2">
-                        <span className="text-[14px] font-light capitalize leading-none text-[#000000]">
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
                           Time : <span className="text-[14px] font-normal leading-[28px] text-[#000000]"> {myFormattedDateTime?.time}</span>
                         </span>
                       </p>
 
                       <p>
-                        <span className="text-[14px] font-light capitalize leading-none text-[#000000]">
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
                           Date : <span className="text-[14px] font-normal leading-[28px] text-[#000000]"> {myFormattedDateTime?.date}</span>
                         </span>
                       </p>
                       <div className="mt-3 flex justify-between">
-                        <span className=" text-[14px] font-light capitalize leading-none text-[#000000]">
+                        <span className=" text-[14px]  capitalize leading-none text-[#000000] font-bold">
                           Status:{' '}
                           <span className="ps-2 font-normal text-[#0E1726]">
                             <StatusBg>{meetingInfo?.meeting_status}</StatusBg>
                           </span>
                         </span>
-                        {meetingInfo.link ? <span className=" block font-sans text-[14px] leading-[18.2px] text-[#000000]">Link: {meetingInfo.link}</span> : ''}
+                        {meetingInfo.link ? <span className=" block font-sans text-[14px] leading-[18.2px] text-[#000000] font-bold">Link: {meetingInfo.link}</span> : ''}
                       </div>
                     </div>
 
                     {/* Resheduling */}
-                    <div>
+                    <div className='mr-4'>
                       {meetingInfo?.meeting_status === 'pending' && (
                         <div className="flex flex-col items-start">
-                          <h2 className="text-[14px] font-semibold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
+                          <h2 className="text-[14px] font-semibold capitalize leading-none text-[#000000] mb-3">Reschedule Meeting</h2>
                           <div className="flex flex-col">
                             <Flatpickr
                               id="meeting_time"
@@ -337,8 +337,8 @@ const Meeting = () => {
                               onChange={(date) => setMetingDate(date[0])}
                             />
 
-                            <button onClick={()=>handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-[16px] font-light capitalize text-white">
-                              Save date
+                            <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans font-bold text-sm  capitalize text-white">
+                              Reschedule Request
                             </button>
                           </div>
                         </div>

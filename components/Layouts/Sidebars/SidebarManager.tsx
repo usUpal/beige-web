@@ -36,7 +36,7 @@ const SidebarManager = (props: any) => {
             {/* <Link href='/dashboard/bookNow' className='group'> */}
             <Link href="/manager/bookNow" className="group">
               <div className="flex items-center">
-                {allSvgs.bookNowSvg}
+                {allSvgs.bookingLinkIcon}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Book Now</span>
               </div>
             </Link>
@@ -45,7 +45,7 @@ const SidebarManager = (props: any) => {
           <li className="nav-item">
             <Link href="/dashboard/shoots" className="group">
               <div className="flex items-center">
-                {allSvgs.shootSvg}
+                {allSvgs.shootsLinkIcon}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Shoots</span>
               </div>
             </Link>
@@ -63,7 +63,7 @@ const SidebarManager = (props: any) => {
           <li className="nav-item">
             <Link href="/dashboard/meetings" className="group">
               <div className="flex items-center">
-                {allSvgs.meetingsSvg}
+                {allSvgs.mettingLinkIcon}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Meetings</span>
               </div>
             </Link>
@@ -103,7 +103,7 @@ const SidebarManager = (props: any) => {
           <li className="menu nav-item">
             <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('settings')}>
               <div className="flex items-center">
-                {allSvgs.settingsSvg}
+                {allSvgs.settingLinkIcon}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Settings</span>
               </div>
 
@@ -129,7 +129,7 @@ const SidebarManager = (props: any) => {
           <li className="nav-item">
             <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('users')}>
               <div className="flex items-center">
-                {allSvgs.helpSvg}
+                {allSvgs.userLinkIcon}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Users</span>
               </div>
 
