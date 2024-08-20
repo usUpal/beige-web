@@ -389,7 +389,7 @@ const IndexClient = () => {
     const newCp = {
       id: cp?.userId?._id,
       name: cp?.userId?.name,
-      decision: 'accepted',
+      decision: 'pending',
       role: 'Beige Producer',
       url: cp?.userId?.profile_picture,
       location: cp?.city,
