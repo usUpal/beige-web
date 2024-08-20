@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import StatusBg from '@/components/Status/StatusBg';
 import { useRouter } from 'next/router';
@@ -17,7 +17,6 @@ import ResponsivePagination from 'react-responsive-pagination';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import axios from 'axios';
-import GeoLocationMap from '@/components/GeoLocationMap';
 import GoogleMapReact from 'google-map-react';
 
 const ShootDetails = () => {
@@ -27,6 +26,7 @@ const ShootDetails = () => {
 
   const [showNewMetingBox, setShowNewMetingBox] = useState<boolean>(false);
   const [showNewStatusBox, setShowNewStatusBox] = useState<boolean>(false);
+
   const router = useRouter();
   const shootId = router.query.shootDetails as string;
   const { userData } = useAuth();
@@ -346,23 +346,70 @@ const ShootDetails = () => {
     } catch (error) {
       console.error('Error occurred while sending PATCH request:', error);
     }
-
-    // {
-    //   "decision": "pending",
-    //   "_id": "66c42e1b2cfd401f8f26d6d2",
-    //   "id": {
-    //     "role": "cp",
-    //     "isEmailVerified": false,
-    //     "name": "Sajjad",
-    //     "email": "sajjad@gmail.com",
-    //     "location": "Dhaka New Market, Mirpur Road, Dhaka, Bangladesh",
-    //     "createdAt": "2024-05-14T08:41:39.305Z",
-    //     "updatedAt": "2024-07-30T05:03:36.010Z",
-    //     "profile_picture": "https://storage.googleapis.com/beigestorage/ProfileInfo/664323c3d5bbe3164cb6b54f/ProfilePic/0EF6A685-3E72-4588-AEF5-4DE67ABA2C01.jpg",
-    //     "id": "664323c3d5bbe3164cb6b54f"
-    //   }
-    // }
   };
+
+
+  const AccordionItem = ({ id, title, content, selected, setSelected }) => {
+    const contentRef = useRef(null);
+
+    const handleClick = () => {
+      setSelected(selected !== id ? id : null);
+    };
+
+    return (
+      <li className="relative border-b border-gray-200">
+        <button
+          type="button"
+          className="w-full p-2 text-left"
+          onClick={handleClick}
+        >
+          <div className="flex items-center justify-between">
+            <span>{title}</span>
+            <svg
+              className={`w-5 h-5 text-gray-500 transform transition-transform ${selected === id ? "rotate-180" : ""
+                }`}
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </button>
+        <div
+          ref={contentRef}
+          className="relative overflow-hidden transition-all duration-700"
+          style={{
+            maxHeight: selected === id ? `${contentRef.current.scrollHeight}px` : "0px",
+          }}
+        >
+          <div className="p-2">{content}</div>
+        </div>
+      </li>
+    );
+  };
+
+  const Accordion = () => {
+    const [selected, setSelected] = useState(null);
+
+    return (
+      <div className="bg-white max-w-full mx-auto border border-gray-200">
+        <ul className="shadow-box">
+          <AccordionItem
+            id={3}
+            title="When will I receive my seats?"
+            content="Game day seats are rentals will be in place for the first game of the season, unless you are in sections 409-421. Those sections will have game day seats mid way through the football season."
+            selected={selected}
+            setSelected={setSelected}
+          />
+        </ul>
+      </div>
+    );
+  };
+
 
   return (
     <>
@@ -572,8 +619,47 @@ const ShootDetails = () => {
               </div>
 
               {/* Assigned Cp's */}
-              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-                <div className="mb-0 flex items-center gap-4 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">
+              <div className="mb-4 basis-[45%]">
+                <div className='flex items-center justify-between w-full mb-3'>
+                  <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Assign CP's</label>
+                  <div className='flex gap-3'>
+                    <button onClick={getCps} className='bg-violet-600 text-white rounded-md px-3 py-0.5 text-sm'>Add CP</button>
+                  </div>
+                </div>
+                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                  {shootInfo?.cp_ids?.length > 0 && (
+                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden border border-slate-100 rounded">
+                      <table className="w-full table-auto">
+                        <thead>
+                          <tr>
+                            <th className="border-b px-4 py-2">Name</th>
+                            <th className="border-b px-4 py-2">Decision</th>
+                            <th className="border-b px-4 py-2">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {shootInfo?.cp_ids?.map((cp, key) => (
+                            <tr key={key}>
+                              <td className="border-b px-4 py-2 font-bold">{cp?.id?.name ?? ''}</td>
+                              <td className="border-b px-4 py-2">
+                                <StatusBg>{cp?.decision ?? ''}</StatusBg>
+                              </td>
+                              <td className="border-b px-4 py-2">
+                                <button onClick={() => cancelCp(cp)} className="rounded bg-red-500 p-[5px] text-white">
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                  </svg>
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+                {/* <Accordion/> */}
+                {/* <div className="mb-0 flex items-center gap-4 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">
                   <div>Assigned Cp's</div>
                   {userData?.role === 'manager' && (
                     <div className="">
@@ -584,6 +670,7 @@ const ShootDetails = () => {
                   )}
                 </div>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+
                   {shootInfo?.cp_ids?.length > 0 && (
                     <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden">
                       <table className="w-full table-auto">
@@ -614,7 +701,7 @@ const ShootDetails = () => {
                       </table>
                     </div>
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -694,9 +781,8 @@ const ShootDetails = () => {
                             aria-hidden="true"
                           ></span>
                           <div
-                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
-                              status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
-                            } transition-all duration-200`}
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
+                              } transition-all duration-200`}
                           >
                             {status === 'Cancelled' ? (
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -790,9 +876,8 @@ const ShootDetails = () => {
                                   } */}
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
-                                    isSelected ? 'bg-red-500' : 'bg-black'
-                                  } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
+                                    } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
                                 </p>
@@ -830,3 +915,6 @@ const ShootDetails = () => {
 };
 
 export default ShootDetails;
+
+
+
