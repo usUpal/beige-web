@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/authContext';
 import Link from 'next/link';
 import api from '../../../FileManager/api/storage';
 import ResponsivePagination from 'react-responsive-pagination';
+import PreLoader from '@/components/ProfileImage/PreLoader';
 
 const Shoots = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -40,7 +41,7 @@ const Shoots = () => {
       const allShots = await response.json();
       setTotalPagesCount(allShots?.totalPages);
       setMyShoots(allShots?.results);
-      setIsLoading(true);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -65,89 +66,97 @@ const Shoots = () => {
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Recent Orders</h5>
         </div>
-        
-          <div className="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
-                  <th className="text-[16px] font-semibold">Order ID</th>
-                  <th className="text-[16px] font-semibold">Price</th>
-                  <th className="text-[16px] font-semibold">Files</th>
-                  <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                  <th className="text-[16px] font-semibold">View</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading && myShoots && myShoots.length > 0 ? (
 
-                  myShoots?.map((shoot) => (
-                    <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                      <td className="min-w-[150px] text-black dark:text-white">
-                        <div className="flex items-center">
-                          <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
-                          <p className="whitespace-nowrap">
-                            {shoot?.order_name}
-                            <span className="block text-xs text-[#888EA8]">{new Date(shoot?.shoot_datetimes[0]?.start_date_time).toDateString()}</span>
-                          </p>
-                        </div>
-                      </td>
-                      <td>{shoot.id}</td>
-                      <td>$ {shoot?.shoot_cost}</td>
+        <div className="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
+                <th className="text-[16px] font-semibold">Order ID</th>
+                <th className="text-[16px] font-semibold">Price</th>
+                <th className="text-[16px] font-semibold">Files</th>
+                <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
+                <th className="text-[16px] font-semibold">View</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <>
+                  <PreLoader></PreLoader>
+                </>
+              ) : (
+                <>
+                  {myShoots && myShoots.length > 0 ? (
+                    myShoots?.map((shoot) => (
+                      <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                        <td className="min-w-[150px] text-black dark:text-white">
+                          <div className="flex items-center">
+                            <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
+                            <p className="whitespace-nowrap">
+                              {shoot?.order_name}
+                              <span className="block text-xs text-[#888EA8]">{new Date(shoot?.shoot_datetimes[0]?.start_date_time).toDateString()}</span>
+                            </p>
+                          </div>
+                        </td>
+                        <td>{shoot.id}</td>
+                        <td>$ {shoot?.shoot_cost}</td>
 
-                      <td className="text-success">
-                        {shoot?.file_path && (
-                          <span
-                            onClick={async () => {
-                              await api.downloadFolder(`${shoot.order_name}/`);
-                            }}
-                            className="badge text-md w-12 bg-success text-center"
-                          >
-                            Download
-                          </span>
-                        )}
-                        {/* <Link href="/dashboard/files" className="rounded-[10px] border border-solid border-[#ddd] px-2 py-1 ring-1 ring-success">
+                        <td className="text-success">
+                          {shoot?.file_path && (
+                            <span
+                              onClick={async () => {
+                                await api.downloadFolder(`${shoot.order_name}/`);
+                              }}
+                              className="badge text-md w-12 bg-success text-center"
+                            >
+                              Download
+                            </span>
+                          )}
+                          {/* <Link href="/dashboard/files" className="rounded-[10px] border border-solid border-[#ddd] px-2 py-1 ring-1 ring-success">
                           Available
                         </Link> */}
-                      </td>
-                      <td>
-                        <div className="">
-                          <StatusBg>{shoot?.order_status}</StatusBg>
-                        </div>
-                      </td>
-                      <td>
-                        <Link href={`shoots/${shoot?.id}`}>
-                          <button type="button" className="p-0">
-                            <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                          </button>
-                        </Link>
+                        </td>
+                        <td>
+                          <div className="">
+                            <StatusBg>{shoot?.order_status}</StatusBg>
+                          </div>
+                        </td>
+                        <td>
+                          <Link href={`shoots/${shoot?.id}`}>
+                            <button type="button" className="p-0">
+                              <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                            </button>
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+
+                  ) : (
+                    <tr>
+                      <td colSpan={50} className="text-center">
+                        <span className="text-[red] font-semibold flex justify-center"> No shoots found </span>
                       </td>
                     </tr>
-                  ))
+                  )}
+                </>
+              )}
 
-                ) : (
-                <tr>
-                  <td colSpan={50} className="text-center">
-                        <span className="text-[red] font-semibold flex justify-center"> No shoots found </span>
-                  </td>
-                </tr>
-                )}
 
-              </tbody>
-            </table>
+            </tbody>
+          </table>
 
-            {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
-            <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-              <ResponsivePagination
-                current={currentPage}
-                total={totalPagesCount}
-                onPageChange={handlePageChange}
-                maxWidth={400}
-                // styles={styles}
-              />
-            </div>
+          {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
+          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <ResponsivePagination
+              current={currentPage}
+              total={totalPagesCount}
+              onPageChange={handlePageChange}
+              maxWidth={400}
+            // styles={styles}
+            />
           </div>
-     
+        </div>
+
       </div>
     </div>
   );

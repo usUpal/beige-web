@@ -10,6 +10,7 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePagination from 'react-responsive-pagination';
 import { useAuth } from '@/contexts/authContext';
+import PreLoader from '@/components/ProfileImage/PreLoader';
 
 const Disputes = () => {
   // previous code
@@ -23,6 +24,7 @@ const Disputes = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   const [desputes, setDesputes] = useState<MeetingResponsTypes[]>([]);
   const [disputeInfo, setDisputeInfo] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getAllDusputes();
@@ -34,6 +36,7 @@ const Disputes = () => {
 
   // all disputes user base
   const getAllDusputes = async () => {
+    setIsLoading(true);
     let url = `${API_ENDPOINT}disputes?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     if (userRole === 'client' || userRole === 'cp') {
       url = `${API_ENDPOINT}disputes/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
@@ -44,8 +47,10 @@ const Disputes = () => {
       const allDusputes = await response.json();
       setTotalPagesCount(allDusputes?.totalPages);
       setDesputes(allDusputes.results);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
     }
   };
 
@@ -95,6 +100,14 @@ const Disputes = () => {
             </thead>
             <tbody>
 
+
+              {isLoading ? (
+                <>
+                  <PreLoader></PreLoader>
+                </>
+              ) : (
+              <>
+
               {desputes && desputes.length > 0 ? (
 
                 desputes?.map((dispute) => (
@@ -131,6 +144,10 @@ const Disputes = () => {
                   </td>
                 </tr>
               )}
+
+
+            </>
+            )}
 
 
 
