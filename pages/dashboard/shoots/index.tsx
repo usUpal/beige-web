@@ -104,7 +104,7 @@ const Shoots = () => {
                           {shoot?.file_path?.status ? (
                             <span
                               onClick={async () => {
-                                await api.downloadFolder(`${shoot.order_name}/`);
+                                await api.downloadFolder(`${shoot?.file_path?.dir_name}`);
                               }}
                               className="badge text-md w-12 bg-success text-center"
                             >

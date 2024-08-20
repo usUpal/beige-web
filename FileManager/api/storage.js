@@ -1,7 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 import axiosLib from 'axios';
 import config from '../../config';
-
+import { toast } from 'react-toastify';
 const axios = axiosLib.create({
   baseURL: config.APIEndpoint,
 });
@@ -177,11 +177,42 @@ export default {
     }
   },
   // New method to download a folder as a ZIP file
+  // async downloadFolder(folderpath) {
+  //   try {
+  //     const res = await axios.get(`/download-folder?folderpath=${encodeURIComponent(folderpath)}`, {
+  //       ...reqConfig(this),
+  //       responseType: 'blob',
+  //     });
+
+  //     const blob = new Blob([res.data], { type: 'application/zip' });
+  //     const url = window.URL.createObjectURL(blob);
+  //     const a = document.createElement('a');
+  //     a.style.display = 'none';
+  //     a.href = url;
+  //     a.download = `${folderpath.split('/').pop()}.zip`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     window.URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     console.log(`Error in downloadFolder for ${folderpath}:`, error.message);
+  //     // Display user-friendly message or handle error appropriately
+  //   }
+  // },
   async downloadFolder(folderpath) {
+    console.log('Downloading folder', folderpath);
+    const toastId = toast.loading('Downloading...');
+
     try {
       const res = await axios.get(`/download-folder?folderpath=${encodeURIComponent(folderpath)}`, {
-        ...reqConfig(this),
-        responseType: 'blob',
+        responseType: 'blob', // Important for downloading files
+        onDownloadProgress: (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          console.log('Download progress:', progress);
+          toast.update(toastId, {
+            render: `Downloading...`,
+            progress: progress / 100,
+          });
+        },
       });
 
       const blob = new Blob([res.data], { type: 'application/zip' });
@@ -193,9 +224,22 @@ export default {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
+
+      toast.update(toastId, {
+        render: 'Download completed!',
+        type: 'success',
+        isLoading: false,
+        autoClose: 5000,
+      });
     } catch (error) {
-      console.log(`Error in downloadFolder for ${folderpath}:`, error.message);
-      // Display user-friendly message or handle error appropriately
+      console.error(`Error in downloadFolder for ${folderpath}:`, error);
+      toast.update(toastId, {
+        render: 'Download failed!',
+        type: 'error',
+        isLoading: false,
+        autoClose: 5000,
+      });
+      throw error;
     }
   },
 };
