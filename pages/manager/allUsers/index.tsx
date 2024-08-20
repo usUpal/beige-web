@@ -208,13 +208,6 @@ const Users = () => {
                                                                             <p className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400mt-1'>
                                                                                 {userInfo?.id}
                                                                             </p>
-                                                                            {/* <input
-                                                                                {...register("id")}
-                                                                                defaultValue={userInfo?.id}
-                                                                                className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400 mt-1 bg-gray-200'
-                                                                                onChange={(e) => handleInputChange('id', e.target.value)}
-                                                                                disabled
-                                                                            /> */}
                                                                         </div>
                                                                         <div className="w-full">
                                                                             <label htmlFor="name" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
@@ -232,12 +225,6 @@ const Users = () => {
                                                                             <p className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1'>
                                                                                 {userInfo?.email}
                                                                             </p>
-                                                                            {/* <input
-                                                                                {...register("email")}
-                                                                                defaultValue={userInfo?.email}
-                                                                                className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1'
-                                                                                onChange={(e) => handleInputChange('email', e.target.value)}
-                                                                            /> */}
                                                                         </div>
                                                                     </div>
 
@@ -250,33 +237,12 @@ const Users = () => {
                                                                             <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
                                                                                 {userInfo?.isEmailVerified === "true" ? "Yes" : "No"}
                                                                             </p>
-                                                                            {/* <select
-                                                                                className='border rounded p-3 focus:outline-none focus:border-gray-400 ms-12 md:ms-0 mt-1 w-56'
-                                                                                id="isEmailVerified"
-                                                                                defaultValue={userInfo?.isEmailVerified}
-                                                                                {...register('isEmailVerified')}
-                                                                                onChange={(e) => handleInputChange('isEmailVerified', e.target.value)}
-                                                                            >
-                                                                                <option value="true">Yes</option>
-                                                                                <option value="false">No</option>
-                                                                            </select> */}
                                                                         </div>
                                                                         <div className="w-full">
                                                                             <label htmlFor="role" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize"
                                                                             >
                                                                                 role
                                                                             </label>
-                                                                            {/* <select
-                                                                                className='border rounded p-3 focus:outline-none focus:border-gray-400 ms-12 md:ms-0 mt-1 w-56'
-                                                                                id="role"
-                                                                                defaultValue={userInfo?.role}
-                                                                                {...register('role')}
-                                                                                onChange={(e) => handleInputChange('role', e.target.value)}
-                                                                            >
-                                                                                <option value="manager">Manager</option>
-                                                                                <option value="user">User</option>
-                                                                                <option value="cp">Cp</option>
-                                                                            </select> */}
                                                                             <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
                                                                                 {userInfo?.role}
                                                                             </p>
@@ -287,12 +253,6 @@ const Users = () => {
                                                                             <label htmlFor="location" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                                                                                 Address
                                                                             </label>
-                                                                            {/* <input
-                                                                                {...register("location")}
-                                                                                defaultValue={userInfo?.location}
-                                                                                className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1 '
-                                                                                onChange={(e) => handleInputChange('location', e.target.value)}
-                                                                            /> */}
                                                                             <p className='border rounded p-3 text-gray-600 mt-1'>
                                                                                 {userInfo?.location}
                                                                             </p>

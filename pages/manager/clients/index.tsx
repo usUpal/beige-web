@@ -330,8 +330,6 @@ const Users = () => {
                             </div>
 
                             <div className="basis-[50%]">
-                              {/* <h2 className="mx-6 mb-[12px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Detail Information offff {clientUserInfo?.name} </h2> */}
-
                               <div className="mx-6 pb-6">
                                 <div className="flex gap-5 mt-0 mx-auto  space-y-5 md:space-y-0 box-border ">
                                   <div className="left space-y-4 w-full">
@@ -356,16 +354,6 @@ const Users = () => {
                                       <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Address </span>
                                       <span className=" text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.location}</span>
                                     </span>
-                                    {/* <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
-                                      <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
-                                        Date :<span className="ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]">{formattedDateTime?.date}</span>
-                                      </span>
-                                    </p>
-                                    <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
-                                      <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
-                                        Address :<span className="ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]">{clientUserInfo?.location}</span>
-                                      </span>
-                                    </p> */}
                                   </div>
                                 </div>
                                 <span className="text-[16px] font-bold leading-none text-[#000000] flex flex-col gap-1">

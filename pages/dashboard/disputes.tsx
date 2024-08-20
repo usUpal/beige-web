@@ -164,69 +164,50 @@ const Disputes = () => {
                   </button>
                 </div>
 
-                <div className=" px-5">
+                <div className="mt-5 px-5">
                   {/* <h2 className="mb-[20px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Shoot Name: {disputeInfo?.order_id?.order_name}</h2> */}
                   {/*  */}
-                  <div className="flex gap-5 mt-0 mx-auto  space-y-5 md:space-y-0 box-border">
-                    <div className='left space-y-4 w-full'>
-                      <div className="mb-[5px]  w-full">
-                        <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[9px] w-full">
-                          <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Reason </span>
-                          <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{disputeInfo?.reason}</span>
+                  <div className="justify-between md:flex">
+                    <div>
+                      <div className="mb-[5px]">
+                        <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
+                          Reason : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{disputeInfo?.reason}</span>
                         </span>
                       </div>
 
-                      {/* <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[9px]">
-                        <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"'> Client Id  </span>
-                        <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.id}</span>
-                      </span> */}
+                      <p>
+                        <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
+                          Amount : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{disputeInfo?.order_id ? disputeInfo?.order_id?.shoot_cost : 0}</span>
+                        </span>
+                      </p>
 
-                      <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[9px] w-full">
-                        <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'>  Amount  </span>
-                        <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{disputeInfo?.order_id ? disputeInfo?.order_id?.shoot_cost : 0}</span>
-                      </span>
-
-                      {/* <span className="my-[10px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">
+                      <span className="my-[10px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">
                         Status:
                         <span className="ps-1 text-[14px] font-semibold">
                           <StatusBg>{disputeInfo?.status}</StatusBg>
                         </span>
-                      </span> */}
+                      </span>
                     </div>
 
-                    <div className='right space-y-4 w-full'>
-
-                      <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[9px] w-full">
-                        <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'>  Amount  </span>
-                        <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{disputeInfo?.status}</span>
-                      </span>
-                      {/* <p>
+                    <div>
+                      <p>
                         <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
                           Time : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{formattedDateTime?.time}</span>
                         </span>
-                      </p> */}
+                      </p>
 
-                      <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[9px] w-full">
-                        <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'>  Amount  </span>
-                        <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{formattedDateTime?.time}</span>
-                      </span>
-
-                      {/* <p>
+                      <p>
                         <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
                           Date : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{formattedDateTime?.date}</span>
                         </span>
-                      </p> */}
+                      </p>
+
+                      <button onClick={() => setDisputeModal(false)} type="submit" className="btn mx-auto mt-8 bg-black font-sans text-white md:me-0 md:mt-24">
+                        Close
+                      </button>
                       {/* </div> */}
                     </div>
                   </div>
-                  <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[9px] w-full">
-                    <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'>  Amount  </span>
-                    <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{formattedDateTime?.date}</span>
-                  </span>
-
-                  <button onClick={() => setDisputeModal(false)} type="submit" className="btn flex justify-end bg-black font-sans text-white md:me-0 md:mt-[35px] ml-auto">
-                    Close
-                  </button>
                 </div>
               </Dialog.Panel>
             </div>
