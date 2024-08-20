@@ -61,8 +61,6 @@ const IndexClient = () => {
   const router = useRouter();
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
-  console.log("🚀 ~ IndexClient ~ allCpUsers:", allCpUsers)
-
   const [allClients, onlyClients] = useClient();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);

@@ -557,7 +557,7 @@ const ShootDetails = () => {
               {/* Schedule Meeting */}
               <div className="mb-4 basis-[45%] flex-row space-y-5">
                 <div className="flex space-x-3">
-                  <button className="rounded-sm bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewMetingBox(!showNewMetingBox)}>
+                  <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewMetingBox(!showNewMetingBox)}>
                     Schedule Meeting
                   </button>
                   {showNewMetingBox && (
@@ -580,7 +580,7 @@ const ShootDetails = () => {
                       <button
                         disabled={loadingSubmitMeting === true ? true : false}
                         onClick={submitNewMeting}
-                        className="flex items-center justify-center rounded-sm border border-black bg-black px-1 text-white"
+                        className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -591,7 +591,7 @@ const ShootDetails = () => {
                 </div>
                 {userData?.role === 'manager' && (
                   <div className="flex space-x-3">
-                    <button className="rounded-sm bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewStatusBox(!showNewStatusBox)}>
+                    <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewStatusBox(!showNewStatusBox)}>
                       Change Status
                     </button>
                     {showNewStatusBox && (
@@ -606,7 +606,7 @@ const ShootDetails = () => {
                         <button
                           disabled={statusData.length ? false : true}
                           onClick={submitUpdateStatus}
-                          className="flex items-center justify-center rounded-sm border border-black bg-black px-1 text-white"
+                          className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -623,7 +623,7 @@ const ShootDetails = () => {
                 <div className='flex items-center justify-between w-full mb-3'>
                   <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Assign CP's</label>
                   <div className='flex gap-3'>
-                    <button onClick={getCps} className='bg-violet-600 text-white rounded-md px-3 py-0.5 text-xs'>Add CP</button>
+                    <button onClick={getCps} className='bg-black text-white rounded-md px-3 py-0.5 text-xs'>Add CP</button>
                   </div>
                 </div>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
@@ -632,24 +632,50 @@ const ShootDetails = () => {
                       <table className="w-full table-auto">
                         <thead>
                           <tr>
-                            <th className="border-b px-4 py-2">Name</th>
-                            <th className="border-b px-4 py-2">Decision</th>
-                            <th className="border-b px-4 py-2">Action</th>
+                            <th className="border-b px-4 py-2">
+                              <div className='flex justify-center'>Name</div>
+                            </th>
+                            <th className="border-b px-4 py-2">
+                              <div className='flex justify-center'>Decision</div>
+                            </th>
+                            <th className="border-b px-4 py-2 text-right">
+                              <div className="flex justify-center">Action</div>
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
                           {shootInfo?.cp_ids?.map((cp, key) => (
                             <tr key={key}>
-                              <td className="border-b px-4 py-2 font-bold">{cp?.id?.name ?? ''}</td>
-                              <td className="border-b px-4 py-2">
-                                <StatusBg>{cp?.decision ?? ''}</StatusBg>
+                              <td className="border-b px-4 py-2 font-bold">
+                                <div className='flex justify-center'>{cp?.id?.name ?? ''}</div>
                               </td>
                               <td className="border-b px-4 py-2">
-                                <button onClick={() => cancelCp(cp)} className="rounded bg-red-500 p-[5px] text-white">
-                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                  </svg>
-                                </button>
+                                <div className='flex justify-center'>
+                                  <StatusBg>{cp?.decision ?? ''}</StatusBg>
+                                </div>
+                              </td>
+                              <td className="border-b px-4 py-2 text-right">
+                                <div className="flex justify-center">
+                                  <button
+                                    onClick={() => cancelCp(cp)}
+                                    className="rounded bg-red-500 p-1 text-white"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      strokeWidth={1.5}
+                                      stroke="currentColor"
+                                      className="h-4 w-4"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))}
