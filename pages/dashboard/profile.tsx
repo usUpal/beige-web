@@ -12,6 +12,7 @@ import 'swiper/swiper-bundle.css';
 import { Dialog, Transition } from '@headlessui/react';
 import { API_ENDPOINT } from '@/config';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
+import Swal from 'sweetalert2';
 
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 
@@ -79,6 +80,8 @@ const Profile = () => {
         break;
     }
   };
+
+
 
   useEffect(() => {
     dispatch(setPageTitle('Profile'));

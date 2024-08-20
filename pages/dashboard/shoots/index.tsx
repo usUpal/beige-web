@@ -27,7 +27,7 @@ const Shoots = () => {
 
   // All Shoots - user base 
   const getAllMyShoots = async () => {
-    setIsLoading(false);
+    setIsLoading(true);
     let url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     if (userRole === 'client') {
       url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&client_id=${userData?.id}`;
