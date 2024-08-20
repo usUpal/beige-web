@@ -58,8 +58,11 @@ const Profile = () => {
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
   const [reviews, setReviews] = useState<any[]>([]);
+  const [uploadImage, setUploadImage] = useState<any[]>([]);
+  const [uploadVideo, setUploadVideo] = useState<any[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showImage, setShowImage] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const profileDesignation = (role) => {
     switch (role) {
       case 'user':
@@ -82,20 +85,65 @@ const Profile = () => {
 
     const fetchReviews = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch(`${API_ENDPOINT}/review?cp_id=${userData?.id}&populate=client_id`);
         if (response.ok) {
           const data = await response.json();
           setReviews(data.results);
         } else {
           console.error('Error fetching reviews:', response.statusText);
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Error fetching reviews:', error);
+        setIsLoading(false);
       }
     };
 
     fetchReviews();
   }, [dispatch]);
+
+
+  useEffect(() => {
+    const fetchUploadImage = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`${API_ENDPOINT}/gcp/get-content/${userData?.id}/images`);
+       
+        if (response.ok) {
+          const data = await response.json();
+          setUploadImage(data.contents);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error fetching upload image:', error);
+        setIsLoading(false);
+      }
+    };
+    fetchUploadImage();
+  }, []);
+
+  useEffect(() => {
+    const fetchUploadVideo = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`${API_ENDPOINT}/gcp/get-content/${userData?.id}/videos`);
+       
+        if (response.ok) {
+          const data = await response.json();
+          setUploadVideo(data.contents);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error fetching upload image:', error);
+        setIsLoading(false);
+      }
+    };
+    fetchUploadVideo();
+  }, []);
+
 
   const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
@@ -164,10 +212,9 @@ const Profile = () => {
             <div className="panel">
               <div className="mb-7 font-bold">All Reviews</div>
               <Swiper spaceBetween={30} slidesPerView={3} navigation={false} pagination={{ clickable: true }} className="mySwiper">
-                {reviews.length > 0 ? (
-                  reviews.map(
+                {isLoading && reviews?.length > 0 ? (
+                  reviews?.map(
                     (review, index) => (
-                      console.log('gggg', review?.client_id?.profile_picture),
                       (
                         <SwiperSlide key={index}>
                           <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
@@ -210,71 +257,133 @@ const Profile = () => {
         )}
 
         <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
+        {userRole === 'cp' && (
+          <div className="panel mt-5">
+            <div className="flex flex-wrap items-center gap-2">
+              <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleImageClick}>
+                Image
+              </button>
+              <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleVideoClick}>
+                Video
+              </button>
+              {/* {showImage &&
+                    <button
+                      className="py-1 px-4 flex items-center gap-2 justify-center bg-[#007aff] text-white text-[13px] font-bold rounded-md">
+                      Add Image <span className='text-white text-[20px] font-bold '>+</span>
+                    </button>
+                  }
+                  {!showImage &&
+                    <button
+                      className="py-1 px-4 flex items-center gap-2 justify-center bg-[#007aff] text-white text-[13px] font-bold rounded-md">
+                      Add  Video <span className='text-white text-[20px] font-bold '>+</span>
+                    </button>
+                  } */}
+            </div>
 
-        <div className="panel mt-5">
-          <div className="flex flex-wrap items-center gap-2">
-            <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleImageClick}>
-              Image
-            </button>
-            <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleVideoClick}>
-              Video
-            </button>
-            {/* {showImage &&
-                  <button
-                    className="py-1 px-4 flex items-center gap-2 justify-center bg-[#007aff] text-white text-[13px] font-bold rounded-md">
-                    Add Image <span className='text-white text-[20px] font-bold '>+</span>
-                  </button>
-                }
-                {!showImage &&
-                  <button
-                    className="py-1 px-4 flex items-center gap-2 justify-center bg-[#007aff] text-white text-[13px] font-bold rounded-md">
-                    Add  Video <span className='text-white text-[20px] font-bold '>+</span>
-                  </button>
-                } */}
-          </div>
-
-          {showImage && (
-            <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-              {['https://images.pexels.com/photos/27351031/pexels-photo-27351031/free-photo-of-essaouira-view.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load', userData?.profile_picture].map(
-                (src, index) => (
-                  <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                    <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+            {showImage && (<>
+                {uploadImage?.Corporate?.length > 0 && 
+                <>
+                  <h2 className="text-left text-[20px] font-bold mt-6 mb-0">Corporate Images</h2>
+                  <div className="image-sec mt-4 flex flex-wrap items-center gap-4">
+                      {uploadImage?.Corporate?.map(
+                        (src, index) => (
+                          <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                            <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+                          </div>
+                        ))
+                    }
                   </div>
-                )
-              )}
-            </div>
-          )}
+                </>
+                }
 
-          <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
+                {uploadImage?.Wedding?.length > 0 && 
+                <>
+                  <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Wedding Images</h2>
+                  <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
+                      {uploadImage?.Wedding?.map(
+                        (src, index) => (
+                          <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                            <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+                          </div>
+                        ))
+                    }
+                  </div>
+                  </>
+                }
 
-          {!showImage && (
-            <div className="video-section mt-6 flex flex-wrap items-center gap-2">
-              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
-                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
-              </div>
+                {uploadImage?.Other?.length > 0 && 
+                <>
+                   <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Other Images</h2>
+                  <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
+                    {uploadImage?.Other?.map(
+                      (src, index) => (
+                        <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                          <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+                        </div>
+                      ))
+                    }
+                  </div>
+                  </>
+                }
+            </>
+            )}
 
-              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
-                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
-              </div>
+            <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
 
-              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
-                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
-              </div>
+            {!showImage && (<>
+                {uploadVideo?.Corporate?.length > 0 &&
+                <>
+                  <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Corporate Videos</h2>
+                  <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                      {uploadVideo?.Corporate?.map(
+                        (src, index) => (
+                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                        </div>
+                    ))}
+                  </div>
+                </>
+                }
 
-              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
-                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
-              </div>
 
-              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
-                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
-              </div>
+                {uploadVideo?.Wedding?.length > 0 &&
+                <>
+                  <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Wedding Videos</h2>
+                  <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                    {uploadVideo?.Wedding?.map(
+                      (src, index) => (
+                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                        </div>
+                      ))
+                    }
+                  </div>
+                </>
+                }
 
-              <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
-                <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src="https://videos.pexels.com/video-files/27593045/12178773_640_360_30fps.mp4" autoplay controls loop />
-              </div>
-            </div>
-          )}
-        </div>
+
+                {uploadVideo?.Other?.length > 0 &&
+                <>
+                  <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Other Videos</h2>
+                  <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                    {uploadVideo?.Other?.map(
+                      (src, index) => (
+                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                        </div>
+                      ))}
+                  </div>
+                </>
+                }
+
+            </>
+            )}
+
+
+
+          </div>
+        )}
+
       </div>
     </div>
   );
