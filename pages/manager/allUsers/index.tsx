@@ -187,7 +187,7 @@ const Users = () => {
                                             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
                                                 <div className="flex min-h-screen items-start justify-center md:px-4">
 
-                                                    <Dialog.Panel as="div" className="panel my-32 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark w-10/12 md:w-3/5 xl:w-3/6 2xl:w-2/6"
+                                                    <Dialog.Panel as="div" className="panel my-24 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark w-10/12 md:w-3/5 xl:w-3/6 2xl:w-2/6"
                                                     >
                                                         <div className="flex my-2 items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
                                                             <div className="text-[22px] font-bold capitalize leading-none text-[#000000] ms-3"> users details </div>
@@ -196,60 +196,61 @@ const Users = () => {
                                                             </button>
                                                         </div>
                                                         <div className="">
-                                                            <h2 className="mx-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Detail Information of {userInfo?.name} </h2>
                                                             {/* <div className='mx-6 pb-6'> */}
                                                             <form onSubmit={handleSubmit(onSubmit)} className='mx-6 pb-6'>
                                                                 <div
-                                                                    className='md:flex justify-between mx-auto pb-6 space-y-5 md:space-y-0 box-border px-6'>
-                                                                    <div className="left space-y-4 ">
-                                                                        {/* Id */}
-                                                                        <div className="">
+                                                                    className='md:flex gap-5 mt-2 mx-auto pb-6 space-y-5 md:space-y-0 box-border '>
+                                                                    <div className="left space-y-4  w-full">
+                                                                        <div className="w-full mt-[5px]">
                                                                             <label htmlFor="id" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                                                                                 User id
                                                                             </label>
-                                                                            <input
+                                                                            <p className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400mt-1'>
+                                                                                {userInfo?.id}
+                                                                            </p>
+                                                                            {/* <input
                                                                                 {...register("id")}
                                                                                 defaultValue={userInfo?.id}
                                                                                 className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400 mt-1 bg-gray-200'
                                                                                 onChange={(e) => handleInputChange('id', e.target.value)}
                                                                                 disabled
-                                                                            />
+                                                                            /> */}
                                                                         </div>
-                                                                        {/* Name */}
-                                                                        <div className="">
+                                                                        <div className="w-full">
                                                                             <label htmlFor="name" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                                                                                 Name
                                                                             </label>
-                                                                            <input
-                                                                                {...register("name")}
-                                                                                defaultValue={userInfo?.name}
-                                                                                className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1'
-                                                                                onChange={(e) => handleInputChange('name', e.target.value)}
-                                                                            />
+                                                                            <p className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1'>
+                                                                                {userInfo?.name}
+                                                                            </p>
                                                                         </div>
 
-                                                                        {/*Email*/}
-                                                                        <div className="">
+                                                                        <div className="w-full">
                                                                             <label htmlFor="email" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                                                                                 email
                                                                             </label>
-                                                                            <input
+                                                                            <p className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1'>
+                                                                                {userInfo?.email}
+                                                                            </p>
+                                                                            {/* <input
                                                                                 {...register("email")}
                                                                                 defaultValue={userInfo?.email}
                                                                                 className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1'
                                                                                 onChange={(e) => handleInputChange('email', e.target.value)}
-                                                                            />
+                                                                            /> */}
                                                                         </div>
                                                                     </div>
 
-                                                                    <div className="right space-y-4">
-                                                                        {/*Email Varified*/}
-                                                                        <div className="">
+                                                                    <div className="right space-y-4 w-full">
+                                                                        <div className="w-full">
                                                                             <label htmlFor="isEmailVerified" className="mb-0 font-sans text-[14px] rtl:ml-2 w-1/4 md:w-full capitalize"
                                                                             >
                                                                                 Email Verified
                                                                             </label>
-                                                                            <select
+                                                                            <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
+                                                                                {userInfo?.isEmailVerified === "true" ? "Yes" : "No"}
+                                                                            </p>
+                                                                            {/* <select
                                                                                 className='border rounded p-3 focus:outline-none focus:border-gray-400 ms-12 md:ms-0 mt-1 w-56'
                                                                                 id="isEmailVerified"
                                                                                 defaultValue={userInfo?.isEmailVerified}
@@ -258,15 +259,14 @@ const Users = () => {
                                                                             >
                                                                                 <option value="true">Yes</option>
                                                                                 <option value="false">No</option>
-                                                                            </select>
+                                                                            </select> */}
                                                                         </div>
-                                                                        {/*Role*/}
-                                                                        <div className="">
+                                                                        <div className="w-full">
                                                                             <label htmlFor="role" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize"
                                                                             >
                                                                                 role
                                                                             </label>
-                                                                            <select
+                                                                            {/* <select
                                                                                 className='border rounded p-3 focus:outline-none focus:border-gray-400 ms-12 md:ms-0 mt-1 w-56'
                                                                                 id="role"
                                                                                 defaultValue={userInfo?.role}
@@ -276,30 +276,37 @@ const Users = () => {
                                                                                 <option value="manager">Manager</option>
                                                                                 <option value="user">User</option>
                                                                                 <option value="cp">Cp</option>
-                                                                            </select>
+                                                                            </select> */}
+                                                                            <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
+                                                                                {userInfo?.role}
+                                                                            </p>
+
                                                                         </div>
 
-                                                                        {/*Address*/}
-                                                                        <div className="">
+                                                                        <div className="w-full">
                                                                             <label htmlFor="location" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                                                                                 Address
                                                                             </label>
-                                                                            <input
+                                                                            {/* <input
                                                                                 {...register("location")}
                                                                                 defaultValue={userInfo?.location}
                                                                                 className='border rounded p-3 focus:outline-none text-gray-600 focus:border-gray-400  mt-1 '
                                                                                 onChange={(e) => handleInputChange('location', e.target.value)}
-                                                                            />
+                                                                            /> */}
+                                                                            <p className='border rounded p-3 text-gray-600 mt-1'>
+                                                                                {userInfo?.location}
+                                                                            </p>
                                                                         </div>
 
-                                                                        <div className="">
-                                                                            <button type="submit" className="btn bg-black font-sans text-white mb-4 capitalize md:block mt-5">
-                                                                                Save
-                                                                            </button>
-                                                                        </div>
                                                                     </div>
                                                                 </div>
+                                                                <div className="flex justify-end">
+                                                                    <button type="submit" className="btn bg-black font-sans text-white  capitalize md:block ">
+                                                                        Save
+                                                                    </button>
+                                                                </div>
                                                             </form>
+
                                                         </div>
                                                     </Dialog.Panel>
                                                 </div>

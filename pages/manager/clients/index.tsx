@@ -321,7 +321,7 @@ const Users = () => {
                     <Dialog as="div" open={userModalClient} onClose={() => setUserModalClient(false)}>
                       <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
                         <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                          <Dialog.Panel as="div" className="panel my-24 w-3/5 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                          <Dialog.Panel as="div" className="panel my-24 w-10/12 md:w-3/5 xl:w-3/6 2xl:w-2/6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                             <div className="my-2 flex items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
                               <div className="ms-3 text-[22px] font-bold capitalize leading-none text-[#000000]">Client </div>
                               <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModalClient(false)}>
@@ -330,46 +330,48 @@ const Users = () => {
                             </div>
 
                             <div className="basis-[50%]">
-                              <h2 className="mx-6 mb-[12px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Detail Information of {clientUserInfo?.name} </h2>
+                              {/* <h2 className="mx-6 mb-[12px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Detail Information offff {clientUserInfo?.name} </h2> */}
 
                               <div className="mx-6 pb-6">
-                                <div className="flex justify-between">
-                                  <div className="left">
-                                    <p>
-                                      <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
-                                        Name :<span className="ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]">{clientUserInfo?.name}</span>
-                                      </span>
-                                    </p>
-                                    <p>
-                                      <span className="text-[16px] font-bold leading-none text-[#000000]">
-                                        Email :<span className="ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]">{clientUserInfo?.email}</span>
-                                      </span>
-                                    </p>
-                                    <p>
-                                      <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
-                                        Role :<span className="ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]">{clientUserInfo?.role}</span>
-                                      </span>
-                                    </p>
+                                <div className="flex gap-5 mt-0 mx-auto  space-y-5 md:space-y-0 box-border ">
+                                  <div className="left space-y-4 w-full">
+                                    <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[9px]">
+                                      <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Client Id  </span>
+                                      <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.id}</span>
+                                    </span>
+                                    <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[12px]">
+                                      <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Name  </span>
+                                      <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.name}</span>
+                                    </span>
                                   </div>
 
-                                  <div className="right">
-                                    <p>
-                                      <span className="text-[16px] font-bold leading-none text-[#000000]">
-                                        Time :<span className="ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]">{formattedDateTime?.time}</span>
-                                      </span>
-                                    </p>
-                                    <p>
+                                  <div className="right space-y-4 w-full">
+                                    <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col gap-1 m-0 mt-1">
+                                      <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Role </span>
+                                      <span className=" text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.role}</span>
+                                    </span>
+
+                                    <span className="text-[16px] font-bold leading-none text-[#000000] flex flex-col gap-1 m-0 mt-1">
+
+                                      <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Address </span>
+                                      <span className=" text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.location}</span>
+                                    </span>
+                                    {/* <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
                                       <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
                                         Date :<span className="ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]">{formattedDateTime?.date}</span>
                                       </span>
                                     </p>
-                                    <p>
+                                    <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
                                       <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
                                         Address :<span className="ps-1 text-[16px] font-semibold leading-[28px] text-[#000000]">{clientUserInfo?.location}</span>
                                       </span>
-                                    </p>
+                                    </p> */}
                                   </div>
                                 </div>
+                                <span className="text-[16px] font-bold leading-none text-[#000000] flex flex-col gap-1">
+                                  <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Email  </span>
+                                  <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.email}</span>
+                                </span>
                                 <div className="btn-group flex">
                                   <button onClick={() => setUserModalClient(false)} type="submit" className="btn mx-auto mt-12 hidden bg-black font-sans text-white md:me-0 md:block">
                                     Close
