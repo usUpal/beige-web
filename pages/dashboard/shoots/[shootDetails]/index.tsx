@@ -623,7 +623,7 @@ const ShootDetails = () => {
                 <div className='flex items-center justify-between w-full mb-3'>
                   <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Assign CP's</label>
                   <div className='flex gap-3'>
-                    <button onClick={getCps} className='bg-violet-600 text-white rounded-md px-3 py-0.5 text-sm'>Add CP</button>
+                    <button onClick={getCps} className='bg-violet-600 text-white rounded-md px-3 py-0.5 text-xs'>Add CP</button>
                   </div>
                 </div>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">

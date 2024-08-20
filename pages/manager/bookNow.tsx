@@ -736,7 +736,7 @@ const BookNow = () => {
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
-                              <p className="btn btn-success ml-2 mt-4 h-9" onClick={addDateTime}>
+                              <p className="btn btn-success ml-2 mt-4 h-9 cursor-pointer" onClick={addDateTime}>
                                 Add
                               </p>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
@@ -908,13 +908,13 @@ const BookNow = () => {
                             const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
                               <div key={cp?.userId?._id} className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
-                                <div className="flex items-start justify-start">
+                                <div className="grid grid-cols-3">
                                   <div className="media relative h-14 w-14">
                                     <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} style={{ width: '100%', height: '100%' }} className="mr-3 rounded-full" alt="img" />
                                     <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
                                   </div>
 
-                                  <div className="content ms-2">
+                                  <div className="col-span-2 content ms-2">
                                     <h4 className="font-sans text-[16px] capitalize leading-none text-black">{cp?.userId?.name}</h4>
                                     <span className="profession text-[12px] capitalize leading-none text-[#838383]">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
                                     <div className="location mt-2 flex items-center justify-start">
