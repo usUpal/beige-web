@@ -23,7 +23,7 @@ const StatusBg: React.FC<any> = ({ children }) => {
     backgroundColor = '#DDF5F0';
   } else if (children === 'inactive' || children === 'InActive') {
     backgroundColor = '#E7CF02';
-  } else if (children === 'paid' || children === 'Paid') {
+  } else if (children === 'paid' || children === 'Paid' || children === 'accepted') {
     backgroundColor = '#5cb85c';
     textColor = '#fff';
   }

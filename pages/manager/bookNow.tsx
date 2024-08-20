@@ -638,8 +638,8 @@ const BookNow = () => {
                                       onClick={() => handleClientChange(client)}
                                       className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
                                     >
-                                      <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full bg-gray-500 text-xl text-white">
-                                        <img src={client.profile_picture} className="rounded-full" />
+                                      <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
+                                        <img src={client.profile_picture || '/assets/images/favicon.png'} className="rounded-full w-full h-full" />
                                       </div>
                                       <a href="#">{client.name}</a>
                                     </li>
@@ -890,45 +890,6 @@ const BookNow = () => {
                             <p className="text-[14px] capitalize leading-none text-[#838383]">choose your beige photographer/videographer</p>
                           </div>
                         </div>
-                        {/* search */}
-                        {/* <div className="search me-12">
-                          <div className=" mt-[30px] items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
-                            <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
-                                  placeholder="Search... asdfasdf"
-                                  onChange={(event) => setQuery(event.target.value)}
-                                  value={query}
-                                />
-                                <button type="button" className="absolute inset-0 h-9 w-9 appearance-none peer-focus:text-primary ltr:right-auto rtl:left-auto">
-                                  <svg className="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
-                                    <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                  </svg>
-                                </button>
-                                <button type="button" className="absolute top-1/2 block -translate-y-1/2 hover:opacity-80 ltr:right-2 rtl:left-2 sm:hidden" onClick={() => setSearch(false)}>
-                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                                    <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                  </svg>
-                                </button>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => setSearch(!search)}
-                                className="search_btn rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60 sm:hidden"
-                              >
-                                <svg className="mx-auto h-4.5 w-4.5 dark:text-[#d0d2d6]" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
-                                  <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                        </div> */}
-
                         <div>
                           <input
                             type="text"
