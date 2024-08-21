@@ -460,11 +460,11 @@ const BookNow = () => {
           console.log(meeting_time);
           console.log(response);
           if (response.status === 201) {
-            swalToast('success', 'Order has been created successfully!');
+            swalToast('success', 'Shoot has been created successfully!');
             router.push('/dashboard/shoots');
             setIsLoading(false);
           } else {
-            swalToast('danger', 'Please check your order details!');
+            swalToast('danger', 'Please check your shoot details!');
             setIsLoading(false);
           }
         }
@@ -625,7 +625,7 @@ const BookNow = () => {
                               setClientName(event?.target?.value);
                               getAllClients(); // Fetch clients as user types
                             }}
-                            className="form-input flex-grow bg-slate-100"
+                            className="form-input flex-grow"
                             value={clientName}
                             placeholder="Client"
                           />
@@ -673,10 +673,10 @@ const BookNow = () => {
                       </div>
 
                       <div className="mt-5 flex items-start justify-between">
-                        {/* Order Name */}
+                        {/* Shoot Name */}
                         <div className="flex basis-[45%] flex-col  sm:flex-row">
                           <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Order Name
+                            Shoot Name
                           </label>
                           <input
                             id="order_name"
@@ -685,7 +685,7 @@ const BookNow = () => {
                             value={orderName()}
                             type="text"
                             className="form-input flex-grow bg-slate-100"
-                            placeholder="Order Name"
+                            placeholder="Shoot Name"
                             {...register('order_name')}
                           />
                         </div>

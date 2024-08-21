@@ -94,7 +94,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
         });
         const uploadPolicy = await api
           .getNewUploadPolicy(file?.name, file?.type, file?.size) // Get upload policy for full file destination path.
-          .catch((err) => handleStepFail(err, `Unable to get upload info for files ( Make sure the order is exist )`));
+          .catch((err) => handleStepFail(err, `Unable to get upload info for files ( Make sure the shoot is exist )`));
         dispatch({
           type: 'setStatus',
           status: `Uploading file ${i + 1} of ${state.files.length}...`,

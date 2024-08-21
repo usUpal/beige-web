@@ -457,12 +457,12 @@ const IndexClient = () => {
         if (activeTab === 3) {
           const response = await OrderApi.handleOrderMake(formattedData);
           if (response.status === 201) {
-            swalToast('success', 'Order has been created successfully!');
+            swalToast('success', 'Shoot has been created successfully!');
             setQuery('');
             router.push('/dashboard/shoots');
             setIsLoading(false);
           } else {
-            swalToast('danger', 'Please check your order details!');
+            swalToast('danger', 'Please check your shoot details!');
             setIsLoading(false);
           }
         }
@@ -621,7 +621,7 @@ const IndexClient = () => {
                         {/* Order Name */}
                         <div className="flex basis-[45%] flex-col  sm:flex-row">
                           <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Order Name
+                            Shoot Name
                           </label>
                           <input
                             id="order_name"
@@ -630,7 +630,7 @@ const IndexClient = () => {
                             value={orderName()}
                             type="text"
                             className="form-input flex-grow bg-slate-100"
-                            placeholder="Order Name"
+                            placeholder="Shoot Name"
                             {...register('order_name')}
                           />
                         </div>
@@ -837,15 +837,18 @@ const IndexClient = () => {
                           </div>
                         </div>
                         {/* search */}
-                        <div className="">
-                          <input
-                            type="text"
-                            className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
-                            placeholder="Search..."
-                            onChange={(event) => setQuery(event?.target?.value)}
-                            value={query}
-                          />
-                        </div>
+                        {userData?.role === 'manager' && (
+                          <div className="">
+                            <input
+                              type="text"
+                              className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
+                              placeholder="Search..."
+                              onChange={(event) => setQuery(event?.target?.value)}
+                              value={query}
+                            />
+                          </div>
+                        )}
+
                         {/* search ends */}
                       </div>
                       {/* Showing all cps */}
