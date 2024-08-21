@@ -93,7 +93,7 @@ const Disputes = () => {
             <thead>
               <tr>
                 <th className="text-[16px] font-semibold">Reason</th>
-                <th className="text-[16px] font-semibold">Created Date</th>
+                <th className="text-[16px] font-semibold">Created Date </th>
                 <th className="text-[16px] font-semibold">Status</th>
                 <th className="text-[16px] font-semibold">View</th>
               </tr>
@@ -118,7 +118,12 @@ const Disputes = () => {
                       </div>
                     </td>
 
-                    <td>{new Date(dispute?.createdAt).toLocaleString()}</td>
+                    <td>
+                      {new Date(dispute?.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}{' '} ,
+                      Time: {new Date(dispute?.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
+                    </td>
+
+
 
                     <td className="">
                       <StatusBg>{dispute?.status}</StatusBg>
@@ -140,7 +145,7 @@ const Disputes = () => {
               ) : (
                 <tr>
                   <td colSpan={50} className="text-center">
-                      <span className="text-[red] font-semibold flex justify-center"> No desputes found </span>
+                    <span className="text-[red] font-semibold flex justify-center"> No desputes found </span>
                   </td>
                 </tr>
               )}
@@ -177,7 +182,7 @@ const Disputes = () => {
                 </div>
 
                 <div className="mt-5 px-5">
-                  <h2 className="mb-[20px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Shoot Name: {disputeInfo?.order_id?.order_name}</h2>
+                  {/* <h2 className="mb-[20px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Shoot Name: {disputeInfo?.order_id?.order_name}</h2> */}
                   {/*  */}
                   <div className="justify-between md:flex">
                     <div>

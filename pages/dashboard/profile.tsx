@@ -22,7 +22,15 @@ const ImageModal = ({ src, onClose }) => {
   return (
     <Transition appear show={!!src} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0 scale-95"
+          enterTo="opacity-100 scale-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100 scale-100"
+          leaveTo="opacity-0 scale-95"
+        >
           <div className="fixed inset-0 bg-black bg-opacity-25" />
         </Transition.Child>
 
@@ -81,8 +89,6 @@ const Profile = () => {
     }
   };
 
-
-
   useEffect(() => {
     dispatch(setPageTitle('Profile'));
 
@@ -106,13 +112,12 @@ const Profile = () => {
     fetchReviews();
   }, [dispatch]);
 
-
   useEffect(() => {
     const fetchUploadImage = async () => {
       try {
         setIsLoading(true);
         const response = await fetch(`${API_ENDPOINT}/gcp/get-content/${userData?.id}/images`);
-       
+
         if (response.ok) {
           const data = await response.json();
           setUploadImage(data.contents);
@@ -132,7 +137,7 @@ const Profile = () => {
       try {
         setIsLoading(true);
         const response = await fetch(`${API_ENDPOINT}/gcp/get-content/${userData?.id}/videos`);
-       
+
         if (response.ok) {
           const data = await response.json();
           setUploadVideo(data.contents);
@@ -146,7 +151,6 @@ const Profile = () => {
     };
     fetchUploadVideo();
   }, []);
-
 
   const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
@@ -186,7 +190,7 @@ const Profile = () => {
 
                 <p className="text-xl font-semibold text-primary">{userData?.name}</p>
               </div>
-              <ul className="m-auto mt-5 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
+              <ul className="m-auto  mt-2 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
                 <li className="ml-4 flex items-center gap-2">
                   {allSvgs.coffeeCupIcon}
                   {profileDesignation(userData?.role)}
@@ -216,41 +220,37 @@ const Profile = () => {
               <div className="mb-7 font-bold">All Reviews</div>
               <Swiper spaceBetween={30} slidesPerView={3} navigation={false} pagination={{ clickable: true }} className="mySwiper">
                 {isLoading && reviews?.length > 0 ? (
-                  reviews?.map(
-                    (review, index) => (
-                      (
-                        <SwiperSlide key={index}>
-                          <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
-                            <div className="flex gap-4">
-                              {!review?.client_id?.profile_picture ? (
-                                <MakeProfileImage>{review?.client_id?.name}</MakeProfileImage>
-                              ) : (
-                                <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="User profile picture" />
-                              )}
+                  reviews?.map((review, index) => (
+                    <SwiperSlide key={index}>
+                      <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
+                        <div className="flex gap-4">
+                          {!review?.client_id?.profile_picture ? (
+                            <MakeProfileImage>{review?.client_id?.name}</MakeProfileImage>
+                          ) : (
+                            <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="User profile picture" />
+                          )}
 
-                              <div className="w-full">
-                                <div className="flex w-full items-center justify-between">
-                                  <div>
-                                    <h2 className="text-left text-[20px] font-bold leading-5">{review?.client_id?.name}</h2>
-                                    <p className="mt-1 text-left text-[14px] font-medium text-[#928989]">{review?.client_id?.location}</p>
-                                  </div>
-                                  <div>
-                                    <div className="flex items-center justify-end gap-1">
-                                      <svg className="h-4 w-4 text-center" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style={{ fill: '#c2ad36' }}>
-                                        <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.7 18L202.6 95.1 59 116.3c-12 1.8-22.2 10.7-25.7 21.7s-0.7 24.3 7.9 32.7L166.6 329l-97.4 93.1c-2.2 12-0.6 24.1 6.6 32.5 6.6 7.7 15.7 12.1 24.2 12.7 6.3 0 12.7-1.5 18.5-4.6l146.1-82.8 146.1 82.8c5.9 3.1 12.2 4.6 18.5 4.6 9.1 0 18.2-3.6 24.8-10.2 9.4-8.4 14.5-20.5 12.7-32.5L438.2 329l104.4-96.2c8.6-8.5 11.9-20.8 7.9-32.7s-13.7-19.9-25.7-21.7l-143.6-21.2L316.9 18z" />
-                                      </svg>
-                                      <span className="font-bold">{review?.rating}</span>
-                                    </div>
-                                  </div>
+                          <div className="w-full">
+                            <div className="flex w-full items-center justify-between">
+                              <div>
+                                <h2 className="text-left text-[20px] font-bold leading-5">{review?.client_id?.name}</h2>
+                                <p className="mt-1 text-left text-[14px] font-medium text-[#928989]">{review?.client_id?.location}</p>
+                              </div>
+                              <div>
+                                <div className="flex items-center justify-end gap-1">
+                                  <svg className="h-4 w-4 text-center" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style={{ fill: '#c2ad36' }}>
+                                    <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.7 18L202.6 95.1 59 116.3c-12 1.8-22.2 10.7-25.7 21.7s-0.7 24.3 7.9 32.7L166.6 329l-97.4 93.1c-2.2 12-0.6 24.1 6.6 32.5 6.6 7.7 15.7 12.1 24.2 12.7 6.3 0 12.7-1.5 18.5-4.6l146.1-82.8 146.1 82.8c5.9 3.1 12.2 4.6 18.5 4.6 9.1 0 18.2-3.6 24.8-10.2 9.4-8.4 14.5-20.5 12.7-32.5L438.2 329l104.4-96.2c8.6-8.5 11.9-20.8 7.9-32.7s-13.7-19.9-25.7-21.7l-143.6-21.2L316.9 18z" />
+                                  </svg>
+                                  <span className="font-bold">{review?.rating}</span>
                                 </div>
-                                <p className="mt-3 text-left text-[14px]">{review?.reviewText}</p>
                               </div>
                             </div>
+                            <p className="mt-3 text-left text-[14px]">{review?.reviewText}</p>
                           </div>
-                        </SwiperSlide>
-                      )
-                    )
-                  )
+                        </div>
+                      </div>
+                    </SwiperSlide>
+                  ))
                 ) : (
                   <p>No reviews available</p>
                 )}
@@ -283,110 +283,95 @@ const Profile = () => {
                   } */}
             </div>
 
-            {showImage && (<>
-                {uploadImage?.Corporate?.length > 0 && 
-                <>
-                  <h2 className="text-left text-[20px] font-bold mt-6 mb-0">Corporate Images</h2>
-                  <div className="image-sec mt-4 flex flex-wrap items-center gap-4">
-                      {uploadImage?.Corporate?.map(
-                        (src, index) => (
-                          <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                            <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
-                          </div>
-                        ))
-                    }
-                  </div>
-                </>
-                }
-
-                {uploadImage?.Wedding?.length > 0 && 
-                <>
-                  <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Wedding Images</h2>
-                  <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                      {uploadImage?.Wedding?.map(
-                        (src, index) => (
-                          <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                            <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
-                          </div>
-                        ))
-                    }
-                  </div>
-                  </>
-                }
-
-                {uploadImage?.Other?.length > 0 && 
-                <>
-                   <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Other Images</h2>
-                  <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                    {uploadImage?.Other?.map(
-                      (src, index) => (
+            {showImage && (
+              <>
+                {uploadImage?.Corporate?.length > 0 && (
+                  <>
+                    <h2 className="mb-0 mt-6 text-left text-[20px] font-bold">Corporate Images</h2>
+                    <div className="image-sec mt-4 flex flex-wrap items-center gap-4">
+                      {uploadImage?.Corporate?.map((src, index) => (
                         <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
                           <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
                         </div>
-                      ))
-                    }
-                  </div>
+                      ))}
+                    </div>
                   </>
-                }
-            </>
+                )}
+
+                {uploadImage?.Wedding?.length > 0 && (
+                  <>
+                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Images</h2>
+                    <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
+                      {uploadImage?.Wedding?.map((src, index) => (
+                        <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                          <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {uploadImage?.Other?.length > 0 && (
+                  <>
+                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Images</h2>
+                    <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
+                      {uploadImage?.Other?.map((src, index) => (
+                        <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                          <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
             )}
 
             <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
 
-            {!showImage && (<>
-                {uploadVideo?.Corporate?.length > 0 &&
-                <>
-                  <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Corporate Videos</h2>
-                  <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {uploadVideo?.Corporate?.map(
-                        (src, index) => (
-                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
-                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
-                        </div>
-                    ))}
-                  </div>
-                </>
-                }
-
-
-                {uploadVideo?.Wedding?.length > 0 &&
-                <>
-                  <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Wedding Videos</h2>
-                  <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                    {uploadVideo?.Wedding?.map(
-                      (src, index) => (
-                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
-                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
-                        </div>
-                      ))
-                    }
-                  </div>
-                </>
-                }
-
-
-                {uploadVideo?.Other?.length > 0 &&
-                <>
-                  <h2 className="text-left text-[20px] font-bold mt-8 mb-0">Other Videos</h2>
-                  <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                    {uploadVideo?.Other?.map(
-                      (src, index) => (
+            {!showImage && (
+              <>
+                {uploadVideo?.Corporate?.length > 0 && (
+                  <>
+                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Corporate Videos</h2>
+                    <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                      {uploadVideo?.Corporate?.map((src, index) => (
                         <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
                           <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
                         </div>
                       ))}
-                  </div>
-                </>
-                }
+                    </div>
+                  </>
+                )}
 
-            </>
+                {uploadVideo?.Wedding?.length > 0 && (
+                  <>
+                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Videos</h2>
+                    <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                      {uploadVideo?.Wedding?.map((src, index) => (
+                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {uploadVideo?.Other?.length > 0 && (
+                  <>
+                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Videos</h2>
+                    <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                      {uploadVideo?.Other?.map((src, index) => (
+                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
             )}
-
-
-
           </div>
         )}
-
       </div>
     </div>
   );
