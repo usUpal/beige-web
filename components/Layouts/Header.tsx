@@ -162,7 +162,7 @@ const Header = () => {
           </div>
           <div className="flex items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
             <div className="sm:ltr:mr-auto sm:rtl:ml-auto"></div>
-            <div className="dropdown shrink-0">
+            {/* <div className="dropdown shrink-0">
               <Dropdown
                 offset={[0, 8]}
                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -175,7 +175,7 @@ const Header = () => {
                   <li className="mb-5" onClick={(e) => e.stopPropagation()}>
                     <div className="relative !h-[68px] w-full overflow-hidden rounded-t-md p-5 text-white hover:!bg-transparent">
                       <div className="bg- absolute inset-0 h-full w-full bg-[url(/assets/images/menu-heade.jpg)] bg-cover bg-center bg-no-repeat"></div>
-                      <h4 className="relative z-10 text-lg font-semibold">Messages</h4>
+                      <h4 className="relative z-10 text-lg font-semibold">Messages asdfasdf</h4>
                     </div>
                   </li>
                   {messages.length > 0 ? (
@@ -220,7 +220,7 @@ const Header = () => {
                   )}
                 </ul>
               </Dropdown>
-            </div>
+            </div> */}
             <div className="dropdown shrink-0">
               <Dropdown
                 offset={[0, 8]}
