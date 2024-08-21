@@ -669,6 +669,7 @@ const ShootDetails = () => {
                         <tbody>
                           {shootInfo?.cp_ids?.map((cp, key) => (
                             <tr key={key}>
+                              {console.log("Cp Info : ",cp)}
                               <td className="border-b px-4 py-2 font-bold">
                                 <div className='flex items-center justify-center'>
                                   <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">

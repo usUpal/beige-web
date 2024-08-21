@@ -1,24 +1,36 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "lib": ["dom", "dom.iterable", "esnext"],
-        "allowJs": true,
-        "skipLibCheck": true,
-        "strict": true,
-        "forceConsistentCasingInFileNames": true,
-        "noEmit": true,
-        "esModuleInterop": true,
-        "module": "esnext",
-        "moduleResolution": "node",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "jsx": "preserve",
-        "incremental": true,
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["./*"]
-        }
-    },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/apps/todolist.tsx", "FileManager/FileExplorer/FileExplorer.tsx", "FileManager/FileCard/FileCard.tsx", "FileManager/FileUploadModal/FileUploadModal.tsx", "FileManager/FolderCreationModal/FolderCreationModal.tsx", "FileManager/SettingsModal/SettingsModal.tsx", "FileManager/Menu/Menu.js"],
-    "exclude": ["node_modules"]
+  "compilerOptions": {
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/apps/todolist.tsx",
+    "FileManager/FileExplorer/FileExplorer.tsx",
+    "FileManager/FileCard/FileCard.tsx",
+    "FileManager/FileUploadModal/FileUploadModal.tsx",
+    "FileManager/FolderCreationModal/FolderCreationModal.tsx",
+    "FileManager/SettingsModal/SettingsModal.tsx",
+    "FileManager/Menu/Menu.js"
+  ],
+  "exclude": ["node_modules"]
 }
