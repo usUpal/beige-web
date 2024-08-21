@@ -53,14 +53,14 @@ const SidebarClient = (props: any) => {
             </Link>
           </li>
 
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <Link href="/dashboard/fileManager" className="group">
               <div className="flex items-center">
                 {allSvgs.filesSvg}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">File Manager</span>
               </div>
             </Link>
-          </li>
+          </li> */}
 
           <li className='nav-item'>
             <Link href='/dashboard/transactions' className='group'>

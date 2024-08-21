@@ -665,7 +665,7 @@ const BookNow = () => {
                               setClientName(event?.target?.value);
                               getAllClients(); // Fetch clients as user types
                             }}
-                            className={`form-input flex-grow bg-slate-100 ${clientName ? 'border-red-500' : ''}`}
+                            className={`form-input flex-grow bg-slate-100 `}
                             value={clientName}
                             placeholder="Client"
                             required={!clientName}
@@ -675,8 +675,8 @@ const BookNow = () => {
 
                             
                             <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
-                              {
-                                isClientLoading && <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
+                              { isClientLoading ? (
+                                <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
                                   {/* Render loading skeleton here */}
                                   {[...Array(5)].map((_, i) => (
                                     <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
@@ -685,30 +685,33 @@ const BookNow = () => {
                                     </div>
                                   ))}
                                 </div>
-                              }
-                              {clients && clients.length > 0 && !isClientLoading ? (
-                                <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
-                                  {clients?.map((client) => (
-                                    <li
-                                      key={client.id}
-                                      onClick={() => handleClientChange(client)}
-                                      className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
-                                    >
-                                      <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                        <img src={client.profile_picture || '/assets/images/favicon.png'} className="rounded-full w-full h-full" />
-                                      </div>
-                                      <a href="#">{client.name}</a>
-                                    </li>
-                                  ))}
-                                </ul>
-                              ) : <div
+                              ) : (
+                              <>
+                                { clients && clients.length > 0 ? (
+                                  <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
+                                    {clients?.map((client) => (
+                                      <li
+                                        key={client.id}
+                                        onClick={() => handleClientChange(client)}
+                                        className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
+                                      >
+                                        <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
+                                          <img src={client.profile_picture || '/assets/images/favicon.png'} className="rounded-full w-full h-full" />
+                                        </div>
+                                        <a href="#">{client.name}</a>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
+                                    <p className="text-center text-red-500">No client found</p>
+                                  </div>
+                                )}
+                              </>
+                              )}
 
 
-                                className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
-                              >
-                                <p>No client found</p>
-
-                              </div>}
+                              
                               
                             </div>
                           </>
