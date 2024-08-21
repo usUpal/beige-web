@@ -99,7 +99,7 @@ const IndexClient = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setPageTitle('Manager Dashboard'));
+    dispatch(setPageTitle('Dashboard'));
     localStorage.removeItem('location');
   }, []);
 

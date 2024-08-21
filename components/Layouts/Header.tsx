@@ -144,11 +144,11 @@ const Header = () => {
   const { t, i18n } = useTranslation();
 
   let userProfileImage;
-  if(userData?.profile_image){
-    userProfileImage = <img className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="/assets/images/user-profile.jpeg" alt="userProfile" />
+  if(userData?.profile_picture){
+    userProfileImage = <img className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src={`${userData?.profile_picture || "/assets/images/user-profile.jpeg"}`} alt="userProfile" />
 
   }else{
-    userProfileImage = <span className='w-8 h-8 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white capitalize'>{userData?.name[0] ?? 'NA'}</span>
+    userProfileImage = <span className='w-8 h-8 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white capitalize'>{userData?.name[0] ?? 'BE'}</span>
   }
 
   return (
@@ -315,7 +315,8 @@ const Header = () => {
                   <li>
                     <div className="flex items-center px-4 py-4">
                       <Link href="/dashboard/profile">
-                        <span className='w-9 h-9 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white'>{userData?.name[0] ?? 'NA'}</span>
+                      {userProfileImage}
+                        {/* <span className='w-9 h-9 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white'>{userData?.name[0] ?? 'NA'}</span> */}
                         {/* <img className="h-10 w-10 rounded-md object-cover"  src={'/assets/images/favicon.png'}  alt="userProfile" /> */}
                       </Link>
                       <div className="truncate ltr:pl-4 rtl:pr-4">

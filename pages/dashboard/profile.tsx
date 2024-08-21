@@ -130,7 +130,8 @@ const Profile = () => {
                 {userData?.profile_picture ? (
                   <img src={userData?.profile_picture} className="mb-5 h-32 w-32 rounded-full object-cover" alt="User profile picture" />
                 ) : (
-                  <img src="/assets/images/favicon.png" alt="Default profile picture" className="mb-5 h-32 w-32 rounded-full object-contain" />
+                  // <img src="/assets/images/favicon.png" alt="Default profile picture" className="mb-5 h-32 w-32 rounded-full object-contain" />
+                  <span className='h-32 w-32 rounded-full font-bold text-2xl flex justify-center items-center object-cover bg-slate-400 text-white capitalize'>{userData?.name[0] ?? 'BE'}</span>
                 )}
 
                 <p className="text-xl font-semibold text-primary">{userData?.name}</p>
