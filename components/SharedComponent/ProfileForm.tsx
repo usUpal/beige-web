@@ -4,6 +4,7 @@ import Map from '../Map';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_ENDPOINT } from '@/config';
+import Swal from 'sweetalert2';
 
 interface FormData {
   name: string;
@@ -58,6 +59,23 @@ const ProfileForm = () => {
   };
 
   const onSubmit = async (data: userData) => {
+
+    const toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 10000,
+      showCloseButton: true,
+      customClass: {
+        popup: `color-any`,
+      },
+    });
+    toast.fire({
+      title: "This page is under development",
+    });
+    return;
+
+    
     const coordinates = geo_location?.coordinates;
 
     if (coordinates.length === 2) {

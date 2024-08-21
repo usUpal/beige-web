@@ -11,6 +11,7 @@ import StatusBg from '@/components/Status/StatusBg';
 import { useAuth } from '@/contexts/authContext';
 import Swal from 'sweetalert2';
 import ResponsivePagination from 'react-responsive-pagination';
+import PreLoader from '@/components/ProfileImage/PreLoader';
 
 const Transactions = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const Transactions = () => {
   const [payoutInfo, setPayoutInfo] = useState<any>({});
   const [selectedPayoutInfo, setSelectedPayoutInfo] = useState<Payouts | null>(null);
   const statusRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getAllPayouts();
@@ -32,6 +34,7 @@ const Transactions = () => {
 
   const getAllPayouts = async () => {
     let url;
+    setIsLoading(true);
     if (userRole == 'manager'){
       url = `${API_ENDPOINT}payout?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     }else{
@@ -43,8 +46,10 @@ const Transactions = () => {
       const myAllPayouts = await response.json();
       setTotalPagesCount(myAllPayouts?.totalPages);
       setAllPayouts(myAllPayouts?.results);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
     }
   };
 
@@ -84,7 +89,7 @@ const Transactions = () => {
   const payoutDate = useDateFormat(selectedPayoutInfo?.date);
   const updatedDate = useDateFormat(selectedPayoutInfo?.updatedAt);
 
-  console.log(selectedPayoutInfo?.updatedAt);
+  // console.log(selectedPayoutInfo?.updatedAt);
 
   // update the status-only
   const handleUpdateTestSubmit = async (id: string) => {
@@ -156,36 +161,47 @@ const Transactions = () => {
 
             <tbody>
 
-              {allPayouts && allPayouts.length > 0 ? (
-                allPayouts.map((data) => {
-                  return (
-                    <tr key={data.id}>
-                      <td>
-                        <div className="whitespace-nowrap">{data?.cardNumber ? data?.cardNumber : data?.accountNumber}</div>
-                      </td>
-                      <td>{data?.accountType == 'debitCard' ? 'Card' : 'Bank'}</td>
-                      <td>{data?.accountHolder}</td>
-                      <td>{data?.withdrawAmount}</td>
-
-                      <td>
-                        <StatusBg>{data?.status}</StatusBg>
-                      </td>
-                      {(userRole === 'manager') ?
-                      <td className="text-center">
-                        <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
-                          {allSvgs.pencilIconForEdit}
-                        </button>
-                      </td> : null }
-                    </tr>
-                  );
-                })
-
+              {isLoading ? (
+                <>
+                  <PreLoader></PreLoader>
+                </>
               ) : (
-                <tr>
-                  <td colSpan={50} className="text-center">
-                    <span className="text-[red] font-semibold flex justify-center"> No transactions found </span>
-                  </td>
-                </tr>
+              <>
+
+                {allPayouts && allPayouts.length > 0 ? (
+                  allPayouts.map((data) => {
+                    return (
+                      <tr key={data.id}>
+                        <td>
+                          <div className="whitespace-nowrap">{data?.cardNumber ? data?.cardNumber : data?.accountNumber}</div>
+                        </td>
+                        <td>{data?.accountType == 'debitCard' ? 'Card' : 'Bank'}</td>
+                        <td>{data?.accountHolder}</td>
+                        <td>{data?.withdrawAmount}</td>
+
+                        <td>
+                          <StatusBg>{data?.status}</StatusBg>
+                        </td>
+                        {(userRole === 'manager') ?
+                        <td className="text-center">
+                          <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
+                            {allSvgs.pencilIconForEdit}
+                          </button>
+                        </td> : null }
+                      </tr>
+                    );
+                  })
+
+                ) : (
+                  <tr>
+                    <td colSpan={50} className="text-center">
+                      <span className="text-[red] font-semibold flex justify-center"> No transactions found </span>
+                    </td>
+                  </tr>
+                )}
+
+
+              </>
               )}
 
 

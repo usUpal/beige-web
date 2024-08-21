@@ -14,6 +14,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import { swalToast } from '@/utils/Toast/SwalToast';
+import PreLoader from '@/components/ProfileImage/PreLoader';
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -81,6 +82,7 @@ const Meeting = () => {
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
   const getAllMyMeetings = async () => {
+    setLoading(true);
     let url = `${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     if (userRole === 'client' || userRole === 'cp') {
       url = `${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
@@ -91,12 +93,14 @@ const Meeting = () => {
 
       setTotalPagesCount(allMeetings?.totalPages);
       setMyMeetings(allMeetings.results);
+      setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(true);
     }
   };
 
-  console.log('myMeetings', myMeetings);
+  // console.log('myMeetings', myMeetings);
 
   // Meeting Single
   const router = useRouter();
@@ -207,6 +211,15 @@ const Meeting = () => {
             </thead>
 
             <tbody>
+
+              {isLoading ? (
+                <>
+                  <PreLoader></PreLoader>
+                </>
+              ) : (
+              <>
+                
+                
               {myMeetings && myMeetings.length > 0 ? (
 
                 myMeetings?.map((meeting) => (
@@ -250,6 +263,9 @@ const Meeting = () => {
                   </td>
                 </tr>
               )}
+
+            </>
+            )}
 
             </tbody>
           </table>
@@ -317,7 +333,7 @@ const Meeting = () => {
 
                     {/* Resheduling */}
                     <div className='mr-4'>
-                      {meetingInfo?.meeting_status === 'pending' && (
+                      {meetingInfo?.meeting_status === 'pending' && userData?.role === "cp" && (
                         <div className="flex flex-col items-start">
                           <h2 className="text-[14px] font-semibold capitalize leading-none text-[#000000] mb-3">Reschedule Meeting</h2>
                           <div className="flex flex-col">
