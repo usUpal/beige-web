@@ -333,7 +333,7 @@ const Meeting = () => {
 
                     {/* Resheduling */}
                     <div className='mr-4'>
-                      {meetingInfo?.meeting_status === 'pending' && (
+                      {meetingInfo?.meeting_status === 'pending' && userData?.role === "cp" && (
                         <div className="flex flex-col items-start">
                           <h2 className="text-[14px] font-semibold capitalize leading-none text-[#000000] mb-3">Reschedule Meeting</h2>
                           <div className="flex flex-col">
