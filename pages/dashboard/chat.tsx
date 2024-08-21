@@ -10,6 +10,7 @@ import { IRootState } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import Link from 'next/link';
 import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 // types
 
 const Chat = () => {
@@ -39,16 +40,7 @@ const Chat = () => {
   const { userData } = useAuth() as any;
   const socket = useRef<any | null>(null);
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
-  useEffect(() => {
-    Swal.fire({
-      text: 'This Screen is under development',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Okay',
-    });
-  }, []);
+
   const fetchChats = async () => {
     try {
       setIsLoading(true);
@@ -194,7 +186,7 @@ const Chat = () => {
       <div className={`relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)] sm:min-h-0 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
         <div className={`panel absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
           <div className="relative">
-            <input type="text" className="peer form-input ltr:pr-9 rtl:pl-9" placeholder="Searching..." value={searchUser} onChange={(e) => setSearchUser(e.target.value)} />
+            <input type="text" className="peer form-input ltr:pr-9 rtl:pl-9" placeholder="Searching..." value={searchUser} onChange={(e) => setSearchUser(e.target.value)} onFocus={()=>(toast.warn('This features under development.'))}/>
             <div className="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-2 rtl:left-2">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5"></circle>
