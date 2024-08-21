@@ -235,7 +235,7 @@ const DashboardManager = (props: any) => {
     },
   };
 
-  //Total Orders
+  //Total Shoots
   const totalOrders: any = {
     series: [
       {
@@ -363,7 +363,7 @@ const DashboardManager = (props: any) => {
 
           <div className="panel h-full">
             <div className="mb-5 flex items-center">
-              <h5 className="text-lg font-semibold dark:text-white-light">Orders By Category</h5>
+              <h5 className="text-lg font-semibold dark:text-white-light">Shoots By Category</h5>
             </div>
             <div>
               <div className="rounded-lg bg-white dark:bg-black">
@@ -379,7 +379,7 @@ const DashboardManager = (props: any) => {
           </div>
         </div>
 
-        {/* Total Orders */}
+        {/* Total Shoots */}
         <div className="mb-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-1">
           <div className="panel h-full p-0">
             <div className="absolute flex w-full items-center justify-between p-5">
@@ -388,7 +388,7 @@ const DashboardManager = (props: any) => {
               </div>
               <h5 className="text-2xl font-semibold ltr:text-right rtl:text-left dark:text-white-light">
                 3,192
-                <span className="block text-sm font-normal">Total Orders</span>
+                <span className="block text-sm font-normal">Total Shoots</span>
               </h5>
             </div>
             <div className="rounded-lg bg-transparent">

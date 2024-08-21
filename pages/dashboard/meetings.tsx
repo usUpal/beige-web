@@ -189,7 +189,7 @@ const Meeting = () => {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
-      {/* Recent Orders */}
+      {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Meeting List</h5>
@@ -198,7 +198,7 @@ const Meeting = () => {
           <table>
             <thead>
               <tr className="">
-                <th className="text-[16px] font-semibold">Order Name</th>
+                <th className="text-[16px] font-semibold">Shoot Name</th>
                 <th className="text-[16px] font-semibold">Meeting Date / Time</th>
                 <th className="text-[16px] font-semibold">Attendings</th>
                 <th className="text-[16px] font-semibold ltr:rounded-r-md rtl:rounded-l-md">Status</th>
@@ -280,7 +280,7 @@ const Meeting = () => {
                     <div className="leftdata">
                       <p>
                         <span className="text-[14px] font-bold capitalize leading-none text-[#000000] ">
-                          Order : <span className="text-[14px] font-normal text-[#000000]">{meetingInfo?.order?.name}</span>
+                          Shoot : <span className="text-[14px] font-normal text-[#000000]">{meetingInfo?.order?.name}</span>
                         </span>
                       </p>
 

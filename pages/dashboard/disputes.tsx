@@ -78,7 +78,7 @@ const Disputes = () => {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
-      {/* Recent Orders */}
+      {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">All Disputes</h5>

@@ -114,7 +114,7 @@ const ShootDetails = () => {
                 </span>
               </div>
               <div className="">
-                <b>Current Order Status: </b> <span>
+                <b>Current Shoot Status: </b> <span>
                   <StatusBg>pre_production</StatusBg>
                 </span>
               </div>
