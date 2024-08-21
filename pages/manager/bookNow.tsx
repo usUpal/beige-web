@@ -28,6 +28,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import { API_ENDPOINT } from '@/config';
 import { clientNamespaces } from 'ni18n';
+import { useLocation } from 'react-router-dom';
 
 interface FormData {
   content_type: string;
@@ -142,35 +143,70 @@ const BookNow = () => {
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
 
-  useEffect(() => {
-    if (startDateTimeRef.current) {
-      flatpickr(startDateTimeRef.current, {
-        altInput: true,
-        altFormat: 'F j, Y h:i K',
-        dateFormat: 'Y-m-d H:i',
-        enableTime: true,
-        time_24hr: false,
-        minDate: 'today',
-        onChange: (selectedDates, dateStr) => {
-          handleChangeStartDateTime(dateStr);
-        },
-      });
-    }
 
-    if (endDateTimeRef.current) {
-      flatpickr(endDateTimeRef.current, {
-        altInput: true,
-        altFormat: 'F j, Y h:i K',
-        dateFormat: 'Y-m-d H:i',
-        enableTime: true,
-        time_24hr: false,
-        minDate: 'today',
-        onChange: (selectedDates, dateStr) => {
-          handleChangeEndDateTime(dateStr);
-        },
-      });
-    }
+  const handleBack = () => {
+    setActiveTab(activeTab === 3 ? 2 : 1);
+    // Use setTimeout to delay the Flatpickr initialization
+    setTimeout(() => {
+      if (startDateTimeRef.current) {
+        flatpickr(startDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeStartDateTime(dateStr);
+          },
+        });
+      }
+
+      if (endDateTimeRef.current) {
+        flatpickr(endDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeEndDateTime(dateStr);
+          },
+        });
+      }
+    }, 0);
+  };
+
+  useEffect(() => {
+      if (startDateTimeRef.current) {
+        flatpickr(startDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeStartDateTime(dateStr);
+          },
+        });
+      }
+      if (endDateTimeRef.current) {
+        flatpickr(endDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeEndDateTime(dateStr);
+          },
+        });
+      }
   }, []);
+
 
   const handleChangeStartDateTime = (dateStr) => {
     try {
@@ -625,10 +661,12 @@ const BookNow = () => {
                               setClientName(event?.target?.value);
                               getAllClients(); // Fetch clients as user types
                             }}
-                            className="form-input flex-grow bg-slate-100"
+                            className={`form-input flex-grow bg-slate-100 ${errors?.clientName ? 'border-red-500' : ''}`}
                             value={clientName}
                             placeholder="Client"
+                            required={clientName?.length === 0}
                           />
+                          {errors?.clientName && <p className="text-danger">{errors?.clientName.message}</p>}
                           {showClientDropdown && (
                             <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
                               {clients && clients.length > 0 ? (
@@ -708,12 +746,14 @@ const BookNow = () => {
                                 Shoot Time
                               </label>
 
+
+
                               <div className="relative">
                                 <p className="text-xs font-bold">Start Time</p>
                                 <input
                                   id="start_date_time"
                                   ref={startDateTimeRef}
-                                  type="datetime-local"
+                                  type="text"
                                   className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`}
                                   placeholder="Start time"
                                   required={startDateTime?.length === 0}
@@ -722,12 +762,13 @@ const BookNow = () => {
 
                                 {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                               </div>
+
                               <div className="relative">
                                 <p className="ml-1 text-xs font-bold">End Time</p>
                                 <input
                                   id="end_date_time"
                                   ref={endDateTimeRef}
-                                  type="datetime-local"
+                                  type="text"
                                   className={`form-input ml-1 w-[220px] cursor-pointer ${errors?.end_date_time ? 'border-red-500' : ''}`}
                                   placeholder="End time"
                                   required={endDateTime?.length === 0}
@@ -736,6 +777,12 @@ const BookNow = () => {
                                 <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/4 transform">🗓️</span>
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
+
+
+
+
+
+
 
                               <p className="btn btn-success ml-2 mt-4 h-9 cursor-pointer" onClick={addDateTime}>
                                 Add
@@ -746,7 +793,7 @@ const BookNow = () => {
 
                           {/* DateTime Output show Table */}
                           {dateTimes?.length !== 0 && (
-                            <div className="">
+                            <div className="mb-8">
                               <table className="table-auto">
                                 <thead>
                                   <tr>
@@ -1116,7 +1163,7 @@ const BookNow = () => {
                   <button
                     type="button"
                     className={`btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
-                    onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}
+                    onClick={() => handleBack()}
                   >
                     Back
                   </button>
