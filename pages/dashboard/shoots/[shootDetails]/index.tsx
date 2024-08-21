@@ -18,6 +18,9 @@ import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import axios from 'axios';
 import GoogleMapReact from 'google-map-react';
+import Loader from "@/components/SharedComponent/Loader";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 const ShootDetails = () => {
   const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
@@ -34,6 +37,7 @@ const ShootDetails = () => {
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
   const [cp_ids, setCp_ids] = useState([]);
   const [loadingSubmitMeting, setLoadingSubmitMeting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const allStatus = [
     {
@@ -121,11 +125,11 @@ const ShootDetails = () => {
   };
 
   const submitNewMeting = async () => {
-    setLoadingSubmitMeting(true);
+
     if (!metingDate) {
       return swalToast('danger', 'Please select Meting Date & Time!');
     }
-
+    setIsLoading(true);
     const requestData = {
       summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
       location: 'Online',
@@ -168,7 +172,7 @@ const ShootDetails = () => {
       setShowNewMetingBox(false);
       getShootDetails(shootId);
       swalToast('success', 'Schedule Meeting Success!');
-      setLoadingSubmitMeting(false);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error occurred while sending POST request:', error);
     }
@@ -180,6 +184,7 @@ const ShootDetails = () => {
         return swalToast('danger', 'Please select a status!');
       }
 
+      setIsLoading(true);
       const requestBody = {
         order_status: statusData,
       };
@@ -203,6 +208,7 @@ const ShootDetails = () => {
       setStatusDate('');
       setShowNewStatusBox(false);
       getShootDetails(shootId);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error occurred while sending POST request:', error);
     }
@@ -486,7 +492,7 @@ const ShootDetails = () => {
               </div>
               {/* Geo Location */}
               <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
-                <div style={{ height: '200px', width: '50%' }}>
+                <div style={{ height: '200px', width: '100%' }}>
                   {isLocationAvailable ? (
                     <GoogleMapReact
                       bootstrapURLKeys={{ key: MAPAPIKEY }}
@@ -578,13 +584,17 @@ const ShootDetails = () => {
                         onChange={(date) => setMetingDate(date[0])}
                       />
                       <button
-                        disabled={loadingSubmitMeting === true ? true : false}
+                        disabled={isLoading === true ? true : false}
                         onClick={submitNewMeting}
                         className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>
+                        {isLoading === true ? (
+                          <Loader />
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                          </svg>
+                        )}
                       </button>
                     </div>
                   )}
@@ -604,13 +614,18 @@ const ShootDetails = () => {
                           ))}
                         </select>
                         <button
-                          disabled={statusData.length ? false : true}
+                          disabled={isLoading === true ? true : false}
                           onClick={submitUpdateStatus}
                           className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                          </svg>
+                          {isLoading === true ? (
+                            <Loader />
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                          )}
+
                         </button>
                       </div>
                     )}
@@ -620,11 +635,18 @@ const ShootDetails = () => {
 
               {/* Assigned Cp's */}
               <div className="mb-4 basis-[45%]">
-                <div className='flex items-center justify-between w-full mb-3'>
-                  <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Assign CP's</label>
-                  <div className='flex gap-3'>
-                    <button onClick={getCps} className='bg-black text-white rounded-md px-3 py-0.5 text-xs'>Add CP</button>
-                  </div>
+                <div className='flex items-center gap-2 w-full mb-3'>
+                  <label className="mb-0 font-sans text-[14px] capitalize">Assign CP's</label>
+                  {userData?.role === 'manager' && (
+                    <div className='flex gap-3'>
+                      <button onClick={getCps} className='bg-black text-white rounded-md px-1 py-0.5 text-xs flex items-center gap-1'>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-3 h-3 text-white">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span>Add CP</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
                   {shootInfo?.cp_ids?.length > 0 && (
@@ -647,7 +669,12 @@ const ShootDetails = () => {
                           {shootInfo?.cp_ids?.map((cp, key) => (
                             <tr key={key}>
                               <td className="border-b px-4 py-2 font-bold">
-                                <div className='flex justify-center'>{cp?.id?.name ?? ''}</div>
+                                <div className='flex items-center justify-center'>
+                                  <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
+                                    <img src={'/assets/images/favicon.png'} className="rounded-full w-full h-full" />
+                                  </div>
+                                  <div>{cp?.id?.name ?? ''}</div>
+                                </div>
                               </td>
                               <td className="border-b px-4 py-2">
                                 <div className='flex justify-center'>
@@ -656,25 +683,28 @@ const ShootDetails = () => {
                               </td>
                               <td className="border-b px-4 py-2 text-right">
                                 <div className="flex justify-center">
-                                  <button
-                                    onClick={() => cancelCp(cp)}
-                                    className="rounded bg-red-500 p-1 text-white"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      strokeWidth={1.5}
-                                      stroke="currentColor"
-                                      className="h-4 w-4"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                      />
-                                    </svg>
-                                  </button>
+                                  {userData?.role === 'manager' ? (
+                                    <Tippy content="Cancel">
+                                      <button
+                                        onClick={() => cancelCp(cp)}
+                                        className={`rounded bg-red-500 text-white p-1`}
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                      </button>
+                                    </Tippy>
+                                  ) : (
+                                    <Tippy content="Only for admin">
+                                      <button
+                                        className={`rounded bg-[#E8E8E8] text-black  p-1`}
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                      </button>
+                                    </Tippy>
+                                  )}
                                 </div>
                               </td>
                             </tr>
@@ -882,7 +912,6 @@ const ShootDetails = () => {
                                   <h4 className="font-sans text-[16px] capitalize leading-none text-black">{cp?.userId?.name}</h4>
                                   <span className="profession text-[12px] capitalize leading-none text-[#838383]">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
                                   <div className="location mt-2 flex items-center justify-start">
-                                    {/* Your location icon here */}
                                     <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">{cp?.city}</span>
                                   </div>
                                   <div className="ratings mt-2">
@@ -893,13 +922,6 @@ const ShootDetails = () => {
                                 </div>
                               </div>
                               <div className="mt-3 flex">
-                                {/* <Link href={`cp/${cp?.userId?._id}`}>
-                                  <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-lg bg-black px-3 py-2 font-sans capitalize leading-none text-white">
-                                    view profile
-                                  </p>
-                                </Link> */}
-                                {/* ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                  } */}
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
                                   className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
@@ -925,8 +947,8 @@ const ShootDetails = () => {
                       <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
                         <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
                       </div>
-                      <button onClick={updateCps} className="mt-5 rounded-sm bg-black px-3 py-1 text-white">
-                        Submit
+                      <button disabled={isLoading === true ? true : false} onClick={updateCps} className="mt-5 rounded-sm bg-black px-3 py-1 text-white">
+                        {isLoading === !true ? 'Submit' : 'Loading'}
                       </button>
                     </div>
                   </div>
