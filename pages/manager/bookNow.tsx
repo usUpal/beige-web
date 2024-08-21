@@ -75,6 +75,7 @@ const BookNow = () => {
   const [clients, setClients] = useState([]);
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const [isClientLoading, setIsClientLoading] = useState(false);
 
   const {
     register,
@@ -179,32 +180,32 @@ const BookNow = () => {
   };
 
   useEffect(() => {
-      if (startDateTimeRef.current) {
-        flatpickr(startDateTimeRef.current, {
-          altInput: true,
-          altFormat: 'F j, Y h:i K',
-          dateFormat: 'Y-m-d H:i',
-          enableTime: true,
-          time_24hr: false,
-          minDate: 'today',
-          onChange: (selectedDates, dateStr) => {
-            handleChangeStartDateTime(dateStr);
-          },
-        });
-      }
-      if (endDateTimeRef.current) {
-        flatpickr(endDateTimeRef.current, {
-          altInput: true,
-          altFormat: 'F j, Y h:i K',
-          dateFormat: 'Y-m-d H:i',
-          enableTime: true,
-          time_24hr: false,
-          minDate: 'today',
-          onChange: (selectedDates, dateStr) => {
-            handleChangeEndDateTime(dateStr);
-          },
-        });
-      }
+    if (startDateTimeRef.current) {
+      flatpickr(startDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onChange: (selectedDates, dateStr) => {
+          handleChangeStartDateTime(dateStr);
+        },
+      });
+    }
+    if (endDateTimeRef.current) {
+      flatpickr(endDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onChange: (selectedDates, dateStr) => {
+          handleChangeEndDateTime(dateStr);
+        },
+      });
+    }
   }, []);
 
 
@@ -520,6 +521,7 @@ const BookNow = () => {
   // };
 
   const getAllClients = async () => {
+    setIsClientLoading(true);
     try {
       let res;
       if (clientName) {
@@ -530,8 +532,10 @@ const BookNow = () => {
       const users = await res.json();
       setClients(users?.results || []);
       setShowClientDropdown(true);
+      setIsClientLoading(false)
     } catch (error) {
       console.error(error);
+      setIsClientLoading(false)
     }
   };
 
@@ -656,22 +660,35 @@ const BookNow = () => {
                           </label>
                           <input
                             type="search"
-                            onFocus={getAllClients}
+                            // onFocus={getAllClients}
                             onChange={(event) => {
                               setClientName(event?.target?.value);
                               getAllClients(); // Fetch clients as user types
                             }}
-                            className={`form-input flex-grow bg-slate-100 ${errors?.clientName ? 'border-red-500' : ''}`}
+                            className={`form-input flex-grow bg-slate-100 ${clientName ? 'border-red-500' : ''}`}
                             value={clientName}
                             placeholder="Client"
-                            required={clientName?.length === 0}
+                            required={!clientName}
                           />
-                          {errors?.clientName && <p className="text-danger">{errors?.clientName.message}</p>}
-                          {showClientDropdown && (
+                          {/* {clientName && <p className="text-danger">Please select a valid client</p>} */}
+                          {showClientDropdown && <>
+
+                            
                             <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
-                              {clients && clients.length > 0 ? (
+                              {
+                                isClientLoading && <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
+                                  {/* Render loading skeleton here */}
+                                  {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
+                                      <div className="h-7 w-7 rounded-full bg-slate-200"></div>
+                                      <div className="h-7 w-full rounded-sm bg-slate-200"></div>
+                                    </div>
+                                  ))}
+                                </div>
+                              }
+                              {clients && clients.length > 0 && !isClientLoading ? (
                                 <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
-                                  {clients.map((client) => (
+                                  {clients?.map((client) => (
                                     <li
                                       key={client.id}
                                       onClick={() => handleClientChange(client)}
@@ -684,19 +701,19 @@ const BookNow = () => {
                                     </li>
                                   ))}
                                 </ul>
-                              ) : (
-                                <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
-                                  {/* Render loading skeleton here */}
-                                  {[...Array(5)].map((_, i) => (
-                                    <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
-                                      <div className="h-7 w-7 rounded-full bg-slate-200"></div>
-                                      <div className="h-7 w-full rounded-sm bg-slate-200"></div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
+                              ) : <div
+
+
+                                className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
+                              >
+                                <p>No client found</p>
+
+                              </div>}
+                              
                             </div>
-                          )}
+                          </>
+
+                          }
                         </div>
 
                         {/* Location */}
