@@ -10,6 +10,8 @@ import { IRootState } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import Link from 'next/link';
 import Swal from 'sweetalert2';
+import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
+import { toast } from 'react-toastify';
 // types
 
 const Chat = () => {
@@ -39,23 +41,14 @@ const Chat = () => {
   const { userData } = useAuth() as any;
   const socket = useRef<any | null>(null);
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
-  useEffect(() => {
-    Swal.fire({
-      text: 'This Screen is under development',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Okay',
-    });
-  }, []);
+
   const fetchChats = async () => {
     try {
       setIsLoading(true);
       //   const response = await fetch(`${API_ENDPOINT}/chats?sortBy=updatedAt:desc&limit=20&page=${currentPage}&cp_id=${userDetails.id}&populate=cp_id,client_id,order_id,last_message`);
-      const response = await fetch(`${API_ENDPOINT}chats/?populate=order_id,last_message&${userRole}_id=${userData.id}`);
+      const response = await fetch(`${API_ENDPOINT}chats/?sortBy=updatedAt:desc&populate=order_id,last_message&${userRole}_id=${userData.id}`);
       const newChats = await response.json();
-      if (newChats.results.length === 0) {
+      if (newChats.results?.length === 0) {
         setShowError(true);
         setIsLoading(false);
       } else {
@@ -120,7 +113,6 @@ const Chat = () => {
       });
       socket.current.on('roomJoined', (data: any) => {
         getOldMessages(selectedChatRoom?.id);
-        console.log('JOINED CHAT ROOM Conversation screen  =====', data);
       });
       //   Listaning messages
       socket.current.on('message', (data: any) => {
@@ -189,12 +181,23 @@ const Chat = () => {
     }
   };
 
+  const createImageByName = (name: string) => {
+    return <span className="flex h-[35px] w-[35px] items-center justify-center rounded-full bg-gray-300 text-[13px] leading-[45px]">{name}</span>;
+  };
+
   return (
     <div>
       <div className={`relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)] sm:min-h-0 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
         <div className={`panel absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
           <div className="relative">
-            <input type="text" className="peer form-input ltr:pr-9 rtl:pl-9" placeholder="Searching..." value={searchUser} onChange={(e) => setSearchUser(e.target.value)} />
+            <input
+              type="text"
+              className="peer form-input ltr:pr-9 rtl:pl-9"
+              placeholder="Searching..."
+              value={searchUser}
+              onChange={(e) => setSearchUser(e.target.value)}
+              onFocus={() => toast.warn('This features under development.')}
+            />
             <div className="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-2 rtl:left-2">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5"></circle>
@@ -217,7 +220,8 @@ const Chat = () => {
                       <div className="flex-1">
                         <div className="flex items-center">
                           <div className="relative flex-shrink-0">
-                            <img src="https://i.pravatar.cc/800" className="h-12 w-12 rounded-full object-cover" alt="" />
+                            <MakeProfileImage>{chat.order_id?.order_name}</MakeProfileImage>
+                            {/* <img src="https://i.pravatar.cc/800" className="h-12 w-12 rounded-full object-cover" alt="" /> */}
                             {/* {person.active && (
                               <div>
                                 <div className="absolute bottom-0 ltr:right-0 rtl:left-0">
@@ -382,9 +386,10 @@ const Chat = () => {
                     </svg>
                   </button>
                   <div className="relative flex-none">
-                    <img src="/public/favicon.png" className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" alt="img" />
+                    {/* <img src="/public/favicon.png" className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" alt="img" /> */}
+                    <MakeProfileImage>{selectedChatRoom?.order_id?.order_name}</MakeProfileImage>
                     <div className="absolute bottom-0 ltr:right-0 rtl:left-0">
-                      <div className="h-4 w-4 rounded-full bg-success"></div>
+                      <div className="h-3 w-3 rounded-full bg-success"></div>
                     </div>
                   </div>
                   <div className="mx-3">
@@ -394,7 +399,7 @@ const Chat = () => {
                     </Link>
                   </div>
                 </div>
-                <div className="flex gap-3 sm:gap-5">
+                {/* <div className="flex gap-3 sm:gap-5">
                   <div className="dropdown">
                     <Dropdown
                       placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -412,7 +417,7 @@ const Chat = () => {
                       }
                     ></Dropdown>
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
 
@@ -437,8 +442,14 @@ const Chat = () => {
                           <div key={index}>
                             <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
                               <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
-                                {message?.senderId === userData.id ? <img src="https://thispersondoesnotexist.com/" className="h-10 w-10 rounded-full object-cover" alt="" /> : ''}
-                                {message?.senderId !== userData.id ? <img src="https://i.pravatar.cc/800" className="h-10 w-10 rounded-full object-cover" alt="" /> : ''}
+                                {message?.senderId === userData.id ? (userRole == 'manager' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
+                                {message?.senderId !== userData.id
+                                  ? message?.senderName == 'Admin User'
+                                    ? createImageByName('MA')
+                                    : message?.senderName == 'User'
+                                    ? createImageByName('User')
+                                    : createImageByName('CP')
+                                  : ''}
                               </div>
                               <div className="">
                                 <div className="flex items-center gap-3">

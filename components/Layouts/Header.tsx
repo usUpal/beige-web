@@ -143,6 +143,14 @@ const Header = () => {
 
   const { t, i18n } = useTranslation();
 
+  let userProfileImage;
+  if(userData?.profile_picture){
+    userProfileImage = <img className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src={`${userData?.profile_picture || "/assets/images/user-profile.jpeg"}`} alt="userProfile" />
+
+  }else{
+    userProfileImage = <span className='w-8 h-8 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white capitalize'>{userData?.name[0] ?? 'BE'}</span>
+  }
+
   return (
     <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
       <div className="shadow-sm">
@@ -162,7 +170,7 @@ const Header = () => {
           </div>
           <div className="flex items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
             <div className="sm:ltr:mr-auto sm:rtl:ml-auto"></div>
-            <div className="dropdown shrink-0">
+            {/* <div className="dropdown shrink-0">
               <Dropdown
                 offset={[0, 8]}
                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -175,7 +183,7 @@ const Header = () => {
                   <li className="mb-5" onClick={(e) => e.stopPropagation()}>
                     <div className="relative !h-[68px] w-full overflow-hidden rounded-t-md p-5 text-white hover:!bg-transparent">
                       <div className="bg- absolute inset-0 h-full w-full bg-[url(/assets/images/menu-heade.jpg)] bg-cover bg-center bg-no-repeat"></div>
-                      <h4 className="relative z-10 text-lg font-semibold">Messages</h4>
+                      <h4 className="relative z-10 text-lg font-semibold">Messages asdfasdf</h4>
                     </div>
                   </li>
                   {messages.length > 0 ? (
@@ -220,7 +228,7 @@ const Header = () => {
                   )}
                 </ul>
               </Dropdown>
-            </div>
+            </div> */}
             <div className="dropdown shrink-0">
               <Dropdown
                 offset={[0, 8]}
@@ -300,13 +308,16 @@ const Header = () => {
                 offset={[0, 8]}
                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
                 btnClassName="relative group block"
-                button={<img className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="/assets/images/user-profile.jpeg" alt="userProfile" />}
+                button={userProfileImage }
               >
+                {console.log("User Info From Header : ",userData)}
                 <ul className="w-[230px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
                   <li>
                     <div className="flex items-center px-4 py-4">
                       <Link href="/dashboard/profile">
-                        <img className="h-10 w-10 rounded-md object-cover" src="/assets/images/user-profile.jpeg" alt="userProfile" />
+                      {userProfileImage}
+                        {/* <span className='w-9 h-9 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white'>{userData?.name[0] ?? 'NA'}</span> */}
+                        {/* <img className="h-10 w-10 rounded-md object-cover"  src={'/assets/images/favicon.png'}  alt="userProfile" /> */}
                       </Link>
                       <div className="truncate ltr:pl-4 rtl:pr-4">
                         <Link href="/dashboard/profile" className="text-black">

@@ -31,7 +31,7 @@ const SidebarCP = (props: any) => {
           <li className="nav-item">
             <Link href="/dashboard/shoots" className="group">
               <div className="flex items-center">
-                {allSvgs.shootSvg}
+                {allSvgs.shootsLinkIcon}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Shoots</span>
               </div>
             </Link>
@@ -39,7 +39,7 @@ const SidebarCP = (props: any) => {
           <li className="nav-item">
             <Link href="/dashboard/meetings" className="group">
               <div className="flex items-center">
-                {allSvgs.meetingsSvg}
+                {allSvgs.mettingLinkIcon}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Meetings</span>
               </div>
             </Link>
@@ -79,7 +79,7 @@ const SidebarCP = (props: any) => {
           <li className="menu nav-item">
             <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('settings')}>
               <div className="flex items-center">
-                {allSvgs.settingsSvg}
+                {allSvgs.settingLinkIcon}
                 <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Settings</span>
               </div>
 
@@ -92,8 +92,8 @@ const SidebarCP = (props: any) => {
 
             <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
               <ul className="sub-menu text-gray-500">
-                <Link href={'#'}>
-                  <li className="text-center">General Settings</li>
+                <Link href="/dashboard/profile">
+                  <li className="text-center">Profile Settings</li>
                 </Link>
               </ul>
             </AnimateHeight>

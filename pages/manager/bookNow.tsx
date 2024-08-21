@@ -5,7 +5,7 @@ import Map from '@/components/Map';
 import Loader from '@/components/SharedComponent/Loader';
 import useAddons from '@/hooks/useAddons';
 import useAllCp from '@/hooks/useAllCp';
-import useClent from '@/hooks/useClent';
+import useClient from '@/hooks/useClient';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation';
 import { swalToast } from '@/utils/Toast/SwalToast';
@@ -16,12 +16,19 @@ import 'flatpickr/dist/flatpickr.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
+
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import Flatpickr from 'react-flatpickr';
+import { API_ENDPOINT } from '@/config';
+import { clientNamespaces } from 'ni18n';
+import { useLocation } from 'react-router-dom';
 
 interface FormData {
   content_type: string;
@@ -42,9 +49,9 @@ interface FormData {
 const BookNow = () => {
   const router = useRouter();
   const [addonsData] = useAddons();
-  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails] = useAllCp();
+  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
 
-  const [allClients, onlyClients] = useClent();
+  const [allClients, onlyClients] = useClient();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
   const [startDateTime, setStartDateTime] = useState('');
@@ -65,6 +72,11 @@ const BookNow = () => {
   const [formDataPageOne, setFormDataPageOne] = useState<any>({});
   const [cp_ids, setCp_ids] = useState([]);
   const [search, setSearch] = useState(false);
+  const [clients, setClients] = useState([]);
+  const [showClientDropdown, setShowClientDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const [isClientLoading, setIsClientLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -129,40 +141,98 @@ const BookNow = () => {
     setAllRates(totalRate + shootCosts);
   }, [selectedFilteredAddons, filteredAddonsData, addonExtraHours]);
 
-  const handleChangeStartDateTime = (e: ChangeEvent<HTMLInputElement>) => {
-    try {
-      const inputValue = e.target.value;
-      const s_time = parseISO(inputValue);
+  const startDateTimeRef = useRef(null);
+  const endDateTimeRef = useRef(null);
 
-      // Check if the parsed date is valid
+  const handleBack = () => {
+    setActiveTab(activeTab === 3 ? 2 : 1);
+    // Use setTimeout to delay the Flatpickr initialization
+    setTimeout(() => {
+      if (startDateTimeRef.current) {
+        flatpickr(startDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeStartDateTime(dateStr);
+          },
+        });
+      }
+
+      if (endDateTimeRef.current) {
+        flatpickr(endDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeEndDateTime(dateStr);
+          },
+        });
+      }
+    }, 0);
+  };
+
+  useEffect(() => {
+    if (startDateTimeRef.current) {
+      flatpickr(startDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onChange: (selectedDates, dateStr) => {
+          handleChangeStartDateTime(dateStr);
+        },
+      });
+    }
+    if (endDateTimeRef.current) {
+      flatpickr(endDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onChange: (selectedDates, dateStr) => {
+          handleChangeEndDateTime(dateStr);
+        },
+      });
+    }
+  }, []);
+
+  const handleChangeStartDateTime = (dateStr) => {
+    try {
+      const s_time = parseISO(dateStr);
       if (!isValid(s_time)) {
         return;
       }
-      // Format the date if valid
       const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setStartDateTime(starting_date);
     } catch (error) {
       console.error('Error parsing date:', error);
-      // Handle the error, e.g., set an error state or display an error message
     }
   };
 
-  const handleChangeEndDateTime = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeEndDateTime = (dateStr) => {
     try {
-      const inputValue = e.target.value;
-      const e_time = parseISO(inputValue);
-      // Check if the parsed date is valid
+      const e_time = parseISO(dateStr);
       if (!isValid(e_time)) {
         return;
       }
-      // Format the date if valid
       const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setEndDateTime(ending_date);
     } catch (error) {
       console.error('Error parsing end date:', error);
-      // Handle the error, e.g., set an error state or display an error message
     }
   };
+
   const addDateTime = () => {
     const newDateTime: FormData = {
       start_date_time: startDateTime,
@@ -352,16 +422,16 @@ const BookNow = () => {
 
   const handleSelectProducer = (cp: any) => {
     const newCp = {
-      id: cp?.userId?.id,
+      id: cp?.userId?._id,
       name: cp?.userId?.name,
       decision: 'accepted',
       role: 'Beige Producer',
       url: cp?.userId?.profile_picture,
       location: cp?.city,
     };
-    const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?.id);
+    const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
     if (isCpSelected) {
-      const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?.id);
+      const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?._id);
       setCp_ids(updatedCps);
     } else {
       const updatedCps = [...cp_ids, newCp];
@@ -369,8 +439,17 @@ const BookNow = () => {
     }
   };
 
+  const [meetingTime, setMeetingTime] = useState(null);
+  const convertToISO = (datetime: any) => {
+    const date = new Date(datetime);
+    const isoDate = date.toISOString();
+    return isoDate;
+  };
+
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
+    const meeting_time = convertToISO(data.meeting_time);
+    // console.log("metting: ", meeting_time);
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
@@ -403,6 +482,7 @@ const BookNow = () => {
           addOns_cost: allAddonRates,
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
+
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
@@ -412,12 +492,14 @@ const BookNow = () => {
         }
         if (activeTab === 3) {
           const response = await OrderApi.handleOrderMake(formattedData);
+          console.log(meeting_time);
+          console.log(response);
           if (response.status === 201) {
-            swalToast('success', 'Order has been created successfully!');
+            swalToast('success', 'Shoot has been created successfully!');
             router.push('/dashboard/shoots');
             setIsLoading(false);
           } else {
-            swalToast('danger', 'Please check your order details!');
+            swalToast('danger', 'Please check your shoot details!');
             setIsLoading(false);
           }
         }
@@ -430,10 +512,37 @@ const BookNow = () => {
   const contentTypes = watch('content_type', []);
   const contentVertical = watch('content_vertical');
   //
-  const handleClientChange = (event) => {
-    const selectedOption = event.target.options[event.target.selectedIndex];
-    setClient_id(selectedOption.value);
-    setClientName(selectedOption.getAttribute('data-name'));
+  // const handleClientChange = (event) => {
+  //   const selectedOption = event.target.options[event.target.selectedIndex];
+  //   setClient_id(selectedOption.value);
+  //   setClientName(selectedOption.getAttribute('data-name'));
+  // };
+
+  const getAllClients = async () => {
+    setIsClientLoading(true);
+    try {
+      let res;
+      if (clientName) {
+        res = await fetch(`${API_ENDPOINT}users?role=user&search=${clientName}`);
+      } else {
+        res = await fetch(`${API_ENDPOINT}users?role=user`);
+      }
+      const users = await res.json();
+      setClients(users?.results || []);
+      setShowClientDropdown(true);
+      setIsClientLoading(false);
+    } catch (error) {
+      console.error(error);
+      setIsClientLoading(false);
+    }
+  };
+
+  const handleClientChange = (client) => {
+    console.log('client', client);
+    //const selectedOption = event.target.options[event.target.selectedIndex];
+    setClient_id(client?.id);
+    setClientName(client?.name);
+    setShowClientDropdown(false);
   };
   //
   const orderName = () => {
@@ -454,6 +563,18 @@ const BookNow = () => {
     return concateOrderName;
   };
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowClientDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownRef]);
+
   return (
     <div>
       <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -469,9 +590,6 @@ const BookNow = () => {
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
         {/* icon only */}
         <div className="panel">
-          <div className="mb-5 flex items-center justify-between">
-            <h5 className="text-lg font-semibold capitalize dark:text-white-light">Shoot Booking By Manager</h5>
-          </div>
           <div className="">
             <div className="inline-block w-full">
               <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
@@ -496,14 +614,14 @@ const BookNow = () => {
                                     },
                                   })}
                                 />
-                                <span className="text-black">Video</span>
+                                <span className="text-black">Videography</span>
                               </label>
                             </div>
                             {/* Photo */}
                             <div className="mb-2">
                               <label className="flex items-center">
                                 <input type="checkbox" className={`form-checkbox ${errors.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
-                                <span className="text-black">Photo</span>
+                                <span className="text-black">Photography</span>
                               </label>
                             </div>
                           </div>
@@ -534,27 +652,63 @@ const BookNow = () => {
                         </div>
                       </div>
                       <div className="my-5 flex items-center justify-between">
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <div className="relative flex basis-[45%] flex-col sm:flex-row">
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Client
                           </label>
-                          <select
-                            className={`form-select text-black ${errors.client ? 'border-red-500' : ''}`}
-                            id="content_vertical"
-                            defaultValue="SelectClient"
-                            {...register('client', {
-                              required: 'Client is required',
-                              validate: (value) => value !== 'SelectClient' || 'Please select a Client',
-                            })}
-                            onChange={handleClientChange}
-                          >
-                            <option value="SelectClient">Select Client</option>
-                            {onlyClients?.map((client) => (
-                              <option key={client.id} value={client.id} data-name={client.name}>
-                                {client.name}
-                              </option>
-                            ))}
-                          </select>
+                          <input
+                            type="search"
+                            // onFocus={getAllClients}
+                            onChange={(event) => {
+                              setClientName(event?.target?.value);
+                              getAllClients(); // Fetch clients as user types
+                            }}
+                            className={`form-input flex-grow bg-slate-100 `}
+                            value={clientName}
+                            placeholder="Client"
+                            required={!clientName}
+                          />
+                          {/* {clientName && <p className="text-danger">Please select a valid client</p>} */}
+                          {showClientDropdown && (
+                            <>
+                              <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
+                                {isClientLoading ? (
+                                  <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
+                                    {/* Render loading skeleton here */}
+                                    {[...Array(5)].map((_, i) => (
+                                      <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
+                                        <div className="h-7 w-7 rounded-full bg-slate-200"></div>
+                                        <div className="h-7 w-full rounded-sm bg-slate-200"></div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <>
+                                    {clients && clients.length > 0 ? (
+                                      <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
+                                        {clients?.map((client) => (
+                                          <li
+                                            key={client.id}
+                                            onClick={() => handleClientChange(client)}
+                                            className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
+                                          >
+                                            <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
+                                              <img src={client.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                            </div>
+                                            <a href="#">{client.name}</a>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    ) : (
+                                      <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
+                                        <p className="text-center text-red-500">No client found</p>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            </>
+                          )}
                         </div>
 
                         {/* Location */}
@@ -569,10 +723,10 @@ const BookNow = () => {
                       </div>
 
                       <div className="mt-5 flex items-start justify-between">
-                        {/* Order Name */}
+                        {/* Shoot Name */}
                         <div className="flex basis-[45%] flex-col  sm:flex-row">
                           <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Order Name
+                            Shoot Name
                           </label>
                           <input
                             id="order_name"
@@ -581,7 +735,7 @@ const BookNow = () => {
                             value={orderName()}
                             type="text"
                             className="form-input flex-grow bg-slate-100"
-                            placeholder="Order Name"
+                            placeholder="Shoot Name"
                             {...register('order_name')}
                           />
                         </div>
@@ -604,31 +758,46 @@ const BookNow = () => {
                                 Shoot Time
                               </label>
 
-                              <div>
+                              <div className="relative">
                                 <p className="text-xs font-bold">Start Time</p>
-                                <input id="start_date_time" type="datetime-local" className="form-input w-[220px]" onBlur={handleChangeStartDateTime} required={dateTimes?.length === 0} />
+                                <input
+                                  id="start_date_time"
+                                  ref={startDateTimeRef}
+                                  type="text"
+                                  className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`}
+                                  placeholder="Start time"
+                                  required={startDateTime?.length === 0}
+                                />
+                                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/4 transform">🗓️</span>
+
+                                {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                               </div>
-                              <div>
+
+                              <div className="relative">
                                 <p className="ml-1 text-xs font-bold">End Time</p>
                                 <input
                                   id="end_date_time"
-                                  type="datetime-local"
-                                  className="form-input ml-1 w-[220px]"
-                                  onBlur={handleChangeEndDateTime}
-                                  //   onBlur={addDateTime}
-                                  required={dateTimes?.length === 0}
+                                  ref={endDateTimeRef}
+                                  type="text"
+                                  className={`form-input ml-1 w-[220px] cursor-pointer ${errors?.end_date_time ? 'border-red-500' : ''}`}
+                                  placeholder="End time"
+                                  required={endDateTime?.length === 0}
                                 />
+
+                                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/4 transform">🗓️</span>
+                                {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
-                              <p className="btn btn-success ml-2 mt-4 h-9" onClick={addDateTime}>
+
+                              <p className="btn btn-success ml-2 mt-4 h-9 cursor-pointer" onClick={addDateTime}>
                                 Add
                               </p>
-                              {errors.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                              {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
                           </div>
 
                           {/* DateTime Output show Table */}
                           {dateTimes?.length !== 0 && (
-                            <div className="">
+                            <div className="mb-8">
                               <table className="table-auto">
                                 <thead>
                                   <tr>
@@ -721,6 +890,36 @@ const BookNow = () => {
                           </label>
                           <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
                         </div>
+                        <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
+                          <label htmlFor="meeting_time" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
+                            Meeting time
+                          </label>
+
+                          <div className="relative w-[98%] pl-5">
+                            <Flatpickr
+                              id="meeting_time"
+                              className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
+                              value={meetingTime}
+                              placeholder="Meeting time ..."
+                              options={{
+                                altInput: true,
+                                altFormat: 'F j, Y h:i K',
+                                dateFormat: 'Y-m-d H:i',
+                                enableTime: true,
+                                time_24hr: false,
+                                minDate: 'today',
+                              }}
+                              onChange={(date) => {
+                                setMeetingTime(date[0]); // Set the selected date
+                                setValue('meeting_time', date[0]); // Update form value
+                              }}
+                            />
+                            <input type="hidden" {...register('meeting_time', { required: 'Meeting time is required' })} />
+
+                            <span className="-translate-y-1/6 pointer-events-none absolute right-2 top-1 transform">🗓️</span>
+                            {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
+                          </div>
+                        </div>
                       </div>
 
                       <button
@@ -733,7 +932,7 @@ const BookNow = () => {
                   )}
                 </div>
 
-                <div className="mb-5">
+                <div className="">
                   {activeTab === 2 && (
                     <div>
                       <div className="flex items-center justify-between">
@@ -743,59 +942,31 @@ const BookNow = () => {
                             <p className="text-[14px] capitalize leading-none text-[#838383]">choose your beige photographer/videographer</p>
                           </div>
                         </div>
-                        {/* search */}
-                        <div className="search me-12">
-                          <div className=" mt-[30px] items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
-                            <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
-                                  placeholder="Search..."
-                                />
-                                <button type="button" className="absolute inset-0 h-9 w-9 appearance-none peer-focus:text-primary ltr:right-auto rtl:left-auto">
-                                  <svg className="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
-                                    <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                  </svg>
-                                </button>
-                                <button type="button" className="absolute top-1/2 block -translate-y-1/2 hover:opacity-80 ltr:right-2 rtl:left-2 sm:hidden" onClick={() => setSearch(false)}>
-                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                                    <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                  </svg>
-                                </button>
-                              </div>
-                              {/* </form> */}
-                              <button
-                                type="button"
-                                onClick={() => setSearch(!search)}
-                                className="search_btn rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60 sm:hidden"
-                              >
-                                <svg className="mx-auto h-4.5 w-4.5 dark:text-[#d0d2d6]" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
-                                  <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
+                        <div>
+                          <input
+                            type="text"
+                            className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
+                            placeholder="Search..."
+                            onChange={(event) => setQuery(event.target.value)}
+                            value={query}
+                          />
                         </div>
                         {/* search ends */}
                       </div>
                       {/* Showing all cps */}
                       <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
-                        {allCpUsers?.length !== 0 &&
+                        {allCpUsers?.length > 0 ? (
                           allCpUsers?.map((cp) => {
-                            const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?.id);
+                            const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
-                              <div key={cp?.userId?.id} className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
-                                <div className="flex items-start justify-start">
+                              <div key={cp?.userId?._id} className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
+                                <div className="grid grid-cols-3">
                                   <div className="media relative h-14 w-14">
                                     <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} style={{ width: '100%', height: '100%' }} className="mr-3 rounded-full" alt="img" />
                                     <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
                                   </div>
 
-                                  <div className="content ms-2">
+                                  <div className="content col-span-2 ms-2">
                                     <h4 className="font-sans text-[16px] capitalize leading-none text-black">{cp?.userId?.name}</h4>
                                     <span className="profession text-[12px] capitalize leading-none text-[#838383]">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
                                     <div className="location mt-2 flex items-center justify-start">
@@ -810,7 +981,7 @@ const BookNow = () => {
                                   </div>
                                 </div>
                                 <div className="mt-[30px] flex">
-                                  <Link href={`cp/${cp?.userId?.id}`}>
+                                  <Link href={`cp/${cp?.userId?._id}`}>
                                     <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
                                       view profile
                                     </p>
@@ -826,7 +997,14 @@ const BookNow = () => {
                                 </div>
                               </div>
                             );
-                          })}
+                          })
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-center">
+                              <h3 className="text-center font-semibold">No Data Found</h3>
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       {/* pagination */}
@@ -953,7 +1131,7 @@ const BookNow = () => {
                                           <>
                                             <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                               <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
-                                              <td>{addon?.hours ? `${addon?.hours} hours` : ''}</td>
+                                              <td>{addon?.ExtendRate ? `${addon?.hours} hours` : ''}</td>
                                               <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
                                             </tr>
                                           </>
@@ -991,7 +1169,7 @@ const BookNow = () => {
                   <button
                     type="button"
                     className={`btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
-                    onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}
+                    onClick={() => handleBack()}
                   >
                     Back
                   </button>

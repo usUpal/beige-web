@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from './store';
 import { toggleRTL, toggleTheme, toggleLocale, toggleMenu, toggleLayout, toggleAnimation, toggleNavbar, toggleSemidark } from './store/themeConfigSlice';
+import { ToastContainer } from 'react-toastify';
 
 function App({ children }: PropsWithChildren) {
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -30,6 +31,7 @@ function App({ children }: PropsWithChildren) {
       } main-section text-md relative font-nunito font-normal antialiased`}
     >
       {children}
+      <ToastContainer />
     </div>
   );
 }
