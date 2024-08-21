@@ -28,6 +28,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import { API_ENDPOINT } from '@/config';
 import { clientNamespaces } from 'ni18n';
+import { useLocation } from 'react-router-dom';
 
 interface FormData {
   content_type: string;
@@ -74,6 +75,7 @@ const BookNow = () => {
   const [clients, setClients] = useState([]);
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const [isClientLoading, setIsClientLoading] = useState(false);
 
   const {
     register,
@@ -142,6 +144,40 @@ const BookNow = () => {
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
 
+  const handleBack = () => {
+    setActiveTab(activeTab === 3 ? 2 : 1);
+    // Use setTimeout to delay the Flatpickr initialization
+    setTimeout(() => {
+      if (startDateTimeRef.current) {
+        flatpickr(startDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeStartDateTime(dateStr);
+          },
+        });
+      }
+
+      if (endDateTimeRef.current) {
+        flatpickr(endDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeEndDateTime(dateStr);
+          },
+        });
+      }
+    }, 0);
+  };
+
   useEffect(() => {
     if (startDateTimeRef.current) {
       flatpickr(startDateTimeRef.current, {
@@ -156,7 +192,6 @@ const BookNow = () => {
         },
       });
     }
-
     if (endDateTimeRef.current) {
       flatpickr(endDateTimeRef.current, {
         altInput: true,
@@ -484,6 +519,7 @@ const BookNow = () => {
   // };
 
   const getAllClients = async () => {
+    setIsClientLoading(true);
     try {
       let res;
       if (clientName) {
@@ -494,8 +530,10 @@ const BookNow = () => {
       const users = await res.json();
       setClients(users?.results || []);
       setShowClientDropdown(true);
+      setIsClientLoading(false);
     } catch (error) {
       console.error(error);
+      setIsClientLoading(false);
     }
   };
 
@@ -620,44 +658,56 @@ const BookNow = () => {
                           </label>
                           <input
                             type="search"
-                            onFocus={getAllClients}
+                            // onFocus={getAllClients}
                             onChange={(event) => {
                               setClientName(event?.target?.value);
                               getAllClients(); // Fetch clients as user types
                             }}
-                            className="form-input flex-grow"
+                            className={`form-input flex-grow border border-gray-300 bg-slate-100 focus:border-red-500 focus:outline-none `}
                             value={clientName}
                             placeholder="Client"
+                            required={!clientName}
                           />
+                          {/* {clientName && <p className="text-danger">Please select a valid client</p>} */}
                           {showClientDropdown && (
-                            <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
-                              {clients && clients.length > 0 ? (
-                                <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
-                                  {clients.map((client) => (
-                                    <li
-                                      key={client.id}
-                                      onClick={() => handleClientChange(client)}
-                                      className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
-                                    >
-                                      <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                        <img src={client.profile_picture || '/assets/images/favicon.png'} className="rounded-full w-full h-full" />
+                            <>
+                              <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
+                                {isClientLoading ? (
+                                  <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
+                                    {/* Render loading skeleton here */}
+                                    {[...Array(5)].map((_, i) => (
+                                      <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
+                                        <div className="h-7 w-7 rounded-full bg-slate-200"></div>
+                                        <div className="h-7 w-full rounded-sm bg-slate-200"></div>
                                       </div>
-                                      <a href="#">{client.name}</a>
-                                    </li>
-                                  ))}
-                                </ul>
-                              ) : (
-                                <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
-                                  {/* Render loading skeleton here */}
-                                  {[...Array(5)].map((_, i) => (
-                                    <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
-                                      <div className="h-7 w-7 rounded-full bg-slate-200"></div>
-                                      <div className="h-7 w-full rounded-sm bg-slate-200"></div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <>
+                                    {clients && clients.length > 0 ? (
+                                      <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
+                                        {clients?.map((client) => (
+                                          <li
+                                            key={client.id}
+                                            onClick={() => handleClientChange(client)}
+                                            className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
+                                          >
+                                            <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
+                                              <img src={client.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                            </div>
+                                            <a href="#">{client.name}</a>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    ) : (
+                                      <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
+                                        <p className="text-center text-red-500">No client found</p>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            </>
                           )}
                         </div>
 
@@ -713,7 +763,7 @@ const BookNow = () => {
                                 <input
                                   id="start_date_time"
                                   ref={startDateTimeRef}
-                                  type="datetime-local"
+                                  type="text"
                                   className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`}
                                   placeholder="Start time"
                                   required={startDateTime?.length === 0}
@@ -722,12 +772,13 @@ const BookNow = () => {
 
                                 {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                               </div>
+
                               <div className="relative">
                                 <p className="ml-1 text-xs font-bold">End Time</p>
                                 <input
                                   id="end_date_time"
                                   ref={endDateTimeRef}
-                                  type="datetime-local"
+                                  type="text"
                                   className={`form-input ml-1 w-[220px] cursor-pointer ${errors?.end_date_time ? 'border-red-500' : ''}`}
                                   placeholder="End time"
                                   required={endDateTime?.length === 0}
@@ -746,7 +797,7 @@ const BookNow = () => {
 
                           {/* DateTime Output show Table */}
                           {dateTimes?.length !== 0 && (
-                            <div className="">
+                            <div className="mb-8">
                               <table className="table-auto">
                                 <thead>
                                   <tr>
@@ -904,7 +955,7 @@ const BookNow = () => {
                       </div>
                       {/* Showing all cps */}
                       <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
-                        {allCpUsers?.length > 0 ?
+                        {allCpUsers?.length > 0 ? (
                           allCpUsers?.map((cp) => {
                             const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
@@ -915,7 +966,7 @@ const BookNow = () => {
                                     <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
                                   </div>
 
-                                  <div className="col-span-2 content ms-2">
+                                  <div className="content col-span-2 ms-2">
                                     <h4 className="font-sans text-[16px] capitalize leading-none text-black">{cp?.userId?.name}</h4>
                                     <span className="profession text-[12px] capitalize leading-none text-[#838383]">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
                                     <div className="location mt-2 flex items-center justify-start">
@@ -937,21 +988,23 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
+                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
                                 </div>
                               </div>
                             );
-                          }) : (
-                            <>
-                              <div className="flex justify-center items-center">
-                                <h3 className='font-semibold text-center'>No Data Found</h3>
-                              </div>
-                            </>
-                          )}
+                          })
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-center">
+                              <h3 className="text-center font-semibold">No Data Found</h3>
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       {/* pagination */}
@@ -1001,7 +1054,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                            // disabled={disableInput}
+                                              // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1062,7 +1115,7 @@ const BookNow = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                          // onClick={() => shootCostCalculation()}
+                            // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation
@@ -1116,7 +1169,7 @@ const BookNow = () => {
                   <button
                     type="button"
                     className={`btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
-                    onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}
+                    onClick={() => handleBack()}
                   >
                     Back
                   </button>

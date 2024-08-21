@@ -154,6 +154,42 @@ const IndexClient = () => {
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
 
+
+  const handleBack = () => {
+    setActiveTab(activeTab === 3 ? 2 : 1);
+    // Use setTimeout to delay the Flatpickr initialization
+    setTimeout(() => {
+      if (startDateTimeRef.current) {
+        flatpickr(startDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeStartDateTime(dateStr);
+          },
+        });
+      }
+
+      if (endDateTimeRef.current) {
+        flatpickr(endDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeEndDateTime(dateStr);
+          },
+        });
+      }
+    }, 0);
+  };
+
+
   useEffect(() => {
     if (startDateTimeRef.current) {
       flatpickr(startDateTimeRef.current, {
@@ -658,7 +694,7 @@ const IndexClient = () => {
                                 <input
                                   id="start_date_time"
                                   ref={startDateTimeRef}
-                                  type="datetime-local"
+                                  type="text"
                                   className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`}
                                   placeholder="Start time"
                                   required={startDateTime?.length === 0}
@@ -672,7 +708,7 @@ const IndexClient = () => {
                                 <input
                                   id="end_date_time"
                                   ref={endDateTimeRef}
-                                  type="datetime-local"
+                                  type="text"
                                   className={`form-input ml-1 w-[220px] cursor-pointer ${errors?.end_date_time ? 'border-red-500' : ''}`}
                                   placeholder="End time"
                                   required={endDateTime?.length === 0}
@@ -691,7 +727,7 @@ const IndexClient = () => {
 
                           {/* DateTime Output show Table */}
                           {dateTimes?.length !== 0 && (
-                            <div className="">
+                            <div className="mb-8">
                               <table className="table-auto">
                                 <thead>
                                   <tr>
@@ -1065,7 +1101,7 @@ const IndexClient = () => {
                   <button
                     type="button"
                     className={`btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
-                    onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}
+                    onClick={() => handleBack()}
                   >
                     Back
                   </button>
