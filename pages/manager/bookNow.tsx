@@ -665,7 +665,7 @@ const BookNow = () => {
                               setClientName(event?.target?.value);
                               getAllClients(); // Fetch clients as user types
                             }}
-                            className={`form-input flex-grow bg-slate-100 border border-gray-300 focus:border-red-500 focus:outline-none `}
+                            className={`form-input flex-grow bg-slate-100 `}
                             value={clientName}
                             placeholder="Client"
                             required={!clientName}
