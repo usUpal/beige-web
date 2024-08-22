@@ -24,6 +24,7 @@ import 'tippy.js/dist/tippy.css';
 
 const ShootDetails = () => {
   const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
+  console.log("🚀 ~ ShootDetails ~ shootInfo:", shootInfo)
   const [metingDate, setMetingDate] = useState<string>('');
   const [statusData, setStatusDate] = useState<string>('');
 
@@ -176,6 +177,7 @@ const ShootDetails = () => {
       console.error('Error occurred while sending POST request:', error);
     }
   };
+
 
   const submitUpdateStatus = async () => {
     try {
@@ -353,63 +355,6 @@ const ShootDetails = () => {
       console.error('Error occurred while sending PATCH request:', error);
     }
   };
-
-  const AccordionItem = ({ id, title, content, selected, setSelected }) => {
-    const contentRef = useRef(null);
-
-    const handleClick = () => {
-      setSelected(selected !== id ? id : null);
-    };
-
-    return (
-      <li className="relative border-b border-gray-200">
-        <button type="button" className="w-full p-2 text-left" onClick={handleClick}>
-          <div className="flex items-center justify-between">
-            <span>{title}</span>
-            <svg
-              className={`h-5 w-5 transform text-gray-500 transition-transform ${selected === id ? 'rotate-180' : ''}`}
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </button>
-        <div
-          ref={contentRef}
-          className="relative overflow-hidden transition-all duration-700"
-          style={{
-            maxHeight: selected === id ? `${contentRef.current.scrollHeight}px` : '0px',
-          }}
-        >
-          <div className="p-2">{content}</div>
-        </div>
-      </li>
-    );
-  };
-
-  const Accordion = () => {
-    const [selected, setSelected] = useState(null);
-
-    return (
-      <div className="mx-auto max-w-full border border-gray-200 bg-white">
-        <ul className="shadow-box">
-          <AccordionItem
-            id={3}
-            title="When will I receive my seats?"
-            content="Game day seats are rentals will be in place for the first game of the season, unless you are in sections 409-421. Those sections will have game day seats mid way through the football season."
-            selected={selected}
-            setSelected={setSelected}
-          />
-        </ul>
-      </div>
-    );
-  };
-
   return (
     <>
       <div className="panel">

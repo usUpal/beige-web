@@ -1,81 +1,445 @@
-import React, { useState } from 'react';
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
+import React, { useState, useEffect, Fragment, useRef } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
 import StatusBg from '@/components/Status/StatusBg';
+import { useRouter } from 'next/router';
+import { API_ENDPOINT, MAPAPIKEY } from '@/config';
+import Image from 'next/image';
+import Swal from 'sweetalert2';
+import { useAuth } from '@/contexts/authContext';
+import { swalToast } from '@/utils/Toast/SwalToast';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import useAllCp from '@/hooks/useAllCp';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import ResponsivePagination from 'react-responsive-pagination';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
+import axios from 'axios';
+import GoogleMapReact from 'google-map-react';
+import Loader from '@/components/SharedComponent/Loader';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 
 const ShootDetails = () => {
-  const orderStatusArray = [
-    'Pending',
-    'Pre_production',
-    'Production',
-    'Post_production',
-    'Revision',
-    'Completed',
+  const [shootInfo, setShootInfo] = useState<ShootTypes | null>({
+    "geo_location": {
+      "coordinates": [
+        -85.7584557,
+        38.2526647
+      ],
+      "type": "Point"
+    },
+    "budget": {
+      "min": 1000,
+      "max": 1500
+    },
+    "payment": {
+      "payment_type": "full",
+      "payment_status": "pending",
+      "amount_paid": 0,
+      "payment_ids": [
+        "66c7244eb61922f6300bfaef"
+      ]
+    },
+    "file_path": {
+      "status": false
+    },
+    "chat_room_id": "66c7244db61922f6300bfae6",
+    "order_status": "pre_production",
+    "content_type": [
+      "video"
+    ],
+    "vst": [],
+    "order_name": "Sajib's Music Videography",
+    "meeting_date_times": [
+      "66c72452b61922f6300bfaf6"
+    ],
+    "review_status": false,
+    "client_id": {
+      "role": "user",
+      "isEmailVerified": false,
+      "name": "Sajib",
+      "email": "sajib@gmail.com",
+      "createdAt": "2024-04-16T09:58:32.997Z",
+      "updatedAt": "2024-04-16T09:58:32.997Z",
+      "id": "661e4bc86970067f1739f642"
+    },
+    "content_vertical": "Music",
+    "description": "Special Note",
+    "location": "Louisville, KY, USA",
+    "references": "This is new references",
+    "shoot_datetimes": [
+      {
+        "_id": "66c7244db61922f6300bfadb",
+        "start_date_time": "2024-08-22T12:00:00.000Z",
+        "end_date_time": "2024-08-23T12:00:00.000Z",
+        "duration": 24,
+        "date_status": "confirmed"
+      }
+    ],
+    "shoot_duration": 24,
+    "addOns": [],
+    "cp_ids": [
+      {
+        "decision": "accepted",
+        "_id": "66c7244db61922f6300bfadc",
+        "id": {
+          "role": "cp",
+          "isEmailVerified": false,
+          "name": "Prity",
+          "email": "prity@gmail.com",
+          "createdAt": "2024-04-16T09:57:51.103Z",
+          "updatedAt": "2024-04-16T10:17:28.874Z",
+          "id": "661e4b9f6970067f1739f638"
+        }
+      }
+    ],
+    "addOns_cost": 0,
+    "shoot_cost": 6000,
+    "createdAt": "2024-08-22T11:43:09.011Z",
+    "updatedAt": "2024-08-22T11:43:14.496Z",
+    "id": "66c7244db61922f6300bfada"
+  });
+  console.log("🚀 ~ ShootDetails ~ shootInfo:", shootInfo)
+  const [metingDate, setMetingDate] = useState<string>('');
+  const [statusData, setStatusDate] = useState<string>('');
+
+  const [showInput, setShowInput] = useState<boolean>(false);
+  const [showSelect, setShowSelect] = useState<boolean>(false);
+
+  const router = useRouter();
+  const shootId = '66c7244db61922f6300bfae6' as string;
+  const { userData } = useAuth();
+  const [cpModal, setCpModal] = useState(false);
+  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
+  const [cp_ids, setCp_ids] = useState([]);
+  const [loadingSubmitMeting, setLoadingSubmitMeting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const allStatus = [
+    {
+      key: 'pending',
+      value: 'Pending',
+    },
+    {
+      key: 'pre_production',
+      value: 'Pre Production',
+    },
+    {
+      key: 'production',
+      value: 'Production',
+    },
+    {
+      key: 'post_production',
+      value: 'Post Production',
+    },
+    {
+      key: 'revision',
+      value: 'Revision',
+    },
+    {
+      key: 'completed',
+      value: 'Completed',
+    },
+    {
+      key: 'cancelled',
+      value: 'Cancelled',
+    },
+    {
+      key: 'in_dispute',
+      value: 'In Dispute',
+    },
   ];
+
+  const orderStatusArray = ['Pending', 'Pre_production', 'Production', 'Post_production', 'Revision', 'Completed'];
   const rejectStatus = ['In_dispute', 'Cancelled'];
+
+  // Convert order_status to lowercase for comparison
+  const status = 'Post_production';
+  const lowerCaseOrderStatus = shootInfo?.order_status?.toLowerCase();
+  const currentIndex = orderStatusArray.findIndex((status) => status.toLowerCase() === lowerCaseOrderStatus);
+  const cancelIndex = rejectStatus.findIndex((status) => status.toLowerCase() === lowerCaseOrderStatus);
+
+  const getShootDetails = async (shootId: string) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}orders/${shootId}?populate=cp_ids`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusp}`);
+      }
+      const shootDetailsRes = await response.json();
+      setShootInfo(shootDetailsRes);
+    } catch (error) {
+      console.error('Error fetching shoot details:', error);
+    }
+  };
+
+  const createEvent = () => {
+    const requestData = {
+      summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
+      location: 'Online',
+      description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'} order.`,
+      startDateTime: metingDate,
+      endDateTime: metingDate,
+      orderId: shootId,
+    };
+
+    axios
+      .post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData)
+      .then((response) => {
+        if (response.data.authUrl) {
+          console.log('🚀  createEvent  authUrl:', response.data.authUrl);
+          // Linking.openURL(response.data.authUrl);
+        } else {
+          setMeetLink(response.data.meetLink);
+        }
+      })
+      .catch((error) => {
+        console.log('Error creating event:', error.message);
+      })
+      .finally(() => {
+        console.log('Meet Link Create Success');
+      });
+  };
+
+  const submitNewMeting = async () => {
+    if (!metingDate) {
+      return swalToast('danger', 'Please select Meting Date & Time!');
+    }
+    setIsLoading(true);
+    const requestData = {
+      summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
+      location: 'Online',
+      description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'} order.`,
+      startDateTime: metingDate,
+      endDateTime: metingDate,
+      orderId: shootId,
+    };
+
+    const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData);
+    const myMeetLink = response?.data?.meetLink;
+
+    if (!myMeetLink) {
+      console.log("Doesn't create meet link");
+      return swalToast('danger', 'Something went wrong!');
+    }
+
+    try {
+      const requestBody = {
+        meeting_date_time: metingDate,
+        meeting_status: 'pending',
+        meeting_type: 'pre_production',
+        order_id: shootId,
+        meetLink: myMeetLink,
+      };
+      const response = await fetch(`${API_ENDPOINT}meetings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      if (!response.ok) {
+        swalToast('danger', 'Something went wrong !');
+        throw new Error(`Error: ${response.statusp}`);
+      }
+      const updateShootDetails = await response.json();
+      console.log('🚀 ~ submitNewMeting ~ updateShootDetails:', updateShootDetails);
+      setMetingDate('');
+      setShowNewMetingBox(false);
+      getShootDetails(shootId);
+      swalToast('success', 'Schedule Meeting Success!');
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error occurred while sending POST request:', error);
+    }
+  };
+
+
+  const submitUpdateStatus = async () => {
+    try {
+      if (!statusData) {
+        return swalToast('danger', 'Please select a status!');
+      }
+
+      setIsLoading(true);
+      const requestBody = {
+        order_status: statusData,
+      };
+
+      const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        swalToast('danger', 'something want wrong!');
+        throw new Error(`Error: ${response.statusp}`);
+      }
+
+      const updateStatusDetails = await response.json();
+      console.log('updateStatusDetails', updateStatusDetails);
+      swalToast('success', 'Status Update Successfully!');
+      setStatusDate('');
+      setShowNewStatusBox(false);
+      getShootDetails(shootId);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error occurred while sending POST request:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (shootId) {
+      getShootDetails(shootId);
+    }
+  }, [shootId]);
+
+  const getCps = () => {
+    setCpModal(true);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleSelectProducer = (cp: any) => {
+    const newCp = {
+      id: cp?.userId?._id,
+      decision: 'accepted',
+    };
+
+    const isCpSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
+    if (isCpSelected) {
+      const updatedCps = cp_ids.filter((item: any) => item.id !== cp?.userId?._id);
+      setCp_ids(updatedCps);
+    } else {
+      const updatedCps = [...cp_ids, newCp];
+      setCp_ids(updatedCps);
+    }
+  };
+
+  const updateCps = async () => {
+    if (!cp_ids.length) {
+      return swalToast('danger', 'Please select Cp !');
+    }
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cp_ids: cp_ids,
+        }),
+      });
+      if (!response.ok) {
+        swalToast('danger', 'Something went wrong !');
+        throw new Error(`Error: ${response.statusp}`);
+      }
+      const updateShootDetails = await response.json();
+      setCp_ids([]);
+      setCpModal(false);
+      getShootDetails(shootId);
+      setQuery('');
+      swalToast('success', 'Assign CP Success!');
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error occurred while sending POST request:', error);
+    }
+  };
+
   const statusMessage = (status) => {
     switch (status) {
-      case "Pending":
-        return 'The task is awaiting action and has not started yet'
+      case 'Pending':
+        return 'The task is awaiting action and has not started yet';
         break;
 
-      case "Pre_production":
-        return 'Preparations are being made before production begins'
+      case 'Pre_production':
+        return 'Preparations are being made before production begins';
         break;
 
-      case "Production":
-        return 'The task is currently in progress'
+      case 'Production':
+        return 'The task is currently in progress';
         break;
 
-      case "Post_production":
-        return 'The task is completed and in the final stages of review'
+      case 'Post_production':
+        return 'The task is completed and in the final stages of review';
         break;
 
-      case "Revision":
-        return 'The task requires revisions or corrections'
+      case 'Revision':
+        return 'The task requires revisions or corrections';
         break;
 
-      case "Completed":
-        return 'The task has been successfully finished'
+      case 'Completed':
+        return 'The task has been successfully finished';
         break;
 
-      case "In_dispute":
-        return 'There are issues or disagreements that need to be resolved'
+      case 'In_dispute':
+        return 'There are issues or disagreements that need to be resolved';
         break;
 
-      case "Cancelled":
-        return 'The task has been stopped and will not be completed'
+      case 'Cancelled':
+        return 'The task has been stopped and will not be completed';
         break;
       default:
         break;
     }
-  }
-  // Convert order_status to lowercase for comparison
-  const status = "Post_production";
-  const lowerCaseOrderStatus = 'pending';
-  const currentIndex = orderStatusArray.findIndex(
-    status => status.toLowerCase() === lowerCaseOrderStatus,
-  );
-  const cancelIndex = rejectStatus.findIndex(
-    status => status.toLowerCase() === lowerCaseOrderStatus,
-  );
-
-  const [showInput, setShowInput] = useState(false);
-  const [showSelect, setShowSelect] = useState(false);
-
-  const handleButtonClick = () => {
-    setShowInput(true);
   };
+  const coordinates = shootInfo?.geo_location?.coordinates;
+  const isLocationAvailable = coordinates && coordinates.length === 2;
 
+  const cancelCp = async (cp) => {
+    if (!cp || !cp._id) {
+      return swalToast('danger', 'Invalid CP data.');
+    }
 
+    console.log('cp._id', cp);
 
+    try {
+      const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cp_ids: [
+            {
+              id: cp.id.id,
+              decision: 'cancelled',
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        swalToast('danger', `Error: ${errorMessage}`);
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      // Optionally: Get updated shoot details from the server if needed
+      const updatedShootDetails = await response.json();
+      setCp_ids((prevCpIds) => prevCpIds.filter((cpItem) => cpItem._id !== cp._id));
+      getShootDetails(shootId);
+
+      swalToast('success', 'CP cancelled successfully.');
+    } catch (error) {
+      console.error('Error occurred while sending PATCH request:', error);
+    }
+  };
 
   return (
     <>
       <div className="panel">
         <div className="mb-5">
-          <h2 className='capitalize font-semibold text-slate-950'>User's Business Videography</h2>
+          <h2 className='capitalize font-semibold text-slate-950'>{shootInfo?.order_name ?? ''}</h2>
         </div>
 
         <div className='grid grid-cols-1 md:grid md:grid-cols-2 gap-4 '>
@@ -84,25 +448,25 @@ const ShootDetails = () => {
 
             <div className="mt-4 space-y-4">
               <div className="">
-                <b>Budget : </b> <span>Min- $2344 , Max- $3400</span>
+                <b>Budget : </b> <span>Min- ${shootInfo?.budget?.min ?? ''} , Max- ${shootInfo?.budget?.max ?? ''}</span>
               </div>
               <div className="">
-                <b>Content Type : </b> <span>Business</span>
+                <b>Content Type : </b> <span>{shootInfo?.content_type ?? ''}</span>
               </div>
               <div>
-                <b>Shoot Duration : </b> <span>12 Hours</span>
+                <b>Shoot Duration : </b> <span>{shootInfo?.shoot_duration ?? ''} Hours</span>
               </div>
               <div>
-                <b>Shoot Cost : </b> <span>$3500</span>
+                <b>Shoot Cost : </b> <span>${shootInfo?.shoot_cost ?? ''}</span>
               </div>
               <div>
-                <b>Description : </b> <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit minus magnam amet! Ipsam, id mollitia in, tempora ut unde commodi amet nihil harum sit aperiam, architecto quod quasi excepturi laboriosam?</span>
+                <b>Description : </b> <span>{shootInfo?.description ?? ''}</span>
               </div>
             </div>
 
             <div className="flex gap-1 mb-5 mt-3">
               <b className='inline-block w-[170px] '>Shoot Status: </b> <span>
-                <StatusBg>pre_production</StatusBg>
+                <StatusBg>{shootInfo?.order_status ?? ''}</StatusBg>
               </span>
             </div>
             <div className="lg:flex lg:flex-row flex flex-col space-x-2 gap-2">
@@ -113,18 +477,20 @@ const ShootDetails = () => {
               </button>
               {showSelect && (
                 <div className='flex gap-4 w-full'>
-                  <select name="" id="" className=" w-full rounded-md border border-[#b9b8b8] py-[8px] px-[15px] bg-transparent focus:outline-none  lg:w-[270px]">
-                    <option >
-                      hell
-                    </option>
-                    <option >
-                      hell2
-                    </option>
-                    <option >
-                      hell3
-                    </option>
+                  <select
+                    name=""
+                    id=""
+                    onChange={(event) => setStatusDate(event?.target?.value)}
+                    className=" w-full rounded-md border border-[#b9b8b8] py-[8px] px-[15px] bg-transparent focus:outline-none  lg:w-[270px]">
+                    {allStatus?.map((status, key) => (
+                      <option key={key} value={status?.key}>
+                        {status?.value}
+                      </option>
+                    ))}
                   </select>
                   <button
+                    disabled={isLoading === true ? true : false}
+                    onClick={submitUpdateStatus}
                     className="flex items-center justify-center rounded-lg border border-black  h-[40px] w-[40px] bg-black px-1 text-white"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">

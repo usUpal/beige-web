@@ -59,6 +59,7 @@ const Shoots = () => {
   });
 
   const getShootsByQuery = async (event) => {
+    setQuery(event.target.value);
     setIsLoading(true)
     let url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&search=${event.target.value}`;
     if (userRole === 'client') {
@@ -87,7 +88,7 @@ const Shoots = () => {
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Recent Shoots</h5>
-          <input type="text" onChange={getShootsByQuery} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...'/>
+          <input type="text" onChange={getShootsByQuery} value={query} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...'/>
         </div>
 
         <div className="table-responsive">
