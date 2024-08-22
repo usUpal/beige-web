@@ -60,38 +60,38 @@ const ProfileForm = () => {
 
   const onSubmit = async (data: userData) => {
 
-    const toast = Swal.mixin({
-      toast: true,
-      position: 'top',
-      showConfirmButton: false,
-      timer: 10000,
-      showCloseButton: true,
-      customClass: {
-        popup: `color-any`,
-      },
-    });
-    toast.fire({
-      title: "This page is under development",
-    });
-    return;
+    // const toast = Swal.mixin({
+    //   toast: true,
+    //   position: 'top',
+    //   showConfirmButton: false,
+    //   timer: 10000,
+    //   showCloseButton: true,
+    //   customClass: {
+    //     popup: `color-any`,
+    //   },
+    // });
+    // toast.fire({
+    //   title: "This page is under development",
+    // });
+    // return;
 
     
     const coordinates = geo_location?.coordinates;
-
     if (coordinates.length === 2) {
       data.location = await reverseGeocode(coordinates);
     } else {
       data.location = userData?.location || 'Unknown Location';
     }
-
     data.geo_location = watchedGeoLocation;
-    console.log(userData);
-
+    // console.log('data',data);
     const updatedProfileInfo = {
       name: data.name,
       email: data.email,
       location: data.location,
     };
+    console.log("data", data);
+    console.log("hello", updatedProfileInfo);return;
+
 
     try {
       // users/661e4b2d6970067f1739f61a
