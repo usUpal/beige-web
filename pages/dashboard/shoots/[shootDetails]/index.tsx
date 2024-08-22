@@ -247,7 +247,7 @@ const ShootDetails = () => {
     if (!cp_ids.length) {
       return swalToast('danger', 'Please select Cp !');
     }
-
+    setIsLoading(true);
     try {
       const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
         method: 'PATCH',
@@ -268,6 +268,7 @@ const ShootDetails = () => {
       getShootDetails(shootId);
       setQuery('');
       swalToast('success', 'Assign CP Success!');
+      setIsLoading(false);
     } catch (error) {
       console.error('Error occurred while sending POST request:', error);
     }
@@ -534,7 +535,7 @@ const ShootDetails = () => {
                   )}
                 </div>
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Current Order Status</label>
+                  <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Current Shoot Status</label>
                   {shootInfo?.order_status && (
                     <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
                       <StatusBg>{shootInfo?.order_status}</StatusBg>
@@ -659,6 +660,7 @@ const ShootDetails = () => {
                         <tbody>
                           {shootInfo?.cp_ids?.map((cp, key) => (
                             <tr key={key}>
+                              {console.log("Cp Info : ",cp)}
                               <td className="border-b px-4 py-2 font-bold">
                                 <div className="flex items-center justify-center">
                                   <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
@@ -700,50 +702,6 @@ const ShootDetails = () => {
                     </div>
                   )}
                 </div>
-                {/* <Accordion/> */}
-                {/* <div className="mb-0 flex items-center gap-4 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">
-                  <div>Assigned Cp's</div>
-                  {userData?.role === 'manager' && (
-                    <div className="">
-                      <button onClick={getCps} type="button" className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
-                        {allSvgs.plusForAddCp}
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-
-                  {shootInfo?.cp_ids?.length > 0 && (
-                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden">
-                      <table className="w-full table-auto">
-                        <thead>
-                          <tr>
-                            <th className="border-b px-4 py-2">Name</th>
-                            <th className="border-b px-4 py-2">Decision</th>
-                            <th className="border-b px-4 py-2">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {shootInfo?.cp_ids?.map((cp, key) => (
-                            <tr key={key}>
-                              <td className="border-b px-4 py-2 font-bold">{cp?.id?.name ?? ''}</td>
-                              <td className="border-b px-4 py-2">
-                                <StatusBg>{cp?.decision ?? ''}</StatusBg>
-                              </td>
-                              <td className="border-b px-4 py-2">
-                                <button onClick={() => cancelCp(cp)} className="rounded bg-red-500 p-[5px] text-white">
-                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                  </svg>
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div> */}
               </div>
             </div>
           </div>
@@ -934,7 +892,7 @@ const ShootDetails = () => {
                         <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
                       </div>
                       <button disabled={isLoading === true ? true : false} onClick={updateCps} className="mt-5 rounded-sm bg-black px-3 py-1 text-white">
-                        {isLoading === !true ? 'Submit' : 'Loading'}
+                        {isLoading === true ? 'Loading...' : 'Submit'}
                       </button>
                     </div>
                   </div>

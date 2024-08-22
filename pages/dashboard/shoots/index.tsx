@@ -60,18 +60,18 @@ const Shoots = () => {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
-      {/* Recent Orders */}
+      {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
-          <h5 className="text-xl font-bold dark:text-white-light">Recent Orders</h5>
+          <h5 className="text-xl font-bold dark:text-white-light">Recent Shoots</h5>
         </div>
 
         <div className="table-responsive">
           <table>
             <thead>
               <tr>
-                <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Order Name</th>
-                <th className="text-[16px] font-semibold">Order ID</th>
+                <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Shoot Name</th>
+                <th className="text-[16px] font-semibold">Shoot ID</th>
                 <th className="text-[16px] font-semibold">Price</th>
                 <th className="text-[16px] font-semibold">Files</th>
                 <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>

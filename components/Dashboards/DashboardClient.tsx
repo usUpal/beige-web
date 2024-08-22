@@ -99,7 +99,7 @@ const IndexClient = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setPageTitle('Manager Dashboard'));
+    dispatch(setPageTitle('Dashboard'));
     localStorage.removeItem('location');
   }, []);
 
@@ -153,6 +153,42 @@ const IndexClient = () => {
 
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
+
+
+  const handleBack = () => {
+    setActiveTab(activeTab === 3 ? 2 : 1);
+    // Use setTimeout to delay the Flatpickr initialization
+    setTimeout(() => {
+      if (startDateTimeRef.current) {
+        flatpickr(startDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeStartDateTime(dateStr);
+          },
+        });
+      }
+
+      if (endDateTimeRef.current) {
+        flatpickr(endDateTimeRef.current, {
+          altInput: true,
+          altFormat: 'F j, Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          enableTime: true,
+          time_24hr: false,
+          minDate: 'today',
+          onChange: (selectedDates, dateStr) => {
+            handleChangeEndDateTime(dateStr);
+          },
+        });
+      }
+    }, 0);
+  };
+
 
   useEffect(() => {
     if (startDateTimeRef.current) {
@@ -457,12 +493,12 @@ const IndexClient = () => {
         if (activeTab === 3) {
           const response = await OrderApi.handleOrderMake(formattedData);
           if (response.status === 201) {
-            swalToast('success', 'Order has been created successfully!');
+            swalToast('success', 'Shoot has been created successfully!');
             setQuery('');
             router.push('/dashboard/shoots');
             setIsLoading(false);
           } else {
-            swalToast('danger', 'Please check your order details!');
+            swalToast('danger', 'Please check your shoot details!');
             setIsLoading(false);
           }
         }
@@ -621,7 +657,7 @@ const IndexClient = () => {
                         {/* Order Name */}
                         <div className="flex basis-[45%] flex-col  sm:flex-row">
                           <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Order Name
+                            Shoot Name
                           </label>
                           <input
                             id="order_name"
@@ -630,7 +666,7 @@ const IndexClient = () => {
                             value={orderName()}
                             type="text"
                             className="form-input flex-grow bg-slate-100"
-                            placeholder="Order Name"
+                            placeholder="Shoot Name"
                             {...register('order_name')}
                           />
                         </div>
@@ -658,7 +694,7 @@ const IndexClient = () => {
                                 <input
                                   id="start_date_time"
                                   ref={startDateTimeRef}
-                                  type="datetime-local"
+                                  type="text"
                                   className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`}
                                   placeholder="Start time"
                                   required={startDateTime?.length === 0}
@@ -672,7 +708,7 @@ const IndexClient = () => {
                                 <input
                                   id="end_date_time"
                                   ref={endDateTimeRef}
-                                  type="datetime-local"
+                                  type="text"
                                   className={`form-input ml-1 w-[220px] cursor-pointer ${errors?.end_date_time ? 'border-red-500' : ''}`}
                                   placeholder="End time"
                                   required={endDateTime?.length === 0}
@@ -691,7 +727,7 @@ const IndexClient = () => {
 
                           {/* DateTime Output show Table */}
                           {dateTimes?.length !== 0 && (
-                            <div className="">
+                            <div className="mb-8">
                               <table className="table-auto">
                                 <thead>
                                   <tr>
@@ -837,15 +873,18 @@ const IndexClient = () => {
                           </div>
                         </div>
                         {/* search */}
-                        <div className="">
-                          <input
-                            type="text"
-                            className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
-                            placeholder="Search..."
-                            onChange={(event) => setQuery(event?.target?.value)}
-                            value={query}
-                          />
-                        </div>
+                        {userData?.role === 'manager' && (
+                          <div className="">
+                            <input
+                              type="text"
+                              className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
+                              placeholder="Search..."
+                              onChange={(event) => setQuery(event?.target?.value)}
+                              value={query}
+                            />
+                          </div>
+                        )}
+
                         {/* search ends */}
                       </div>
                       {/* Showing all cps */}
@@ -1062,7 +1101,7 @@ const IndexClient = () => {
                   <button
                     type="button"
                     className={`btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
-                    onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}
+                    onClick={() => handleBack()}
                   >
                     Back
                   </button>

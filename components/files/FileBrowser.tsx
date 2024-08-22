@@ -262,7 +262,7 @@ const FileBrowser = (props: any) => {
                             <span className="inline-flex h-full w-full animate-ping rounded-full bg-warning"></span>
                         </div>
                         <div className={`text-center`}>
-                            <span className={`animate-pulse`}>Loading order files</span>
+                            <span className={`animate-pulse`}>Loading shoot files</span>
                         </div>
                     </div>
                 )}
