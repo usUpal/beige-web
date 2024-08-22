@@ -232,8 +232,9 @@ const ShootDetails = () => {
                 <tr >
                   <td className="border-b px-4 py-2 font-bold">
                     <div className="flex items-center justify-center">
-                      <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
+                      <div className="relative m-1 mr-2 gap-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
                         <img src={'/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                        <h4 className='text-black text-sm'>john</h4>
                       </div>
                     </div>
                   </td>
@@ -286,8 +287,9 @@ const ShootDetails = () => {
                 <tr >
                   <td className="border-b px-4 py-2 font-bold">
                     <div className="flex items-center justify-center">
-                      <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
+                      <div className="relative m-1 mr-2 gap-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
                         <img src={'/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                        <h4 className='text-black text-sm'>john</h4>
                       </div>
                     </div>
                   </td>
@@ -340,8 +342,9 @@ const ShootDetails = () => {
                 <tr >
                   <td className="border-b px-4 py-2 font-bold">
                     <div className="flex items-center justify-center">
-                      <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
+                      <div className="relative m-1 mr-2 gap-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
                         <img src={'/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                        <h4 className='text-black text-sm'>john</h4>
                       </div>
                     </div>
                   </td>
