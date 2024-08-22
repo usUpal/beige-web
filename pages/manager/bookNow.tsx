@@ -453,6 +453,8 @@ const BookNow = () => {
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
+    // console.log(geo_location);
+    // return;
     if (activeTab == 2 && cp_ids?.length === 0) {
       swalToast('danger', 'Please select at least one producer!');
       return; // Exit the function early if no producer is selected
@@ -483,6 +485,8 @@ const BookNow = () => {
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
 
+        // console.log('formattedData: ', formattedData);return;
+
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
@@ -492,8 +496,6 @@ const BookNow = () => {
         }
         if (activeTab === 3) {
           const response = await OrderApi.handleOrderMake(formattedData);
-          console.log(meeting_time);
-          console.log(response);
           if (response.status === 201) {
             swalToast('success', 'Shoot has been created successfully!');
             router.push('/dashboard/shoots');
