@@ -41,7 +41,6 @@ next-env.d.ts
 
 .env
 .next/*
-<<<<<<< HEAD
-=======
-
->>>>>>> shakib
+next
+next/*
+/next

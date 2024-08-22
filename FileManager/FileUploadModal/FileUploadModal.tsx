@@ -94,7 +94,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
         });
         const uploadPolicy = await api
           .getNewUploadPolicy(file?.name, file?.type, file?.size) // Get upload policy for full file destination path.
-          .catch((err) => handleStepFail(err, `Unable to get upload info for files ( Make sure the shoot is exist )`));
+          .catch((err) => handleStepFail(err, `Unable to get upload info for files ( Make sure the order is exist )`));
         dispatch({
           type: 'setStatus',
           status: `Uploading file ${i + 1} of ${state.files.length}...`,
@@ -254,7 +254,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                         {state.status && (
                           <div className="mb-5 space-y-5">
                             <div className="h-4 w-full rounded-full bg-[#ebedf2] dark:bg-dark/40">
-                              <div className={`h-4 rounded-full bg-info text-right text-xs text-white`} style={{ width: `${state.progress}%` }}>
+                              <div className={`h-4 rounded-full text-right text-xs text-white`} style={{ width: `${state.progress}%`,backgroundColor: '#0096c7' }}>
                                 {state.uploading ? `${state.progress}%` : state.error ? 'Error!' : `${state.progress}%`}
                               </div>
                             </div>
