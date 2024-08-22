@@ -191,12 +191,36 @@ const Meeting = () => {
 
   }
 
+  const getMeetingsByQuery = (event) => {
+    console.log("🚀 ~ getMeetingsByQuery ~ event.target.value:", event.target.value)
+
+    // setLoading(true);
+    // try {
+    //   const response = await fetch(`${API_ENDPOINT}meetings/${meetingId}`);
+    //   const meetingDetailsRes = await response.json();
+
+    //   if (!meetingDetailsRes) {
+    //     setShowError(true);
+    //     setLoading(false);
+    //   } else {
+    //     setMeetingInfo(meetingDetailsRes);
+    //     setLoading(false);
+    //     setmeetingModal(true);
+    //     handleNext();
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    //   setLoading(false);
+    // }
+  }
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Meeting List</h5>
+          <input type="text" onChange={getMeetingsByQuery} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...'/>
         </div>
         <div className="table-responsive">
           <table>
@@ -218,8 +242,8 @@ const Meeting = () => {
                 </>
               ) : (
               <>
-                
-                
+
+
               {myMeetings && myMeetings.length > 0 ? (
 
                 myMeetings?.map((meeting) => (
