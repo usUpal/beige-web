@@ -14,7 +14,7 @@ const Shoots = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [myShoots, setMyShoots] = useState<ShootTypes[]>([]);
-
+  const [query,setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   // All Shoots
@@ -58,12 +58,36 @@ const Shoots = () => {
     dispatch(setPageTitle('Shoots'));
   });
 
+  const getShootsByQuery = async (event) => {
+    setIsLoading(true)
+    let url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&search=${event.target.value}`;
+    if (userRole === 'client') {
+      url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&client_id=${userData?.id}&search=${event.target.value}`;
+    } else if (userRole === 'cp') {
+      url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&cp_id=${userData?.id}&search=${event.target.value}`;
+    }
+
+    console.log("🚀 ~ getShootsByQuery ~ url:", url)
+
+    try {
+      const response = await fetch(url);
+      const allShots = await response.json();
+      setTotalPagesCount(allShots?.totalPages);
+      setMyShoots(allShots?.results);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Recent Shoots</h5>
+          <input type="text" onChange={getShootsByQuery} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...'/>
         </div>
 
         <div className="table-responsive">
