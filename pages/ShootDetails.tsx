@@ -107,7 +107,7 @@ const ShootDetails = () => {
             </div>
             <div className="lg:flex lg:flex-row flex flex-col space-x-2 gap-2">
 
-              <button className="rounded-lg bg-black px-3 text-[14px] py-3 font-sans font-semibold text-white w-full lg:w-[20%]"
+              <button className="rounded-lg bg-black px-3 text-[12px] py-3 font-sans font-semibold text-white w-full lg:w-[20%]"
                 onClick={() => setShowSelect(!showSelect)}>
                 Change Status
               </button>
