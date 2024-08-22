@@ -23,6 +23,8 @@ import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
 
+import { useAuth } from '@/contexts/authContext';
+import axios from 'axios';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
@@ -76,6 +78,7 @@ const BookNow = () => {
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const [isClientLoading, setIsClientLoading] = useState(false);
+  const { userData } = useAuth();
 
   const {
     register,
@@ -446,10 +449,55 @@ const BookNow = () => {
     return isoDate;
   };
 
+  const getMeetingLink = async (shootInfo: any, meetingDate: any) => {
+    const requestData = {
+      summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
+      location: 'Online',
+      description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'} order.`,
+      startDateTime: meetingDate,
+      endDateTime: meetingDate,
+      orderId: shootInfo?.id,
+    };
+
+    try {
+      const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData);
+      const myMeetLink = response?.data?.meetLink;
+      if (myMeetLink) {
+        try {
+          const requestBody = {
+            meeting_date_time: meetingDate,
+            meeting_status: 'pending',
+            meeting_type: 'pre_production',
+            order_id: shootInfo?.id,
+            meetLink: myMeetLink,
+          };
+          const response = await fetch(`${API_ENDPOINT}meetings`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+          });
+          if (!response.ok) {
+            swalToast('danger', 'Something went wrong !');
+            throw new Error(`Error: ${response.statusp}`);
+          }
+          const meetingInfo = await response.json();
+          return meetingInfo;
+        } catch (error) {
+          console.error('Error occurred while sending POST request:', error);
+        }
+      } else {
+        console.error('Error create meet link after create order');
+      }
+    } catch (error) {
+      console.error('Error create meet link after create order:', error);
+    }
+
+  }
+
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
-    const meeting_time = convertToISO(data.meeting_time);
-    // console.log("metting: ", meeting_time);
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
@@ -460,6 +508,7 @@ const BookNow = () => {
     if (data.content_type == false) {
       swalToast('danger', 'Please select content type!');
     } else {
+
       try {
         const formattedData = {
           budget: {
@@ -492,10 +541,15 @@ const BookNow = () => {
         }
         if (activeTab === 3) {
           const response = await OrderApi.handleOrderMake(formattedData);
-          console.log(meeting_time);
-          console.log(response);
           if (response.status === 201) {
             swalToast('success', 'Shoot has been created successfully!');
+            if (data.meeting_time) {
+              const meeting_time = convertToISO(data.meeting_time);
+              const meetingInfo = await getMeetingLink(response?.data, meeting_time);
+              if(meetingInfo){
+                swalToast('success', 'Meeting has been created successfully!');
+              }
+            }
             router.push('/dashboard/shoots');
             setIsLoading(false);
           } else {
@@ -914,7 +968,7 @@ const BookNow = () => {
                                 setValue('meeting_time', date[0]); // Update form value
                               }}
                             />
-                            <input type="hidden" {...register('meeting_time', { required: 'Meeting time is required' })} />
+                            <input type="hidden" {...register('meeting_time')} />
 
                             <span className="-translate-y-1/6 pointer-events-none absolute right-2 top-1 transform">🗓️</span>
                             {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
@@ -988,9 +1042,8 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1054,7 +1107,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1115,7 +1168,7 @@ const BookNow = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                            // onClick={() => shootCostCalculation()}
+                          // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation
