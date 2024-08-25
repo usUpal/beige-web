@@ -24,18 +24,20 @@ const Index = () => {
 
   const DashboardWrapper = () => {
 
-    let DashboardComponent;
+    // let DashboardComponent;
 
-    switch (userData?.role) {
-      case 'cp':
-        DashboardComponent = dynamic(() => import('@/components/Dashboards/DashboardCP'));
-        break;
-      case 'user':
-        DashboardComponent = dynamic(() => import('@/components/Dashboards/DashboardClient'));
-        break;
-      default:
-        DashboardComponent = dynamic(() => import('@/components/Dashboards/DashboardManager'));
-    }
+    // switch (userData?.role) {
+    //   case 'cp':
+    //     DashboardComponent = dynamic(() => import('@/components/Dashboards/DashboardCP'));
+    //     break;
+    //   case 'user':
+    //     DashboardComponent = dynamic(() => import('@/components/Dashboards/DashboardClient'));
+    //     break;
+    //   default:
+    //     DashboardComponent = dynamic(() => import('@/components/Dashboards/DashboardManager'));
+    // }
+
+    const DashboardComponent = dynamic(() => import('@/components/Dashboard'));
 
     return <DashboardComponent isDark={isDark} isRtl={isRtl} isMounted={isMounted} />;
   };

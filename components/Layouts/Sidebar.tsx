@@ -65,18 +65,19 @@ const Sidebar = () => {
 
   const SidebarWrapper = () => {
 
-    let SidebarComponent;
+    // let SidebarComponent;
 
-    switch (userData?.role) {
-      case 'cp':
-        SidebarComponent = dynamic(() => import('./Sidebars/SidebarCP'));
-        break;
-      case 'user':
-        SidebarComponent = dynamic(() => import('./Sidebars/SidebarClient'));
-        break;
-      default:
-        SidebarComponent = dynamic(() => import('./Sidebars/SidebarManager'));
-    }
+    // switch (userData?.role) {
+    //   case 'cp':
+    //     SidebarComponent = dynamic(() => import('./Sidebars/SidebarCP'));
+    //     break;
+    //   case 'user':
+    //     SidebarComponent = dynamic(() => import('./Sidebars/SidebarClient'));
+    //     break;
+    //   default:
+    //     SidebarComponent = dynamic(() => import('./Sidebars/SidebarManager'));
+    // }
+    const SidebarComponent = dynamic(()=>import('./Sidebars'))
 
     return <SidebarComponent currentMenu={currentMenu} toggleMenu={toggleMenu} />;
   };

@@ -105,13 +105,13 @@ const ShootDetails = () => {
   });
   console.log("🚀 ~ ShootDetails ~ shootInfo:", shootInfo)
   const [metingDate, setMetingDate] = useState<string>('');
-  const [statusData, setStatusDate] = useState<string>('');
+  const [updateStatus, setUpdateStatus] = useState<string>('');
 
   const [showInput, setShowInput] = useState<boolean>(false);
   const [showSelect, setShowSelect] = useState<boolean>(false);
 
   const router = useRouter();
-  const shootId = '66c7244db61922f6300bfae6' as string;
+  const shootId = router.query.shootDetails as string;
   const { userData } = useAuth();
   const [cpModal, setCpModal] = useState(false);
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
@@ -260,13 +260,13 @@ const ShootDetails = () => {
 
   const submitUpdateStatus = async () => {
     try {
-      if (!statusData) {
+      if (!updateStatus) {
         return swalToast('danger', 'Please select a status!');
       }
 
       setIsLoading(true);
       const requestBody = {
-        order_status: statusData,
+        order_status: updateStatus,
       };
 
       const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
@@ -285,8 +285,7 @@ const ShootDetails = () => {
       const updateStatusDetails = await response.json();
       console.log('updateStatusDetails', updateStatusDetails);
       swalToast('success', 'Status Update Successfully!');
-      setStatusDate('');
-      setShowNewStatusBox(false);
+      setShowSelect(false);
       getShootDetails(shootId);
       setIsLoading(false);
     } catch (error) {
@@ -479,7 +478,7 @@ const ShootDetails = () => {
                   <select
                     name=""
                     id=""
-                    onChange={(event) => setStatusDate(event?.target?.value)}
+                    onChange={(event) => setUpdateStatus(event?.target?.value)}
                     className=" w-full rounded-md border border-[#b9b8b8] py-[8px] px-[15px] bg-transparent focus:outline-none  lg:w-[270px]">
                     {allStatus?.map((status, key) => (
                       <option key={key} value={status?.key}>
