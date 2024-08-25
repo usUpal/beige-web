@@ -1,5 +1,7 @@
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
+
+
 export const menuData = [
   {
     key: 'dashboard',
@@ -33,7 +35,7 @@ export const menuData = [
     key: 'book_now',
     name: 'Book Now',
     icon: allSvgs?.bookingLinkIcon,
-    inAccessible: ['manager', 'user', 'cp'],
+    inAccessible: ['manager', 'user'],
     path: '/dashboard/book-now',
   }, {
     key: 'shoots',
@@ -71,3 +73,31 @@ export const menuData = [
     ]
   },
 ];
+
+
+export const permissions = [
+  {
+    role:'user',
+    key: 'add_booking',
+    name: 'Shoot Booking',
+    status: true
+  },
+  {
+    role:'user',
+    key: 'shoots',
+    name: 'Shoots',
+    status: false
+  },
+  {
+    role:'manager',
+    key: 'dashboard',
+    name: 'Dashboard',
+    status: false
+  },
+  {
+    role:'cp',
+    key: 'dashboard',
+    name: 'Dashboard',
+    status: false
+  }
+]

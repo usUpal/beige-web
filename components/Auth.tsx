@@ -76,7 +76,7 @@ const Auth = () => {
         //await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
 
         //Current Folder Structure .
-        await router.push('/dashbaord');
+        await router.push('/dashboard');
         setIsLoading(false);
       } else {
         // toast.error(data.message, {
