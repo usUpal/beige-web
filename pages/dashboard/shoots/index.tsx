@@ -3,7 +3,7 @@ import 'tippy.js/dist/tippy.css';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import StatusBg from '@/components/Status/StatusBg';
-import { API_ENDPOINT, BucketUrl } from '@/config';
+import { API_ENDPOINT } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import Link from 'next/link';
 import api from '../../../FileManager/api/storage';
@@ -71,7 +71,7 @@ const Shoots = () => {
             <thead>
               <tr>
                 <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Shoot Name</th>
-                <th className="text-[16px] font-semibold">Shoot ID</th>
+                {/* <th className="text-[16px] font-semibold">Shoot ID</th> */}
                 <th className="text-[16px] font-semibold">Price</th>
                 <th className="text-[16px] font-semibold">Files</th>
                 <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
@@ -97,7 +97,7 @@ const Shoots = () => {
                             </p>
                           </div>
                         </td>
-                        <td>{shoot.id}</td>
+                        {/* <td>{shoot.id}</td> */}
                         <td>$ {shoot?.shoot_cost}</td>
 
                         <td className="text-success">

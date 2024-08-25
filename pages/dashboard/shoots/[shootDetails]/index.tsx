@@ -18,9 +18,10 @@ import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import axios from 'axios';
 import GoogleMapReact from 'google-map-react';
-import Loader from "@/components/SharedComponent/Loader";
+import Loader from '@/components/SharedComponent/Loader';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import Link from 'next/link';
 
 const ShootDetails = () => {
   const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
@@ -30,6 +31,9 @@ const ShootDetails = () => {
   const [showNewMetingBox, setShowNewMetingBox] = useState<boolean>(false);
   const [showNewStatusBox, setShowNewStatusBox] = useState<boolean>(false);
 
+  const [shortProfileModal, setShortProfileModal] = useState<boolean>(false);
+
+  const [meetLink, setMeetLink] = useState<string>('');
   const router = useRouter();
   const shootId = router.query.shootDetails as string;
   const { userData } = useAuth();
@@ -87,7 +91,7 @@ const ShootDetails = () => {
     try {
       const response = await fetch(`${API_ENDPOINT}orders/${shootId}?populate=cp_ids`);
       if (!response.ok) {
-        throw new Error(`Error: ${response.statusp}`);
+        throw new Error(`Error: ${response.status}`);
       }
       const shootDetailsRes = await response.json();
       setShootInfo(shootDetailsRes);
@@ -125,7 +129,6 @@ const ShootDetails = () => {
   };
 
   const submitNewMeting = async () => {
-
     if (!metingDate) {
       return swalToast('danger', 'Please select Meting Date & Time!');
     }
@@ -164,7 +167,7 @@ const ShootDetails = () => {
       });
       if (!response.ok) {
         swalToast('danger', 'Something went wrong !');
-        throw new Error(`Error: ${response.statusp}`);
+        throw new Error(`Error: ${response.status}`);
       }
       const updateShootDetails = await response.json();
       console.log('🚀 ~ submitNewMeting ~ updateShootDetails:', updateShootDetails);
@@ -199,7 +202,7 @@ const ShootDetails = () => {
 
       if (!response.ok) {
         swalToast('danger', 'something want wrong!');
-        throw new Error(`Error: ${response.statusp}`);
+        throw new Error(`Error: ${response.status}`);
       }
 
       const updateStatusDetails = await response.json();
@@ -222,6 +225,18 @@ const ShootDetails = () => {
 
   const getCps = () => {
     setCpModal(true);
+  };
+
+  const [cpShortDetailsInfo, setCpShortDetailsInfo] = useState<any>({});
+
+  console.log(cpShortDetailsInfo);
+
+  const handleDetailsInfo = (id: any) => {
+    console.log(id, shootInfo);
+    setShortProfileModal(true);
+    const cpInfo = shootInfo?.cp_ids?.find((cp: any) => cp._id === id);
+    setCpShortDetailsInfo(cpInfo.id);
+    // console.log(cpInfo.id);
   };
 
   const handlePageChange = (page: number) => {
@@ -355,7 +370,6 @@ const ShootDetails = () => {
     }
   };
 
-
   const AccordionItem = ({ id, title, content, selected, setSelected }) => {
     const contentRef = useRef(null);
 
@@ -365,16 +379,11 @@ const ShootDetails = () => {
 
     return (
       <li className="relative border-b border-gray-200">
-        <button
-          type="button"
-          className="w-full p-2 text-left"
-          onClick={handleClick}
-        >
+        <button type="button" className="w-full p-2 text-left" onClick={handleClick}>
           <div className="flex items-center justify-between">
             <span>{title}</span>
             <svg
-              className={`w-5 h-5 text-gray-500 transform transition-transform ${selected === id ? "rotate-180" : ""
-                }`}
+              className={`h-5 w-5 transform text-gray-500 transition-transform ${selected === id ? 'rotate-180' : ''}`}
               fill="none"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -390,7 +399,7 @@ const ShootDetails = () => {
           ref={contentRef}
           className="relative overflow-hidden transition-all duration-700"
           style={{
-            maxHeight: selected === id ? `${contentRef.current.scrollHeight}px` : "0px",
+            maxHeight: selected === id ? `${contentRef.current.scrollHeight}px` : '0px',
           }}
         >
           <div className="p-2">{content}</div>
@@ -403,7 +412,7 @@ const ShootDetails = () => {
     const [selected, setSelected] = useState(null);
 
     return (
-      <div className="bg-white max-w-full mx-auto border border-gray-200">
+      <div className="mx-auto max-w-full border border-gray-200 bg-white">
         <ul className="shadow-box">
           <AccordionItem
             id={3}
@@ -416,7 +425,6 @@ const ShootDetails = () => {
       </div>
     );
   };
-
 
   return (
     <>
@@ -626,7 +634,6 @@ const ShootDetails = () => {
                               <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                             </svg>
                           )}
-
                         </button>
                       </div>
                     )}
@@ -636,12 +643,12 @@ const ShootDetails = () => {
 
               {/* Assigned Cp's */}
               <div className="mb-4 basis-[45%]">
-                <div className='flex items-center gap-2 w-full mb-3'>
+                <div className="mb-3 flex w-full items-center gap-2">
                   <label className="mb-0 font-sans text-[14px] capitalize">Assign CP's</label>
                   {userData?.role === 'manager' && (
-                    <div className='flex gap-3'>
-                      <button onClick={getCps} className='bg-black text-white rounded-md px-1 py-0.5 text-xs flex items-center gap-1'>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-3 h-3 text-white">
+                    <div className="flex gap-3">
+                      <button onClick={getCps} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                         <span>Add CP</span>
@@ -649,37 +656,40 @@ const ShootDetails = () => {
                     </div>
                   )}
                 </div>
+
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
                   {shootInfo?.cp_ids?.length > 0 && (
-                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden border border-slate-100 rounded">
+                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded border border-slate-100">
                       <table className="w-full table-auto">
                         <thead>
                           <tr>
                             <th className="border-b px-4 py-2">
-                              <div className='flex justify-center'>Name</div>
+                              <div className="flex justify-center">Name</div>
                             </th>
                             <th className="border-b px-4 py-2">
-                              <div className='flex justify-center'>Decision</div>
+                              <div className="flex justify-center">Decision</div>
+                            </th>
+                            <th className="border-b px-4 py-2">
+                              <div className="flex justify-center">Action</div>
                             </th>
                             <th className="border-b px-4 py-2 text-right">
-                              <div className="flex justify-center">Action</div>
+                              <div className="flex justify-center">Details</div>
                             </th>
                           </tr>
                         </thead>
                         <tbody>
-                          {shootInfo?.cp_ids?.map((cp, key) => (
+                          {shootInfo?.cp_ids?.map((cp: any, key: any) => (
                             <tr key={key}>
-                              {console.log("Cp Info : ",cp)}
                               <td className="border-b px-4 py-2 font-bold">
-                                <div className='flex items-center justify-center'>
+                                <div className="flex items-center justify-center">
                                   <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
-                                    <img src={'/assets/images/favicon.png'} className="rounded-full w-full h-full" />
+                                    <img src={'/assets/images/favicon.png'} className="h-full w-full rounded-full" />
                                   </div>
                                   <div>{cp?.id?.name ?? ''}</div>
                                 </div>
                               </td>
                               <td className="border-b px-4 py-2">
-                                <div className='flex justify-center'>
+                                <div className="flex justify-center">
                                   <StatusBg>{cp?.decision ?? ''}</StatusBg>
                                 </div>
                               </td>
@@ -687,27 +697,25 @@ const ShootDetails = () => {
                                 <div className="flex justify-center">
                                   {userData?.role === 'manager' ? (
                                     <Tippy content="Cancel">
-                                      <button
-                                        onClick={() => cancelCp(cp)}
-                                        className={`rounded bg-red-500 text-white p-1`}
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                      <button onClick={() => cancelCp(cp)} className={`rounded bg-red-500 p-1 text-white`}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
                                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                                         </svg>
                                       </button>
                                     </Tippy>
                                   ) : (
                                     <Tippy content="Only for admin">
-                                      <button
-                                        className={`rounded bg-[#E8E8E8] text-black  p-1`}
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                      <button className={`rounded bg-[#E8E8E8] p-1  text-black`}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
                                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                                         </svg>
                                       </button>
                                     </Tippy>
                                   )}
                                 </div>
+                              </td>
+                              <td className="border-b px-4 py-2 text-right" onClick={() => handleDetailsInfo(cp?._id)}>
+                                <p className="flex justify-center">{allSvgs?.threeDotMenuIcon}</p>
                               </td>
                             </tr>
                           ))}
@@ -716,6 +724,75 @@ const ShootDetails = () => {
                     </div>
                   )}
                 </div>
+
+                {/*  */}
+
+                <div className="">
+                  {/* <button type="button" onClick={() => setShortProfileModal(true)} className="btn btn-success">
+                    Profile
+                  </button> */}
+                  <Transition appear show={shortProfileModal} as={Fragment}>
+                    <Dialog as="div" open={shortProfileModal} onClose={() => setShortProfileModal(false)}>
+                      <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <div className="fixed inset-0"></div>
+                      </Transition.Child>
+                      <div id="profile_modal" className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                        <div className="flex min-h-screen items-start justify-end px-4 md:me-64">
+                          <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
+                          >
+                            <Dialog.Panel className="panel float-right my-24 w-full max-w-[380px] overflow-hidden rounded-lg border-0 bg-gray-100 p-0 text-black dark:bg-secondary dark:text-white-dark md:my-48">
+                              <div className="flex items-center justify-end pt-3 text-white ltr:pr-4 rtl:pl-4 dark:text-white-light">
+                                <button onClick={() => setShortProfileModal(false)} type="button" className="text-white-dark hover:text-dark">
+                                  {allSvgs.closeModalSvg}
+                                </button>
+                              </div>
+
+                              <div className=" px-3 pb-4">
+                                <div className="flex items-center justify-evenly  py-2 text-center text-white dark:text-white-light">
+                                  <div>
+                                    <div className="mx-auto  h-20 w-20 overflow-hidden rounded-full">
+                                      <img src={cpShortDetailsInfo?.profile_picture && cpShortDetailsInfo?.profile_picture} alt="img" className="h-full w-full object-cover" />
+                                    </div>
+                                    <div className="details">
+                                      <div className="flex justify-center gap-3 pb-2">
+                                        <Link href={`cp/${cpShortDetailsInfo?.id}`}>
+                                          <button type="button" className="btn mx-auto mt-2 hidden bg-black  text-white md:me-0 md:block">
+                                            View Details
+                                          </button>
+                                        </Link>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="font-semibold text-black">{cpShortDetailsInfo?.name}</p>
+                                    <p className="font-semibold text-black">{cpShortDetailsInfo?.email}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </Dialog.Panel>
+                          </Transition.Child>
+                        </div>
+                      </div>
+                    </Dialog>
+                  </Transition>
+                </div>
+
+                {/*  */}
               </div>
             </div>
           </div>
@@ -795,8 +872,9 @@ const ShootDetails = () => {
                             aria-hidden="true"
                           ></span>
                           <div
-                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
-                              } transition-all duration-200`}
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
+                              status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
+                            } transition-all duration-200`}
                           >
                             {status === 'Cancelled' ? (
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -882,8 +960,9 @@ const ShootDetails = () => {
                               <div className="mt-3 flex">
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
-                                    } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
+                                    isSelected ? 'bg-red-500' : 'bg-black'
+                                  } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
                                 </p>
@@ -921,6 +1000,3 @@ const ShootDetails = () => {
 };
 
 export default ShootDetails;
-
-
-
