@@ -6,6 +6,7 @@ import axios from 'axios';
 import { API_ENDPOINT } from '@/config';
 import Swal from 'sweetalert2';
 import Cookies from 'js-cookie';
+import { setLazyProp } from 'next/dist/server/api-utils';
 
 interface FormData {
   name: string;
@@ -17,7 +18,7 @@ interface FormData {
 
 const ProfileForm = () => {
   const [geo_location, setGeo_location] = useState<{ coordinates: number[]; type: 'Point' }>({ coordinates: [], type: 'Point' });
-  // const [geo_location, setGeo_location] = useState({ coordinates: [], type: 'Point' });
+  const [location, setLocation] = useState('');
   const { userData } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
   const { setUserData, setAccessToken, setRefreshToken } = useAuth();
@@ -85,19 +86,20 @@ const ProfileForm = () => {
       coloredToast('danger', 'Admin profile update is under development');
       return;
     }
-    const coordinates = geo_location?.coordinates;
-    if (coordinates.length === 2) {
-      data.location = await reverseGeocode(coordinates);
-    } else {
-      data.location = userData?.location || 'Unknown Location';
-    }
-    data.geo_location = watchedGeoLocation;
+    // const coordinates = geo_location?.coordinates;
+    // if (coordinates.length === 2) {
+    //   data.location = await reverseGeocode(coordinates);
+    // } else {
+    //   data.location = userData?.location || 'Unknown Location';
+    // }
+    // data.geo_location = watchedGeoLocation;
     const updatedProfileInfo = {
       name: data.name,
       email: data.email,
-      location: data.location,
+      location: location || data.location,
     };
 
+    // console.log('updatedProfileInfo', updatedProfileInfo);return;
     try {
       // users/661e4b2d6970067f1739f61a
       const patchResponse = await fetch(`${API_ENDPOINT}users/${userData?.id}`, {
@@ -161,7 +163,7 @@ const ProfileForm = () => {
 
             <div className="flex-grow">
               <label htmlFor="geo_location">Location</label>
-              <Map setGeo_location={setGeo_location} defaultValue={userData?.location || ''} />
+              <Map setGeo_location={setGeo_location} setLocation={setLocation} defaultValue={userData?.location || ''} />
             </div>
 
             <div>
