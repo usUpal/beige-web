@@ -72,8 +72,11 @@ const Auth = () => {
         });
 
         //Redirect user to the dashboard
-        // await router.push('/');
-        await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
+        //await router.push('/');
+        //await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
+
+        //Current Folder Structure .
+        await router.push('/dashbaord');
         setIsLoading(false);
       } else {
         // toast.error(data.message, {
