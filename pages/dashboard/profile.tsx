@@ -162,6 +162,21 @@ const Profile = () => {
     setShowImage(false);
   };
 
+
+  const [profilePicture, setProfilePicture] = useState(userData?.profile_picture || '');
+  const [name, setName] = useState(userData?.name || '');
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div>
       <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -181,7 +196,12 @@ const Profile = () => {
               <h5 className="text-lg font-semibold dark:text-white-light">Profile</h5>
             </div>
             <div className="mb-5">
-              <div className="flex flex-col items-center justify-center">
+              {/* <div className="flex flex-col items-center justify-center relative group">
+                <div className='h-32 w-32 rounded-full bg-[#02020281] absolute top-0 '>
+                  <svg className='h-[35px] w-[35px] absolute top-0 left-0 right-0 bottom-0 m-auto cursor-pointer' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                    <path className='text-[15px]' fill='white' d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128l-368 0zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39L296 392c0 13.3 10.7 24 24 24s24-10.7 24-24l0-134.1 39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
+                  </svg>
+                </div>
                 {userData?.profile_picture ? (
                   <img src={userData?.profile_picture} className="mb-5 h-32 w-32 rounded-full object-cover" alt="User profile picture" />
                 ) : (
@@ -190,7 +210,51 @@ const Profile = () => {
                 )}
 
                 <p className="text-xl font-semibold text-primary">{userData?.name}</p>
+              </div> */}
+
+
+              <div className="relative group flex flex-col items-center justify-center">
+                {profilePicture ? (
+                  <img
+                    src={profilePicture}
+                    className="h-32 w-32 rounded-full object-cover"
+                    alt="User profile picture"
+                  />
+
+                ) : (
+                  <span className="h-32 w-32 rounded-full font-bold text-2xl flex justify-center items-center object-cover bg-slate-400 text-white capitalize">
+                    {name[0] ?? 'BE'}
+                  </span>
+                )}
+
+                <div className="h-32 w-32 rounded-full bg-[#02020281] absolute top-0 right-[31%] bottom-0  flex justify-center items-center opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
+                    <svg
+                      className="h-[35px] w-[35px]"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 640 512"
+                    >
+                      <path
+                        className="text-[15px]"
+                        fill="white"
+                        d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128l-368 0zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39L296 392c0 13.3 10.7 24 24 24s24-10.7 24-24l0-134.1 39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+                      />
+                    </svg>
+                  </label>
+                </div>
               </div>
+              <button type="submit" className="btn btn-primary my-4 flex justify-center m-auto ">
+                Update
+              </button>
+
+              <p className="text-xl font-semibold text-primary mt-2 text-center">{name}</p>
+
               <ul className="m-auto  mt-2 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
                 <li className="ml-4 flex items-center gap-2">
                   {allSvgs.coffeeCupIcon}
