@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_ENDPOINT } from '@/config';
 import Swal from 'sweetalert2';
+import Cookies from 'js-cookie';
+import { setLazyProp } from 'next/dist/server/api-utils';
 
 interface FormData {
   name: string;
@@ -16,9 +18,14 @@ interface FormData {
 
 const ProfileForm = () => {
   const [geo_location, setGeo_location] = useState<{ coordinates: number[]; type: 'Point' }>({ coordinates: [], type: 'Point' });
+  const [location, setLocation] = useState('');
   const { userData } = useAuth();
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
+  const { setUserData, setAccessToken, setRefreshToken } = useAuth();
 
+  // console.log(userData)
+
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const { register, handleSubmit, setValue, watch, reset } = useForm<FormData>({
     defaultValues: {
       name: userData?.name || '',
@@ -58,41 +65,41 @@ const ProfileForm = () => {
     }
   };
 
-  const onSubmit = async (data: userData) => {
-
+  const coloredToast = (color: any, message: string) => {
     const toast = Swal.mixin({
       toast: true,
       position: 'top',
       showConfirmButton: false,
-      timer: 10000,
+      timer: 3000,
       showCloseButton: true,
       customClass: {
-        popup: `color-any`,
+        popup: `color-${color}`,
       },
     });
     toast.fire({
-      title: "This page is under development",
+      title: message,
     });
-    return;
+  };
 
-    
-    const coordinates = geo_location?.coordinates;
-
-    if (coordinates.length === 2) {
-      data.location = await reverseGeocode(coordinates);
-    } else {
-      data.location = userData?.location || 'Unknown Location';
+  const onSubmit = async (data: userData) => {
+    if(userRole == 'manager'){
+      coloredToast('danger', 'Admin profile update is under development');
+      return;
     }
-
-    data.geo_location = watchedGeoLocation;
-    console.log(userData);
-
+    // const coordinates = geo_location?.coordinates;
+    // if (coordinates.length === 2) {
+    //   data.location = await reverseGeocode(coordinates);
+    // } else {
+    //   data.location = userData?.location || 'Unknown Location';
+    // }
+    // data.geo_location = watchedGeoLocation;
     const updatedProfileInfo = {
       name: data.name,
       email: data.email,
-      location: data.location,
+      location: location || data.location,
     };
 
+    // console.log('updatedProfileInfo', updatedProfileInfo);return;
     try {
       // users/661e4b2d6970067f1739f61a
       const patchResponse = await fetch(`${API_ENDPOINT}users/${userData?.id}`, {
@@ -102,13 +109,34 @@ const ProfileForm = () => {
         },
         body: JSON.stringify(updatedProfileInfo),
       });
-
       if (!patchResponse.ok) {
         throw new Error('Failed to patch data');
       }
 
-      const updatedAddon = await patchResponse.json(); //
+      if(userRole == 'cp'){
+        try {
+          const cpResponse = await fetch(`${API_ENDPOINT}cp/${userData?.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ geo_location, city: data.location }),
+          });
+          if (!cpResponse.ok) {
+            throw new Error('Failed to patch data');
+          }
 
+        } catch (error) {
+          console.error('Cp patch error:', error);
+        }
+      }
+      const updatedAddon = await patchResponse.json();
+
+      setUserData(updatedAddon);
+      Cookies.set('userData', JSON.stringify(updatedAddon), {
+        expires: 7,
+      });
+      coloredToast('success', 'Profile updated successfully');
       // const updatedAddonsData = addonsData.map((addon: any) => (addon._id === addonsInfo?._id ? updatedAddon : addon));
       // setAddonsData(updatedAddonsData);
 
@@ -135,7 +163,7 @@ const ProfileForm = () => {
 
             <div className="flex-grow">
               <label htmlFor="geo_location">Location</label>
-              <Map setGeo_location={setGeo_location} defaultValue={userData?.location || ''} />
+              <Map setGeo_location={setGeo_location} setLocation={setLocation} defaultValue={userData?.location || ''} />
             </div>
 
             <div>

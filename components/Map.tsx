@@ -65,7 +65,7 @@ const PlacesAutocomplete: React.FC<{
   );
 };
 
-const Map: React.FC<MapProps> = ({ setGeo_location, defaultValue }) => {
+const Map: React.FC<MapProps> = ({ setGeo_location, defaultValue, setLocation}) => {
   const libraries = useMemo(() => ['places'], []);
 
   const { isLoaded } = useLoadScript({
@@ -89,6 +89,7 @@ const Map: React.FC<MapProps> = ({ setGeo_location, defaultValue }) => {
         onAddressSelect={(address) => {
           getGeocode({ address }).then((results) => {
             const { lat, lng } = getLatLng(results[0]);
+            setLocation(address);
             setGeo_location({
               coordinates: [lng, lat],
               type: 'Point',
