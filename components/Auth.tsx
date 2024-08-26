@@ -52,9 +52,9 @@ const Auth = () => {
         const refreshToken = data?.tokens?.refresh;
 
         if(userData?.role === 'manager'){
-          userData.permissions = ['dashboard','book_now','shoots','setting'];
+          userData.permissions = ['dashboard','book_now','shoots','meetings','role'];
         }else if(userData?.role === 'cp'){
-          userData.permissions = ['dashboard','shoots','setting'];
+          userData.permissions = ['dashboard','shoots'];
         }else if(userData?.role === 'user'){
           userData.permissions = ['dashboard','book_now'];
         }else{

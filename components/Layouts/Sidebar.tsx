@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { toggleSidebar } from '../../store/themeConfigSlice';
 import AnimateHeight from 'react-animate-height';
 import { IRootState } from '../../store';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/authContext';
 import dynamic from 'next/dynamic';
 
 const Sidebar = () => {
-
+  const scrollContainerRef = useRef(null);
   const router = useRouter();
   const [currentMenu, setCurrentMenu] = useState<string>('');
   const [errorSubMenu, setErrorSubMenu] = useState(false);
@@ -20,11 +20,30 @@ const Sidebar = () => {
 
   const { userData } = useAuth();
 
+
+
+
+
   const toggleMenu = (value: string) => {
     setCurrentMenu((oldValue) => {
       return oldValue === value ? '' : value;
     });
   };
+
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    const psInstance = container?.__ps?.ps;
+
+    if (psInstance) {
+      const originalBind = psInstance.event.bind;
+      psInstance.event.bind = (element, event, handler, options = {}) => {
+        originalBind.call(psInstance.event, element, event, handler, { ...options, passive: true });
+      };
+    }
+  }, []);
+
+
 
   useEffect(() => {
     const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
@@ -107,7 +126,7 @@ const Sidebar = () => {
               </svg>
             </button>
           </div>
-          <PerfectScrollbar className='relative h-[calc(100vh-80px)]'>
+          <PerfectScrollbar className='relative h-[calc(100vh-80px)]' ref={scrollContainerRef}>
             <SidebarWrapper/>
           </PerfectScrollbar>
         </div>
