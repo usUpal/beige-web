@@ -1,86 +1,50 @@
-import { useEffect, useState, Fragment } from 'react';
-import 'tippy.js/dist/tippy.css';
-import { useDispatch } from 'react-redux';
-import { setPageTitle } from '@/store/themeConfigSlice';
-import StatusBg from '@/components/Status/StatusBg';
-import { API_ENDPOINT, BucketUrl } from '@/config';
-import { useAuth } from '@/contexts/authContext';
-import Link from 'next/link';
-import api from '../../../FileManager/api/storage';
-import ResponsivePagination from 'react-responsive-pagination';
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/exhaustive-deps */
 import PreLoader from '@/components/ProfileImage/PreLoader';
+import StatusBg from '@/components/Status/StatusBg';
+import { useAuth } from '@/contexts/authContext';
+import { useGetAllShootQuery } from '@/Redux/features/shoot/shootApi';
+import { setPageTitle } from '@/store/themeConfigSlice';
+import Link from 'next/link';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import ResponsivePagination from 'react-responsive-pagination';
+import 'tippy.js/dist/tippy.css';
+import api from '../../../FileManager/api/storage';
 
 const Shoots = () => {
-  const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [myShoots, setMyShoots] = useState<ShootTypes[]>([]);
-  const [query,setQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  // All Shoots
-  const { userData } = useAuth();
-  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
-
-  useEffect(() => {
-    getAllMyShoots();
-  }, [currentPage]);
-
-  // All Shoots - user base
-  const getAllMyShoots = async () => {
-    setIsLoading(true);
-    let url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
-    if (userRole === 'client') {
-      url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&client_id=${userData?.id}`;
-    } else if (userRole === 'cp') {
-      url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&cp_id=${userData?.id}`;
-    }
-    // console.log('🚀 ~ getAllMyShoots ~ url:', url);
-    try {
-      const response = await fetch(url);
-      const allShots = await response.json();
-      setTotalPagesCount(allShots?.totalPages);
-      setMyShoots(allShots?.results);
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
-
-  // previous code
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // previous code
   const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [query, setQuery] = useState<string>('');
+  const { userData } = useAuth();
+
+  // Set page title
   useEffect(() => {
     dispatch(setPageTitle('Shoots'));
+  }, []);
+
+  // Memoize queryParams
+  const queryParams = useMemo(
+    () => ({
+      sortBy: 'createdAt:desc',
+      limit: '10',
+      page: currentPage,
+      ...(userData?.role === 'user' && { client_id: userData.id }),
+      ...(userData?.role === 'cp' && { cp_id: userData.id }),
+      search: query,
+    }),
+    [currentPage, userData, query]
+  );
+
+  // Fetch data based on query parameters
+  const { data, error, isFetching, isLoading, refetch } = useGetAllShootQuery(queryParams, {
+    refetchOnMountOrArgChange: true,
   });
 
-  const getShootsByQuery = async (event) => {
-    setQuery(event.target.value);
-    setIsLoading(true)
-    let url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&search=${event.target.value}`;
-    if (userRole === 'client') {
-      url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&client_id=${userData?.id}&search=${event.target.value}`;
-    } else if (userRole === 'cp') {
-      url = `${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=10&page=${currentPage}&cp_id=${userData?.id}&search=${event.target.value}`;
-    }
-
-    console.log("🚀 ~ getShootsByQuery ~ url:", url)
-
-    try {
-      const response = await fetch(url);
-      const allShots = await response.json();
-      setTotalPagesCount(allShots?.totalPages);
-      setMyShoots(allShots?.results);
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  }
+  // Memoize handlePageChange
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
@@ -88,7 +52,13 @@ const Shoots = () => {
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Recent Shoots</h5>
-          <input type="text" onChange={getShootsByQuery} value={query} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...'/>
+          <input
+            type="text"
+            onChange={(event) => setQuery(event.target.value)}
+            value={query}
+            className="rounded border border-black px-3 py-1 focus:border-black focus:outline-none"
+            placeholder="Search..."
+          />
         </div>
 
         <div className="table-responsive">
@@ -105,82 +75,66 @@ const Shoots = () => {
             </thead>
             <tbody>
               {isLoading ? (
-                <>
-                  <PreLoader></PreLoader>
-                </>
+                <PreLoader />
+              ) : data?.results?.length > 0 ? (
+                data.results.map((shoot) => (
+                  <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                    <td className="min-w-[150px] text-black dark:text-white">
+                      <div className="flex items-center">
+                        <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
+                        <p className="whitespace-nowrap">
+                          {shoot.order_name}
+                          <span className="block text-xs text-[#888EA8]">{new Date(shoot.shoot_datetimes[0]?.start_date_time).toDateString()}</span>
+                        </p>
+                      </div>
+                    </td>
+                    <td>{shoot.id}</td>
+                    <td>$ {shoot.shoot_cost}</td>
+                    <td className="text-success">
+                      {shoot.file_path?.status ? (
+                        <span
+                          onClick={async () => {
+                            await api.downloadFolder(`${shoot.file_path.dir_name}`);
+                          }}
+                          className="badge text-md w-12 bg-success text-center"
+                        >
+                          Download
+                        </span>
+                      ) : (
+                        <span
+                          onClick={async () => {
+                            await api.downloadFolder(`${shoot.file_path.dir_name}`);
+                          }}
+                          className="badge text-md w-12 bg-gray-200 text-center text-gray-500"
+                        >
+                          Unavailable
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <StatusBg>{shoot.order_status}</StatusBg>
+                    </td>
+                    <td>
+                      <Link href={`shoots/${shoot.id}`}>
+                        <button type="button" className="p-0">
+                          <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                        </button>
+                      </Link>
+                    </td>
+                  </tr>
+                ))
               ) : (
-                <>
-                  {myShoots && myShoots.length > 0 ? (
-                    myShoots?.map((shoot) => (
-                      <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                        <td className="min-w-[150px] text-black dark:text-white">
-                          <div className="flex items-center">
-                            <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
-                            <p className="whitespace-nowrap">
-                              {shoot?.order_name}
-                              <span className="block text-xs text-[#888EA8]">{new Date(shoot?.shoot_datetimes[0]?.start_date_time).toDateString()}</span>
-                            </p>
-                          </div>
-                        </td>
-                        <td>{shoot.id}</td>
-                        <td>$ {shoot?.shoot_cost}</td>
-
-                        <td className="text-success">
-                          {shoot?.file_path?.status ? (
-                            <span
-                              onClick={async () => {
-                                await api.downloadFolder(`${shoot?.file_path?.dir_name}`);
-                              }}
-                              className="badge text-md w-12 bg-success text-center"
-                            >
-                              Download
-                            </span>
-                          ) : (
-                            <span
-                              onClick={async () => {
-                                await api.downloadFolder(`${shoot?.file_path?.dir_name}`);
-                              }}
-                              className="badge text-md w-12 bg-gray-200 text-center text-gray-500"
-                            >
-                              Unavilable
-                            </span>
-                          )}
-                        </td>
-                        <td>
-                          <div className="">
-                            <StatusBg>{shoot?.order_status}</StatusBg>
-                          </div>
-                        </td>
-                        <td>
-                          <Link href={`shoots/${shoot?.id}`}>
-                            <button type="button" className="p-0">
-                              <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                            </button>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={50} className="text-center">
-                        <span className="flex justify-center font-semibold text-[red]"> No shoots found </span>
-                      </td>
-                    </tr>
-                  )}
-                </>
+                <tr>
+                  <td colSpan={6} className="text-center">
+                    <span className="flex justify-center font-semibold text-[red]">No shoots found</span>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
 
-          {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
           <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-            <ResponsivePagination
-              current={currentPage}
-              total={totalPagesCount}
-              onPageChange={handlePageChange}
-              maxWidth={400}
-              // styles={styles}
-            />
+            <ResponsivePagination current={currentPage} total={data?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
           </div>
         </div>
       </div>

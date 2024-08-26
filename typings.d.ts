@@ -1,4 +1,4 @@
-export {};
+export { };
 declare global {
   interface ChatRoomTypes {
     order_id: OrderID;
@@ -225,4 +225,8 @@ declare global {
     setGeo_location: (location: GeoLocation) => void;
     defaultValue?: string;
   }
+  interface TQueryParam {
+    name: string;
+    value: boolean | React.Key;
+  };
 }
