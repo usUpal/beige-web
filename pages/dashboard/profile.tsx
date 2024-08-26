@@ -6,6 +6,7 @@ import { setPageTitle } from '../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useAuth } from '@/contexts/authContext';
 import ProfileForm from '@/components/SharedComponent/ProfileForm';
+import ProfileImageForm from '@/components/SharedComponent/ProfileImageForm';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Navigation, Pagination, Autoplay } from 'swiper';
 import 'swiper/swiper-bundle.css';
@@ -188,7 +189,7 @@ const Profile = () => {
                   // <img src="/assets/images/favicon.png" alt="Default profile picture" className="mb-5 h-32 w-32 rounded-full object-contain" />
                   <span className='h-32 w-32 rounded-full font-bold text-2xl flex justify-center items-center object-cover bg-slate-400 text-white capitalize'>{userData?.name[0] ?? 'BE'}</span>
                 )}
-
+                <ProfileImageForm />
                 <p className="text-xl font-semibold text-primary">{userData?.name}</p>
               </div>
               <ul className="m-auto  mt-2 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">

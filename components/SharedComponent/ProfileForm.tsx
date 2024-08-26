@@ -22,8 +22,7 @@ const ProfileForm = () => {
   const { userData } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
   const { setUserData, setAccessToken, setRefreshToken } = useAuth();
-
-  // console.log(userData)
+  const [isLoading, setIsLoading] = useState(false);
 
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const { register, handleSubmit, setValue, watch, reset } = useForm<FormData>({
@@ -82,26 +81,19 @@ const ProfileForm = () => {
   };
 
   const onSubmit = async (data: userData) => {
+    setIsLoading(true);
     if(userRole == 'manager'){
       coloredToast('danger', 'Admin profile update is under development');
+      setIsLoading(false);
       return;
     }
-    // const coordinates = geo_location?.coordinates;
-    // if (coordinates.length === 2) {
-    //   data.location = await reverseGeocode(coordinates);
-    // } else {
-    //   data.location = userData?.location || 'Unknown Location';
-    // }
-    // data.geo_location = watchedGeoLocation;
     const updatedProfileInfo = {
       name: data.name,
       email: data.email,
       location: location || data.location,
     };
 
-    // console.log('updatedProfileInfo', updatedProfileInfo);return;
     try {
-      // users/661e4b2d6970067f1739f61a
       const patchResponse = await fetch(`${API_ENDPOINT}users/${userData?.id}`, {
         method: 'PATCH',
         headers: {
@@ -143,6 +135,8 @@ const ProfileForm = () => {
       // setAddonsModal(false);
     } catch (error) {
       console.error('Patch error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -174,8 +168,8 @@ const ProfileForm = () => {
         </div>
 
         <div className="mt-3 sm:col-span-2">
-          <button type="submit" className="btn btn-primary">
-            Save
+          <button type="submit" className="btn btn-primary" disabled={isLoading}>
+            {isLoading ? 'Saving...' : 'Save'}
           </button>
         </div>
       </form>
