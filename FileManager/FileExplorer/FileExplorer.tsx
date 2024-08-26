@@ -266,7 +266,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           <span className="ml-2 text-lg font-normal text-gray-900">Ignore Folder Structure</span>
         </label>
 
-        <p className="mb-0 flex items-center gap-2 px-4	 text-lg" onClick={getFiles}>
+        <p className="mb-0 flex items-center gap-2 px-4	 text-lg cursor-pointer" onClick={getFiles}>
           <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
           Refresh
         </p>
