@@ -745,7 +745,7 @@ const ShootDetails = () => {
                         <div className="fixed inset-0"></div>
                       </Transition.Child>
                       <div id="profile_modal" className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
-                        <div className="flex min-h-screen items-start justify-end px-4 md:me-64">
+                        <div className="flex min-h-screen items-start justify-end px-4 md:me-48">
                           <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -762,10 +762,10 @@ const ShootDetails = () => {
                                 </button>
                               </div>
 
-                              <div className=" px-3 pb-4">
-                                <div className="flex items-center justify-evenly  py-2 text-center text-white dark:text-white-light">
+                              <div className="px-3 pb-4">
+                                <div className="flex items-center justify-evenly py-2 text-center text-white dark:text-white-light">
                                   <div>
-                                    <div className="mx-auto  h-20 w-20 overflow-hidden rounded-full">
+                                    <div className="mx-auto h-20 w-20 overflow-hidden rounded-full">
                                       <img src={cpShortDetailsInfo?.profile_picture && cpShortDetailsInfo?.profile_picture} alt="img" className="h-full w-full object-cover" />
                                     </div>
                                     <div className="details">

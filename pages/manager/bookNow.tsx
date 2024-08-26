@@ -46,6 +46,15 @@ interface FormData {
   duration: number;
   vst: string;
 }
+
+interface CategoryListData {
+  name: string;
+  budget: {
+    max: BudgetData;
+    min: BudgetData;
+  };
+}
+
 const BookNow = () => {
   const router = useRouter();
   const [addonsData] = useAddons();
@@ -76,6 +85,9 @@ const BookNow = () => {
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const [isClientLoading, setIsClientLoading] = useState(false);
+
+  const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
+  const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
 
   const {
     register,
@@ -122,7 +134,6 @@ const BookNow = () => {
         return addon?.rate;
       }
     };
-
     const updatedComputedRates = filteredAddonsData.reduce((prevAddon: any, addon: addonTypes) => {
       prevAddon[addon?._id] = calculateUpdatedRate(addon);
       return prevAddon;
@@ -144,9 +155,33 @@ const BookNow = () => {
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
 
+  // set category data for the ui
+  const categoryList: CategoryListData[] = [
+    { name: 'Commercial', budget: { max: 100, min: 200 } },
+    { name: 'Corporate', budget: { max: 120, min: 220 } },
+    { name: 'Music', budget: { max: 133, min: 222 } },
+    { name: 'Private', budget: { max: 333, min: 355 } },
+    { name: 'Weeding', budget: { max: 377, min: 399 } },
+    { name: 'Other', budget: { max: 444, min: 555 } },
+  ];
+
+  // setting default budget
+  const handleChangeCategoryWithBudget = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategory = event.target.value;
+    const category = categoryList.find((cat) => cat.name === selectedCategory);
+
+    if (category) {
+      setMyMaxBud(category.budget.max);
+      setMyMinBud(category.budget.min);
+    } else {
+      setMyMaxBud(0);
+      setMyMinBud(0);
+    }
+  };
+  //
+
   const handleBack = () => {
     setActiveTab(activeTab === 3 ? 2 : 1);
-    // Use setTimeout to delay the Flatpickr initialization
     setTimeout(() => {
       if (startDateTimeRef.current) {
         flatpickr(startDateTimeRef.current, {
@@ -449,22 +484,25 @@ const BookNow = () => {
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
     const meeting_time = convertToISO(data.meeting_time);
-    // console.log("metting: ", meeting_time);
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
     if (activeTab == 2 && cp_ids?.length === 0) {
       swalToast('danger', 'Please select at least one producer!');
-      return; // Exit the function early if no producer is selected
+      return;
     }
     if (data.content_type == false) {
       swalToast('danger', 'Please select content type!');
     } else {
       try {
         const formattedData = {
+          // budget: {
+          //   max: parseFloat(data.max_budget),
+          //   min: parseFloat(data.min_budget),
+          // },
           budget: {
-            max: parseFloat(data.max_budget),
-            min: parseFloat(data.min_budget),
+            max: myMaxBud,
+            min: myMinBud,
           },
           client_id,
           order_status: 'pre_production',
@@ -486,14 +524,14 @@ const BookNow = () => {
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
-          // reset();
+
+          console.log('formattedData', formattedData);
         } else {
           return false;
         }
         if (activeTab === 3) {
           const response = await OrderApi.handleOrderMake(formattedData);
-          console.log(meeting_time);
-          console.log(response);
+
           if (response.status === 201) {
             swalToast('success', 'Shoot has been created successfully!');
             router.push('/dashboard/shoots');
@@ -538,8 +576,6 @@ const BookNow = () => {
   };
 
   const handleClientChange = (client) => {
-    console.log('client', client);
-    //const selectedOption = event.target.options[event.target.selectedIndex];
     setClient_id(client?.id);
     setClientName(client?.name);
     setShowClientDropdown(false);
@@ -640,14 +676,14 @@ const BookNow = () => {
                               required: 'Category is required',
                               validate: (value) => value !== 'SelectCategory' || 'Please select a valid category',
                             })}
+                            onChange={handleChangeCategoryWithBudget}
                           >
                             <option value="SelectCategory">Select Category</option>
-                            <option value="Commercial">Commercial</option>
-                            <option value="Corporate">Corporate</option>
-                            <option value="Music">Music</option>
-                            <option value="Private">Private</option>
-                            <option value="Wedding">Wedding</option>
-                            <option value="Other">Other</option>
+                            {categoryList.map((category) => (
+                              <option key={category.name} value={category.name}>
+                                {category.name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </div>
@@ -829,8 +865,9 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between">
-                        {/* min_budget budget */}
+                      {/* budget starts */}
+                      {/* min_budget budget */}
+                      {/* <div className="flex items-center justify-between">
                         <div className="flex basis-[45%] flex-col sm:flex-row">
                           <label htmlFor="min_budget" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-32">
                             Min Budget
@@ -881,7 +918,9 @@ const BookNow = () => {
                             {errors.max_budget && <p className="ml-4 text-danger">{errors?.max_budget.message}</p>}
                           </div>
                         </div>
-                      </div>
+                      </div> */}
+                      {/* budget ends */}
+
                       <div className="mt-5 flex items-center justify-between">
                         {/* Special Note */}
                         <div className="flex basis-[45%] flex-col sm:flex-row">

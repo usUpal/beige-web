@@ -98,6 +98,15 @@ const SidebarCP = (props: any) => {
               </ul>
             </AnimateHeight>
           </li>
+
+          <li className="nav-item">
+            <Link href="/dashboard/support" className="group">
+              <div className="flex items-center">
+                {allSvgs.helpSvg}
+                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Support</span>
+              </div>
+            </Link>
+          </li>
         </ul>
       </li>
     </ul>

@@ -144,11 +144,12 @@ const Header = () => {
   const { t, i18n } = useTranslation();
 
   let userProfileImage;
-  if(userData?.profile_picture){
-    userProfileImage = <img className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src={`${userData?.profile_picture || "/assets/images/user-profile.jpeg"}`} alt="userProfile" />
-
-  }else{
-    userProfileImage = <span className='w-8 h-8 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white capitalize'>{userData?.name[0] ?? 'BE'}</span>
+  if (userData?.profile_picture) {
+    userProfileImage = (
+      <img className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src={`${userData?.profile_picture || '/assets/images/user-profile.jpeg'}`} alt="userProfile" />
+    );
+  } else {
+    userProfileImage = <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-400 object-cover font-bold capitalize text-white">{userData?.name[0] ?? 'BE'}</span>;
   }
 
   return (
@@ -293,9 +294,7 @@ const Header = () => {
                   ) : (
                     <li onClick={(e) => e.stopPropagation()}>
                       <button type="button" className="!grid min-h-[200px] place-content-center text-lg hover:!bg-transparent">
-                        <div className="mx-auto mb-4 rounded-full ring-4 ring-primary/30">
-                          {allSvgs.invalidNotificationCrossBtnSvg}
-                        </div>
+                        <div className="mx-auto mb-4 rounded-full ring-4 ring-primary/30">{allSvgs.invalidNotificationCrossBtnSvg}</div>
                         No data available.
                       </button>
                     </li>
@@ -304,18 +303,13 @@ const Header = () => {
               </Dropdown>
             </div>
             <div className="dropdown flex shrink-0">
-              <Dropdown
-                offset={[0, 8]}
-                placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                btnClassName="relative group block"
-                button={userProfileImage }
-              >
-                {console.log("User Info From Header : ",userData)}
+              <Dropdown offset={[0, 8]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} btnClassName="relative group block" button={userProfileImage}>
+                {/* {console.log("User Info From Header : ",userData)} */}
                 <ul className="w-[230px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
                   <li>
                     <div className="flex items-center px-4 py-4">
                       <Link href="/dashboard/profile">
-                      {userProfileImage}
+                        {userProfileImage}
                         {/* <span className='w-9 h-9 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white'>{userData?.name[0] ?? 'NA'}</span> */}
                         {/* <img className="h-10 w-10 rounded-md object-cover"  src={'/assets/images/favicon.png'}  alt="userProfile" /> */}
                       </Link>
@@ -349,9 +343,7 @@ const Header = () => {
                 {allSvgs.horizontalMenuDashboardSvg}
                 <span className="px-1">{t('dashboard')}</span>
               </div>
-              <div className="right_arrow">
-                {allSvgs.downArrowSvg}
-              </div>
+              <div className="right_arrow">{allSvgs.downArrowSvg}</div>
             </button>
             <ul className="sub-menu">
               <li>
@@ -374,9 +366,7 @@ const Header = () => {
                 {allSvgs.horizontalAppsIconSvg}
                 <span className="px-1">{t('apps')}</span>
               </div>
-              <div className="right_arrow">
-                {allSvgs.downArrowSvg}
-              </div>
+              <div className="right_arrow">{allSvgs.downArrowSvg}</div>
             </button>
             <ul className="sub-menu">
               <li>
@@ -400,9 +390,7 @@ const Header = () => {
               <li className="relative">
                 <button type="button">
                   {t('invoice')}
-                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">
-                    {allSvgs.greaterThanArrowSvg}
-                  </div>
+                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">{allSvgs.greaterThanArrowSvg}</div>
                 </button>
                 <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
                   <li>
@@ -430,9 +418,7 @@ const Header = () => {
                 {allSvgs.diceForComponentsHorizontalMenuSvg}
                 <span className="px-1">{t('components')}</span>
               </div>
-              <div className="right_arrow">
-                {allSvgs.downArrowSvg}
-              </div>
+              <div className="right_arrow">{allSvgs.downArrowSvg}</div>
             </button>
             <ul className="sub-menu">
               <li>
@@ -485,9 +471,7 @@ const Header = () => {
                 {allSvgs.elementsSvg}
                 <span className="px-1">{t('elements')}</span>
               </div>
-              <div className="right_arrow">
-                {allSvgs.downArrowSvg}
-              </div>
+              <div className="right_arrow">{allSvgs.downArrowSvg}</div>
             </button>
             <ul className="sub-menu">
               <li>
@@ -552,9 +536,7 @@ const Header = () => {
                 {allSvgs.tablesSvgIcon}
                 <span className="px-1">{t('tables')}</span>
               </div>
-              <div className="right_arrow">
-                {allSvgs.downArrowSvg}
-              </div>
+              <div className="right_arrow">{allSvgs.downArrowSvg}</div>
             </button>
             <ul className="sub-menu">
               <li>
@@ -563,9 +545,7 @@ const Header = () => {
               <li className="relative">
                 <button type="button">
                   {t('datatables')}
-                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">
-                    {allSvgs.greaterThanArrowSvg}
-                  </div>
+                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">{allSvgs.greaterThanArrowSvg}</div>
                 </button>
                 <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
                   <li>
@@ -611,9 +591,7 @@ const Header = () => {
                 {allSvgs.formsSvgIcon}
                 <span className="px-1">{t('forms')}</span>
               </div>
-              <div className="right_arrow">
-                {allSvgs.downArrowSvg}
-              </div>
+              <div className="right_arrow">{allSvgs.downArrowSvg}</div>
             </button>
             <ul className="sub-menu">
               <li>
@@ -669,17 +647,13 @@ const Header = () => {
                 {allSvgs.pagesIconSvg}
                 <span className="px-1">{t('pages')}</span>
               </div>
-              <div className="right_arrow">
-                {allSvgs.downArrowSvg}
-              </div>
+              <div className="right_arrow">{allSvgs.downArrowSvg}</div>
             </button>
             <ul className="sub-menu">
               <li className="relative">
                 <button type="button">
                   {t('users')}
-                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">
-                    {allSvgs.greaterThanArrowSvg}
-                  </div>
+                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">{allSvgs.greaterThanArrowSvg}</div>
                 </button>
                 <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
                   <li>
@@ -850,9 +824,7 @@ const Header = () => {
                 </svg>
                 <span className="px-1">{t('more')}</span>
               </div>
-              <div className="right_arrow">
-                {allSvgs.rightArrowSvg}
-              </div>
+              <div className="right_arrow">{allSvgs.rightArrowSvg}</div>
             </button>
             <ul className="sub-menu">
               <li>
