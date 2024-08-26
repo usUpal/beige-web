@@ -17,10 +17,6 @@ const AddRole = () => {
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Create Role</h5>
-          {/* <div className="space-x-2">
-            <Link href={'/dashboard/role/add-role'} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none'>Add</Link>
-            <input type="text" className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...' />
-          </div> */}
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="">
