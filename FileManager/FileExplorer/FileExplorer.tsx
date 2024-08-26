@@ -266,7 +266,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           <span className="ml-2 text-lg font-normal text-gray-900">Ignore Folder Structure</span>
         </label> */}
 
-        <p className="flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-lg" onClick={getFiles} style={{ backgroundColor: '#a4d3a2' }}>
+        <p className="text-md flex cursor-pointer items-center gap-2 rounded-md px-2 py-1" onClick={getFiles} style={{ backgroundColor: '#a4d3a2' }}>
           <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
           Refresh
         </p>
