@@ -51,6 +51,18 @@ const Auth = () => {
         const accessToken = data?.tokens?.access;
         const refreshToken = data?.tokens?.refresh;
 
+        if(userData?.role === 'manager'){
+          userData.permissions = ['dashboard','book_now','shoots','setting'];
+        }else if(userData?.role === 'cp'){
+          userData.permissions = ['dashboard','shoots','setting'];
+        }else if(userData?.role === 'user'){
+          userData.permissions = ['dashboard','book_now'];
+        }else{
+          coloredToast('danger', data.message);
+          setIsLoading(false);
+        }
+
+
         //Update context values
         setUserData(userData);
         setAccessToken(accessToken?.token);
