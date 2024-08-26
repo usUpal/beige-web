@@ -12,6 +12,7 @@ import Link from 'next/link';
 import Swal from 'sweetalert2';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
 import { toast } from 'react-toastify';
+import ResponsivePagination from 'react-responsive-pagination';
 // types
 
 const Chat = () => {
@@ -41,6 +42,12 @@ const Chat = () => {
   const { userData } = useAuth() as any;
   const socket = useRef<any | null>(null);
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const fetchChats = async () => {
     try {
@@ -54,7 +61,9 @@ const Chat = () => {
       } else {
         setFetchData(newChats);
         setChats(newChats.results);
+        setTotalPagesCount(newChats?.totalPages)
       }
+        console.log("🚀 ~ fetchChats ~ newChats:", newChats)
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -185,6 +194,10 @@ const Chat = () => {
     return <span className="flex h-[35px] w-[35px] items-center justify-center rounded-full bg-gray-300 text-[13px] leading-[45px]">{name}</span>;
   };
 
+  const getChatByQuery = (event) => {
+    setSearchUser(event.target.value);
+  }
+
   return (
     <div>
       <div className={`relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)] sm:min-h-0 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
@@ -195,8 +208,7 @@ const Chat = () => {
               className="peer form-input ltr:pr-9 rtl:pl-9"
               placeholder="Searching..."
               value={searchUser}
-              onChange={(e) => setSearchUser(e.target.value)}
-              onFocus={() => toast.warn('This features under development.')}
+              onChange={getChatByQuery}
             />
             <div className="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-2 rtl:left-2">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -244,6 +256,21 @@ const Chat = () => {
                 );
               })}
             </PerfectScrollbar>
+
+
+
+
+
+            <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <ResponsivePagination
+              current={currentPage}
+              total={totalPagesCount}
+              onPageChange={handlePageChange}
+              maxWidth={400}
+              // styles={styles}
+            />
+          </div>
+
           </div>
         </div>
         <div className={`absolute z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>

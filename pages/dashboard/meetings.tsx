@@ -30,7 +30,7 @@ const Meeting = () => {
   const [metingDate, setMetingDate] = useState();
   const myInputDate = meetingInfo?.meeting_date_time;
   const myFormattedDateTime = useDateFormat(myInputDate);
-
+  const [query , setQuery] = useState('');
 
   useEffect(() => {
     getAllMyMeetings();
@@ -191,12 +191,34 @@ const Meeting = () => {
 
   }
 
+  const getMeetingsByQuery = async(event) => {
+    setQuery(event.target.value)
+    setLoading(true);
+    let url = `${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}&search=${query}`;
+    if (userData?.role === 'client' || userData?.role === 'cp') {
+      url = `${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}&search=${query}`;
+    }
+    try {
+      const response = await fetch(url);
+      const allMeetings = await response.json();
+      console.log("🚀 ~ getMeetingsByQuery ~ allMeetings:", allMeetings)
+
+      setTotalPagesCount(allMeetings?.totalPages);
+      setMyMeetings(allMeetings.results);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(true);
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Meeting List</h5>
+          <input type="text" onChange={getMeetingsByQuery} value={query} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...'/>
         </div>
         <div className="table-responsive">
           <table>
@@ -218,8 +240,8 @@ const Meeting = () => {
                 </>
               ) : (
               <>
-                
-                
+
+
               {myMeetings && myMeetings.length > 0 ? (
 
                 myMeetings?.map((meeting) => (
