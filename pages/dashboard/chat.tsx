@@ -12,6 +12,7 @@ import Link from 'next/link';
 import Swal from 'sweetalert2';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
 import { toast } from 'react-toastify';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 // types
 
 const Chat = () => {
@@ -41,6 +42,9 @@ const Chat = () => {
   const { userData } = useAuth() as any;
   const socket = useRef<any | null>(null);
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
+
+  console.log('setSelectedChatRoom--> ', selectedChatRoom);
+  // console.log('textMessage--> ', textMessage);
 
   const fetchChats = async () => {
     try {
@@ -181,8 +185,25 @@ const Chat = () => {
     }
   };
 
+  const [openChatDetails, setOpenChatDetails] = useState(false);
+
   const createImageByName = (name: string) => {
     return <span className="flex h-[35px] w-[35px] items-center justify-center rounded-full bg-gray-300 text-[13px] leading-[45px]">{name}</span>;
+  };
+
+  const chatInfoOptions = [
+    { title: 'see group members', logo: allSvgs.mettingLinkIcon },
+    { title: 'Nickname', logo: allSvgs.addonsSvg },
+    { title: 'Link', logo: allSvgs.bookingLinkIcon },
+  ];
+
+  const [showChatMembers, setShowChatMembers] = useState(false);
+
+  const handleTItleAndCompare = (title: any) => {
+    // console.log(title);
+    if (title.toLowerCase() === 'see group members') {
+      setShowChatMembers((prev) => !prev);
+    }
   };
 
   return (
@@ -221,14 +242,6 @@ const Chat = () => {
                         <div className="flex items-center">
                           <div className="relative flex-shrink-0">
                             <MakeProfileImage>{chat.order_id?.order_name}</MakeProfileImage>
-                            {/* <img src="https://i.pravatar.cc/800" className="h-12 w-12 rounded-full object-cover" alt="" /> */}
-                            {/* {person.active && (
-                              <div>
-                                <div className="absolute bottom-0 ltr:right-0 rtl:left-0">
-                                  <div className="h-4 w-4 rounded-full bg-success"></div>
-                                </div>
-                              </div>
-                            )} */}
                           </div>
                           <div className="mx-3 ltr:text-left rtl:text-right">
                             <p className="mb-1 font-semibold">{chat.order_id?.order_name}</p>
@@ -246,7 +259,8 @@ const Chat = () => {
             </PerfectScrollbar>
           </div>
         </div>
-        <div className={`absolute z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
+
+        {/* <div className={`absolute z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div> */}
         <div className="panel flex-1 p-0">
           {!isShowUserChat && (
             <div className="relative flex h-full items-center justify-center p-4">
@@ -435,9 +449,9 @@ const Chat = () => {
                       <span className="relative top-2 bg-white px-3 dark:bg-black">{'Today, ' + selectedChatRoom?.time}</span>
                     </h4>
                   </div>
-                  {newMessages.length ? (
+                  {newMessages?.length ? (
                     <>
-                      {newMessages.map((message: any, index: any) => {
+                      {newMessages?.map((message: any, index: any) => {
                         return (
                           <div key={index}>
                             <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
@@ -526,6 +540,38 @@ const Chat = () => {
             ''
           )}
         </div>
+
+        {/* <div className="flex"> */}
+        {openChatDetails && (
+          <div className={`panel absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+            <p className="capitalize">Chat Info </p>
+            {chatInfoOptions.map((chatInfoItem, index) => (
+              <div className="flex items-center justify-start gap-2 border-b-gray-600 text-[14px] capitalize" key={index} onClick={() => handleTItleAndCompare(chatInfoItem?.title)}>
+                <span>{chatInfoItem?.logo}</span>
+                <p>{chatInfoItem?.title}</p>
+              </div>
+            ))}
+
+            {showChatMembers && (
+              <>
+                {/* showChatMembers */}
+                <div className="w-10/12 bg-gray-400">
+                  showChatMembers
+                  <ul>
+                    <li></li>
+                  </ul>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {selectedChatRoom && (
+          <div className="h-2" onClick={() => setOpenChatDetails((prev) => !prev)}>
+            {allSvgs.threeDotMenuIcon}
+          </div>
+        )}
+        {/* </div> */}
       </div>
     </div>
   );
