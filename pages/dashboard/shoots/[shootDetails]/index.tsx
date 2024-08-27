@@ -144,17 +144,6 @@ const ShootDetails = () => {
     const result = await updateStatus(data);
   };
 
-  useEffect(() => {
-    if (shootId) {
-      //getShootDetails(shootId);
-    }
-  }, [shootId]);
-
-  const getCps = () => {
-    setCpModal(true);
-  };
-
-  // Memoize handlePageChange
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
   }, []);
@@ -480,7 +469,7 @@ const ShootDetails = () => {
                   <label className="mb-0 font-sans text-[14px] capitalize">Assign CP's</label>
                   {userData?.role === 'manager' && (
                     <div className="flex gap-3">
-                      <button onClick={getCps} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
+                      <button onClick={()=>setCpModal(!cpModal)} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
