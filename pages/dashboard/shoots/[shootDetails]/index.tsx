@@ -40,8 +40,11 @@ const ShootDetails = () => {
   const [cpModal, setCpModal] = useState(false);
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
   const [cp_ids, setCp_ids] = useState([]);
-  const [loadingSubmitMeting, setLoadingSubmitMeting] = useState(false);
+  // const [loadingSubmitMeting, setLoadingSubmitMeting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [cpShortDetailsInfo, setCpShortDetailsInfo] = useState<any>({});
+  const [selectedCpId, setSelectedCpId] = useState<string | null>(null);
 
   const allStatus = [
     {
@@ -227,16 +230,16 @@ const ShootDetails = () => {
     setCpModal(true);
   };
 
-  const [cpShortDetailsInfo, setCpShortDetailsInfo] = useState<any>({});
-
-  console.log(cpShortDetailsInfo);
-
-  const handleDetailsInfo = (id: any) => {
-    console.log(id, shootInfo);
-    setShortProfileModal(true);
-    const cpInfo = shootInfo?.cp_ids?.find((cp: any) => cp._id === id);
-    setCpShortDetailsInfo(cpInfo.id);
-    // console.log(cpInfo.id);
+  const handleDetailsInfo = (id: string) => {
+    if (shortProfileModal && selectedCpId === id) {
+      setShortProfileModal(false);
+      setSelectedCpId(null);
+    } else {
+      setShortProfileModal(true);
+      setSelectedCpId(id);
+      const cpInfo = shootInfo?.cp_ids?.find((cp: any) => cp._id === id);
+      setCpShortDetailsInfo(cpInfo?.id);
+    }
   };
 
   const handlePageChange = (page: number) => {
@@ -657,7 +660,8 @@ const ShootDetails = () => {
                   )}
                 </div>
 
-                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                {/* relative */}
+                <div className="relative ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
                   {shootInfo?.cp_ids?.length > 0 && (
                     <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded border border-slate-100">
                       <table className="w-full table-auto">
@@ -714,8 +718,10 @@ const ShootDetails = () => {
                                   )}
                                 </div>
                               </td>
-                              <td className="border-b px-4 py-2 text-right" onClick={() => handleDetailsInfo(cp?._id)}>
-                                <p className="flex justify-center">{allSvgs?.threeDotMenuIcon}</p>
+                              <td className="border-b px-4 py-2 text-right">
+                                <p className="flex justify-center" onClick={() => handleDetailsInfo(cp?._id)}>
+                                  {allSvgs?.threeDotMenuIcon}
+                                </p>
                               </td>
                             </tr>
                           ))}
@@ -723,76 +729,51 @@ const ShootDetails = () => {
                       </table>
                     </div>
                   )}
-                </div>
 
-                {/*  */}
+                  {/* <Modal isOpen={shortProfileModal} onClose={() => setShortProfileModal(false)} cpShortDetailsInfo={cpShortDetailsInfo} /> */}
 
-                <div className="">
-                  {/* <button type="button" onClick={() => setShortProfileModal(true)} className="btn btn-success">
-                    Profile
-                  </button> */}
-                  <Transition appear show={shortProfileModal} as={Fragment}>
-                    <Dialog as="div" open={shortProfileModal} onClose={() => setShortProfileModal(false)}>
-                      <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                      >
-                        <div className="fixed inset-0"></div>
-                      </Transition.Child>
-                      <div id="profile_modal" className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
-                        <div className="flex min-h-screen items-start justify-end px-4 md:me-48">
-                          <Transition.Child
-                            as={Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0 scale-95"
-                            enterTo="opacity-100 scale-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100 scale-100"
-                            leaveTo="opacity-0 scale-95"
-                          >
-                            <Dialog.Panel className="panel float-right my-24 w-full max-w-[380px] overflow-hidden rounded-lg border-0 bg-gray-100 p-0 text-black dark:bg-secondary dark:text-white-dark md:my-48">
-                              <div className="flex items-center justify-end pt-3 text-white ltr:pr-4 rtl:pl-4 dark:text-white-light">
-                                <button onClick={() => setShortProfileModal(false)} type="button" className="text-white-dark hover:text-dark">
-                                  {allSvgs.closeModalSvg}
-                                </button>
-                              </div>
+                  {shortProfileModal && cpShortDetailsInfo && (
+                    <div className="absolute bottom-0 right-[81px] top-[48px] h-min w-[50%] rounded-md bg-white p-2 shadow-md">
+                      <div className="flex justify-end">
+                        <button onClick={() => handleDetailsInfo(selectedCpId || '')} type="button" className="h-1 text-white-dark hover:text-dark ">
+                          {allSvgs.closeModalSvg}
+                        </button>
+                      </div>
 
-                              <div className="px-3 pb-4">
-                                <div className="flex items-center justify-evenly py-2 text-center text-white dark:text-white-light">
-                                  <div>
-                                    <div className="mx-auto h-20 w-20 overflow-hidden rounded-full">
-                                      <img src={cpShortDetailsInfo?.profile_picture && cpShortDetailsInfo?.profile_picture} alt="img" className="h-full w-full object-cover" />
-                                    </div>
-                                    <div className="details">
-                                      <div className="flex justify-center gap-3 pb-2">
-                                        <Link href={`cp/${cpShortDetailsInfo?.id}`}>
-                                          <button type="button" className="btn mx-auto mt-2 hidden bg-black  text-white md:me-0 md:block">
-                                            View Details
-                                          </button>
-                                        </Link>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <p className="font-semibold text-black">{cpShortDetailsInfo?.name}</p>
-                                    <p className="font-semibold text-black">{cpShortDetailsInfo?.email}</p>
-                                  </div>
+                      <div className="px-2 pb-2">
+                        <div className="flex items-start justify-evenly gap-4 py-1 text-white dark:text-white-light">
+                          <div>
+                            <div className="mx-auto h-12 w-12 overflow-hidden rounded-full">
+                              <img src={cpShortDetailsInfo?.profile_picture} alt="img" className="h-full w-full object-cover" />
+                            </div>
+                            {userData?.role === 'manager' && (
+                              <div className="details">
+                                <div className="flex justify-center ">
+                                  <Link href={`cp/${cpShortDetailsInfo?.id}`}>
+                                    <button type="button" className=" mx-auto mt-1 hidden text-[12px] text-black underline md:me-0 md:block">
+                                      View Details
+                                    </button>
+                                  </Link>
                                 </div>
                               </div>
-                            </Dialog.Panel>
-                          </Transition.Child>
+                            )}
+                          </div>
+                          <div className="text-[12px]">
+                            <p className="font-semibold text-black">
+                              Name: <span className="font-light">{cpShortDetailsInfo?.name}</span>
+                            </p>
+                            <p className="font-semibold text-black">
+                              Email: <span className="font-light"> {cpShortDetailsInfo?.email}</span>
+                            </p>
+                            <p className="font-semibold text-black">
+                              Location: <span className="font-light">{cpShortDetailsInfo?.location}</span>
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </Dialog>
-                  </Transition>
+                    </div>
+                  )}
                 </div>
-
-                {/*  */}
               </div>
             </div>
           </div>
