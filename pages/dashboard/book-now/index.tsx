@@ -33,6 +33,8 @@ import { clientNamespaces } from 'ni18n';
 import { useLocation } from 'react-router-dom';
 import { permissions } from "@/store/menuBuilder";
 import RoleProtection from '@/components/RoleProtection';
+import { usePostOrderMutation } from '@/Redux/features/shoot/shootApi';
+
 
 interface FormData {
   content_type: string;
@@ -501,14 +503,19 @@ const BookNow = () => {
 
   }
 
+
+  const [postOrder,{isSuccess}] = usePostOrderMutation();
+  console.log("🚀 ~ BookNow ~ isSuccess:", isSuccess)
+
   // --------> onsubmit function
   const onSubmit = async (data: any) => {
+
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
     if (activeTab == 2 && cp_ids?.length === 0) {
       swalToast('danger', 'Please select at least one producer!');
-      return; // Exit the function early if no producer is selected
+      return;
     }
     if (data.content_type == false) {
       swalToast('danger', 'Please select content type!');
@@ -545,22 +552,26 @@ const BookNow = () => {
           return false;
         }
         if (activeTab === 3) {
-          const response = await OrderApi.handleOrderMake(formattedData);
-          if (response.status === 201) {
-            swalToast('success', 'Shoot has been created successfully!');
-            if (data.meeting_time) {
-              const meeting_time = convertToISO(data.meeting_time);
-              const meetingInfo = await getMeetingLink(response?.data, meeting_time);
-              if (meetingInfo) {
-                swalToast('success', 'Meeting has been created successfully!');
-              }
-            }
-            router.push('/dashboard/shoots');
-            setIsLoading(false);
-          } else {
-            swalToast('danger', 'Please check your shoot details!');
-            setIsLoading(false);
-          }
+          console.log("Formateed Data : ",formattedData);
+          const result = postOrder(formattedData);
+          console.log("🚀 ~ onSubmit ~ result:", result)
+
+          //const response = await OrderApi.handleOrderMake(formattedData);
+          // if (response.status === 201) {
+          //   swalToast('success', 'Shoot has been created successfully!');
+          //   if (data.meeting_time) {
+          //     const meeting_time = convertToISO(data.meeting_time);
+          //     const meetingInfo = await getMeetingLink(response?.data, meeting_time);
+          //     if (meetingInfo) {
+          //       swalToast('success', 'Meeting has been created successfully!');
+          //     }
+          //   }
+          //   router.push('/dashboard/shoots');
+          //   setIsLoading(false);
+          // } else {
+          //   swalToast('danger', 'Please check your shoot details!');
+          //   setIsLoading(false);
+          // }
         }
       } catch (error) {
         swalToast('danger', 'error');
@@ -618,7 +629,7 @@ const BookNow = () => {
     if (contentVertical === 'SelectCategory') {
       contentVertical = 'Category';
     }
-    const concateOrderName = `${clientName || 'Name'}'s ${contentVertical} ${type || 'Type'}`;
+    const concateOrderName = `${userData?.role === 'user' ? userData?.name : clientName || 'Name'}'s ${contentVertical} ${type || 'Type'}`;
     return concateOrderName;
   };
 
