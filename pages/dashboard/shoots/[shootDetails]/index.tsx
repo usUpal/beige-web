@@ -18,12 +18,13 @@ import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import axios from 'axios';
 import GoogleMapReact from 'google-map-react';
-import Loader from "@/components/SharedComponent/Loader";
+import Loader from '@/components/SharedComponent/Loader';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
 const ShootDetails = () => {
   const [shootInfo, setShootInfo] = useState<ShootTypes | null>(null);
+  console.log("🚀 ~ ShootDetails ~ shootInfo:", shootInfo)
   const [metingDate, setMetingDate] = useState<string>('');
   const [statusData, setStatusDate] = useState<string>('');
 
@@ -125,7 +126,6 @@ const ShootDetails = () => {
   };
 
   const submitNewMeting = async () => {
-
     if (!metingDate) {
       return swalToast('danger', 'Please select Meting Date & Time!');
     }
@@ -177,6 +177,7 @@ const ShootDetails = () => {
       console.error('Error occurred while sending POST request:', error);
     }
   };
+
 
   const submitUpdateStatus = async () => {
     try {
@@ -354,70 +355,6 @@ const ShootDetails = () => {
       console.error('Error occurred while sending PATCH request:', error);
     }
   };
-
-
-  const AccordionItem = ({ id, title, content, selected, setSelected }) => {
-    const contentRef = useRef(null);
-
-    const handleClick = () => {
-      setSelected(selected !== id ? id : null);
-    };
-
-    return (
-      <li className="relative border-b border-gray-200">
-        <button
-          type="button"
-          className="w-full p-2 text-left"
-          onClick={handleClick}
-        >
-          <div className="flex items-center justify-between">
-            <span>{title}</span>
-            <svg
-              className={`w-5 h-5 text-gray-500 transform transition-transform ${selected === id ? "rotate-180" : ""
-                }`}
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </button>
-        <div
-          ref={contentRef}
-          className="relative overflow-hidden transition-all duration-700"
-          style={{
-            maxHeight: selected === id ? `${contentRef.current.scrollHeight}px` : "0px",
-          }}
-        >
-          <div className="p-2">{content}</div>
-        </div>
-      </li>
-    );
-  };
-
-  const Accordion = () => {
-    const [selected, setSelected] = useState(null);
-
-    return (
-      <div className="bg-white max-w-full mx-auto border border-gray-200">
-        <ul className="shadow-box">
-          <AccordionItem
-            id={3}
-            title="When will I receive my seats?"
-            content="Game day seats are rentals will be in place for the first game of the season, unless you are in sections 409-421. Those sections will have game day seats mid way through the football season."
-            selected={selected}
-            setSelected={setSelected}
-          />
-        </ul>
-      </div>
-    );
-  };
-
-
   return (
     <>
       <div className="panel">
@@ -626,7 +563,6 @@ const ShootDetails = () => {
                               <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                             </svg>
                           )}
-
                         </button>
                       </div>
                     )}
@@ -636,12 +572,12 @@ const ShootDetails = () => {
 
               {/* Assigned Cp's */}
               <div className="mb-4 basis-[45%]">
-                <div className='flex items-center gap-2 w-full mb-3'>
+                <div className="mb-3 flex w-full items-center gap-2">
                   <label className="mb-0 font-sans text-[14px] capitalize">Assign CP's</label>
                   {userData?.role === 'manager' && (
-                    <div className='flex gap-3'>
-                      <button onClick={getCps} className='bg-black text-white rounded-md px-1 py-0.5 text-xs flex items-center gap-1'>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-3 h-3 text-white">
+                    <div className="flex gap-3">
+                      <button onClick={getCps} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                         <span>Add CP</span>
@@ -651,15 +587,15 @@ const ShootDetails = () => {
                 </div>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
                   {shootInfo?.cp_ids?.length > 0 && (
-                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden border border-slate-100 rounded">
+                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded border border-slate-100">
                       <table className="w-full table-auto">
                         <thead>
                           <tr>
                             <th className="border-b px-4 py-2">
-                              <div className='flex justify-center'>Name</div>
+                              <div className="flex justify-center">Name</div>
                             </th>
                             <th className="border-b px-4 py-2">
-                              <div className='flex justify-center'>Decision</div>
+                              <div className="flex justify-center">Decision</div>
                             </th>
                             <th className="border-b px-4 py-2 text-right">
                               <div className="flex justify-center">Action</div>
@@ -671,15 +607,15 @@ const ShootDetails = () => {
                             <tr key={key}>
                               {console.log("Cp Info : ",cp)}
                               <td className="border-b px-4 py-2 font-bold">
-                                <div className='flex items-center justify-center'>
+                                <div className="flex items-center justify-center">
                                   <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
-                                    <img src={'/assets/images/favicon.png'} className="rounded-full w-full h-full" />
+                                    <img src={'/assets/images/favicon.png'} className="h-full w-full rounded-full" />
                                   </div>
                                   <div>{cp?.id?.name ?? ''}</div>
                                 </div>
                               </td>
                               <td className="border-b px-4 py-2">
-                                <div className='flex justify-center'>
+                                <div className="flex justify-center">
                                   <StatusBg>{cp?.decision ?? ''}</StatusBg>
                                 </div>
                               </td>
@@ -687,21 +623,16 @@ const ShootDetails = () => {
                                 <div className="flex justify-center">
                                   {userData?.role === 'manager' ? (
                                     <Tippy content="Cancel">
-                                      <button
-                                        onClick={() => cancelCp(cp)}
-                                        className={`rounded bg-red-500 text-white p-1`}
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                      <button onClick={() => cancelCp(cp)} className={`rounded bg-red-500 p-1 text-white`}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
                                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                                         </svg>
                                       </button>
                                     </Tippy>
                                   ) : (
                                     <Tippy content="Only for admin">
-                                      <button
-                                        className={`rounded bg-[#E8E8E8] text-black  p-1`}
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                      <button className={`rounded bg-[#E8E8E8] p-1  text-black`}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
                                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                                         </svg>
                                       </button>
@@ -727,7 +658,7 @@ const ShootDetails = () => {
                     {index < currentIndex && (
                       <>
                         <span
-                          className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                          className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                           aria-hidden="true"
                         ></span>
                         <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full  border border-gray-300 bg-green-500 text-white transition-all duration-200">
@@ -741,7 +672,7 @@ const ShootDetails = () => {
                     {index === currentIndex && (
                       <>
                         <span
-                          className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                          className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                           aria-hidden="true"
                         ></span>
                         <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-green-500 text-white transition-all duration-200 ">
@@ -754,7 +685,7 @@ const ShootDetails = () => {
                     {index > currentIndex && (
                       <>
                         <span
-                          className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                          className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                           aria-hidden="true"
                         ></span>
                         <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white transition-all duration-200" />
@@ -775,7 +706,7 @@ const ShootDetails = () => {
                       {index < cancelIndex && (
                         <>
                           <span
-                            className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                            className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                             aria-hidden="true"
                           ></span>
                           <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-gray-50 transition-all duration-200">
@@ -791,7 +722,7 @@ const ShootDetails = () => {
                       {index === cancelIndex && (
                         <>
                           <span
-                            className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                            className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                             aria-hidden="true"
                           ></span>
                           <div
@@ -814,7 +745,7 @@ const ShootDetails = () => {
                       {index > cancelIndex && (
                         <>
                           <span
-                            className="absolute left-[18px] top-14 h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
+                            className="absolute left-[12px] top-[48px] h-[calc(100%_-_32px)] w-px bg-gray-300 lg:left-auto lg:right-[-30px] lg:top-[12px] lg:h-px lg:w-[calc(100%_-_5px)]"
                             aria-hidden="true"
                           ></span>
                           <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white transition-all duration-200 " />
@@ -921,6 +852,3 @@ const ShootDetails = () => {
 };
 
 export default ShootDetails;
-
-
-

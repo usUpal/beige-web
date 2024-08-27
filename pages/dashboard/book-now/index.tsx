@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '@/store/themeConfigSlice';
 
 import { useAuth } from '@/contexts/authContext';
 import axios from 'axios';
@@ -31,6 +31,8 @@ import Flatpickr from 'react-flatpickr';
 import { API_ENDPOINT } from '@/config';
 import { clientNamespaces } from 'ni18n';
 import { useLocation } from 'react-router-dom';
+import { permissions } from "@/store/menuBuilder";
+import RoleProtection from '@/components/RoleProtection';
 
 interface FormData {
   content_type: string;
@@ -52,7 +54,7 @@ const BookNow = () => {
   const router = useRouter();
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
-
+  const { userData } = useAuth();
   const [allClients, onlyClients] = useClient();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
@@ -61,7 +63,7 @@ const BookNow = () => {
   const [dateTimes, setDateTimes] = useState<FormData[]>([]);
   const [showDateTimes, setShowDateTimes] = useState<any>();
   const [getTotalDuration, setTotalDuration] = useState<any>();
-  const [client_id, setClient_id] = useState('');
+  const [client_id, setClient_id] = useState(userData?.role === 'user' ? userData?.id : '');
   const [clientName, setClientName] = useState('');
   const [filteredAddonsData, setFilteredAddonsData] = useState([]);
   const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
@@ -78,7 +80,7 @@ const BookNow = () => {
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const [isClientLoading, setIsClientLoading] = useState(false);
-  const { userData } = useAuth();
+
 
   const {
     register,
@@ -89,6 +91,9 @@ const BookNow = () => {
     getValues,
     formState: { errors },
   } = useForm<FormData>({ defaultValues: {} });
+
+  //const authPermissions = permissions.filter((item)=> item?.role === userData?.role)
+  // console.log("🚀 ~ BookNow ~ authPermissions:", authPermissions)
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -501,8 +506,6 @@ const BookNow = () => {
     if (geo_location?.coordinates?.length === 0) {
       return swalToast('danger', 'Please select shoot location!');
     }
-    // console.log(geo_location);
-    // return;
     if (activeTab == 2 && cp_ids?.length === 0) {
       swalToast('danger', 'Please select at least one producer!');
       return; // Exit the function early if no producer is selected
@@ -534,8 +537,6 @@ const BookNow = () => {
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
 
-        // console.log('formattedData: ', formattedData);return;
-
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
@@ -550,7 +551,7 @@ const BookNow = () => {
             if (data.meeting_time) {
               const meeting_time = convertToISO(data.meeting_time);
               const meetingInfo = await getMeetingLink(response?.data, meeting_time);
-              if(meetingInfo){
+              if (meetingInfo) {
                 swalToast('success', 'Meeting has been created successfully!');
               }
             }
@@ -710,64 +711,65 @@ const BookNow = () => {
                         </div>
                       </div>
                       <div className="my-5 flex items-center justify-between">
-                        <div className="relative flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Client
-                          </label>
-                          <input
-                            type="search"
-                            // onFocus={getAllClients}
-                            onChange={(event) => {
-                              setClientName(event?.target?.value);
-                              getAllClients(); // Fetch clients as user types
-                            }}
-                            className={`form-input flex-grow bg-slate-100 `}
-                            value={clientName}
-                            placeholder="Client"
-                            required={!clientName}
-                          />
-                          {/* {clientName && <p className="text-danger">Please select a valid client</p>} */}
-                          {showClientDropdown && (
-                            <>
-                              <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
-                                {isClientLoading ? (
-                                  <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
-                                    {/* Render loading skeleton here */}
-                                    {[...Array(5)].map((_, i) => (
-                                      <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
-                                        <div className="h-7 w-7 rounded-full bg-slate-200"></div>
-                                        <div className="h-7 w-full rounded-sm bg-slate-200"></div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <>
-                                    {clients && clients.length > 0 ? (
-                                      <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
-                                        {clients?.map((client) => (
-                                          <li
-                                            key={client.id}
-                                            onClick={() => handleClientChange(client)}
-                                            className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
-                                          >
-                                            <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                              <img src={client.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
-                                            </div>
-                                            <a href="#">{client.name}</a>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    ) : (
-                                      <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
-                                        <p className="text-center text-red-500">No client found</p>
-                                      </div>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            </>
-                          )}
-                        </div>
+                        {userData?.role === 'manager' && (
+                          <div className="relative flex basis-[45%] flex-col sm:flex-row">
+                            <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                              Client
+                            </label>
+                            <input
+                              type="search"
+                              onChange={(event) => {
+                                setClientName(event?.target?.value);
+                                getAllClients();
+                              }}
+                              className={`form-input flex-grow bg-slate-100 `}
+                              value={clientName}
+                              placeholder="Client"
+                              required={!clientName}
+                            />
+
+                            {showClientDropdown && (
+                              <>
+                                <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
+                                  {isClientLoading ? (
+                                    <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
+                                      {/* Render loading skeleton here */}
+                                      {[...Array(5)].map((_, i) => (
+                                        <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
+                                          <div className="h-7 w-7 rounded-full bg-slate-200"></div>
+                                          <div className="h-7 w-full rounded-sm bg-slate-200"></div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <>
+                                      {clients && clients.length > 0 ? (
+                                        <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
+                                          {clients?.map((client) => (
+                                            <li
+                                              key={client.id}
+                                              onClick={() => handleClientChange(client)}
+                                              className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
+                                            >
+                                              <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
+                                                <img src={client.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                              </div>
+                                              <a href="#">{client.name}</a>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      ) : (
+                                        <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
+                                          <p className="text-center text-red-500">No client found</p>
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
 
                         {/* Location */}
                         <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -1262,4 +1264,4 @@ const BookNow = () => {
   );
 };
 
-export default BookNow;
+export default RoleProtection(BookNow,['user','manager']);
