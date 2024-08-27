@@ -55,7 +55,7 @@ const shootApi = baseApi.injectEndpoints({
         body: cp_ids
       })
     })
-    // Add more endpoints here if needed
+    
   }),
 });
 
