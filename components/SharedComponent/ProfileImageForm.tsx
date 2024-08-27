@@ -45,6 +45,8 @@ const ProfileImageForm = () => {
   };
 
   const onSubmit = async (data) => {
+    coloredToast('success', 'Under development');
+    return;
     setIsLoading(true);
     try {
       const patchResponse = await fetch(`${API_ENDPOINT}users/${userData?.id}`, {
@@ -86,7 +88,7 @@ const ProfileImageForm = () => {
           )}
 
           
-        <form onSubmit={handleSubmit(onSubmit)} className="mb-5 rounded-md bg-white p-4 dark:border-[#191e3a] dark:bg-black">
+        <form onSubmit={handleSubmit(onSubmit)} className="rounded-md bg-white p-2 dark:border-[#191e3a] dark:bg-black">
           <div className="h-32 w-32 rounded-full bg-[#02020281] absolute top-0 right-[32%] bottom-0  flex flex-col gap-0 justify-center items-center opacity-0 transition-opacity duration-300 ease-out hover:opacity-100">
             <label className="cursor-pointer">
               <input type="file" accept="image/*" className="hidden" {...register('profile_picture')} onChange={handleImageUpload} />

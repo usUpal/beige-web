@@ -182,38 +182,13 @@ const Profile = () => {
               <h5 className="text-lg font-semibold dark:text-white-light">Profile</h5>
             </div>
             <div className="mb-5">
-
-              {/* <div className="flex flex-col items-center justify-center">
-                {userData?.profile_picture ? (
-                  <img src={userData?.profile_picture} className="mb-5 h-32 w-32 rounded-full object-cover" alt="User profile picture" />
-                ) : (
-                  // <img src="/assets/images/favicon.png" alt="Default profile picture" className="mb-5 h-32 w-32 rounded-full object-contain" />
-                  <span className='h-32 w-32 rounded-full font-bold text-2xl flex justify-center items-center object-cover bg-slate-400 text-white capitalize'>{userData?.name[0] ?? 'BE'}</span>
-                )}
-                <p className="text-xl font-semibold text-primary">{userData?.name}</p>
-              </div> */}
-
-
               <ProfileImageForm />
-
               <ul className="m-auto  mt-2 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
                 <li className="ml-4 flex items-center gap-2">
                   {allSvgs.coffeeCupIcon}
                   {profileDesignation(userData?.role)}
                 </li>
               </ul>
-              
-              {/* <ul className="mt-7 flex items-center justify-center gap-2">
-                <li>
-                  <button className="btn btn-info flex h-10 w-10 items-center justify-center rounded-full p-0">{allSvgs.twitterIcon}</button>
-                </li>
-                <li>
-                  <button className="btn btn-danger flex h-10 w-10 items-center justify-center rounded-full p-0">{allSvgs.nextToTwitterOnProfile}</button>
-                </li>
-                <li>
-                  <button className="btn btn-dark flex h-10 w-10 items-center justify-center rounded-full p-0">{allSvgs.githubIcon}</button>
-                </li>
-              </ul> */}
             </div>
           </div>
           <div className="panel lg:col-span-2 xl:col-span-3">

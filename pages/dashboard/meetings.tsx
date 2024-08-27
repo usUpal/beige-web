@@ -10,11 +10,11 @@ import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePagination from 'react-responsive-pagination';
-import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import { swalToast } from '@/utils/Toast/SwalToast';
 import PreLoader from '@/components/ProfileImage/PreLoader';
+import { useGetAllMeetingQuery } from '@/Redux/features/meeting/meetingApi';
 
 const Meeting = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -39,6 +39,11 @@ const Meeting = () => {
   useEffect(() => {
     dispatch(setPageTitle('Meetings'));
   }, []);
+
+  // Fetch data based on query parameters
+  // const { data, error, isFetching, isLoading, refetch } = useGetAllMeetingQuery({});
+  // console.log("all met:", data);
+
 
   // Getting dateTime value
   const dateTimeRef: any = useRef(null);
