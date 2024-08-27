@@ -43,20 +43,30 @@ const shootApi = baseApi.injectEndpoints({
       }),
     }),
     updateStatus: builder.mutation({
-      query: (data) => {
-        console.log("🚀 ~ id:", data?.id)
-        console.log("🚀 ~ data:", data?.data)
-      }
+      query: ({id,status}) => ({
+        url: `orders/${id}`,
+        method: 'PATCH',
+        body: status
+      })
     }),
     assignCp: builder.mutation({
-      query: ({cp_ids,id}) => ({
+      query: ({ cp_ids, id }) => ({
         url: `orders/${id}`,
         method: 'PATCH',
         body: cp_ids
       })
     })
-    
+
   }),
 });
 
-export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation,useAssignCpMutation } = shootApi;
+// const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
+//   method: 'PATCH',
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+//   body: JSON.stringify(requestBody),
+// });
+
+
+export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation } = shootApi;

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, useEffect, Fragment, useRef, useMemo, useCallback } from 'react';
+import React, { useState, Fragment, useMemo, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import StatusBg from '@/components/Status/StatusBg';
 import { useRouter } from 'next/router';
@@ -10,11 +10,8 @@ import { swalToast } from '@/utils/Toast/SwalToast';
 import { toast } from 'react-toastify';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import useAllCp from '@/hooks/useAllCp';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import ResponsivePagination from 'react-responsive-pagination';
-import 'flatpickr/dist/flatpickr.min.css';
-import Flatpickr from 'react-flatpickr';
 import GoogleMapReact from 'google-map-react';
 import Loader from '@/components/SharedComponent/Loader';
 import Tippy from '@tippyjs/react';
@@ -23,6 +20,7 @@ import 'tippy.js/dist/tippy.css';
 import { useAssignCpMutation, useGetShootDetailsQuery, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';
 import { shootStatusMessage, allStatus } from '@/utils/shootUtils/shootDetails';
+import ScheduleMeeting from '@/components/shoots/ScheduleMeeting';
 
 const ShootDetails = () => {
   const { userData } = useAuth();
@@ -32,12 +30,14 @@ const ShootDetails = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [cpModal, setCpModal] = useState<boolean>(false);
   const [cp_ids, setCp_ids] = useState<number[]>([]);
+  const [statusBox,setStatusBox] = useState<boolean>(false);
   const [status, setStatus] = useState<string>('');
+  const [metingDate, setMetingDate] = useState<string>('');
+  const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
   const { data, error: shootDetailsError, isLoading: isDetailsLoading } = useGetShootDetailsQuery(shootId);
-  const [updateStatus, { isSuccess, isLoading: isUpdateLoading }] = useUpdateStatusMutation();
+  const [updateStatus, { isSuccess, isLoading: isStatusLoading }] = useUpdateStatusMutation();
   const [assignCp, { isLoading: isAssignCpLoading }] = useAssignCpMutation();
-
   const queryParams = useMemo(
     () => ({
       sortBy: 'createdAt:desc',
@@ -47,27 +47,12 @@ const ShootDetails = () => {
     }),
     [currentPage, query]
   );
-
   const { data: allCp, error: getCpError, isLoading: isGetCpLoading } = useGetAllCpQuery(queryParams, {
     refetchOnMountOrArgChange: true,
   })
 
-
-
-
-  const [metingDate, setMetingDate] = useState<string>('');
-
-  const [showNewMetingBox, setShowNewMetingBox] = useState<boolean>(false);
-
-
-
-
-
-
-
-
-
-
+  const coordinates = data?.geo_location?.coordinates;
+  const isLocationAvailable = coordinates && coordinates.length === 2;
   const orderStatusArray = ['Pending', 'Pre_production', 'Production', 'Post_production', 'Revision', 'Completed'];
   const rejectStatus = ['In_dispute', 'Cancelled'];
   const lowerCaseOrderStatus = data?.order_status?.toLowerCase();
@@ -134,19 +119,16 @@ const ShootDetails = () => {
 
 
   const handelUpdateStatus = async () => {
-    if (!status) {
-      return toast.error('Please select a status...!');
-    }
-    const data = {
-      data: status,
-      id: shootId
-    }
-    const result = await updateStatus(data);
+    // if (!status) {
+    //   return toast.error('Please select a status...!');
+    // }
+    // const data = {
+    //   status,
+    //   id: shootId
+    // }
+    // const result = await updateStatus(data);
+    // console.log("🚀 ~ handelUpdateStatus ~ result:", result)
   };
-
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-  }, []);
 
   const handleSelectProducer = (cp: any) => {
     const newCp = {
@@ -163,6 +145,10 @@ const ShootDetails = () => {
       setCp_ids(updatedCps);
     }
   };
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
   const updateCps = async () => {
     if (!cp_ids.length) {
@@ -201,10 +187,6 @@ const ShootDetails = () => {
     //   console.error('Error occurred while sending POST request:', error);
     // }
   };
-
-
-  const coordinates = data?.geo_location?.coordinates;
-  const isLocationAvailable = coordinates && coordinates.length === 2;
 
   const cancelCp = async (cp: any) => {
     if (!cp || !cp._id) {
@@ -245,6 +227,7 @@ const ShootDetails = () => {
       console.error('Error occurred while sending PATCH request:', error);
     }
   };
+
   return (
     <>
       <div className="panel">
@@ -309,7 +292,7 @@ const ShootDetails = () => {
                 </label>
                 {data?.shoot_datetimes && (
                   <div className="flex-row">
-                    {data?.shoot_datetimes?.map((time, key) => (
+                    {data?.shoot_datetimes?.map((time:any, key:number) => (
                       <div key={key} className="space-x-4">
                         <span className="font-sans capitalize text-black">{new Date(time?.start_date_time).toDateString() ?? ''} </span>
                         <span className="font-sans capitalize text-black">{new Date(time?.end_date_time).toDateString() ?? ''}</span>
@@ -391,11 +374,11 @@ const ShootDetails = () => {
             <div className="items-center justify-between md:mb-4 md:flex">
               {/* Schedule Meeting */}
               <div className="mb-4 basis-[45%] flex-row space-y-5">
-                <div className="flex space-x-3">
-                  <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewMetingBox(!showNewMetingBox)}>
+                {/* <div className="flex space-x-3">
+                  <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setMeetingBox(!meetingBox)}>
                     Schedule Meeting
                   </button>
-                  {showNewMetingBox && (
+                  {meetingBox && (
                     <div className="flex space-x-2">
                       <Flatpickr
                         id="meeting_time"
@@ -427,10 +410,11 @@ const ShootDetails = () => {
                       </button>
                     </div>
                   )}
-                </div>
+                </div> */}
+                <ScheduleMeeting meetingBox setMeetingBox metingDate setMetingDate submitNewMeting/>
                 {userData?.role === 'manager' && (
                   <div className="flex space-x-3">
-                    <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setShowNewStatusBox(!showNewStatusBox)}>
+                    <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setStatusBox(!statusBox)}>
                       Change Status
                     </button>
                     <div className="flex space-x-2">
@@ -445,18 +429,17 @@ const ShootDetails = () => {
                         ))}
                       </select>
                       <button
-                        disabled={false}
+                        disabled={isStatusLoading === true ? true : false}
                         onClick={handelUpdateStatus}
                         className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                       >
-                        {/* {isLoading === true ? (
+                        {isStatusLoading === true ? (
                           <Loader />
                         ) : (
-
-                        )} */}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                          </svg>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -469,7 +452,7 @@ const ShootDetails = () => {
                   <label className="mb-0 font-sans text-[14px] capitalize">Assign CP's</label>
                   {userData?.role === 'manager' && (
                     <div className="flex gap-3">
-                      <button onClick={()=>setCpModal(!cpModal)} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
+                      <button onClick={() => setCpModal(!cpModal)} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
