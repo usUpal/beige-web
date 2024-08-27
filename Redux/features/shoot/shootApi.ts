@@ -43,11 +43,14 @@ const shootApi = baseApi.injectEndpoints({
       }),
     }),
     updateStatus: builder.mutation({
-      query: ({id,status}) => ({
-        url: `orders/${id}`,
+      query: (data) => ({
+        url: `orders/${data?.id}`,
         method: 'PATCH',
-        body: status
-      })
+        credentials: 'include', // Ensure credentials are included
+        body: JSON.stringify({
+          order_status: data?.order_status,
+        }),
+      }),
     }),
     assignCp: builder.mutation({
       query: ({ cp_ids, id }) => ({

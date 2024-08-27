@@ -119,15 +119,50 @@ const ShootDetails = () => {
 
 
   const handelUpdateStatus = async () => {
+      if (!status) {
+        return toast.error('Please select a status!');
+      }
+
+      // const data = {
+      //   order_status: status,
+      //   id:shootId,
+      // };
+
+    //   const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
+    //     method: 'PATCH',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(requestBody),
+    //   });
+
+    //   // if (!response.ok) {
+    //   //   swalToast('danger', 'something want wrong!');
+    //   //   throw new Error(`Error: ${response.statusp}`);
+    //   // }
+
+    //   const updateStatusDetails = await response.json();
+    //   console.log("🚀 ~ handelUpdateStatus ~ updateStatusDetails:", updateStatusDetails)
+
+    //   // console.log('updateStatusDetails', updateStatusDetails);
+    //   // swalToast('success', 'Status Update Successfully!');
+    //   // setStatusDate('');
+    //   // setShowNewStatusBox(false);
+    //   // getShootDetails(shootId);
+    //   // setIsLoading(false);
+    // } catch (error) {
+    //   console.error('Error occurred while sending POST request:', error);
+    // }
     // if (!status) {
     //   return toast.error('Please select a status...!');
     // }
-    // const data = {
-    //   status,
-    //   id: shootId
-    // }
-    // const result = await updateStatus(data);
-    // console.log("🚀 ~ handelUpdateStatus ~ result:", result)
+    const data = {
+      order_status:status,
+      id: shootId
+    }
+    console.log("🚀 ~ ShootDetails ~ data:", data)
+    const result = await updateStatus(data);
+    console.log("🚀 ~ handelUpdateStatus ~ result:", result)
   };
 
   const handleSelectProducer = (cp: any) => {
