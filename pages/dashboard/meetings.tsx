@@ -1,10 +1,8 @@
-import React, { useEffect, useState, Fragment, useRef } from 'react';
+import React, { useEffect, useState, Fragment, useRef, useMemo } from 'react';
 import 'tippy.js/dist/tippy.css';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { Dialog, Transition } from '@headlessui/react';
-import { useRouter } from 'next/router';
-import { API_ENDPOINT } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
@@ -13,126 +11,57 @@ import ResponsivePagination from 'react-responsive-pagination';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
-import { swalToast } from '@/utils/Toast/SwalToast';
+import { toast } from 'react-toastify';
 import PreLoader from '@/components/ProfileImage/PreLoader';
+import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
 
 const Meeting = () => {
-  const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [myMeetings, setMyMeetings] = useState<MeetingResponsTypes[]>([]);
-  const [rescheduleMeetingTime, setrescheduleMeetingTime] = useState('');
   const [meetingInfo, setMeetingInfo] = useState<any>({});
-  const [showError, setShowError] = useState<boolean>(false);
-  const [isLoading, setLoading] = useState<boolean>(true);
-  const [meetingModal, setmeetingModal] = useState(false);
+  const [meetingModal, setMeetingModal] = useState(false);
   const { userData } = useAuth();
   const dispatch = useDispatch();
   const [metingDate, setMetingDate] = useState();
   const myInputDate = meetingInfo?.meeting_date_time;
   const myFormattedDateTime = useDateFormat(myInputDate);
-  const [query , setQuery] = useState('');
+  const [query, setQuery] = useState('');
 
-  useEffect(() => {
-    getAllMyMeetings();
-  }, [currentPage]);
+
+  const queryParams = useMemo(
+    () => ({
+      sortBy: 'createdAt:desc',
+      limit: '10',
+      page: currentPage,
+      ...(userData?.role === 'user' && { client_id: userData.id }),
+      ...(userData?.role === 'cp' && { cp_id: userData.id }),
+      search: query,
+    }),
+    [currentPage, userData, query]
+  );
+  const { data: allMeetings, isLoading: getAllMeetingLoading, isFetching } = useGetAllMeetingsQuery(queryParams, {
+    refetchOnMountOrArgChange: true,
+  })
+  const [getMeetingDetails, { data: meetingDetails, isLoading: isMeetingDetailsLoading }] = useLazyGetMeetingDetailsQuery();
+  const [updateReschedule, { isLoading: isUpdateRescheduleLoading }] = useUpdateRescheduleMutation();
 
   useEffect(() => {
     dispatch(setPageTitle('Meetings'));
-  }, []);
+  });
 
-  // Getting dateTime value
-  const dateTimeRef: any = useRef(null);
-
-  const handleButtonChange = () => {
-    const dateTimeValue = dateTimeRef.current.value;
-    const selectedDate = new Date(dateTimeValue);
-    const scheduleDate = selectedDate.toISOString();
-    setrescheduleMeetingTime(scheduleDate);
-  };
-  const requestData = {
-    requested_by: 'cp',
-    requested_time: rescheduleMeetingTime,
-  };
-  // API
-  const handleNext = async () => {
-    if (rescheduleMeetingTime) {
-      const url = `${API_ENDPOINT}meetings/schedule/${meetingInfo?.id}`;
-
-      try {
-        const response = await fetch(url, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestData),
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-      } catch (error) {
-        console.log(error);
-      }
+  const handelMeetingDetails = async (meetingId: string) => {
+    const result = await getMeetingDetails(meetingId);
+    if (result?.data) {
+      setMeetingInfo(result?.data);
+      setMeetingModal(true)
+    } else {
+      toast.error("Something want wrong....!")
     }
   };
 
-  // All meetings - user base
-  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
-
-  const getAllMyMeetings = async () => {
-    setLoading(true);
-    let url = `${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
-    if (userRole === 'client' || userRole === 'cp') {
-      url = `${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
-    }
-    try {
-      const response = await fetch(url);
-      const allMeetings = await response.json();
-
-      setTotalPagesCount(allMeetings?.totalPages);
-      setMyMeetings(allMeetings.results);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setLoading(true);
-    }
-  };
-
-  // console.log('myMeetings', myMeetings);
-
-  // Meeting Single
-  const router = useRouter();
-
-  const getMeetingDetails = async (meetingId: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_ENDPOINT}meetings/${meetingId}`);
-      const meetingDetailsRes = await response.json();
-
-      if (!meetingDetailsRes) {
-        setShowError(true);
-        setLoading(false);
-      } else {
-        setMeetingInfo(meetingDetailsRes);
-        setLoading(false);
-        setmeetingModal(true);
-        handleNext();
-      }
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-    }
-  };
-
-  // previous code
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  // get date format
-  // left only for table
   function makeDateFormat(inputDate: any) {
     const date = new Date(inputDate);
 
@@ -157,59 +86,28 @@ const Meeting = () => {
     };
   }
 
-  const inputDate = '2024-05-29T21:00:00.000Z';
-  const formattedDateTime = makeDateFormat(inputDate);
 
   const handelRescheduleMeeting = async (id: any) => {
     if (!metingDate) {
-      return swalToast('danger', 'Please select Meting Date & Time!');
+      toast.error('Please select Meting Date & Time...!');
+      return;
     }
 
     try {
-      const requestBody = {
-        "requested_by": userData?.role,
-        "requested_time": metingDate
-      };
-      const response = await fetch(`${API_ENDPOINT}meetings/schedule/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-      if (!response.ok) {
-        swalToast('danger', 'Something went wrong !');
-        throw new Error(`Error: ${response.statusp}`);
+      const data = {
+        id: id,
+        requestBody: {
+          "requested_by": userData?.role,
+          "requested_time": metingDate
+        }
       }
-      const updateShootDetails = await response.json();
-      swalToast('success', 'Reschedule Meeting Success');
-      setmeetingModal(false);
+      const result = await updateReschedule(data)
+      console.log("🚀 ~ handelRescheduleMeeting ~ result:", result)
     } catch (error) {
       console.error('Error occurred while sending POST request:', error);
     }
 
 
-  }
-
-  const getMeetingsByQuery = async(event) => {
-    setQuery(event.target.value)
-    setLoading(true);
-    let url = `${API_ENDPOINT}meetings?sortBy=createdAt:desc&limit=10&page=${currentPage}&search=${query}`;
-    if (userData?.role === 'client' || userData?.role === 'cp') {
-      url = `${API_ENDPOINT}meetings/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}&search=${query}`;
-    }
-    try {
-      const response = await fetch(url);
-      const allMeetings = await response.json();
-      console.log("🚀 ~ getMeetingsByQuery ~ allMeetings:", allMeetings)
-
-      setTotalPagesCount(allMeetings?.totalPages);
-      setMyMeetings(allMeetings.results);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setLoading(true);
-    }
   }
 
   return (
@@ -218,7 +116,7 @@ const Meeting = () => {
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Meeting List</h5>
-          <input type="text" onChange={getMeetingsByQuery} value={query} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...'/>
+          <input type="text" onChange={(event) => setQuery(event.target.value)} value={query} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...' />
         </div>
         <div className="table-responsive">
           <table>
@@ -234,77 +132,75 @@ const Meeting = () => {
 
             <tbody>
 
-              {isLoading ? (
+              {getAllMeetingLoading ? (
                 <>
                   <PreLoader></PreLoader>
                 </>
               ) : (
-              <>
+                <>
 
 
-              {myMeetings && myMeetings.length > 0 ? (
+                  {allMeetings?.results && allMeetings?.results?.length > 0 ? (
+                    allMeetings?.results?.map((meeting: any) => (
+                      <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                        <td className=" min-w-[150px] text-black dark:text-white">
+                          <div className="flex items-center">
+                            <p className="whitespace-nowrap break-words">{(meeting?.order?.name).length > 10 ? meeting?.order?.name : 'less than 10 character'}</p>
+                          </div>
+                        </td>
 
-                myMeetings?.map((meeting) => (
-                  <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                    <td className=" min-w-[150px] text-black dark:text-white">
-                      <div className="flex items-center">
-                        <p className="whitespace-nowrap break-words">{(meeting?.order?.name).length > 10 ? meeting?.order?.name : 'less than 10 character'}</p>
-                      </div>
-                    </td>
+                        <td>
+                          <span className="ps-2">{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
+                          <span className="ps-2"> {makeDateFormat(meeting?.meeting_date_time)?.time}</span>
+                        </td>
 
-                    <td>
-                      <span className="ps-2">{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
-                      <span className="ps-2"> {makeDateFormat(meeting?.meeting_date_time)?.time}</span>
-                    </td>
+                        <td>
+                          <p className="whitespace-nowrap">
+                            {meeting?.client?.name} with
+                            <span className="ps-1">{meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}</span>
+                          </p>
+                        </td>
 
-                    <td>
-                      <p className="whitespace-nowrap">
-                        {meeting?.client?.name} with
-                        <span className="ps-1">{meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}</span>
-                      </p>
-                    </td>
+                        <td>
+                          <div>
+                            <StatusBg>{meeting?.meeting_status}</StatusBg>
+                          </div>
+                        </td>
 
-                    <td>
-                      <div>
-                        <StatusBg>{meeting?.meeting_status}</StatusBg>
-                      </div>
-                    </td>
+                        <td>
+                          <button type="button" className="p-0" onClick={() => handelMeetingDetails(meeting?.id)}>
+                            <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
 
-                    <td>
-                      <button type="button" className="p-0" onClick={() => getMeetingDetails(meeting.id)}>
-                        <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                  ) : (
+                    <tr>
+                      <td colSpan={50} className="text-center">
+                        <span className="text-[red] font-semibold flex justify-center"> No meetings found </span>
+                      </td>
+                    </tr>
+                  )}
 
-              ) : (
-                <tr>
-                  <td colSpan={50} className="text-center">
-                    <span className="text-[red] font-semibold flex justify-center"> No meetings found </span>
-                  </td>
-                </tr>
+                </>
               )}
-
-            </>
-            )}
-
             </tbody>
           </table>
           <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-            <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
+            <ResponsivePagination current={currentPage} total={allMeetings?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
           </div>
         </div>
       </div>
 
       <Transition appear show={meetingModal} as={Fragment}>
-        <Dialog as="div" open={meetingModal} onClose={() => setmeetingModal(false)}>
+        <Dialog as="div" open={meetingModal} onClose={() => setMeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
               <Dialog.Panel as="div" className="panel my-24 w-2/5 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                   <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
-                  <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setmeetingModal(false)}>
+                  <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setMeetingModal(false)}>
                     {allSvgs.closeModalSvg}
                   </button>
                 </div>

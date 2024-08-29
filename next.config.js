@@ -1,4 +1,4 @@
-/** @type {import('next').NextConfig} */
+/* @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -19,6 +19,14 @@ const nextConfig = {
     CDN_URL: process.env.CDN_URL,
     BucketUrl: process.env.BucketUrl,
     appName: process.env.appName,
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_ENDPOINT}:path*`, // Proxy to Backend
+      },
+    ];
   },
 };
 

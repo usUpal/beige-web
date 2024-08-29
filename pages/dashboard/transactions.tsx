@@ -155,7 +155,7 @@ const Transactions = () => {
                 <th>Account Holder</th>
                 <th>Withdraw Ammount</th>
                 <th>Status</th>
-                { (userRole === 'manager') ? <th className="text-center">Edit</th> : null } 
+                { (userRole === 'manager') ? <th className="text-center">Edit</th> : null }
               </tr>
             </thead>
 
@@ -275,7 +275,7 @@ const Transactions = () => {
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Type </span>
                           <input
-                            value={selectedPayoutInfo?.accountType == 'debitCard' ? 'Card' : 'Bank'} 
+                            value={selectedPayoutInfo?.accountType == 'debitCard' ? 'Card' : 'Bank'}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
