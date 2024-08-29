@@ -46,7 +46,6 @@ const shootApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: `orders/${data?.id}`,
         method: 'PATCH',
-        credentials: 'include', // Ensure credentials are included
         body: JSON.stringify({
           order_status: data?.order_status,
         }),

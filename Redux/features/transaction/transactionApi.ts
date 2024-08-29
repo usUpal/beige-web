@@ -3,13 +3,30 @@ const transactionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllTransaction: builder.query({
       query: (args) => {
+        let URL;
+        if (args?.userData?.role == 'manager') {
+          URL = `payout?sortBy=createdAt:desc&limit=10&page=${args?.page}`;
+        } else {
+          URL = `payout?userId=${args?.userData?.id}&sortBy=${args?.sortBy}&limit=${args?.limit}&page=${args?.page}`;
+        }
+
         return {
-          url: `cp?limit=10&page=${args?.page}&${args?.search && `search=${args?.search}`}`,
+          url: URL,
           method: 'GET'
+        }
+      },
+    }),
+    updateTransactionStatus: builder.mutation({
+      query: (data) => {
+        console.log("🚀 ~ data:", data)
+        return {
+          url: `payout/${data?.id}`,
+          method: 'PATCH',
+          body: JSON.stringify({ status: data?.status }),
         }
       },
     }),
   }),
 });
 
-export const { useGetAllTransactionQuery } = transactionApi;
+export const { useGetAllTransactionQuery, useUpdateTransactionStatusMutation } = transactionApi;

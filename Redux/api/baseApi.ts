@@ -13,7 +13,7 @@ import { API_ENDPOINT } from '@/config';
 
 const baseQuery = fetchBaseQuery({
     baseUrl: API_ENDPOINT,
-    credentials: 'include',
+    credentials: 'omit',
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).auth.token;
 
