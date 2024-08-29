@@ -208,12 +208,29 @@ const Chat = () => {
     { name: 'Jane Smith', isActive: false },
     { name: 'Alice Johnson', isActive: true },
     { name: 'Bob Brown', isActive: false },
-    { name: 'Charlie Green', isActive: true }
+    { name: 'Charlie Green', isActive: true },
+    { name: 'John Doe', isActive: true },
+    { name: 'Jane Smith', isActive: false },
+    { name: 'Alice Johnson', isActive: true },
+    { name: 'Bob Brown', isActive: false },
+    { name: 'Charlie Green', isActive: true },
+    { name: 'John Doe', isActive: true },
+    { name: 'Jane Smith', isActive: false },
+    { name: 'Alice Johnson', isActive: true },
+    { name: 'Bob Brown', isActive: false },
+    { name: 'Charlie Green', isActive: true },
+    { name: 'John Doe', isActive: true },
+    { name: 'Jane Smith', isActive: false },
+    { name: 'Alice Johnson', isActive: true },
+    { name: 'Bob Brown', isActive: false },
+    { name: 'Charlie Green', isActive: true },
   ];
 
   const totalUsers = users.length;
   const totalActiveUsers = users.filter(user => user.isActive).length;
   const totalInactiveUsers = totalUsers - totalActiveUsers;
+
+  const [activeTab, setActiveTab] = useState("1");
 
   return (
     <div>
@@ -290,7 +307,9 @@ const Chat = () => {
 
           </div>
         </div>
+
         <div className={`absolute z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
+
         <div className="panel flex-1 p-0">
           {!isShowUserChat && (
             <div className="relative flex h-full items-center justify-center p-4">
@@ -443,6 +462,7 @@ const Chat = () => {
                     </Link>
                   </div>
                 </div>
+                {!isSidebarOpen && (
                 <div className="flex gap-3 sm:gap-5">
                   <div className="dropdown">
                     <Dropdown
@@ -465,47 +485,8 @@ const Chat = () => {
                       }
                     ></Dropdown>
                   </div>
-
-
-                  {/* Sidebar Modal */}
-                  {isSidebarOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
-                      <div className="bg-white dark:bg-[#1b2e4b] w-64 h-full shadow-lg p-4">
-                        <button
-                          className="text-black dark:text-white"
-                          onClick={toggleSidebar}
-                        >
-                         <div class="style_editorClose__7uxp1"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" fill="#555" width="26" height="26"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z" fill="currentColor"></path></svg></div>
-                        </button>
-                       
-                        <div>
-
-                          <div className="flex justify-between items-center bg-gray-100 dark:bg-[#2c3e50] p-2 rounded-lg mb-4">
-                            <span className="text-black dark:text-white text-sm font-medium">All: ({totalUsers})</span>
-                            <span className="text-blue-500 dark:text-blue-400 text-sm font-medium">Active: ({totalActiveUsers})</span>
-                            <span className="text-gray-500 dark:text-gray-400 text-sm font-medium">Inactive: ({totalInactiveUsers})</span>
-                          </div>
-
-                          <ul className="space-y-2">
-                            {users.map((user, index) => (
-                              <li key={index} className="flex items-center hover:bg-gray-200 dark:hover:bg-[#2c3e50] p-2 rounded">
-                                <span
-                                  className={`rounded-full w-2.5 h-2.5 mr-2 ${
-                                    user.isActive ? 'bg-blue-500' : 'bg-gray-400'
-                                  }`}
-                                ></span>
-                                <span className="text-black dark:text-white">{user.name}</span>
-                              </li>
-                            ))}
-                          </ul>
-                          
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-
                 </div> 
+                )}
               </div>
               <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
 
@@ -614,6 +595,98 @@ const Chat = () => {
             ''
           )}
         </div>
+
+
+        {isSidebarOpen && (
+          <div className={`panel absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+            <div className="flex gap-3 sm:gap-5 justify-end w-full mt-1">
+              <button className="bg-[#f4f4f4] dark:bg-[#1b2e4b] hover:bg-primary-light w-8 h-8 rounded-full flex justify-center items-center"
+                onClick={toggleSidebar}>
+                <div className="ml-2 mt-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="#000000" width="26" height="26">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z" fill="currentColor"></path>
+                  </svg>
+                </div>
+              </button>
+            </div>
+            <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] pt-1"></div>
+
+            <div>
+              <ul className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                <li className="me-2">
+                  <button onClick={() => setActiveTab("1")}
+                    className={`inline-block p-4 rounded-t-lg ${activeTab === "1"
+                        ? "text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500"
+                        : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                      }`}>
+                    Participant
+                  </button>
+                </li>
+                <li className="me-2">
+                  <button onClick={() => setActiveTab("2")}
+                    className={`inline-block p-4 rounded-t-lg ${activeTab === "2"
+                        ? "text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500"
+                        : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                      }`}>
+                    Files
+                  </button>
+                </li>
+              </ul>
+
+              <div>
+                {activeTab === "1" && (
+                  <div className="pt-4">
+                    <div className="mt-1">
+                      <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
+                        <ul className="space-y-2">
+                          {users.map((user, index) => (
+                            <li key={index} className="flex items-center hover:bg-gray-200 dark:hover:bg-[#2c3e50] p-2 rounded">
+                              <span
+                                className={`rounded-full w-2.5 h-2.5 mr-2 ${user.isActive ? 'bg-green-500' : 'bg-gray-400'
+                                  }`}
+                              ></span>
+                              <span className="text-black dark:text-white">{user.name}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </PerfectScrollbar>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "2" && (
+                  <div className="pt-4">
+                    <h2 className="text-lg font-medium">Image files</h2>
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="relative">
+                        <img src="https://via.placeholder.com/300" alt="Demo 1" className="w-full h-auto rounded-lg shadow-md" />
+                      </div>
+                      <div className="relative">
+                        <img src="https://via.placeholder.com/300" alt="Demo 2" className="w-full h-auto rounded-lg shadow-md" />
+                      </div>
+                      <div className="relative">
+                        <img src="https://via.placeholder.com/300" alt="Demo 3" className="w-full h-auto rounded-lg shadow-md" />
+                      </div>
+
+                      <div className="relative">
+                        <img src="https://via.placeholder.com/300" alt="Demo 1" className="w-full h-auto rounded-lg shadow-md" />
+                      </div>
+                      <div className="relative">
+                        <img src="https://via.placeholder.com/300" alt="Demo 2" className="w-full h-auto rounded-lg shadow-md" />
+                      </div>
+                      <div className="relative">
+                        <img src="https://via.placeholder.com/300" alt="Demo 3" className="w-full h-auto rounded-lg shadow-md" />
+                      </div>
+
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
