@@ -17,10 +17,14 @@ import Loader from '@/components/SharedComponent/Loader';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import Flatpickr from 'react-flatpickr';
+
 import { useAssignCpMutation, useGetShootDetailsQuery, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';
 import { shootStatusMessage, allStatus } from '@/utils/shootUtils/shootDetails';
-import ScheduleMeeting from '@/components/shoots/ScheduleMeeting';
+import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 
 const ShootDetails = () => {
   const { userData } = useAuth();
@@ -30,14 +34,18 @@ const ShootDetails = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [cpModal, setCpModal] = useState<boolean>(false);
   const [cp_ids, setCp_ids] = useState<number[]>([]);
-  const [statusBox,setStatusBox] = useState<boolean>(false);
+  const [statusBox, setStatusBox] = useState<boolean>(false);
   const [status, setStatus] = useState<string>('');
   const [metingDate, setMetingDate] = useState<string>('');
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
-  const { data, error: shootDetailsError, isLoading: isDetailsLoading } = useGetShootDetailsQuery(shootId);
-  const [updateStatus, { isSuccess, isLoading: isStatusLoading }] = useUpdateStatusMutation();
+  const { data, error: shootDetailsError, isLoading: isDetailsLoading, refetch } = useGetShootDetailsQuery(shootId, {
+    refetchOnMountOrArgChange: true
+  });
+  const [updateStatus, { isLoading: isStatusLoading }] = useUpdateStatusMutation();
   const [assignCp, { isLoading: isAssignCpLoading }] = useAssignCpMutation();
+  const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
+  const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
   const queryParams = useMemo(
     () => ({
       sortBy: 'createdAt:desc',
@@ -66,103 +74,58 @@ const ShootDetails = () => {
       return;
     }
 
-    const requestData = {
-      summary: data?.order_name ? data?.order_name : 'Beige Meeting',
-      location: 'Online',
-      description: `Meeting to discuss ${data?.order_name ? data?.order_name : 'Beige'} order.`,
-      startDateTime: metingDate,
-      endDateTime: metingDate,
-      orderId: shootId,
+    const requestBody: any = {
+      userId: userData?.id,
+      requestData: {
+        summary: data?.order_name ? data?.order_name : 'Beige Meeting',
+        location: 'Online',
+        description: `Meeting to discuss ${data?.order_name ? data?.order_name : 'Beige'} order.`,
+        startDateTime: metingDate,
+        endDateTime: metingDate,
+        orderId: shootId,
+      }
     };
 
-    //Get here meet link form meeting slice
-    // const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData);
-    // const myMeetLink = response?.data?.meetLink;
-
-
-    // if (!myMeetLink) {
-    //   return swalToast('danger', 'Something went wrong!');
-    // }
-
-    // const requestBody = {
-    //   meeting_date_time: metingDate,
-    //   meeting_status: 'pending',
-    //   meeting_type: 'pre_production',
-    //   order_id: shootId,
-    //   meetLink: myMeetLink,
-    // };
-
-    // try {
-
-    //   const response = await fetch(`${API_ENDPOINT}meetings`, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(requestBody),
-    //   });
-    //   if (!response.ok) {
-    //     swalToast('danger', 'Something went wrong !');
-    //     throw new Error(`Error: ${response.statusp}`);
-    //   }
-    //   const updateShootDetails = await response.json();
-    //   console.log('🚀 ~ submitNewMeting ~ updateShootDetails:', updateShootDetails);
-    //   setMetingDate('');
-    //   setShowNewMetingBox(false);
-    //   //getShootDetails(shootId);
-    //   swalToast('success', 'Schedule Meeting Success!');
-    //   setIsLoading(false);
-    // } catch (error) {
-    //   console.error('Error occurred while sending POST request:', error);
-    // }
+    const response = await newMeetLink(requestBody)
+    if (response?.data) {
+      const requestBody = {
+        meeting_date_time: metingDate,
+        meeting_status: 'pending',
+        meeting_type: 'pre_production',
+        order_id: shootId,
+        meetLink: response?.data?.meetLink,
+      };
+      const result = await newMeeting(requestBody);
+      if (result?.data) {
+        setMeetingBox(false);
+        toast.success('Meeting create success.');
+      } else {
+        console.log("Don't create the meeting");
+        toast.error('Something want wrong...!');
+      }
+    } else {
+      console.log("Don't create the meeting link");
+      toast.error('Something want wrong...!');
+    }
   };
 
 
   const handelUpdateStatus = async () => {
-      if (!status) {
-        return toast.error('Please select a status!');
-      }
+    if (!status) {
+      return toast.error('Please select a status!');
+    }
 
-      // const data = {
-      //   order_status: status,
-      //   id:shootId,
-      // };
-
-    //   const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
-    //     method: 'PATCH',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(requestBody),
-    //   });
-
-    //   // if (!response.ok) {
-    //   //   swalToast('danger', 'something want wrong!');
-    //   //   throw new Error(`Error: ${response.statusp}`);
-    //   // }
-
-    //   const updateStatusDetails = await response.json();
-    //   console.log("🚀 ~ handelUpdateStatus ~ updateStatusDetails:", updateStatusDetails)
-
-    //   // console.log('updateStatusDetails', updateStatusDetails);
-    //   // swalToast('success', 'Status Update Successfully!');
-    //   // setStatusDate('');
-    //   // setShowNewStatusBox(false);
-    //   // getShootDetails(shootId);
-    //   // setIsLoading(false);
-    // } catch (error) {
-    //   console.error('Error occurred while sending POST request:', error);
-    // }
-    // if (!status) {
-    //   return toast.error('Please select a status...!');
-    // }
     const data = {
-      order_status:status,
+      order_status: status,
       id: shootId
     }
-    console.log("🚀 ~ ShootDetails ~ data:", data)
+
     const result = await updateStatus(data);
-    console.log("🚀 ~ handelUpdateStatus ~ result:", result)
+
+    if (result?.data) {
+      refetch();
+      toast.success('Shoot status updated');
+    }
   };
 
   const handleSelectProducer = (cp: any) => {
@@ -188,39 +151,18 @@ const ShootDetails = () => {
   const updateCps = async () => {
     if (!cp_ids.length) {
       toast.error('Please select Cp...!')
+      return;
     }
     const data = {
       cp_ids: cp_ids,
       id: shootId
     }
-    const response = await assignCp(data);
-    console.log("🚀 ~ updateCps ~ cp_ids:", cp_ids)
-    console.log("🚀 ~ updateCps ~ response:", response)
-
-    // try {
-    //   const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
-    //     method: 'PATCH',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       cp_ids: cp_ids,
-    //     }),
-    //   });
-    //   if (!response.ok) {
-    //     swalToast('danger', 'Something went wrong !');
-    //     throw new Error(`Error: ${response.statusp}`);
-    //   }
-    //   const updateShootDetails = await response.json();
-    //   setCp_ids([]);
-    //   setCpModal(false);
-    //   //getShootDetails(shootId);
-    //   setQuery('');
-    //   swalToast('success', 'Assign CP Success!');
-    //   setIsLoading(false);
-    // } catch (error) {
-    //   console.error('Error occurred while sending POST request:', error);
-    // }
+    const result = await assignCp(data);
+    if(result?.data){
+      refetch();
+      toast.success('Cp assigned success...!')
+      setCpModal(false);
+    }
   };
 
   const cancelCp = async (cp: any) => {
@@ -327,7 +269,7 @@ const ShootDetails = () => {
                 </label>
                 {data?.shoot_datetimes && (
                   <div className="flex-row">
-                    {data?.shoot_datetimes?.map((time:any, key:number) => (
+                    {data?.shoot_datetimes?.map((time: any, key: number) => (
                       <div key={key} className="space-x-4">
                         <span className="font-sans capitalize text-black">{new Date(time?.start_date_time).toDateString() ?? ''} </span>
                         <span className="font-sans capitalize text-black">{new Date(time?.end_date_time).toDateString() ?? ''}</span>
@@ -409,7 +351,7 @@ const ShootDetails = () => {
             <div className="items-center justify-between md:mb-4 md:flex">
               {/* Schedule Meeting */}
               <div className="mb-4 basis-[45%] flex-row space-y-5">
-                {/* <div className="flex space-x-3">
+                <div className="flex space-x-3">
                   <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setMeetingBox(!meetingBox)}>
                     Schedule Meeting
                   </button>
@@ -431,11 +373,11 @@ const ShootDetails = () => {
                         onChange={(date) => setMetingDate(date[0])}
                       />
                       <button
-                        disabled={isLoading === true ? true : false}
+                        disabled={isNewMeetingLoading === true ? true : false}
                         onClick={submitNewMeting}
                         className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                       >
-                        {isLoading === true ? (
+                        {isNewMeetingLoading === true ? (
                           <Loader />
                         ) : (
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -445,38 +387,39 @@ const ShootDetails = () => {
                       </button>
                     </div>
                   )}
-                </div> */}
-                <ScheduleMeeting meetingBox setMeetingBox metingDate setMetingDate submitNewMeting/>
+                </div>
                 {userData?.role === 'manager' && (
                   <div className="flex space-x-3">
                     <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setStatusBox(!statusBox)}>
                       Change Status
                     </button>
-                    <div className="flex space-x-2">
-                      <select name="" id="" onChange={(event) => setStatus(event?.target?.value)} className="rounded-sm border border-black px-2 lg:w-[240px]">
-                        {allStatus?.map((item, key) => (
-                          <option
-                            selected={item?.value === status ? true : false}
-                            key={key}
-                            value={item?.key}>
-                            {item?.value}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        disabled={isStatusLoading === true ? true : false}
-                        onClick={handelUpdateStatus}
-                        className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
-                      >
-                        {isStatusLoading === true ? (
-                          <Loader />
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                          </svg>
-                        )}
-                      </button>
-                    </div>
+                    {statusBox && (
+                      <div className="flex space-x-2">
+                        <select name="" id="" onChange={(event) => setStatus(event?.target?.value)} className="rounded-sm border border-black px-2 lg:w-[240px]">
+                          {allStatus?.map((item, key) => (
+                            <option
+                              selected={item?.key === status ? true : false}
+                              key={key}
+                              value={item?.key}>
+                              {item?.value}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          disabled={isStatusLoading === true ? true : false}
+                          onClick={handelUpdateStatus}
+                          className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
+                        >
+                          {isStatusLoading === true ? (
+                            <Loader />
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

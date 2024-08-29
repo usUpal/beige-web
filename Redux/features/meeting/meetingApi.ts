@@ -33,6 +33,24 @@ const meetingApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data?.requestBody
       })
+    }),
+    newMeetLink: builder.mutation({
+      query: (data) => {
+        return {
+          url: `create-event?userId=${data?.userId}`,
+          method: 'POST',
+          body: data?.requestData,
+        }
+      }
+    }),
+    newMeeting:builder.mutation({
+      query:(data) => {
+        return {
+          url: `meetings`,
+          method: 'POST',
+          body: data,
+        }
+      }
     })
 
   }),
@@ -40,4 +58,4 @@ const meetingApi = baseApi.injectEndpoints({
 
 
 
-export const { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } = meetingApi;
+export const { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation, useNewMeetLinkMutation,useNewMeetingMutation } = meetingApi;

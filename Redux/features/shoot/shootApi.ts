@@ -36,39 +36,36 @@ const shootApi = baseApi.injectEndpoints({
       }
     }),
     postOrder: builder.mutation({
-      query: (data) => ({
-        url: 'orders',
-        method: 'POST',
-        body: data,
-      }),
+      query: (data) => {
+        console.log("🚀 ~ data:", data)
+        return {
+          url: 'orders',
+          method: 'POST',
+          body: data,
+        }
+      },
     }),
     updateStatus: builder.mutation({
-      query: (data) => ({
-        url: `orders/${data?.id}`,
-        method: 'PATCH',
-        body: JSON.stringify({
-          order_status: data?.order_status,
-        }),
-      }),
+      query: (data) => {
+        return {
+          url: `orders/${data?.id}`,
+          method: 'PATCH',
+          body: JSON.stringify({ order_status: data?.order_status }),
+        }
+      },
     }),
     assignCp: builder.mutation({
-      query: ({ cp_ids, id }) => ({
-        url: `orders/${id}`,
-        method: 'PATCH',
-        body: cp_ids
-      })
+      query: (data) => {
+        return {
+          url: `orders/${data?.id}`,
+          method: 'PATCH',
+          body: JSON.stringify({ cp_ids: data?.cp_ids })
+        }
+      }
     })
 
   }),
+  overrideExisting: true,
 });
-
-// const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
-//   method: 'PATCH',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-//   body: JSON.stringify(requestBody),
-// });
-
 
 export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation } = shootApi;
