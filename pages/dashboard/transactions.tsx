@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import 'tippy.js/dist/tippy.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
@@ -12,72 +12,47 @@ import { useAuth } from '@/contexts/authContext';
 import Swal from 'sweetalert2';
 import ResponsivePagination from 'react-responsive-pagination';
 import PreLoader from '@/components/ProfileImage/PreLoader';
+import { useGetAllTransactionQuery, useUpdateTransactionStatusMutation } from '@/Redux/features/transaction/transactionApi';
+import { toast } from 'react-toastify';
 
 const Transactions = () => {
   const dispatch = useDispatch();
   const { userData } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
+  const [query, setQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
-  const [allPayouts, setAllPayouts] = useState<Payouts[]>([]);
   const [payoutModal, setPayoutModal] = useState(false);
   const [payoutInfo, setPayoutInfo] = useState<any>({});
   const [selectedPayoutInfo, setSelectedPayoutInfo] = useState<Payouts | null>(null);
   const statusRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    getAllPayouts();
-  }, [currentPage]);
-
-  // 2024-07-03T12:22:20.145Z
-
-  const getAllPayouts = async () => {
-    let url;
-    setIsLoading(true);
-    if (userRole == 'manager'){
-      url = `${API_ENDPOINT}payout?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
-    }else{
-      url = `${API_ENDPOINT}payout?userId=${userData?.id}&sortBy=createdAt:desc&limit=10&page=${currentPage}`;
-    }
-
-    try {
-      const response = await fetch(url);
-      const myAllPayouts = await response.json();
-      setTotalPagesCount(myAllPayouts?.totalPages);
-      setAllPayouts(myAllPayouts?.results);
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
-
-  // previous code
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
+  const [codeArr, setCodeArr] = useState<string[]>([]);
 
   useEffect(() => {
     dispatch(setPageTitle('Transactions'));
   });
 
-  const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+  const queryParams = useMemo(
+    () => ({
+      sortBy: 'createdAt:desc',
+      limit: '10',
+      page: currentPage,
+      search: query,
+      userData
+    }),
+    [currentPage, query, userData]
+  );
 
-  const [codeArr, setCodeArr] = useState<string[]>([]);
-  const toggleCode = (name: string) => {
-    if (codeArr.includes(name)) {
-      setCodeArr((value) => value.filter((d) => d !== name));
-    } else {
-      setCodeArr([...codeArr, name]);
-    }
+  const { data: allPayments, isLoading: isAllPaymentLoading } = useGetAllTransactionQuery(queryParams)
+  const [updateTransactionStatus, { isLoading: updateTransactionStatusLoading,isError:updateTransactionStatusError }] = useUpdateTransactionStatusMutation();
+  console.log("🚀 ~ Transactions ~ updateTransactionStatusError:", updateTransactionStatusError)
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
-  // taking solo or single payout details to a state
   const getSoloPayoutDetails = (id: string) => {
-    const selectedPayout = allPayouts?.find((payout) => payout?.id === id);
-
+    const selectedPayout = allPayments?.results?.find((payout: any) => payout?.id === id);
     if (selectedPayout) {
       setSelectedPayoutInfo(selectedPayout);
       setPayoutModal(true);
@@ -89,55 +64,44 @@ const Transactions = () => {
   const payoutDate = useDateFormat(selectedPayoutInfo?.date);
   const updatedDate = useDateFormat(selectedPayoutInfo?.updatedAt);
 
-  // console.log(selectedPayoutInfo?.updatedAt);
-
-  // update the status-only
   const handleUpdateTestSubmit = async (id: string) => {
-    const selectedStatus = statusRef.current?.value;
-
     try {
-      const patchResponse = await fetch(`${API_ENDPOINT}payout/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: selectedStatus }),
-      });
-
-      if (!patchResponse.ok) {
-        throw new Error('Failed to patch data');
-      }
-
-      const updatedPayoutRes = await patchResponse.json();
-
-      // console.log(updatedPayoutRes);
-
-      setAllPayouts((prevPayouts) => {
-        return prevPayouts.map((payout) => (payout.id === id ? { ...payout, status: updatedPayoutRes.status } : payout));
-      });
+      const selectedStatus = statusRef.current?.value;
+      const result = updateTransactionStatus({ id, status: selectedStatus })
       setPayoutModal(false);
-      coloredToast('success', 'Payment status update successfully');
+      toast.success('Payment status update successfully');
     } catch (error) {
+      toast.error('Something want wrong...!');
       console.error('Patch error:', error);
     }
-  };
 
-  const coloredToast = (color: any, message: string) => {
-    const toast = Swal.mixin({
-      toast: true,
-      position: 'top',
-      showConfirmButton: false,
-      timer: 3000,
-      showCloseButton: true,
-      customClass: {
-        popup: `color-${color}`,
-      },
-    });
-    toast.fire({
-      title: message,
-    });
-  };
 
+    // try {
+    //   const patchResponse = await fetch(`${API_ENDPOINT}payout/${id}`, {
+    //     method: 'PATCH',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ status: selectedStatus }),
+    //   });
+
+    //   if (!patchResponse.ok) {
+    //     throw new Error('Failed to patch data');
+    //   }
+
+    //   const updatedPayoutRes = await patchResponse.json();
+
+    //   // console.log(updatedPayoutRes);
+
+    //   setAllPayouts((prevPayouts) => {
+    //     return prevPayouts.map((payout) => (payout.id === id ? { ...payout, status: updatedPayoutRes.status } : payout));
+    //   });
+    //   setPayoutModal(false);
+    //   coloredToast('success', 'Payment status update successfully');
+    // } catch (error) {
+    //   console.error('Patch error:', error);
+    // }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-1">
@@ -155,53 +119,53 @@ const Transactions = () => {
                 <th>Account Holder</th>
                 <th>Withdraw Ammount</th>
                 <th>Status</th>
-                { (userRole === 'manager') ? <th className="text-center">Edit</th> : null } 
+                {(userRole === 'manager') ? <th className="text-center">Edit</th> : null}
               </tr>
             </thead>
 
             <tbody>
 
-              {isLoading ? (
+              {isAllPaymentLoading ? (
                 <>
                   <PreLoader></PreLoader>
                 </>
               ) : (
-              <>
+                <>
 
-                {allPayouts && allPayouts.length > 0 ? (
-                  allPayouts.map((data) => {
-                    return (
-                      <tr key={data.id}>
-                        <td>
-                          <div className="whitespace-nowrap">{data?.cardNumber ? data?.cardNumber : data?.accountNumber}</div>
-                        </td>
-                        <td>{data?.accountType == 'debitCard' ? 'Card' : 'Bank'}</td>
-                        <td>{data?.accountHolder}</td>
-                        <td>{data?.withdrawAmount}</td>
+                  {allPayments?.results && allPayments?.results?.length > 0 ? (
+                    allPayments?.results?.map((data: any) => {
+                      return (
+                        <tr key={data.id}>
+                          <td>
+                            <div className="whitespace-nowrap">{data?.cardNumber ? data?.cardNumber : data?.accountNumber}</div>
+                          </td>
+                          <td>{data?.accountType == 'debitCard' ? 'Card' : 'Bank'}</td>
+                          <td>{data?.accountHolder}</td>
+                          <td>{data?.withdrawAmount}</td>
 
-                        <td>
-                          <StatusBg>{data?.status}</StatusBg>
-                        </td>
-                        {(userRole === 'manager') ?
-                        <td className="text-center">
-                          <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
-                            {allSvgs.pencilIconForEdit}
-                          </button>
-                        </td> : null }
-                      </tr>
-                    );
-                  })
+                          <td>
+                            <StatusBg>{data?.status}</StatusBg>
+                          </td>
+                          {(userRole === 'manager') ?
+                            <td className="text-center">
+                              <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
+                                {allSvgs.pencilIconForEdit}
+                              </button>
+                            </td> : null}
+                        </tr>
+                      );
+                    })
 
-                ) : (
-                  <tr>
-                    <td colSpan={50} className="text-center">
-                      <span className="text-[red] font-semibold flex justify-center"> No transactions found </span>
-                    </td>
-                  </tr>
-                )}
+                  ) : (
+                    <tr>
+                      <td colSpan={50} className="text-center">
+                        <span className="text-[red] font-semibold flex justify-center"> No transactions found </span>
+                      </td>
+                    </tr>
+                  )}
 
 
-              </>
+                </>
               )}
 
 
@@ -211,7 +175,7 @@ const Transactions = () => {
           <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
             <ResponsivePagination
               current={currentPage}
-              total={totalPagesCount}
+              total={allPayments?.totalPages || 1}
               onPageChange={handlePageChange}
               maxWidth={400}
             // styles={styles}
@@ -275,7 +239,7 @@ const Transactions = () => {
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Type </span>
                           <input
-                            value={selectedPayoutInfo?.accountType == 'debitCard' ? 'Card' : 'Bank'} 
+                            value={selectedPayoutInfo?.accountType == 'debitCard' ? 'Card' : 'Bank'}
                             className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />

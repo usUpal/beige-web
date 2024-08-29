@@ -53,7 +53,7 @@ const AddRole = () => {
                       <div className="flex justify-between items-center mb-1" key={index}>
                         <label htmlFor={permission?.key} className='cursor-pointer'>{permission?.name}</label>
                         <div className="w-12 h-6 relative">
-                          <input type="checkbox" {...register('permissions')} defaultValue={permission?._id} className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id={permission?.key} />
+                          <input type="checkbox" {...register('permissions')} defaultValue={permission?.key} className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id={permission?.key} />
                           <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
                         </div>
                       </div>

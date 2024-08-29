@@ -8,7 +8,7 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 const SidebarManager = (props: any) => {
   const { currentMenu, toggleMenu } = props;
   const { userData } = useAuth();
-  console.log("🚀 ~ SidebarManager ~ userData:", userData)
+  //console.log("🚀 ~ SidebarManager ~ userData:", userData)
   // const isAccessible = (item: any) => item.inAccessible.includes(userData.role);
   return (
 
@@ -44,7 +44,7 @@ const SidebarManager = (props: any) => {
           {userData?.permissions?.includes('book_now') && (
             <li className="nav-item">
               {/* <Link href='/dashboard/bookNow' className='group'> */}
-              <Link href="/manager/bookNow" className="group">
+              <Link href="/dashboard/book-now" className="group">
                 <div className="flex items-center">
                   {allSvgs.bookingLinkIcon}
                   <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Book Now</span>

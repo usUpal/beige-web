@@ -54,7 +54,7 @@ const Auth = () => {
         if(userData?.role === 'manager'){
           userData.permissions = ['dashboard','book_now','shoots','meetings','role'];
         }else if(userData?.role === 'cp'){
-          userData.permissions = ['dashboard','shoots'];
+          userData.permissions = ['dashboard','shoots','meetings'];
         }else if(userData?.role === 'user'){
           userData.permissions = ['dashboard','book_now'];
         }else{
