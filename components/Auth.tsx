@@ -51,6 +51,18 @@ const Auth = () => {
         const accessToken = data?.tokens?.access;
         const refreshToken = data?.tokens?.refresh;
 
+        if(userData?.role === 'manager'){
+          userData.permissions = ['dashboard','book_now','shoots','meetings','role'];
+        }else if(userData?.role === 'cp'){
+          userData.permissions = ['dashboard','shoots'];
+        }else if(userData?.role === 'user'){
+          userData.permissions = ['dashboard','book_now'];
+        }else{
+          coloredToast('danger', data.message);
+          setIsLoading(false);
+        }
+
+
         //Update context values
         setUserData(userData);
         setAccessToken(accessToken?.token);
@@ -72,8 +84,11 @@ const Auth = () => {
         });
 
         //Redirect user to the dashboard
-        // await router.push('/');
-        await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
+        //await router.push('/');
+        //await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
+
+        //Current Folder Structure .
+        await router.push('/dashboard');
         setIsLoading(false);
       } else {
         // toast.error(data.message, {
