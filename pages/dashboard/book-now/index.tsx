@@ -29,10 +29,10 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import { API_ENDPOINT } from '@/config';
-import { clientNamespaces } from 'ni18n';
-import { useLocation } from 'react-router-dom';
-import { permissions } from "@/store/menuBuilder";
 import RoleProtection from '@/components/RoleProtection';
+import { usePostOrderMutation } from '@/Redux/features/shoot/shootApi';
+import { toast } from 'react-toastify';
+import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 
 interface FormData {
   content_type: string;
@@ -81,6 +81,8 @@ const BookNow = () => {
   const dropdownRef = useRef(null);
   const [isClientLoading, setIsClientLoading] = useState(false);
 
+  const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
+  const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
 
   const {
     register,
@@ -91,9 +93,6 @@ const BookNow = () => {
     getValues,
     formState: { errors },
   } = useForm<FormData>({ defaultValues: {} });
-
-  //const authPermissions = permissions.filter((item)=> item?.role === userData?.role)
-  // console.log("🚀 ~ BookNow ~ authPermissions:", authPermissions)
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -455,65 +454,96 @@ const BookNow = () => {
   };
 
   const getMeetingLink = async (shootInfo: any, meetingDate: any) => {
-    const requestData = {
-      summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
-      location: 'Online',
-      description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'} order.`,
-      startDateTime: meetingDate,
-      endDateTime: meetingDate,
-      orderId: shootInfo?.id,
+    const requestBody = {
+      userId:userData?.id,
+      requestData : {
+        summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
+        location: 'Online',
+        description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'} order.`,
+        startDateTime: meetingDate,
+        endDateTime: meetingDate,
+        orderId: shootInfo?.id,
+      }
     };
 
-    try {
-      const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData);
-      const myMeetLink = response?.data?.meetLink;
-      if (myMeetLink) {
-        try {
-          const requestBody = {
-            meeting_date_time: meetingDate,
-            meeting_status: 'pending',
-            meeting_type: 'pre_production',
-            order_id: shootInfo?.id,
-            meetLink: myMeetLink,
-          };
-          const response = await fetch(`${API_ENDPOINT}meetings`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-          });
-          if (!response.ok) {
-            swalToast('danger', 'Something went wrong !');
-            throw new Error(`Error: ${response.statusp}`);
-          }
-          const meetingInfo = await response.json();
-          return meetingInfo;
-        } catch (error) {
-          console.error('Error occurred while sending POST request:', error);
-        }
+    const response = await newMeetLink(requestBody)
+    if (response?.data) {
+      const requestBody = {
+        meeting_date_time: meetingDate,
+        meeting_status: 'pending',
+        meeting_type: 'pre_production',
+        order_id: shootInfo?.id,
+        meetLink: response?.data?.meetLink,
+      };
+      const result = await newMeeting(requestBody);
+      if (result?.data) {
+        toast.success('Meeting create success.');
+        return true;
       } else {
-        console.error('Error create meet link after create order');
+        console.log("Don't create the meeting");
+        toast.error('Something want wrong...!');
       }
-    } catch (error) {
-      console.error('Error create meet link after create order:', error);
+    } else {
+      console.log("Don't create the meeting link");
+      toast.error('Something want wrong...!');
     }
+
+    // try {
+    //   const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData);
+    //   const myMeetLink = response?.data?.meetLink;
+    //   if (myMeetLink) {
+    //     try {
+    //       const requestBody = {
+    //         meeting_date_time: meetingDate,
+    //         meeting_status: 'pending',
+    //         meeting_type: 'pre_production',
+    //         order_id: shootInfo?.id,
+    //         meetLink: myMeetLink,
+    //       };
+    //       const response = await fetch(`${API_ENDPOINT}meetings`, {
+    //         method: 'POST',
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(requestBody),
+    //       });
+    //       if (!response.ok) {
+    //         swalToast('danger', 'Something went wrong !');
+    //         throw new Error(`Error: ${response.statusp}`);
+    //       }
+    //       const meetingInfo = await response.json();
+    //       return meetingInfo;
+    //     } catch (error) {
+    //       console.error('Error occurred while sending POST request:', error);
+    //     }
+    //   } else {
+    //     console.error('Error create meet link after create order');
+    //   }
+    // } catch (error) {
+    //   console.error('Error create meet link after create order:', error);
+    // }
 
   }
 
-  // --------> onsubmit function
+
+  const [postOrder, { isSuccess, isLoading: isPostOrderLoading }] = usePostOrderMutation();
+  console.log("🚀 ~ BookNow ~ isPostOrderLoading:", isPostOrderLoading)
+  console.log("🚀 ~ BookNow ~ isSuccess:", isSuccess)
+
   const onSubmit = async (data: any) => {
+
     if (geo_location?.coordinates?.length === 0) {
-      return swalToast('danger', 'Please select shoot location!');
+      toast.error('Please select shoot location...!');
+      return;
     }
     if (activeTab == 2 && cp_ids?.length === 0) {
-      swalToast('danger', 'Please select at least one producer!');
-      return; // Exit the function early if no producer is selected
+      toast.error('Please select cp...!');
+      return;
     }
     if (data.content_type == false) {
-      swalToast('danger', 'Please select content type!');
+      toast.error('Please select a content type...!');
+      return;
     } else {
-
       try {
         const formattedData = {
           budget: {
@@ -540,27 +570,41 @@ const BookNow = () => {
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
-          // reset();
         } else {
           return false;
         }
         if (activeTab === 3) {
-          const response = await OrderApi.handleOrderMake(formattedData);
-          if (response.status === 201) {
-            swalToast('success', 'Shoot has been created successfully!');
+          console.log("🚀 ~ onSubmit ~ formattedData:", formattedData)
+          const result = await postOrder(formattedData);
+          if (result?.data) {
+            toast.success('Shoot has been created successfully')
             if (data.meeting_time) {
               const meeting_time = convertToISO(data.meeting_time);
-              const meetingInfo = await getMeetingLink(response?.data, meeting_time);
+              const meetingInfo = await getMeetingLink(result?.data, meeting_time);
               if (meetingInfo) {
-                swalToast('success', 'Meeting has been created successfully!');
+                toast.success('Meeting has been created successfully!');
               }
             }
             router.push('/dashboard/shoots');
             setIsLoading(false);
-          } else {
-            swalToast('danger', 'Please check your shoot details!');
-            setIsLoading(false);
           }
+
+          //const response = await OrderApi.handleOrderMake(formattedData);
+          // if (response.status === 201) {
+          //   swalToast('success', 'Shoot has been created successfully!');
+          //   if (data.meeting_time) {
+          //     const meeting_time = convertToISO(data.meeting_time);
+          //     const meetingInfo = await getMeetingLink(response?.data, meeting_time);
+          //     if (meetingInfo) {
+          //       swalToast('success', 'Meeting has been created successfully!');
+          //     }
+          //   }
+          //   router.push('/dashboard/shoots');
+          //   setIsLoading(false);
+          // } else {
+          //   swalToast('danger', 'Please check your shoot details!');
+          //   setIsLoading(false);
+          // }
         }
       } catch (error) {
         swalToast('danger', 'error');
@@ -618,7 +662,7 @@ const BookNow = () => {
     if (contentVertical === 'SelectCategory') {
       contentVertical = 'Category';
     }
-    const concateOrderName = `${clientName || 'Name'}'s ${contentVertical} ${type || 'Type'}`;
+    const concateOrderName = `${userData?.role === 'user' ? userData?.name : clientName || 'Name'}'s ${contentVertical} ${type || 'Type'}`;
     return concateOrderName;
   };
 
@@ -1264,4 +1308,4 @@ const BookNow = () => {
   );
 };
 
-export default RoleProtection(BookNow,['user','manager']);
+export default RoleProtection(BookNow, ['user', 'manager']);

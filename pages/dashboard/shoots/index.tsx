@@ -40,6 +40,7 @@ const Shoots = () => {
   const { data, error, isFetching, isLoading, refetch } = useGetAllShootQuery(queryParams, {
     refetchOnMountOrArgChange: true,
   });
+  
 
   // Memoize handlePageChange
   const handlePageChange = useCallback((page: number) => {
