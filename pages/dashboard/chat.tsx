@@ -57,8 +57,8 @@ const Chat = () => {
   const fetchChats = async () => {
     try {
       setIsLoading(true);
-      //   const response = await fetch(`${API_ENDPOINT}/chats?sortBy=updatedAt:desc&limit=20&page=${currentPage}&cp_id=${userDetails.id}&populate=cp_id,client_id,order_id,last_message`);
-      const response = await fetch(`${API_ENDPOINT}chats/?sortBy=updatedAt:desc&populate=order_id,last_message&${userRole}_id=${userData.id}`);
+      // const response = await fetch(`${API_ENDPOINT}/chats?sortBy=updatedAt:desc&limit=20&page=${currentPage}&cp_id=${userData?.id}&populate=cp_id,client_id,order_id,last_message`);
+      const response = await fetch(`${API_ENDPOINT}chats/?sortBy=updatedAt:desc&populate=order_id,last_message,cp_ids.id,client_id,manager_ids.id&${userRole}_id=${userData.id}`);
       const newChats = await response.json();
       if (newChats.results?.length === 0) {
         setShowError(true);
@@ -205,33 +205,6 @@ const Chat = () => {
     setSearchUser(event.target.value);
   };
 
-  const users = [
-    { name: 'John Doe', isActive: true },
-    { name: 'Jane Smith', isActive: false },
-    { name: 'Alice Johnson', isActive: true },
-    { name: 'Bob Brown', isActive: false },
-    { name: 'Charlie Green', isActive: true },
-    { name: 'John Doe', isActive: true },
-    { name: 'Jane Smith', isActive: false },
-    { name: 'Alice Johnson', isActive: true },
-    { name: 'Bob Brown', isActive: false },
-    { name: 'Charlie Green', isActive: true },
-    { name: 'John Doe', isActive: true },
-    { name: 'Jane Smith', isActive: false },
-    { name: 'Alice Johnson', isActive: true },
-    { name: 'Bob Brown', isActive: false },
-    { name: 'Charlie Green', isActive: true },
-    { name: 'John Doe', isActive: true },
-    { name: 'Jane Smith', isActive: false },
-    { name: 'Alice Johnson', isActive: true },
-    { name: 'Bob Brown', isActive: false },
-    { name: 'Charlie Green', isActive: true },
-  ];
-
-  const totalUsers = users.length;
-  const totalActiveUsers = users.filter((user) => user.isActive).length;
-  const totalInactiveUsers = totalUsers - totalActiveUsers;
-
   const [activeTab, setActiveTab] = useState('1');
 
   return (
@@ -279,7 +252,7 @@ const Chat = () => {
               })}
             </PerfectScrollbar>
 
-            <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            {/* <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
               <ResponsivePagination
                 current={currentPage}
                 total={totalPagesCount}
@@ -287,7 +260,7 @@ const Chat = () => {
                 maxWidth={400}
                 // styles={styles}
               />
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -621,12 +594,44 @@ const Chat = () => {
                     <div className="mt-1">
                       <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
                         <ul className="space-y-2">
-                          {users.map((user, index) => (
-                            <li key={index} className="flex items-center rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
-                              <span className={`mr-2 h-2.5 w-2.5 rounded-full ${user.isActive ? 'bg-green-500' : 'bg-gray-400'}`}></span>
-                              <span className="text-black dark:text-white">{user.name}</span>
+                          <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
+                            <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
+
+                            {/* <span className="flex  text-black dark:text-white">
+                              {selectedChatRoom?.client_id?.name}
+                              <span className="ms-5 text-[12px] text-blue-500">{selectedChatRoom?.client_id?.role}</span>
+                            </span> */}
+
+                            <div className="flex flex-col justify-start space-y-0 ">
+                              <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
+                              <span className="badge w-9 bg-info p-0 text-center text-[10px]">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
+                            </div>
+                          </li>
+
+                          {/* {perticipants} */}
+
+                          {[
+                            ...selectedChatRoom?.cp_ids.map((cp) => ({
+                              ...cp,
+                              type: 'cp',
+                            })),
+                            ...selectedChatRoom?.manager_ids.map((manager) => ({
+                              ...manager,
+                              type: 'manager',
+                            })),
+                          ].map((item, index) => (
+                            <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
+                              <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
+                              <div className="flex flex-col space-y-0">
+                                <span className="text-black dark:text-white">{item?.id?.name}</span>
+                                <span className={`badge bg-info p-0 text-center text-[10px] ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
+                                  {item.type === 'manager' ? (item?.id?.role === 'manager' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp') : item?.id?.role}
+                                </span>
+                              </div>
                             </li>
                           ))}
+
+                          {/* ends- participants */}
                         </ul>
                       </PerfectScrollbar>
                     </div>
@@ -640,7 +645,7 @@ const Chat = () => {
                       <div className="relative">
                         <img src="https://via.placeholder.com/300" alt="Demo 1" className="h-auto w-full rounded-lg shadow-md" />
                       </div>
-                      <div className="relative">
+                      {/* <div className="relative">
                         <img src="https://via.placeholder.com/300" alt="Demo 2" className="h-auto w-full rounded-lg shadow-md" />
                       </div>
                       <div className="relative">
@@ -655,7 +660,7 @@ const Chat = () => {
                       </div>
                       <div className="relative">
                         <img src="https://via.placeholder.com/300" alt="Demo 3" className="h-auto w-full rounded-lg shadow-md" />
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 )}

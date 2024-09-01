@@ -17,7 +17,7 @@ import Loader from '@/components/SharedComponent/Loader';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
-import flatpickr from 'flatpickr';
+// import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 
