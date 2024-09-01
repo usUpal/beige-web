@@ -10,6 +10,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [authPermissions, setAuthPermissions] = useState<any>(null);
   const [accessToken, setAccessToken] = useState<Token | null>(null);
   const [refreshToken, setRefreshToken] = useState<Token | null>(null);
   const [ready, setReady] = useState<boolean>(false);
@@ -17,11 +18,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
 
     const userDataCookie = Cookies.get('userData');
+    const authPermissionsCookie = Cookies.get('authPermissions');
     const accessTokenCookie = Cookies.get('accessToken');
     const refreshTokenCookie = Cookies.get('refreshToken');
 
     if (!userData && userDataCookie) {
       setUserData(JSON.parse(userDataCookie));
+    }
+
+    if (!authPermissions && authPermissionsCookie) {
+      setAuthPermissions(JSON.parse(authPermissionsCookie));
     }
 
     if (!accessToken && accessTokenCookie) {
@@ -38,6 +44,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const providerData = {
     userData, setUserData,
+    authPermissions, setAuthPermissions,
     accessToken, setAccessToken,
     refreshToken, setRefreshToken
   };

@@ -14,6 +14,8 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), {
 const Dashboard = (props : any) => {
   const {userData} = useAuth();
   const { isDark, isRtl, isMounted } = props;
+  const {authPermissions} = useAuth();
+  console.log("🚀 ~ Dashboard ~ authPermissions:", authPermissions)
 
   //Revenue Chart
   const revenueChart: any = {

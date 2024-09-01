@@ -2,26 +2,47 @@ import { baseApi } from "@/Redux/api/baseApi";
 
 const roleApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPermissions:builder.query({
-      query:()=>{
+    getAllRoles: builder.query({
+      query: () => {
         return {
-          url:"",
-          method:'GET'
+          url: "roles",
+          method: 'GET'
         }
       }
     }),
 
-    postRole:builder.mutation({
-      query:(data) => ({
-        url:'add-role',
-        method:'POST',
-        body:data,
-      })
+    getAllPermissions: builder.query({
+      query: () => {
+        return {
+          url: "permissions",
+          method: 'GET'
+        }
+      }
     }),
 
+    getSingleRole: builder.query({
+      query:(data) => {
+        return {
+          url: `roles?id=${data}`,
+          method: 'GET'
+        }
+      }
+    }),
+
+    postRole: builder.mutation({
+      query: (data) => {
+        console.log("🚀 ~ data:", data)
+        return {
+          url: 'roles',
+          method: 'POST',
+          body: data,
+        }
+      }
+    }),
   })
 })
 
+export const { useGetAllRolesQuery, useGetAllPermissionsQuery, useGetSingleRoleQuery,usePostRoleMutation } = roleApi
 
 
 

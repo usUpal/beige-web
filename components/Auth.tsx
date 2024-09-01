@@ -16,10 +16,9 @@ import Swal from 'sweetalert2';
 const Auth = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-
   // svg files
 
-  const { setUserData, setAccessToken, setRefreshToken } = useAuth();
+  const { setUserData, setAccessToken, setRefreshToken, setAuthPermissions } = useAuth();
 
   useEffect(() => {
     dispatch(setPageTitle('Login'));
@@ -44,34 +43,29 @@ const Auth = () => {
       });
 
       const data = await response.json();
+      const result = await fetch(`${API_ENDPOINT}roles?search=${data?.user?.role}`);
+      const authPermission = await result.json();
 
-      if (response.ok) {
-        //Prepare token and user data
+      if (response.ok && result.ok) {
         const userData = data?.user;
+        const authPermissions = authPermission[0]?.permissions;
         const accessToken = data?.tokens?.access;
         const refreshToken = data?.tokens?.refresh;
 
-        if(userData?.role === 'manager'){
-          userData.permissions = ['dashboard','book_now','shoots','meetings','role'];
-        }else if(userData?.role === 'cp'){
-          userData.permissions = ['dashboard','shoots','meetings'];
-        }else if(userData?.role === 'user'){
-          userData.permissions = ['dashboard','book_now'];
-        }else{
-          coloredToast('danger', data.message);
-          setIsLoading(false);
-        }
-
-
         //Update context values
         setUserData(userData);
+        setAuthPermissions(authPermissions);
         setAccessToken(accessToken?.token);
         setRefreshToken(refreshToken?.token);
-
         //Store user data to the cookie storage
         Cookies.set('userData', JSON.stringify(userData), {
           expires: 7,
         });
+
+        Cookies.set('authPermissions', JSON.stringify(authPermissions), {
+          expires: 7,
+        });
+
 
         //Store access token to the cookie storage
         Cookies.set('accessToken', JSON.stringify(accessToken), {

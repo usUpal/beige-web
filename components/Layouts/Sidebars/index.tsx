@@ -7,13 +7,14 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
 const SidebarManager = (props: any) => {
   const { currentMenu, toggleMenu } = props;
-  const { userData } = useAuth();
+  const { userData, authPermissions } = useAuth();
+
   //console.log("🚀 ~ SidebarManager ~ userData:", userData)
   // const isAccessible = (item: any) => item.inAccessible.includes(userData.role);
   return (
 
     <ul className="relative space-y-0.5 p-4 py-0 font-semibold">
-      {userData?.permissions?.includes('dashboard') && (
+      {authPermissions?.includes('dashboard_page') && (
         <li className="menu nav-item">
           <button type="button" className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('dashboard')}>
             <div className="flex items-center">
@@ -41,7 +42,7 @@ const SidebarManager = (props: any) => {
 
       <li className="nav-item">
         <ul>
-          {userData?.permissions?.includes('book_now') && (
+          {authPermissions?.includes('booking_page') && (
             <li className="nav-item">
               {/* <Link href='/dashboard/bookNow' className='group'> */}
               <Link href="/dashboard/book-now" className="group">
@@ -53,7 +54,7 @@ const SidebarManager = (props: any) => {
             </li>
           )}
 
-          {userData?.permissions?.includes('shoots') && (
+          {authPermissions?.includes('shoot_page') && (
             <li className="nav-item">
               <Link href="/dashboard/shoots" className="group">
                 <div className="flex items-center">
@@ -64,7 +65,7 @@ const SidebarManager = (props: any) => {
             </li>
           )}
 
-          {userData?.permissions?.includes('add_ons') && (
+          {authPermissions?.includes('add_ons_page') && (
             <li className="nav-item">
               <Link href="/manager/addons" className="group">
                 <div className="flex items-center">
@@ -75,7 +76,7 @@ const SidebarManager = (props: any) => {
             </li>
           )}
 
-          {userData?.permissions?.includes('meetings') && (
+          {authPermissions?.includes('meeting_page') && (
             <li className="nav-item">
               <Link href="/dashboard/meetings" className="group">
                 <div className="flex items-center">
@@ -85,63 +86,78 @@ const SidebarManager = (props: any) => {
               </Link>
             </li>
           )}
-          <li className="nav-item">
-            <Link href="/dashboard/chat" className="group">
-              <div className="flex items-center">
-                {allSvgs.chatSvg}
-                <span className=" text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Chat</span>
-              </div>
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link href="/dashboard/fileManager" className="group">
-              <div className="flex items-center">
-                {allSvgs.filesSvg}
-                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">File Manager</span>
-              </div>
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link href="/dashboard/transactions" className="group">
-              <div className="flex items-center">
-                {allSvgs.transactionsSvg}
-                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Transactions</span>
-              </div>
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link href="/dashboard/disputes" className="group">
-              <div className="flex items-center">
-                {allSvgs.disputesSvg}
-                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Disputes</span>
-              </div>
-            </Link>
-          </li>
-          <li className="menu nav-item">
-            <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('settings')}>
-              <div className="flex items-center">
-                {allSvgs.settingLinkIcon}
-                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Settings</span>
-              </div>
 
-              <div className={currentMenu === 'settings' ? 'rotate-90' : 'rtl:rotate-180'}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </button>
+          {authPermissions?.includes('chat_page') && (
+            <li className="nav-item">
+              <Link href="/dashboard/chat" className="group">
+                <div className="flex items-center">
+                  {allSvgs.chatSvg}
+                  <span className=" text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Chat</span>
+                </div>
+              </Link>
+            </li>
+          )}
 
-            <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
-              <ul className="sub-menu flex flex-col text-gray-500 ">
-                <li>
-                  <Link href="/dashboard/searchingParams">Set Searching Params</Link>
-                </li>
-                {/* <li>
+          {authPermissions?.includes('file_manager_page') && (
+            <li className="nav-item">
+              <Link href="/dashboard/fileManager" className="group">
+                <div className="flex items-center">
+                  {allSvgs.filesSvg}
+                  <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">File Manager</span>
+                </div>
+              </Link>
+            </li>
+          )}
+
+          {authPermissions?.includes('transactions_page') && (
+            <li className="nav-item">
+              <Link href="/dashboard/transactions" className="group">
+                <div className="flex items-center">
+                  {allSvgs.transactionsSvg}
+                  <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Transactions</span>
+                </div>
+              </Link>
+            </li>
+          )}
+
+          {authPermissions?.includes('disputes_page') && (
+            <li className="nav-item">
+              <Link href="/dashboard/disputes" className="group">
+                <div className="flex items-center">
+                  {allSvgs.disputesSvg}
+                  <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Disputes</span>
+                </div>
+              </Link>
+            </li>
+          )}
+
+          {authPermissions?.includes('searching_params') && (
+            <li className="menu nav-item">
+              <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('settings')}>
+                <div className="flex items-center">
+                  {allSvgs.settingLinkIcon}
+                  <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Settings</span>
+                </div>
+
+                <div className={currentMenu === 'settings' ? 'rotate-90' : 'rtl:rotate-180'}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              </button>
+
+              <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
+                <ul className="sub-menu flex flex-col text-gray-500 ">
+                  <li>
+                    <Link href="/dashboard/searchingParams">Set Searching Params</Link>
+                  </li>
+                  {/* <li>
                   <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
                 </li> */}
-              </ul>
-            </AnimateHeight>
-          </li>
+                </ul>
+              </AnimateHeight>
+            </li>
+          )}
 
           <li className="nav-item">
             <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('users')}>
@@ -182,7 +198,8 @@ const SidebarManager = (props: any) => {
                 </div>
               </Link> */}
           </li>
-          {userData?.permissions?.includes('role') && (
+
+          {authPermissions?.includes('role_page') && (
             <li className="nav-item">
               <Link href="/dashboard/role" className="group">
                 <div className="flex items-center">
@@ -192,7 +209,6 @@ const SidebarManager = (props: any) => {
               </Link>
             </li>
           )}
-
         </ul>
       </li>
     </ul>

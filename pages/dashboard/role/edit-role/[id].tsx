@@ -1,35 +1,54 @@
-
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { useGetSingleRoleQuery } from '@/Redux/features/role/roleApi';
 import { useForm } from 'react-hook-form';
-import { useGetAllPermissionsQuery, usePostRoleMutation } from '@/Redux/features/role/roleApi';
-import { createSlug } from '@/utils/helper';
 import Loader from '@/components/SharedComponent/Loader';
-import { toast } from 'react-toastify';
-import { useRouter } from 'next/router';
-const AddRole = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const { data: allPermissions, isLoading: isGetPermissionLoading,isSuccess:isPostPermissionSuccess } = useGetAllPermissionsQuery(undefined, {
+import { useGetAllPermissionsQuery } from '@/Redux/features/role/roleApi';
+
+const EditRole = () => {
+  const router = useRouter();
+  const roleId = router.query.id as string;
+  console.log("🚀 ~ EditRole ~ roleId:", roleId)
+  const { data: roleData, isLoading: isRoleDetailsLoading, isError:isRoleDetailsError , error:roleError } = useGetSingleRoleQuery(roleId,{
     refetchOnMountOrArgChange: true,
   });
 
-  const [postRole, { isLoading: isPostRoleLoading, isError: isPostRoleLoadingError, error: postRoleError }] = usePostRoleMutation();
-  const router = useRouter();
-
-  const onSubmit = async (data: any) => {
-    const formData = {
-      name: data?.name,
-      role: createSlug(data?.name),
-      details: data?.details,
-      permissions: data?.permissions
-    }
-    await postRole(formData);
-    if(isPostPermissionSuccess){
-      router.push('/dashboard/role')
-      toast.success("New role create success...")
-    }
-
+  if(roleData){
+    console.log("🚀 ~ EditRole ~ roleData:", roleData[0] ?? '')
+    console.log("🚀 ~ EditRole ~ isRoleDetailsLoading:", isRoleDetailsLoading)
+    console.log("🚀 ~ EditRole ~ isRoleDetailsError:", isRoleDetailsError)
+    console.log("🚀 ~ EditRole ~ roleError:", roleError)
   }
+
+
+
+
+  const { data: allPermissions, isLoading: isGetPermissionLoading, isSuccess: isPostPermissionSuccess } = useGetAllPermissionsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+  const { register, handleSubmit, formState: { errors } } = useForm();
+
+
+  const onSubmit = (data: any) => {
+    console.log("🚀 ~ onSubmit ~ data:", data)
+  }
+
+  //const [updateRole] = useUpdateRoleMutation();
+
+  useEffect(() => {
+    if (roleData) {
+      setSelectedPermissions(roleData[0]?.permissions || []);
+    }
+  }, [roleData]);
+
+  const handlePermissionChange = (permissionKey: string) => {
+    setSelectedPermissions((prev) =>
+      prev.includes(permissionKey)
+        ? prev.filter((key) => key !== permissionKey) // Remove if already selected
+        : [...prev, permissionKey] // Add if not selected
+    );
+  };
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
@@ -41,8 +60,8 @@ const AddRole = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="">
             <div className="grid grid-cols-3 gap-3">
-              <input type="text" {...register('name')} placeholder='write a role name' className='border border-black rounded px-3 py-1' />
-              <input type="text" {...register('details')} placeholder='write role details' className='border border-black rounded px-3 py-1 col-span-2' />
+              {/* <input type="text" {...register('name')} defaultValue={roleData[0]?.name} placeholder='write a role name' className='border border-black rounded px-3 py-1' />
+              <input type="text" {...register('details')} defaultValue={roleData[0]?.details} placeholder='write role details' className='border border-black rounded px-3 py-1 col-span-2' /> */}
             </div>
 
 
@@ -61,19 +80,22 @@ const AddRole = () => {
                 <div className="border border-black/30 rounded p-3 " key={index}>
                   <div className="flex justify-between items-center">
                     <h4 className='font-semibold text-sm'>{module?.module_name}</h4>
-                    {/* <div className="flex space-x-3 items-center mb-1">
+                    <div className="flex space-x-3 items-center mb-1">
                       <div className="w-12 h-6 relative">
                         <input type="checkbox" className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id={'select_all'} />
                         <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                   <div className="mt-4">
                     {module?.permissions?.length && module?.permissions?.map((permission: object, index: number) => (
                       <div className="flex justify-between items-center mb-1" key={index}>
                         <label htmlFor={permission?.key} className='cursor-pointer'>{permission?.name}</label>
                         <div className="w-12 h-6 relative">
-                          <input type="checkbox" {...register('permissions')} defaultValue={permission?.key} className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id={permission?.key} />
+                          <input type="checkbox" {...register('permissions')} defaultValue={permission?.key}
+                          onChange={() => handlePermissionChange(permission?.key)}
+                          checked={selectedPermissions.includes(permission?.key)}
+                          className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id={permission?.key} />
                           <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
                         </div>
                       </div>
@@ -83,8 +105,8 @@ const AddRole = () => {
               ))}
             </div>
             <div className='flex justify-end'>
-              {isPostRoleLoading ? (
-                <button disabled={isPostRoleLoading} className='bg-black rounded text-white px-3 py-1 flex gap-3' type='submit'><span>Loading...</span><Loader /></button>
+              {isRoleDetailsLoading ? (
+                <button disabled={isRoleDetailsLoading} className='bg-black rounded text-white px-3 py-1 flex gap-3' type='submit'><span>Loading...</span><Loader /></button>
               ) : (
                 <button className='bg-black rounded text-white px-3 py-1' type='submit'>Submit</button>
               )}
@@ -96,4 +118,32 @@ const AddRole = () => {
   )
 }
 
-export default AddRole
+export default EditRole
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
