@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '@/store/themeConfigSlice';
 
 import { useAuth } from '@/contexts/authContext';
 import axios from 'axios';
@@ -29,8 +29,10 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import { API_ENDPOINT } from '@/config';
-import { clientNamespaces } from 'ni18n';
-import { useLocation } from 'react-router-dom';
+import RoleProtection from '@/components/RoleProtection';
+import { usePostOrderMutation } from '@/Redux/features/shoot/shootApi';
+import { toast } from 'react-toastify';
+import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 
 interface FormData {
   content_type: string;
@@ -48,20 +50,11 @@ interface FormData {
   duration: number;
   vst: string;
 }
-
-interface CategoryListData {
-  name: string;
-  budget: {
-    max: BudgetData;
-    min: BudgetData;
-  };
-}
-
 const BookNow = () => {
   const router = useRouter();
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
-
+  const { userData } = useAuth();
   const [allClients, onlyClients] = useClient();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
@@ -70,7 +63,7 @@ const BookNow = () => {
   const [dateTimes, setDateTimes] = useState<FormData[]>([]);
   const [showDateTimes, setShowDateTimes] = useState<any>();
   const [getTotalDuration, setTotalDuration] = useState<any>();
-  const [client_id, setClient_id] = useState('');
+  const [client_id, setClient_id] = useState(userData?.role === 'user' ? userData?.id : '');
   const [clientName, setClientName] = useState('');
   const [filteredAddonsData, setFilteredAddonsData] = useState([]);
   const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
@@ -88,9 +81,8 @@ const BookNow = () => {
   const dropdownRef = useRef(null);
   const [isClientLoading, setIsClientLoading] = useState(false);
 
-  const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
-  const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
-  const { userData } = useAuth();
+  const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
+  const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
 
   const {
     register,
@@ -137,6 +129,7 @@ const BookNow = () => {
         return addon?.rate;
       }
     };
+
     const updatedComputedRates = filteredAddonsData.reduce((prevAddon: any, addon: addonTypes) => {
       prevAddon[addon?._id] = calculateUpdatedRate(addon);
       return prevAddon;
@@ -158,33 +151,9 @@ const BookNow = () => {
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
 
-  // set category data for the ui
-  const categoryList: CategoryListData[] = [
-    { name: 'Commercial', budget: { max: 100, min: 200 } },
-    { name: 'Corporate', budget: { max: 120, min: 220 } },
-    { name: 'Music', budget: { max: 133, min: 222 } },
-    { name: 'Private', budget: { max: 333, min: 355 } },
-    { name: 'Weeding', budget: { max: 377, min: 399 } },
-    { name: 'Other', budget: { max: 444, min: 555 } },
-  ];
-
-  // setting default budget
-  const handleChangeCategoryWithBudget = (event: ChangeEvent<HTMLSelectElement>) => {
-    const selectedCategory = event.target.value;
-    const category = categoryList.find((cat) => cat.name === selectedCategory);
-
-    if (category) {
-      setMyMaxBud(category.budget.max);
-      setMyMinBud(category.budget.min);
-    } else {
-      setMyMaxBud(0);
-      setMyMinBud(0);
-    }
-  };
-  //
-
   const handleBack = () => {
     setActiveTab(activeTab === 3 ? 2 : 1);
+    // Use setTimeout to delay the Flatpickr initialization
     setTimeout(() => {
       if (startDateTimeRef.current) {
         flatpickr(startDateTimeRef.current, {
@@ -485,74 +454,101 @@ const BookNow = () => {
   };
 
   const getMeetingLink = async (shootInfo: any, meetingDate: any) => {
-    const requestData = {
-      summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
-      location: 'Online',
-      description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'} order.`,
-      startDateTime: meetingDate,
-      endDateTime: meetingDate,
-      orderId: shootInfo?.id,
+    const requestBody = {
+      userId:userData?.id,
+      requestData : {
+        summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
+        location: 'Online',
+        description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'} order.`,
+        startDateTime: meetingDate,
+        endDateTime: meetingDate,
+        orderId: shootInfo?.id,
+      }
     };
 
-    try {
-      const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData);
-      const myMeetLink = response?.data?.meetLink;
-      if (myMeetLink) {
-        try {
-          const requestBody = {
-            meeting_date_time: meetingDate,
-            meeting_status: 'pending',
-            meeting_type: 'pre_production',
-            order_id: shootInfo?.id,
-            meetLink: myMeetLink,
-          };
-          const response = await fetch(`${API_ENDPOINT}meetings`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-          });
-          if (!response.ok) {
-            swalToast('danger', 'Something went wrong !');
-            throw new Error(`Error: ${response.statusp}`);
-          }
-          const meetingInfo = await response.json();
-          return meetingInfo;
-        } catch (error) {
-          console.error('Error occurred while sending POST request:', error);
-        }
+    const response = await newMeetLink(requestBody)
+    if (response?.data) {
+      const requestBody = {
+        meeting_date_time: meetingDate,
+        meeting_status: 'pending',
+        meeting_type: 'pre_production',
+        order_id: shootInfo?.id,
+        meetLink: response?.data?.meetLink,
+      };
+      const result = await newMeeting(requestBody);
+      if (result?.data) {
+        toast.success('Meeting create success.');
+        return true;
       } else {
-        console.error('Error create meet link after create order');
+        console.log("Don't create the meeting");
+        toast.error('Something want wrong...!');
       }
-    } catch (error) {
-      console.error('Error create meet link after create order:', error);
+    } else {
+      console.log("Don't create the meeting link");
+      toast.error('Something want wrong...!');
     }
-  };
 
-  // --------> onsubmit function
+    // try {
+    //   const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData);
+    //   const myMeetLink = response?.data?.meetLink;
+    //   if (myMeetLink) {
+    //     try {
+    //       const requestBody = {
+    //         meeting_date_time: meetingDate,
+    //         meeting_status: 'pending',
+    //         meeting_type: 'pre_production',
+    //         order_id: shootInfo?.id,
+    //         meetLink: myMeetLink,
+    //       };
+    //       const response = await fetch(`${API_ENDPOINT}meetings`, {
+    //         method: 'POST',
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(requestBody),
+    //       });
+    //       if (!response.ok) {
+    //         swalToast('danger', 'Something went wrong !');
+    //         throw new Error(`Error: ${response.statusp}`);
+    //       }
+    //       const meetingInfo = await response.json();
+    //       return meetingInfo;
+    //     } catch (error) {
+    //       console.error('Error occurred while sending POST request:', error);
+    //     }
+    //   } else {
+    //     console.error('Error create meet link after create order');
+    //   }
+    // } catch (error) {
+    //   console.error('Error create meet link after create order:', error);
+    // }
+
+  }
+
+
+  const [postOrder, { isSuccess, isLoading: isPostOrderLoading }] = usePostOrderMutation();
+  console.log("🚀 ~ BookNow ~ isPostOrderLoading:", isPostOrderLoading)
+  console.log("🚀 ~ BookNow ~ isSuccess:", isSuccess)
+
   const onSubmit = async (data: any) => {
+
     if (geo_location?.coordinates?.length === 0) {
-      return swalToast('danger', 'Please select shoot location!');
+      toast.error('Please select shoot location...!');
+      return;
     }
-    // console.log(geo_location);
-    // return;
     if (activeTab == 2 && cp_ids?.length === 0) {
-      swalToast('danger', 'Please select at least one producer!');
+      toast.error('Please select cp...!');
       return;
     }
     if (data.content_type == false) {
-      swalToast('danger', 'Please select content type!');
+      toast.error('Please select a content type...!');
+      return;
     } else {
       try {
         const formattedData = {
-          // budget: {
-          //   max: parseFloat(data.max_budget),
-          //   min: parseFloat(data.min_budget),
-          // },
           budget: {
-            max: myMaxBud,
-            min: myMinBud,
+            max: parseFloat(data.max_budget),
+            min: parseFloat(data.min_budget),
           },
           client_id,
           order_status: 'pre_production',
@@ -571,33 +567,44 @@ const BookNow = () => {
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
 
-        // console.log('formattedData: ', formattedData);return;
-
         if (Object.keys(formattedData).length > 0) {
           setFormDataPageOne(formattedData);
           setActiveTab(activeTab === 1 ? 2 : 3);
-
-          console.log('formattedData', formattedData);
         } else {
           return false;
         }
         if (activeTab === 3) {
-          const response = await OrderApi.handleOrderMake(formattedData);
-          if (response.status === 201) {
-            swalToast('success', 'Shoot has been created successfully!');
+          console.log("🚀 ~ onSubmit ~ formattedData:", formattedData)
+          const result = await postOrder(formattedData);
+          if (result?.data) {
+            toast.success('Shoot has been created successfully')
             if (data.meeting_time) {
               const meeting_time = convertToISO(data.meeting_time);
-              const meetingInfo = await getMeetingLink(response?.data, meeting_time);
+              const meetingInfo = await getMeetingLink(result?.data, meeting_time);
               if (meetingInfo) {
-                swalToast('success', 'Meeting has been created successfully!');
+                toast.success('Meeting has been created successfully!');
               }
             }
             router.push('/dashboard/shoots');
             setIsLoading(false);
-          } else {
-            swalToast('danger', 'Please check your shoot details!');
-            setIsLoading(false);
           }
+
+          //const response = await OrderApi.handleOrderMake(formattedData);
+          // if (response.status === 201) {
+          //   swalToast('success', 'Shoot has been created successfully!');
+          //   if (data.meeting_time) {
+          //     const meeting_time = convertToISO(data.meeting_time);
+          //     const meetingInfo = await getMeetingLink(response?.data, meeting_time);
+          //     if (meetingInfo) {
+          //       swalToast('success', 'Meeting has been created successfully!');
+          //     }
+          //   }
+          //   router.push('/dashboard/shoots');
+          //   setIsLoading(false);
+          // } else {
+          //   swalToast('danger', 'Please check your shoot details!');
+          //   setIsLoading(false);
+          // }
         }
       } catch (error) {
         swalToast('danger', 'error');
@@ -634,6 +641,8 @@ const BookNow = () => {
   };
 
   const handleClientChange = (client) => {
+    console.log('client', client);
+    //const selectedOption = event.target.options[event.target.selectedIndex];
     setClient_id(client?.id);
     setClientName(client?.name);
     setShowClientDropdown(false);
@@ -653,7 +662,7 @@ const BookNow = () => {
     if (contentVertical === 'SelectCategory') {
       contentVertical = 'Category';
     }
-    const concateOrderName = `${clientName || 'Name'}'s ${contentVertical} ${type || 'Type'}`;
+    const concateOrderName = `${userData?.role === 'user' ? userData?.name : clientName || 'Name'}'s ${contentVertical} ${type || 'Type'}`;
     return concateOrderName;
   };
 
@@ -734,76 +743,77 @@ const BookNow = () => {
                               required: 'Category is required',
                               validate: (value) => value !== 'SelectCategory' || 'Please select a valid category',
                             })}
-                            onChange={handleChangeCategoryWithBudget}
                           >
                             <option value="SelectCategory">Select Category</option>
-                            {categoryList.map((category) => (
-                              <option key={category.name} value={category.name}>
-                                {category.name}
-                              </option>
-                            ))}
+                            <option value="Commercial">Commercial</option>
+                            <option value="Corporate">Corporate</option>
+                            <option value="Music">Music</option>
+                            <option value="Private">Private</option>
+                            <option value="Wedding">Wedding</option>
+                            <option value="Other">Other</option>
                           </select>
                         </div>
                       </div>
                       <div className="my-5 flex items-center justify-between">
-                        <div className="relative flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Client
-                          </label>
-                          <input
-                            type="search"
-                            // onFocus={getAllClients}
-                            onChange={(event) => {
-                              setClientName(event?.target?.value);
-                              getAllClients(); // Fetch clients as user types
-                            }}
-                            className={`form-input flex-grow bg-slate-100 `}
-                            value={clientName}
-                            placeholder="Client"
-                            required={!clientName}
-                          />
-                          {/* {clientName && <p className="text-danger">Please select a valid client</p>} */}
-                          {showClientDropdown && (
-                            <>
-                              <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
-                                {isClientLoading ? (
-                                  <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
-                                    {/* Render loading skeleton here */}
-                                    {[...Array(5)].map((_, i) => (
-                                      <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
-                                        <div className="h-7 w-7 rounded-full bg-slate-200"></div>
-                                        <div className="h-7 w-full rounded-sm bg-slate-200"></div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <>
-                                    {clients && clients.length > 0 ? (
-                                      <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
-                                        {clients?.map((client) => (
-                                          <li
-                                            key={client.id}
-                                            onClick={() => handleClientChange(client)}
-                                            className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
-                                          >
-                                            <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                              <img src={client.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
-                                            </div>
-                                            <a href="#">{client.name}</a>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    ) : (
-                                      <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
-                                        <p className="text-center text-red-500">No client found</p>
-                                      </div>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            </>
-                          )}
-                        </div>
+                        {userData?.role === 'manager' && (
+                          <div className="relative flex basis-[45%] flex-col sm:flex-row">
+                            <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                              Client
+                            </label>
+                            <input
+                              type="search"
+                              onChange={(event) => {
+                                setClientName(event?.target?.value);
+                                getAllClients();
+                              }}
+                              className={`form-input flex-grow bg-slate-100 `}
+                              value={clientName}
+                              placeholder="Client"
+                              required={!clientName}
+                            />
+
+                            {showClientDropdown && (
+                              <>
+                                <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
+                                  {isClientLoading ? (
+                                    <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
+                                      {/* Render loading skeleton here */}
+                                      {[...Array(5)].map((_, i) => (
+                                        <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
+                                          <div className="h-7 w-7 rounded-full bg-slate-200"></div>
+                                          <div className="h-7 w-full rounded-sm bg-slate-200"></div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <>
+                                      {clients && clients.length > 0 ? (
+                                        <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
+                                          {clients?.map((client) => (
+                                            <li
+                                              key={client.id}
+                                              onClick={() => handleClientChange(client)}
+                                              className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
+                                            >
+                                              <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
+                                                <img src={client.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                              </div>
+                                              <a href="#">{client.name}</a>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      ) : (
+                                        <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
+                                          <p className="text-center text-red-500">No client found</p>
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
 
                         {/* Location */}
                         <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -923,9 +933,8 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      {/* budget starts */}
-                      {/* min_budget budget */}
-                      {/* <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between">
+                        {/* min_budget budget */}
                         <div className="flex basis-[45%] flex-col sm:flex-row">
                           <label htmlFor="min_budget" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-32">
                             Min Budget
@@ -976,9 +985,7 @@ const BookNow = () => {
                             {errors.max_budget && <p className="ml-4 text-danger">{errors?.max_budget.message}</p>}
                           </div>
                         </div>
-                      </div> */}
-                      {/* budget ends */}
-
+                      </div>
                       <div className="mt-5 flex items-center justify-between">
                         {/* Special Note */}
                         <div className="flex basis-[45%] flex-col sm:flex-row">
@@ -1085,9 +1092,8 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1151,7 +1157,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1212,7 +1218,7 @@ const BookNow = () => {
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
                           <h2
                             className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                            // onClick={() => shootCostCalculation()}
+                          // onClick={() => shootCostCalculation()}
                           >
                             {' '}
                             Total Calculation
@@ -1302,4 +1308,4 @@ const BookNow = () => {
   );
 };
 
-export default BookNow;
+export default RoleProtection(BookNow, ['user', 'manager']);

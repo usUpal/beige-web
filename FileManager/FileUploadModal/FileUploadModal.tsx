@@ -6,7 +6,7 @@ import axios from 'axios';
 import { Dialog, Transition } from '@headlessui/react';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
-let uploadCancelFunc = () => {};
+let uploadCancelFunc = () => { };
 
 const initialUploadState = {
   files: [],
@@ -205,13 +205,27 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                       </div>
 
                       <div className="px-5">
-                        <p className="flex items-center">
+                        <div onClick={() => dispatch({ type: 'switchFolderUpload' })} className="flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="form-checkbox border border-black"
+                            id="checkSwitchFolderUpload"
+                            checked={state.folderUpload}
+                            onChange={() => { }}
+                          />
+                          <span className="text-white-dark ml-2">
+                            Select {!state.folderUpload ? 'a Folder' : 'Files'}
+                          </span>
+                        </div>
+                        {/* <div className="">
                           <label className="relative h-6 w-12" onClick={() => dispatch({ type: 'switchFolderUpload' })}>
                             <input type="checkbox" className="custom_switch peer absolute z-10 h-full w-full cursor-pointer opacity-0" id="custom_switch_checkbox1" checked={state.folderUpload} />
                             <span className="block h-full rounded-full bg-[#ebedf2] before:absolute before:bottom-1 before:left-1 before:h-4 before:w-4 before:rounded-full before:bg-white before:transition-all before:duration-300 peer-checked:bg-primary peer-checked:before:left-7 dark:bg-dark dark:before:bg-white-dark dark:peer-checked:before:bg-white"></span>
                           </label>
                           <span className="ms-3 ">Select {!state.folderUpload ? 'a Folder' : 'Files'}</span>
-                        </p>
+                        </div> */}
+
+
 
                         <p className=" font-semibold">
                           <p>
@@ -254,7 +268,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                         {state.status && (
                           <div className="mb-5 space-y-5">
                             <div className="h-4 w-full rounded-full bg-[#ebedf2] dark:bg-dark/40">
-                              <div className={`h-4 rounded-full text-right text-xs text-white`} style={{ width: `${state.progress}%`,backgroundColor: '#0096c7' }}>
+                              <div className={`h-4 rounded-full text-right text-xs text-white`} style={{ width: `${state.progress}%`, backgroundColor: '#0096c7' }}>
                                 {state.uploading ? `${state.progress}%` : state.error ? 'Error!' : `${state.progress}%`}
                               </div>
                             </div>

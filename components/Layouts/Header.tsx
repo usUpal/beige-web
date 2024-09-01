@@ -304,7 +304,6 @@ const Header = () => {
             </div>
             <div className="dropdown flex shrink-0">
               <Dropdown offset={[0, 8]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} btnClassName="relative group block" button={userProfileImage}>
-                {/* {console.log("User Info From Header : ",userData)} */}
                 <ul className="w-[230px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
                   <li>
                     <div className="flex items-center px-4 py-4">
