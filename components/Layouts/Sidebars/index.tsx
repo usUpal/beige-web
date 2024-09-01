@@ -171,6 +171,9 @@ const SidebarManager = (props: any) => {
                 <li>
                   <Link href="/manager/clients">Client</Link>
                 </li>
+                <li>
+                  <Link href="/manager/create-user">Create User</Link>
+                </li>
               </ul>
             </AnimateHeight>
 
