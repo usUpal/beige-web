@@ -134,9 +134,9 @@ const SidebarManager = (props: any) => {
                 <li>
                   <Link href="/dashboard/searchingParams">Set Searching Params</Link>
                 </li>
-                {/* <li>
+                <li>
                   <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
-                </li> */}
+                </li>
               </ul>
             </AnimateHeight>
           </li>

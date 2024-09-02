@@ -1,8 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import Link from 'next/link';
 import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
+import Swal from 'sweetalert2';
+import { API_ENDPOINT } from '@/config';
+import { useUpdatePriceMutation } from '@/Redux/features/algo/pricesApi';
 
 const PricingCalculation = () => {
   const dispatch = useDispatch();
@@ -11,50 +15,47 @@ const PricingCalculation = () => {
     dispatch(setPageTitle('Pricing parameters'));
   });
 
-  const [isData, setData] = useState(null);
-  const cleanedData = { ...isData };
+  const { isLoading, data, error, refetch } = useGetAllPricingQuery({});
+  const [updatePrice, { isLoading: isPatchLoading, isSuccess, isError }] = useUpdatePriceMutation();
+  useEffect(() => {
+    if (isSuccess) {
+      // Notify the user of success
+      Swal.fire(' Saved!', '', 'success');
+      refetch();
+    } else if (isError) {
+      Swal.fire('Error!', 'Something went wrong', 'error');
+    }
+  }, [isError, isSuccess]);
 
-  const { isLoading, data, error } = useGetAllPricingQuery({});
-  console.log('🚀 ~ data:', data);
+  const handleRateEdit = async (data: any) => {
+    const { rate, title, id } = data;
 
-  const handleStatusChange = (key: string) => {
-    // if (isData[key]) {
-    //   const updatedData = { ...isData };
-    //   updatedData[key].status = updatedData[key].status === 0 ? 1 : 0;
-    //   setData(updatedData);
-    // }
-  };
-
-  const handleRateChange = (key, newValue) => {
-    // const updatedData = { ...isData };
-    // updatedData[key].rate = newValue;
-    // setData(updatedData);
-  };
-
-  const getValue = () => {
-    const updatedData = JSON.parse(JSON.stringify(cleanedData));
-    const url = 'https://api.beigecorporation.io/v1/prices';
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedData),
-    };
-
-    fetch(url, requestOptions)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+    // Prompt the user for the new rate
+    const result = await Swal.fire({
+      title: 'Update Rate',
+      input: 'number',
+      inputLabel: title,
+      inputValue: rate,
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value) {
+          return 'You need to write the rate!';
+        } else if (value <= 0) {
+          return 'Rate should be positive!';
         }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+        return null;
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        // Perform the rate update
+        await updatePrice({ id, rate: result.value });
+      } catch (error) {
+        // Handle any errors and notify the user
+        Swal.fire('Error!', 'Something went wrong', 'error');
+      }
+    }
   };
 
   return (
@@ -83,24 +84,24 @@ const PricingCalculation = () => {
                   <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
                   <th>Rate/Hour ($)</th>
                   <th>Status</th>
+                  <th>Edit</th>
                 </tr>
               </thead>
 
               <tbody>
                 {data &&
                   data?.results?.map((price, index) => {
-                    const { rate, status } = price;
+                    const { rate, status, title } = price;
                     return (
                       <tr key={index}>
-                        <td className="capitalize">{price?.title}</td>
+                        <td className="capitalize">{title}</td>
                         <td>
-                          <input name={price?.title} type="number" value={rate} className="form-input w-3/6" onChange={(e) => handleRateChange(price, e.target.value)} />
+                          <input disabled name={title} type="number" defaultValue={rate} className="form-input w-3/6" />
                         </td>
                         <td>
-                          <button type="button" className={`rounded-full px-5 py-2 text-white ${status === 1 ? 'bg-success' : 'bg-danger'}`} onClick={() => handleStatusChange(price)}>
-                            {status === 1 ? 'Active' : 'Inactive'}
-                          </button>
+                          <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
                         </td>
+                        <td onClick={() => handleRateEdit(price)}>edit</td>
                       </tr>
                     );
                   })}
@@ -108,13 +109,13 @@ const PricingCalculation = () => {
                 {/* })} */}
 
                 {/* Calculate */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                {/* <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                   <td>
                     <button type="submit" className="btn bg-black font-sans text-white" onClick={getValue}>
                       Save
                     </button>
                   </td>
-                </tr>
+                </tr> */}
               </tbody>
             </table>
           </div>
