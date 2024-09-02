@@ -1,58 +1,82 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { useGetSingleRoleQuery } from '@/Redux/features/role/roleApi';
+import { useGetSingleRoleQuery, useUpdateRoleMutation } from '@/Redux/features/role/roleApi';
 import { useForm } from 'react-hook-form';
 import Loader from '@/components/SharedComponent/Loader';
 import { useGetAllPermissionsQuery } from '@/Redux/features/role/roleApi';
+import { toast } from 'react-toastify';
+import { createSlug } from '@/utils/helper';
 
 const EditRole = () => {
   const router = useRouter();
   const roleId = router.query.id as string;
-  console.log("🚀 ~ EditRole ~ roleId:", roleId)
-  const { data: roleData, isLoading: isRoleDetailsLoading, isError:isRoleDetailsError , error:roleError } = useGetSingleRoleQuery(roleId,{
+  const { data: roleData, isLoading: isRoleDetailsLoading, isError: isRoleDetailsError, error: roleError } = useGetSingleRoleQuery(roleId, {
     refetchOnMountOrArgChange: true,
   });
+  const [updateRole, { isLoading: isUpdateRoleLoading, isSuccess: isUpdateRoleSuccess, isError: isUpdateRoleError, error: updateRoleError }] = useUpdateRoleMutation();
+  const [roleDetails, setRoleDetails] = useState({
+    name: '',
+    role: '',
+    details: '',
+    permissions: []
+  });
 
-  if(roleData){
-    console.log("🚀 ~ EditRole ~ roleData:", roleData[0] ?? '')
-    console.log("🚀 ~ EditRole ~ isRoleDetailsLoading:", isRoleDetailsLoading)
-    console.log("🚀 ~ EditRole ~ isRoleDetailsError:", isRoleDetailsError)
-    console.log("🚀 ~ EditRole ~ roleError:", roleError)
-  }
-
-
-
+  useEffect(() => {
+    if (roleData) {
+      setRoleDetails({
+        name: roleData.name,
+        role: roleData.role,
+        details: roleData.details,
+        permissions: roleData.permissions
+      });
+    }
+  }, [roleData]);
 
   const { data: allPermissions, isLoading: isGetPermissionLoading, isSuccess: isPostPermissionSuccess } = useGetAllPermissionsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      name: roleData?.name,
+      details: roleData?.details
+    }
+  });
 
+  const onSubmit = async () => {
+    if (!roleDetails?.permissions?.length) {
+      toast.error("Please select a permission...!");
+      return;
+    }
 
-  const onSubmit = (data: any) => {
-    console.log("🚀 ~ onSubmit ~ data:", data)
+    const result = await updateRole({
+      id: roleId,
+      formData: roleDetails,
+    });
+
+    if (result?.data) {
+      router.push('/dashboard/role')
+      toast.success("New role update success...")
+    }
   }
 
-  //const [updateRole] = useUpdateRoleMutation();
-
-  useEffect(() => {
-    if (roleData) {
-      setSelectedPermissions(roleData[0]?.permissions || []);
-    }
-  }, [roleData]);
 
   const handlePermissionChange = (permissionKey: string) => {
-    setSelectedPermissions((prev) =>
-      prev.includes(permissionKey)
-        ? prev.filter((key) => key !== permissionKey) // Remove if already selected
-        : [...prev, permissionKey] // Add if not selected
-    );
+    setRoleDetails((prevDetails) => {
+      const newPermissions = prevDetails.permissions.includes(permissionKey)
+        ? prevDetails.permissions.filter((perm) => perm !== permissionKey)
+        : [...prevDetails.permissions, permissionKey];
+
+      return {
+        ...prevDetails,
+        permissions: newPermissions,
+      };
+    });
   };
+
+  console.log("Role Data - ", roleData)
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
-      {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">Create Role</h5>
@@ -60,8 +84,14 @@ const EditRole = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="">
             <div className="grid grid-cols-3 gap-3">
-              {/* <input type="text" {...register('name')} defaultValue={roleData[0]?.name} placeholder='write a role name' className='border border-black rounded px-3 py-1' />
-              <input type="text" {...register('details')} defaultValue={roleData[0]?.details} placeholder='write role details' className='border border-black rounded px-3 py-1 col-span-2' /> */}
+              <input type="text" placeholder='write a role name' onChange={(e) => setRoleDetails((prevDetails) => ({
+                ...prevDetails,
+                name: e.target.value,
+              }))} value={roleDetails?.name} className='border border-black rounded px-3 py-1' />
+              <input type="text" placeholder='write role details' onChange={(e) => setRoleDetails((prevDetails) => ({
+                ...prevDetails,
+                details: e.target.value,
+              }))} value={roleDetails?.details} className='border border-black rounded px-3 py-1 col-span-2' />
             </div>
 
 
@@ -92,10 +122,15 @@ const EditRole = () => {
                       <div className="flex justify-between items-center mb-1" key={index}>
                         <label htmlFor={permission?.key} className='cursor-pointer'>{permission?.name}</label>
                         <div className="w-12 h-6 relative">
-                          <input type="checkbox" {...register('permissions')} defaultValue={permission?.key}
-                          onChange={() => handlePermissionChange(permission?.key)}
-                          checked={selectedPermissions.includes(permission?.key)}
-                          className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id={permission?.key} />
+                          <input
+                            type="checkbox"
+                            {...register('permissions')}
+                            defaultValue={permission.key}
+                            onChange={() => handlePermissionChange(permission.key)}
+                            checked={roleDetails.permissions.includes(permission.key)}
+                            className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                            id={permission.key}
+                          />
                           <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
                         </div>
                       </div>
@@ -105,8 +140,8 @@ const EditRole = () => {
               ))}
             </div>
             <div className='flex justify-end'>
-              {isRoleDetailsLoading ? (
-                <button disabled={isRoleDetailsLoading} className='bg-black rounded text-white px-3 py-1 flex gap-3' type='submit'><span>Loading...</span><Loader /></button>
+              {isUpdateRoleLoading ? (
+                <button disabled={isUpdateRoleLoading} className='bg-black rounded text-white px-3 py-1 flex gap-3' type='submit'><span>Loading...</span><Loader /></button>
               ) : (
                 <button className='bg-black rounded text-white px-3 py-1' type='submit'>Submit</button>
               )}

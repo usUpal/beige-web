@@ -39,10 +39,21 @@ const roleApi = baseApi.injectEndpoints({
         }
       }
     }),
+
+    updateRole: builder.mutation({
+      query: (data) => {
+        console.log("🚀 ~ data:", data)
+        return {
+          url: `roles?id=${data?.id}`,
+          method: 'PUT',
+          body: data?.formData,
+        }
+      }
+    }),
   })
 })
 
-export const { useGetAllRolesQuery, useGetAllPermissionsQuery, useGetSingleRoleQuery,usePostRoleMutation } = roleApi
+export const { useGetAllRolesQuery, useGetAllPermissionsQuery, useGetSingleRoleQuery,usePostRoleMutation,useUpdateRoleMutation } = roleApi
 
 
 

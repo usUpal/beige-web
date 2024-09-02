@@ -6,7 +6,9 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/authContext';
 const Role = () => {
-  const { data: allRoles, isLoading: isAllRolesLoading, isError: isAllRoleError, status: allRoleStatus, error: allRolesError } = useGetAllRolesQuery(undefined);
+  const { data: allRoles, isLoading: isAllRolesLoading, isError: isAllRoleError, status: allRoleStatus, error: allRolesError } = useGetAllRolesQuery(undefined,{
+    refetchOnMountOrArgChange:true,
+  });
   const router = useRouter();
   const statusCode = 404 //allRolesError.data.code
   const { authPermissions } = useAuth();

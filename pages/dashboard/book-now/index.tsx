@@ -1308,4 +1308,4 @@ const BookNow = () => {
   );
 };
 
-export default RoleProtection(BookNow, ['user', 'manager']);
+export default BookNow;

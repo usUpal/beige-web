@@ -17,6 +17,12 @@ const AddRole = () => {
   const router = useRouter();
 
   const onSubmit = async (data: any) => {
+
+    if(! data?.permissions?.length){
+      toast.error("Please select a permission...!");
+      return;
+    }
+
     const formData = {
       name: data?.name,
       role: createSlug(data?.name),
@@ -28,7 +34,6 @@ const AddRole = () => {
       router.push('/dashboard/role')
       toast.success("New role create success...")
     }
-
   }
 
   return (
