@@ -11,7 +11,6 @@ const SidebarManager = (props: any) => {
   //console.log("🚀 ~ SidebarManager ~ userData:", userData)
   // const isAccessible = (item: any) => item.inAccessible.includes(userData.role);
   return (
-
     <ul className="relative space-y-0.5 p-4 py-0 font-semibold">
       {userData?.permissions?.includes('dashboard') && (
         <li className="menu nav-item">
@@ -36,7 +35,6 @@ const SidebarManager = (props: any) => {
             </ul>
           </AnimateHeight>
         </li>
-
       )}
 
       <li className="nav-item">
@@ -192,7 +190,6 @@ const SidebarManager = (props: any) => {
               </Link>
             </li>
           )}
-
         </ul>
       </li>
     </ul>

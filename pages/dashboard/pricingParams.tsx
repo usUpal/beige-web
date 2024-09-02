@@ -2,49 +2,33 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import Link from 'next/link';
+import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
 
 const PricingCalculation = () => {
   const dispatch = useDispatch();
-
   //Start theme functionality
   useEffect(() => {
-    dispatch(setPageTitle('Pricing Calculation - Client Web App - Beige'));
+    dispatch(setPageTitle('Pricing parameters'));
   });
 
   const [isData, setData] = useState(null);
   const cleanedData = { ...isData };
-  delete cleanedData.__v;
-  delete cleanedData._id;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`https://api.beigecorporation.io/v1/prices`);
-        if (!res.ok) {
-          throw new Error(`Error: ${res.status}`);
-        }
-        const jsonData = await res.json();
-        setData(jsonData);
-      } catch (error) {
-        console.error(`Error fetching data`);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const { isLoading, data, error } = useGetAllPricingQuery({});
+  console.log('🚀 ~ data:', data);
 
   const handleStatusChange = (key: string) => {
-    if (isData[key]) {
-      const updatedData = { ...isData };
-      updatedData[key].status = updatedData[key].status === 0 ? 1 : 0;
-      setData(updatedData);
-    }
+    // if (isData[key]) {
+    //   const updatedData = { ...isData };
+    //   updatedData[key].status = updatedData[key].status === 0 ? 1 : 0;
+    //   setData(updatedData);
+    // }
   };
 
   const handleRateChange = (key, newValue) => {
-    const updatedData = { ...isData };
-    updatedData[key].rate = newValue;
-    setData(updatedData);
+    // const updatedData = { ...isData };
+    // updatedData[key].rate = newValue;
+    // setData(updatedData);
   };
 
   const getValue = () => {
@@ -82,7 +66,7 @@ const PricingCalculation = () => {
           </Link>
         </li>
         <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span>Pricing Calculator</span>
+          <span>Pricing Params</span>
         </li>
       </ul>
 
@@ -103,17 +87,17 @@ const PricingCalculation = () => {
               </thead>
 
               <tbody>
-                {isData &&
-                  Object.keys(cleanedData).map((key, index) => {
-                    const { rate, status } = isData[key];
+                {data &&
+                  data?.results?.map((price, index) => {
+                    const { rate, status } = price;
                     return (
                       <tr key={index}>
-                        <td className="capitalize">{key}</td>
+                        <td className="capitalize">{price?.title}</td>
                         <td>
-                          <input name={key} type="number" value={rate} className="form-input w-3/6" onChange={(e) => handleRateChange(key, e.target.value)} />
+                          <input name={price?.title} type="number" value={rate} className="form-input w-3/6" onChange={(e) => handleRateChange(price, e.target.value)} />
                         </td>
                         <td>
-                          <button type="button" className={`rounded-full px-5 py-2 text-white ${status === 1 ? 'bg-success' : 'bg-danger'}`} onClick={() => handleStatusChange(key)}>
+                          <button type="button" className={`rounded-full px-5 py-2 text-white ${status === 1 ? 'bg-success' : 'bg-danger'}`} onClick={() => handleStatusChange(price)}>
                             {status === 1 ? 'Active' : 'Inactive'}
                           </button>
                         </td>
@@ -141,3 +125,6 @@ const PricingCalculation = () => {
 };
 
 export default PricingCalculation;
+function useGetPricesQuery(): { isLoading: any; data: any; error: any } {
+  throw new Error('Function not implemented.');
+}
