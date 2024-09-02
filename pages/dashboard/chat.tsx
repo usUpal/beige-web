@@ -1,4 +1,4 @@
-import { API_ENDPOINT, SOCKET_URL } from '@/config';
+import { SOCKET_URL } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import transformMessages from '@/utils/transformMessage';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -9,12 +9,11 @@ import Dropdown from '../../components/Dropdown';
 import { IRootState } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import Link from 'next/link';
-import Swal from 'sweetalert2';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
-import { toast } from 'react-toastify';
-import ResponsivePagination from 'react-responsive-pagination';
 
-import { useGetAllChatQueryQuery, useGetChatDetailsQuery } from '@/Redux/features/chat/chatApi';
+import { useGetAllChatQuery, useLazyGetChatDetailsQuery } from '@/Redux/features/chat/chatApi';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import useDateFormat from '@/hooks/useDateFormat';
 // types
 
 const Chat = () => {
@@ -26,16 +25,16 @@ const Chat = () => {
   const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
 
   const [isShowChatMenu, setIsShowChatMenu] = useState(false);
+
   const [searchUser, setSearchUser] = useState('');
   const [isShowUserChat, setIsShowUserChat] = useState(false);
   const [selectedChatRoom, setSelectedChatRoom] = useState<any>(null);
   const [textMessage, setTextMessage] = useState('');
   //   New states
-  const [showError, setShowError] = useState(false);
-  // const [chats, setChats] = useState([]);
+  // const [showError, setShowError] = useState(false);
   const [newMessages, setNewMessages] = useState<any>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [fetchData, setFetchData] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [fetchData, setFetchData] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [typtingUser, setTyptingUser] = useState<MessageTypingProps>();
   const [msgPage, setMsgPage] = useState(1);
@@ -49,10 +48,11 @@ const Chat = () => {
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('1');
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-  const [query, setQuery] = useState<string>('');
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -67,31 +67,31 @@ const Chat = () => {
   );
 
   // Fetch all chat - data based on query parameters
-  const { data, error, isFetching, refetch } = useGetAllChatQueryQuery(queryData, {
+  const { data, error, isFetching, refetch } = useGetAllChatQuery(queryData, {
     refetchOnMountOrArgChange: true,
   });
 
-  // useGetChatDetailsQuery
-  // const detailsData = ({
-  //   roomId,
-  //   // error: shootDetailsError,
-  //   // isLoading: isDetailsLoading,
-  //   // refetch,
-  // } = useGetChatDetailsQuery(roomId, {
-  //   refetchOnMountOrArgChange: true,
-  // }));
+  // show old msg
+  const [getChatDetails, { data: chatDetails, isLoading: isChatDetailsLoading }] = useLazyGetChatDetailsQuery();
 
-  // GET OLD MEASSAGES
-  async function getOldMessages(roomId: string) {
-    await fetch(`${API_ENDPOINT}chats/${roomId}?limit=20&page=1`)
-      .then((response) => response.json())
-      .then((data) => {
-        setTotalMsgPage(data.totalPages);
-        const outputMessages = transformMessages(data.results);
-        setNewMessages(outputMessages.reverse());
-        scrollToBottom();
+  // updatedAt
+  const updatedAtDateTime = useDateFormat(selectedChatRoom?.updatedAt);
+  const createdDateTime = useDateFormat(selectedChatRoom?.createdAt);
+
+  console.log(createdDateTime?.time);
+
+  useEffect(() => {
+    if (selectedChatRoom) {
+      getChatDetails({ roomId: selectedChatRoom?.id, page: 1 }).then(({ data }) => {
+        if (data) {
+          setTotalPagesCount(data.totalPages);
+          const outputMessages = transformMessages(data?.results);
+          setNewMessages(outputMessages.reverse());
+          scrollToBottom();
+        }
       });
-  }
+    }
+  }, [selectedChatRoom]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -104,13 +104,6 @@ const Chat = () => {
     joinRoom();
   }, [selectedChatRoom]);
 
-  //
-  // useEffect(() => {
-  //   if (selectedChatRoom) {
-  //     getOldMessages(selectedChatRoom?.id);
-  //   }
-  // }, [msgPage]);
-
   const joinRoom = () => {
     if (selectedChatRoom) {
       socket.current.emit('joinRoom', {
@@ -119,7 +112,7 @@ const Chat = () => {
         userName: userData?.name,
       });
       socket.current.on('roomJoined', (data: any) => {
-        getOldMessages(selectedChatRoom?.id);
+        getChatDetails(selectedChatRoom?.id);
       });
       //   Listaning messages
       socket.current.on('message', (data: any) => {
@@ -188,8 +181,6 @@ const Chat = () => {
     }
   };
 
-  const [openChatDetails, setOpenChatDetails] = useState(false);
-
   const createImageByName = (name: string) => {
     return <span className="flex h-[35px] w-[35px] items-center justify-center rounded-full bg-gray-300 text-[13px] leading-[45px]">{name}</span>;
   };
@@ -197,8 +188,6 @@ const Chat = () => {
   const getChatByQuery = (event) => {
     setSearchUser(event.target.value);
   };
-
-  const [activeTab, setActiveTab] = useState('1');
 
   return (
     <div className={`relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)] sm:min-h-0 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
@@ -213,7 +202,7 @@ const Chat = () => {
           </div>
         </div>
         <div className="mt-1">
-          <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
+          <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 sm:h-[calc(100vh_-_357px)] ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5">
             {data?.results?.map((chat: any) => {
               return (
                 <div key={chat.id}>
@@ -261,7 +250,7 @@ const Chat = () => {
       <div className="panel flex-1 p-0">
         {!isShowUserChat && (
           <div className="relative flex h-full items-center justify-center p-4">
-            <button type="button" onClick={() => setIsShowChatMenu(!isShowChatMenu)} className="absolute top-4 hover:text-primary ltr:left-4 rtl:right-4 xl:hidden">
+            <button type="button" onClick={() => setIsShowChatMenu(!isShowChatMenu)} className="absolute top-4 hover:text-primary xl:hidden ltr:left-4 rtl:right-4">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 7L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 <path opacity="0.5" d="M20 12L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -385,157 +374,141 @@ const Chat = () => {
             </div>
           </div>
         )}
-        {isShowUserChat && selectedChatRoom ? (
-          <div className="relative h-full">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                <button type="button" className="hover:text-primary xl:hidden" onClick={() => setIsShowChatMenu(!isShowChatMenu)}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 7L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    <path opacity="0.5" d="M20 12L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    <path d="M20 17L4 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </button>
-                <div className="relative flex-none">
-                  {/* <img src="/public/favicon.png" className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" alt="img" /> */}
-                  <MakeProfileImage>{selectedChatRoom?.order_id?.order_name}</MakeProfileImage>
-                  <div className="absolute bottom-0 ltr:right-0 rtl:left-0">
-                    <div className="h-3 w-3 rounded-full bg-success"></div>
+        {isShowUserChat && selectedChatRoom
+          ? (console.log('selectedChatRoom--->', selectedChatRoom),
+            (
+              <div className="relative h-full">
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                    <button type="button" className="hover:text-primary xl:hidden" onClick={() => setIsShowChatMenu(!isShowChatMenu)}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 7L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        <path opacity="0.5" d="M20 12L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        <path d="M20 17L4 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
+                    </button>
+                    <div className="relative flex-none">
+                      {/* <img src="/public/favicon.png" className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" alt="img" /> */}
+                      <MakeProfileImage>{selectedChatRoom?.order_id?.order_name}</MakeProfileImage>
+                      <div className="absolute bottom-0 ltr:right-0 rtl:left-0">
+                        <div className="h-3 w-3 rounded-full bg-success"></div>
+                      </div>
+                    </div>
+                    <div className="mx-3">
+                      <Link href={`./shoots/${selectedChatRoom?.order_id?.id}`}>
+                        <p className="font-semibold">{selectedChatRoom?.order_id?.order_name}</p>
+                        <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + updatedAtDateTime?.time}</p>
+                      </Link>
+                    </div>
                   </div>
+                  {!isSidebarOpen && (
+                    <div className="flex gap-3 sm:gap-5">
+                      <div className="dropdown">
+                        <Dropdown
+                          placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
+                          btnClassName="bg-[#f4f4f4] dark:bg-[#1b2e4b] hover:bg-primary-light w-8 h-8 rounded-full !flex justify-center items-center"
+                          button={
+                            <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="#000000" className="bi bi-three-dots-vertical ml-2 mt-1" onClick={toggleSidebar}>
+                              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                              <g id="SVGRepo_iconCarrier">
+                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
+                              </g>
+                            </svg>
+                          }
+                        ></Dropdown>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="mx-3">
-                  <Link href={`./shoots/${selectedChatRoom?.order_id?.id}`}>
-                    <p className="font-semibold">{selectedChatRoom?.order_id?.order_name}</p>
-                    <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + selectedChatRoom?.time}</p>
-                  </Link>
-                </div>
-              </div>
-              {!isSidebarOpen && (
-                <div className="flex gap-3 sm:gap-5">
-                  <div className="dropdown">
-                    <Dropdown
-                      placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                      btnClassName="bg-[#f4f4f4] dark:bg-[#1b2e4b] hover:bg-primary-light w-8 h-8 rounded-full !flex justify-center items-center"
-                      button={
-                        <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="#000000" className="bi bi-three-dots-vertical ml-2 mt-1" onClick={toggleSidebar}>
-                          <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                          <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                          <g id="SVGRepo_iconCarrier">
-                            <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                          </g>
-                        </svg>
-                      }
-                    ></Dropdown>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
+                <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
 
-            <PerfectScrollbar
-              className="chat-conversation-box relative h-full sm:h-[calc(100vh_-_300px)]"
-              onScrollY={(container) => {
-                if (container.scrollTop === 0) {
-                  handleScroll();
-                }
-              }}
-            >
-              <div className="min-h-[400px] space-y-5 p-4 pb-[68px] sm:min-h-[300px] sm:pb-0">
-                <div className="m-6 mt-0 block">
-                  <h4 className="relative border-b border-[#f4f4f4] text-center text-xs dark:border-gray-800">
-                    <span className="relative top-2 bg-white px-3 dark:bg-black">{'Today, ' + selectedChatRoom?.time}</span>
-                  </h4>
-                </div>
-                {newMessages?.length ? (
-                  <>
-                    {newMessages?.map((message: any, index: any) => {
-                      return (
-                        <div key={index}>
-                          <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
-                            <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
-                              {message?.senderId === userData.id ? (userRole == 'manager' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
-                              {message?.senderId !== userData.id
-                                ? message?.senderName == 'Admin User'
-                                  ? createImageByName('MA')
-                                  : message?.senderName == 'User'
-                                  ? createImageByName('User')
-                                  : createImageByName('CP')
-                                : ''}
-                            </div>
-                            <div className="">
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${
-                                    message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
-                                  }`}
-                                >
-                                  {message?.message}
+                <PerfectScrollbar
+                  className="chat-conversation-box relative h-full sm:h-[calc(100vh_-_300px)]"
+                  onScrollY={(container) => {
+                    if (container.scrollTop === 0) {
+                      handleScroll();
+                    }
+                  }}
+                >
+                  <div className="min-h-[400px] space-y-5 p-4 pb-[68px] sm:min-h-[300px] sm:pb-0">
+                    <div className="m-6 mt-0 block">
+                      <h4 className="relative border-b border-[#f4f4f4] text-center text-xs dark:border-gray-800">
+                        <span className="relative top-2 bg-white px-3 dark:bg-black">{'Today, ' + createdDateTime?.time}</span>
+                      </h4>
+                    </div>
+                    {newMessages?.length ? (
+                      <>
+                        {newMessages?.map((message: any, index: any) => {
+                          return (
+                            <div key={index}>
+                              <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
+                                <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
+                                  {message?.senderId === userData.id ? (userRole == 'manager' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
+                                  {message?.senderId !== userData.id
+                                    ? message?.senderName == 'Admin User'
+                                      ? createImageByName('MA')
+                                      : message?.senderName == 'User'
+                                      ? createImageByName('User')
+                                      : createImageByName('CP')
+                                    : ''}
                                 </div>
+                                <div className="">
+                                  <div className="flex items-center gap-3">
+                                    <div
+                                      className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${
+                                        message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
+                                      }`}
+                                    >
+                                      {message?.message}
+                                    </div>
 
-                                <div className={`${message?.senderId === userData.id ? 'hidden' : ''}`}>
-                                  <svg className="h-5 w-5 text-black/70 hover:!text-primary dark:text-white/70" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                                    <path d="M9 16C9.85038 16.6303 10.8846 17 12 17C13.1154 17 14.1496 16.6303 15 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                    <path d="M16 10.5C16 11.3284 15.5523 12 15 12C14.4477 12 14 11.3284 14 10.5C14 9.67157 14.4477 9 15 9C15.5523 9 16 9.67157 16 10.5Z" fill="currentColor" />
-                                    <ellipse cx="9" cy="10.5" rx="1" ry="1.5" fill="currentColor" />
-                                  </svg>
+                                    <div className={`${message?.senderId === userData.id ? 'hidden' : ''}`}>
+                                      <span>{allSvgs.chatSmileIcon}</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-xs text-white-dark">{message?.senderName}</div>
+                                  {/* <div className={`text-xs text-white-dark ${message?.senderId === userData.id ? 'ltr:text-right rtl:text-left' : ''}`}>{message.time ? message.time : '5h ago'}</div> */}
                                 </div>
                               </div>
-                              <div className="text-xs text-white-dark">{message?.senderName}</div>
-                              {/* <div className={`text-xs text-white-dark ${message?.senderId === userData.id ? 'ltr:text-right rtl:text-left' : ''}`}>{message.time ? message.time : '5h ago'}</div> */}
                             </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </>
-                ) : (
-                  ''
-                )}
-                {isTyping && <p className="text-white-dark"> {typtingUser?.userName} is typing...</p>}
-              </div>
-            </PerfectScrollbar>
-            <div className="absolute bottom-0 left-0 w-full p-4">
-              <div className="w-full items-center space-x-3 rtl:space-x-reverse sm:flex">
-                <div className="relative flex-1">
-                  <input
-                    className="form-input rounded-full border-0 bg-[#f4f4f4] px-12 py-2 focus:outline-none"
-                    placeholder="Type a message"
-                    value={textMessage}
-                    onChange={(e: any) => setTextMessage(e.target.value)}
-                    onKeyUp={sendMessageHandle}
-                  />
-                  <button type="button" className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:left-4 rtl:right-4">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M9 16C9.85038 16.6303 10.8846 17 12 17C13.1154 17 14.1496 16.6303 15 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      <path d="M16 10.5C16 11.3284 15.5523 12 15 12C14.4477 12 14 11.3284 14 10.5C14 9.67157 14.4477 9 15 9C15.5523 9 16 9.67157 16 10.5Z" fill="currentColor" />
-                      <ellipse cx="9" cy="10.5" rx="1" ry="1.5" fill="currentColor" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:right-4 rtl:left-4"
-                    onClick={(e: any) => {
-                      sendMessage(textMessage);
-                    }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M17.4975 18.4851L20.6281 9.09373C21.8764 5.34874 22.5006 3.47624 21.5122 2.48782C20.5237 1.49939 18.6511 2.12356 14.906 3.37189L5.57477 6.48218C3.49295 7.1761 2.45203 7.52305 2.13608 8.28637C2.06182 8.46577 2.01692 8.65596 2.00311 8.84963C1.94433 9.67365 2.72018 10.4495 4.27188 12.0011L4.55451 12.2837C4.80921 12.5384 4.93655 12.6658 5.03282 12.8075C5.22269 13.0871 5.33046 13.4143 5.34393 13.7519C5.35076 13.9232 5.32403 14.1013 5.27057 14.4574C5.07488 15.7612 4.97703 16.4131 5.0923 16.9147C5.32205 17.9146 6.09599 18.6995 7.09257 18.9433C7.59255 19.0656 8.24576 18.977 9.5522 18.7997L9.62363 18.79C9.99191 18.74 10.1761 18.715 10.3529 18.7257C10.6738 18.745 10.9838 18.8496 11.251 19.0285C11.3981 19.1271 11.5295 19.2585 11.7923 19.5213L12.0436 19.7725C13.5539 21.2828 14.309 22.0379 15.1101 21.9985C15.3309 21.9877 15.5479 21.9365 15.7503 21.8474C16.4844 21.5244 16.8221 20.5113 17.4975 18.4851Z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
+                          );
+                        })}
+                      </>
+                    ) : (
+                      ''
+                    )}
+                    {isTyping && <p className="text-white-dark"> {typtingUser?.userName} is typing...</p>}
+                  </div>
+                </PerfectScrollbar>
+                <div className="absolute bottom-0 left-0 w-full p-4">
+                  <div className="w-full items-center space-x-3 sm:flex rtl:space-x-reverse">
+                    <div className="relative flex-1">
+                      <input
+                        className="form-input rounded-full border-0 bg-[#f4f4f4] px-12 py-2 focus:outline-none"
+                        placeholder="Type a message"
+                        value={textMessage}
+                        onChange={(e: any) => setTextMessage(e.target.value)}
+                        onKeyUp={sendMessageHandle}
                       />
-                      <path opacity="0.5" d="M6 18L21 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                  </button>
+                      <button type="button" className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:left-4 rtl:right-4">
+                        {allSvgs.chatSmileIcon}
+                      </button>
+                      <button
+                        type="button"
+                        className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:right-4 rtl:left-4"
+                        onClick={(e: any) => {
+                          sendMessage(textMessage);
+                        }}
+                      >
+                        {allSvgs.msgSendIcon}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
+            ))
+          : ''}
       </div>
 
       {isSidebarOpen && (
@@ -584,7 +557,7 @@ const Chat = () => {
               {activeTab === '1' && (
                 <div className="pt-4">
                   <div className="mt-1">
-                    <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
+                    <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 sm:h-[calc(100vh_-_357px)] ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5">
                       <ul className="space-y-2">
                         <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                           <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
@@ -596,7 +569,7 @@ const Chat = () => {
 
                           <div className="flex flex-col justify-start space-y-0 ">
                             <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
-                            <span className="badge w-9 bg-info p-0 text-center text-[10px]">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
+                            <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
                           </div>
                         </li>
 
@@ -611,17 +584,23 @@ const Chat = () => {
                             ...manager,
                             type: 'manager',
                           })),
-                        ].map((item, index) => (
-                          <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
-                            <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
-                            <div className="flex flex-col space-y-0">
-                              <span className="text-black dark:text-white">{item?.id?.name}</span>
-                              <span className={`badge bg-info p-0 text-center text-[10px] ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
-                                {item.type === 'manager' ? (item?.id?.role === 'manager' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp') : item?.id?.role}
-                              </span>
-                            </div>
-                          </li>
-                        ))}
+                        ].map(
+                          (item, index) => (
+                            console.log('--Item-->', item),
+                            (
+                              <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
+                                <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
+                                <div className="flex flex-col space-y-0">
+                                  <span className="text-black dark:text-white">{item?.id?.name}</span>
+                                  <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
+                                    {/* {item.type === 'manager' ? (item?.id?.role === 'manager' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp') : 'Cp'} */}
+                                    {item?.id?.role === 'manager' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
+                                  </span>
+                                </div>
+                              </li>
+                            )
+                          )
+                        )}
 
                         {/* ends- participants */}
                       </ul>
