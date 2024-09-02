@@ -79,9 +79,12 @@ const Role = () => {
           <table>
             <thead>
               <tr>
-                <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Role</th>
-                <th className="ltr:rounded-r-md rtl:rounded-l-md w-[70%]">Permissions</th>
-                <th className="text-[16px] font-semibold">Action</th>
+                <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Name</th>
+                <th>Role</th>
+                <th className="ltr:rounded-r-md rtl:rounded-l-md w-[60%]">Permissions</th>
+                {(authPermissions?.includes('edit_role') || authPermissions?.includes('delete_role')) && (
+                  <th className="text-[16px] font-semibold">Action</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -95,14 +98,12 @@ const Role = () => {
                     allRoles?.map((role: any, index: number) => (
                       <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                         <td className="min-w-[150px] text-black dark:text-white">
-                          <div className="flex items-center">
-                            <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
-                            <div className="flex">
-                              <div className='block'>{role?.name}</div>
-                            </div>
+                          <div className="">
+                            <h4>{role?.name}</h4>
                           </div>
                         </td>
-                        <td className='flex flex-wrap gap-2 w-[70%]'>
+                        <td>{role?.role}</td>
+                        <td className='flex flex-wrap gap-2 w-[60%]'>
                           {role?.permissions && role?.permissions?.length > 0 && role?.permissions?.map((permission: string, index: number) => (
                             <div className="" key={index}>
                               <div className="">
@@ -111,6 +112,7 @@ const Role = () => {
                             </div>
                           ))}
                         </td>
+                        {(authPermissions?.includes('edit_role') || authPermissions?.includes('delete_role')) && (
                         <td>
                           <div className='space-x-4'>
                             {authPermissions?.includes('edit_role') && (
@@ -119,17 +121,16 @@ const Role = () => {
                               </Link>
                             )}
 
-
                             {role?.is_delete && (
                               <>
-                                {authPermissions?.includes('edit_role') && (
+                                {authPermissions?.includes('delete_role') && (
                                   <button onClick={() => deletePermission(role?._id)} type="button" className="p-0">{allSvgs.trash}</button>
                                 )}
                               </>
                             )}
-
                           </div>
                         </td>
+                        )}
                       </tr>
                     ))
                   ) : (

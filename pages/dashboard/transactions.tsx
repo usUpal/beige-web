@@ -17,7 +17,7 @@ import { toast } from 'react-toastify';
 
 const Transactions = () => {
   const dispatch = useDispatch();
-  const { userData } = useAuth();
+  const { userData, authPermissions } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
   const [query, setQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -44,7 +44,7 @@ const Transactions = () => {
   );
 
   const { data: allPayments, isLoading: isAllPaymentLoading } = useGetAllTransactionQuery(queryParams)
-  const [updateTransactionStatus, { isLoading: updateTransactionStatusLoading,isError:updateTransactionStatusError }] = useUpdateTransactionStatusMutation();
+  const [updateTransactionStatus, { isLoading: updateTransactionStatusLoading, isError: updateTransactionStatusError }] = useUpdateTransactionStatusMutation();
   console.log("🚀 ~ Transactions ~ updateTransactionStatusError:", updateTransactionStatusError)
 
   const handlePageChange = (page: number) => {
@@ -119,7 +119,9 @@ const Transactions = () => {
                 <th>Account Holder</th>
                 <th>Withdraw Ammount</th>
                 <th>Status</th>
-                {(userRole === 'manager') ? <th className="text-center">Edit</th> : null}
+                {userRole === 'admin' && authPermissions?.includes('edit_transactions') && (
+                  <th className="text-center">Edit</th>
+                )}
               </tr>
             </thead>
 
@@ -146,12 +148,13 @@ const Transactions = () => {
                           <td>
                             <StatusBg>{data?.status}</StatusBg>
                           </td>
-                          {(userRole === 'manager') ?
+                          {userRole === 'admin' && authPermissions?.includes('edit_transactions') && (
                             <td className="text-center">
                               <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
                                 {allSvgs.pencilIconForEdit}
                               </button>
-                            </td> : null}
+                            </td>
+                          )}
                         </tr>
                       );
                     })

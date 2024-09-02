@@ -19,7 +19,7 @@ const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [meetingInfo, setMeetingInfo] = useState<any>({});
   const [meetingModal, setMeetingModal] = useState(false);
-  const { userData } = useAuth();
+  const { userData, authPermissions } = useAuth();
   const dispatch = useDispatch();
   const [metingDate, setMetingDate] = useState();
   const myInputDate = meetingInfo?.meeting_date_time;
@@ -126,7 +126,9 @@ const Meeting = () => {
                 <th className="text-[16px] font-semibold">Meeting Date / Time</th>
                 <th className="text-[16px] font-semibold">Attendings</th>
                 <th className="text-[16px] font-semibold ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                <th className="text-[16px] font-semibold">View</th>
+                {authPermissions?.includes('meeting_details') && (
+                  <th className="text-[16px] font-semibold">View</th>
+                )}
               </tr>
             </thead>
 
@@ -166,12 +168,13 @@ const Meeting = () => {
                             <StatusBg>{meeting?.meeting_status}</StatusBg>
                           </div>
                         </td>
-
-                        <td>
-                          <button type="button" className="p-0" onClick={() => handelMeetingDetails(meeting?.id)}>
-                            <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                          </button>
-                        </td>
+                        {authPermissions?.includes('meeting_details') && (
+                          <td>
+                            <button type="button" className="p-0" onClick={() => handelMeetingDetails(meeting?.id)}>
+                              <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     ))
 
@@ -251,31 +254,35 @@ const Meeting = () => {
 
                     {/* Resheduling */}
                     <div className='mr-4'>
-                      {meetingInfo?.meeting_status === 'pending' && userData?.role === "cp" && (
-                        <div className="flex flex-col items-start">
-                          <h2 className="text-[14px] font-semibold capitalize leading-none text-[#000000] mb-3">Reschedule Meeting</h2>
-                          <div className="flex flex-col">
-                            <Flatpickr
-                              id="meeting_time"
-                              className={`w-60 rounded-md border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
-                              value={metingDate}
-                              placeholder="Meeting time ..."
-                              options={{
-                                altInput: true,
-                                altFormat: 'F j, Y h:i K',
-                                dateFormat: 'Y-m-d H:i',
-                                enableTime: true,
-                                time_24hr: false,
-                                minDate: 'today',
-                              }}
-                              onChange={(date) => setMetingDate(date[0])}
-                            />
+                      {authPermissions?.includes('meeting_details_reschedule') && (
+                        <>
+                          {meetingInfo?.meeting_status === 'pending' && userData?.role === "cp" && (
+                            <div className="flex flex-col items-start">
+                              <h2 className="text-[14px] font-semibold capitalize leading-none text-[#000000] mb-3">Reschedule Meeting</h2>
+                              <div className="flex flex-col">
+                                <Flatpickr
+                                  id="meeting_time"
+                                  className={`w-60 rounded-md border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
+                                  value={metingDate}
+                                  placeholder="Meeting time ..."
+                                  options={{
+                                    altInput: true,
+                                    altFormat: 'F j, Y h:i K',
+                                    dateFormat: 'Y-m-d H:i',
+                                    enableTime: true,
+                                    time_24hr: false,
+                                    minDate: 'today',
+                                  }}
+                                  onChange={(date) => setMetingDate(date[0])}
+                                />
 
-                            <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans font-bold text-sm  capitalize text-white">
-                              Reschedule Request
-                            </button>
-                          </div>
-                        </div>
+                                <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans font-bold text-sm  capitalize text-white">
+                                  Reschedule Request
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
 

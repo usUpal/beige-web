@@ -10,6 +10,7 @@ import StatusBg from '@/components/Status/StatusBg';
 import Pagination from '@/components/Pagination';
 import { useRouter } from 'next/router';
 import ResponsivePagination from 'react-responsive-pagination';
+import { useAuth } from '@/contexts/authContext';
 
 const CpUsers = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -21,7 +22,7 @@ const CpUsers = () => {
   const [showError, setShowError] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<any | null>(null);
   const [formData, setFormData] = useState<any>({});
-
+  const { authPermissions } = useAuth();
   useEffect(() => {
     getAllCpUsers();
   }, [currentPage]);
@@ -189,7 +190,9 @@ const CpUsers = () => {
                           <th className="font-mono">Email</th>
                           <th className="font-mono">Role</th>
                           <th className="font-mono ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                          <th className="font-mono">Edit</th>
+                          {authPermissions?.includes('edit_content_provider') && (
+                            <th className="font-mono">Edit</th>
+                          )}
                         </tr>
                       </thead>
                       <tbody>
@@ -211,14 +214,15 @@ const CpUsers = () => {
                                 </div>
                               </div>
                             </td>
-
-                            <td>
-                              <Link href={`cp/${cpUser?.userId?._id}`}>
-                                <button type="button" className="p-0">
-                                  {allSvgs.pencilIconForEdit}
-                                </button>
-                              </Link>
-                            </td>
+                            {authPermissions?.includes('edit_content_provider') && (
+                              <td>
+                                <Link href={`cp/${cpUser?.userId?._id}`}>
+                                  <button type="button" className="p-0">
+                                    {allSvgs.pencilIconForEdit}
+                                  </button>
+                                </Link>
+                              </td>
+                            )}
                           </tr>
                         ))}
                       </tbody>

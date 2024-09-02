@@ -455,8 +455,8 @@ const BookNow = () => {
 
   const getMeetingLink = async (shootInfo: any, meetingDate: any) => {
     const requestBody = {
-      userId:userData?.id,
-      requestData : {
+      userId: userData?.id,
+      requestData: {
         summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
         location: 'Online',
         description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'} order.`,
@@ -986,45 +986,47 @@ const BookNow = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="mt-5 flex items-center justify-between">
-                        {/* Special Note */}
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Special Note
-                          </label>
-                          <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
-                        </div>
-                        <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
-                          <label htmlFor="meeting_time" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
-                            Meeting time
-                          </label>
+                      {userData?.role === 'admin' && (
+                        <div className="mt-5 flex items-center justify-between">
+                          {/* Special Note */}
+                          <div className="flex basis-[45%] flex-col sm:flex-row">
+                            <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                              Special Note
+                            </label>
+                            <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
+                          </div>
+                          <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
+                            <label htmlFor="meeting_time" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
+                              Meeting time
+                            </label>
 
-                          <div className="relative w-[98%] pl-5">
-                            <Flatpickr
-                              id="meeting_time"
-                              className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
-                              value={meetingTime}
-                              placeholder="Meeting time ..."
-                              options={{
-                                altInput: true,
-                                altFormat: 'F j, Y h:i K',
-                                dateFormat: 'Y-m-d H:i',
-                                enableTime: true,
-                                time_24hr: false,
-                                minDate: 'today',
-                              }}
-                              onChange={(date) => {
-                                setMeetingTime(date[0]); // Set the selected date
-                                setValue('meeting_time', date[0]); // Update form value
-                              }}
-                            />
-                            <input type="hidden" {...register('meeting_time')} />
+                            <div className="relative w-[98%] pl-5">
+                              <Flatpickr
+                                id="meeting_time"
+                                className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
+                                value={meetingTime}
+                                placeholder="Meeting time ..."
+                                options={{
+                                  altInput: true,
+                                  altFormat: 'F j, Y h:i K',
+                                  dateFormat: 'Y-m-d H:i',
+                                  enableTime: true,
+                                  time_24hr: false,
+                                  minDate: 'today',
+                                }}
+                                onChange={(date) => {
+                                  setMeetingTime(date[0]); // Set the selected date
+                                  setValue('meeting_time', date[0]); // Update form value
+                                }}
+                              />
+                              <input type="hidden" {...register('meeting_time')} />
 
-                            <span className="-translate-y-1/6 pointer-events-none absolute right-2 top-1 transform">🗓️</span>
-                            {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
+                              <span className="-translate-y-1/6 pointer-events-none absolute right-2 top-1 transform">🗓️</span>
+                              {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
 
                       <button
                         type="submit"

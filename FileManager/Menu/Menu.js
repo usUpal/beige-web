@@ -22,7 +22,7 @@ const Menu = ({ setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen, path }
           </>
         )}
 
-        {userData?.role === 'manager' && (
+        {userData?.role === 'admin' && (
           <h6 className="flex items-center gap-2 rounded-md px-4 py-2 text-lg cursor-pointer" onClick={() => setSettingsOpen(true)}>
             <Image src="/assets/icons/setting.png" alt="refresh" width={18} height={18} />
             File Settings
