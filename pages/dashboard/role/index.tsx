@@ -1,16 +1,22 @@
 import React, { useState } from 'react'
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import Link from 'next/link';
-import { useGetAllRolesQuery } from '@/Redux/features/role/roleApi';
+import { useDeleteRoleMutation, useGetAllRolesQuery } from '@/Redux/features/role/roleApi';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/authContext';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import Swal from 'sweetalert2';
+
 const Role = () => {
-  const { data: allRoles, isLoading: isAllRolesLoading, isError: isAllRoleError, status: allRoleStatus, error: allRolesError } = useGetAllRolesQuery(undefined,{
-    refetchOnMountOrArgChange:true,
+  const { data: allRoles, isLoading: isAllRolesLoading, isError: isAllRoleError, status: allRoleStatus, error: allRolesError, refetch } = useGetAllRolesQuery(undefined, {
+    refetchOnMountOrArgChange: true,
   });
+
+  const [deleteRole, { isLoading: isDeleteRoleLoading, isSuccess: isRoleDelteSuccess }] = useDeleteRoleMutation();
+
   const router = useRouter();
-  const statusCode = 404 //allRolesError.data.code
+  const statusCode = 404
   const { authPermissions } = useAuth();
 
   if (isAllRoleError) {
@@ -27,10 +33,37 @@ const Role = () => {
   }
 
 
+  const deletePermission = async (id: string) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to undo this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const deleteResult = await deleteRole(id);
+        if (deleteResult?.data) {
+          refetch();
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success",
+          });
+        }
+
+      } catch (error) {
+        console.log("🚀 ~ deletePermission ~ error:", error)
+      }
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
-      {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">All Roles</h5>
@@ -79,13 +112,23 @@ const Role = () => {
                           ))}
                         </td>
                         <td>
-                          {authPermissions?.includes('edit_role') && (
-                            <Link href={`/dashboard/role/edit-role/${role?._id}`}>
-                              <button type="button" className="p-0">
-                                <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                              </button>
-                            </Link>
-                          )}
+                          <div className='space-x-4'>
+                            {authPermissions?.includes('edit_role') && (
+                              <Link href={`/dashboard/role/edit-role/${role?._id}`}>
+                                <button type="button" className="">{allSvgs.editPen}</button>
+                              </Link>
+                            )}
+
+
+                            {role?.is_delete && (
+                              <>
+                                {authPermissions?.includes('edit_role') && (
+                                  <button onClick={() => deletePermission(role?._id)} type="button" className="p-0">{allSvgs.trash}</button>
+                                )}
+                              </>
+                            )}
+
+                          </div>
                         </td>
                       </tr>
                     ))

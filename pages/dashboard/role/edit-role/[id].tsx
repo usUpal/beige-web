@@ -72,9 +72,7 @@ const EditRole = () => {
       };
     });
   };
-
-  console.log("Role Data - ", roleData)
-
+ 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       <div className="panel h-full w-full">
