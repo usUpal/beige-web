@@ -1,18 +1,25 @@
 import { useForm } from 'react-hook-form';
 import Link from 'next/link';
-import { Fragment, useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import 'tippy.js/dist/tippy.css';
 import Map from '@/components/Map';
-import { error } from 'console';
-
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import TimezoneSelect from 'react-timezone-select';
 
 const CreateUser = () => {
     const [geoLocation, setGeoLocation] = useState('');
     const [location, setLocation] = useState('');
     const [image, setImage] = useState("https://cdn.vectorstock.com/i/500p/53/42/user-member-avatar-face-profile-icon-vector-22965342.jpg");
+    const [timezone, setTimezone] = useState(null);
 
-
+    const { register, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm();
     const fileInputRef = useRef(null);
+    const [showRoleInput, setShowRoleInput] = useState(false);
+    const [roleOptions, setRoleOptions] = useState([
+        "Admin", "User", "Cp", "Project Manager",
+        "Post Production Manager", "Sales Representative",
+        "User Success"
+    ]);
 
     const handleIconClick = () => {
         fileInputRef.current.click();
@@ -24,19 +31,28 @@ const CreateUser = () => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 setImage(e.target.result);
-                console.log("Srabon");
             };
             reader.readAsDataURL(file);
         }
     };
 
+    const handleSetNewItem = (fieldName) => {
+        const value = getValues(fieldName);
+        if (!value) return;
 
+        setRoleOptions((prevOptions) => [...prevOptions, value]);
+        console.log("New role added:", value);
 
-    const { register, handleSubmit, formState: { errors }, } = useForm();
+        reset({ [fieldName]: '' });
+    };
 
-    const onSubmit = (data) => { console.log(data); };
-
-
+    const onSubmit = (data) => {
+        //! Include timezone data in the form data
+        const filteredData = Object.fromEntries(
+            Object.entries({ ...data, timezone: timezone?.value, location: location }).filter(([key, value]) => value !== '')
+        );
+        console.log(" Data:", filteredData);
+    };
 
     return (
         <>
@@ -90,7 +106,7 @@ const CreateUser = () => {
 
                                 <div>
                                     <label htmlFor="email">Email</label>
-                                    <input id="email" type="email" {...register("email", { required: true })} placeholder="Jimmy@gmail.com" className="form-input " />
+                                    <input id="email" type="email" defaultValue="" {...register("email", { required: true })} placeholder="Jimmy@gmail.com" className="form-input " />
                                     {errors.email && <span className='text-danger text-sm'>Enter your Email</span>}
                                 </div>
                                 <div>
@@ -106,14 +122,46 @@ const CreateUser = () => {
 
                                 <div className="flex-grow">
                                     <label htmlFor="geo_location">Location</label>
-                                    <Map setGeo_location={setGeoLocation} setLocation={setLocation} defaultValue={geoLocation}  {...register("location")} />
-                                    {/* {errors.location && <span className='text-danger text-sm'>Enter your Confirm location</span>} */}
+                                    <Map setGeo_location={setGeoLocation} setLocation={setLocation} defaultValue={geoLocation} {...register("location")} />
+                                </div>
+
+                                <div className='relative'>
+                                    <label htmlFor="role">Role</label>
+                                    {!showRoleInput ? (
+                                        <select {...register("role")} className="form-input">
+                                            {roleOptions.map((role) => (
+                                                <option key={role} value={role}>{role}</option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <div className="relative flex items-center justify-start gap-1">
+                                            <input {...register('role')} className="form-input" placeholder="Add Role" />
+                                            <button type="button" onClick={() => handleSetNewItem('role')} className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
+                                                {allSvgs.plusForAddCp}
+                                            </button>
+                                        </div>
+                                    )}
+                                    {/* toggle button */}
+                                    <div className="mb-2 mt-2 flex items-center justify-between absolute">
+                                        <button type="button" onClick={() => setShowRoleInput((prev) => !prev)} className=" text-bold cursor-pointer p-0 font-sans text-white-dark">
+                                            {showRoleInput ? allSvgs.minusForHide : allSvgs.plusForAddCp}
+                                        </button>
+                                    </div>
+                                    {errors.role && <span className='text-danger text-sm'>Enter your role</span>}
                                 </div>
 
                                 <div>
-                                    <label htmlFor="role">Timezone</label>
-                                    <input type='time' id="time" placeholder="Timezone" className="form-input  capitalize"  {...register("Timezone")} />
-                                    {/* {errors.location && <span className='text-danger text-sm'>Enter your  Timezone</span>} */}
+                                    <label htmlFor="timezone">Timezone</label>
+                                    <TimezoneSelect
+                                        value={timezone}
+                                        onChange={(selectedTimezone) => {
+                                            setTimezone(selectedTimezone);
+                                            // Update the form value
+                                            setValue("Timezone", selectedTimezone?.value || '');
+                                        }}
+                                    //! Optional: Default timezone if needed
+                                    //! defaultValue={yourDefaultTimezone}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -123,7 +171,7 @@ const CreateUser = () => {
                                 Create User
                             </button>
                         </div>
-                    </form>
+                    </form >
                 </div >
             </div >
         </>
