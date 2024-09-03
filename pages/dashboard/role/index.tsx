@@ -20,7 +20,6 @@ const Role = () => {
   const { authPermissions } = useAuth();
 
   if (isAllRoleError) {
-    console.log("🚀 ~ Role ~ allRolesError:", allRolesError)
     if (allRolesError.data.code === statusCode) {
       router.push('/errors/not-found');
       toast.error(allRolesError?.data?.message)
@@ -28,7 +27,7 @@ const Role = () => {
       router.push('/errors/access-denied');
       toast.error(allRolesError?.data?.message)
     } else {
-      console.log("🚀 ~ Role ~ allRolesError:", allRolesError.data.code)
+      console.log("🚀 ~ Role ~ allRolesError:", allRolesError?.data?.code)
     }
   }
 
@@ -69,9 +68,8 @@ const Role = () => {
           <h5 className="text-xl font-bold dark:text-white-light">All Roles</h5>
           <div className="space-x-2">
             {authPermissions?.includes('add_role') && (
-              <Link href={'/dashboard/role/add-role'} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none'>Add</Link>
+              <Link href={'/dashboard/role/add-role'} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none'>Add New Role & Permission</Link>
             )}
-            <input type="text" className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none' placeholder='Search...' />
           </div>
         </div>
 

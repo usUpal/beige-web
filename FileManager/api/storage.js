@@ -199,7 +199,6 @@ export default {
   //   }
   // },
   async downloadFolder(folderpath) {
-    console.log('Downloading folder', folderpath);
     const toastId = toast.loading('Downloading...');
 
     try {
@@ -207,7 +206,6 @@ export default {
         responseType: 'blob', // Important for downloading files
         onDownloadProgress: (progressEvent) => {
           const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          console.log('Download progress:', progress);
           toast.update(toastId, {
             render: `Downloading...`,
             progress: progress / 100,

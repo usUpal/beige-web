@@ -61,9 +61,9 @@ const EditRole = () => {
 
 
   const handlePermissionChange = (permissionKey: string) => {
-    setRoleDetails((prevDetails) => {
+    setRoleDetails((prevDetails:any) => {
       const newPermissions = prevDetails.permissions.includes(permissionKey)
-        ? prevDetails.permissions.filter((perm) => perm !== permissionKey)
+        ? prevDetails.permissions.filter((perm:any) => perm !== permissionKey)
         : [...prevDetails.permissions, permissionKey];
 
       return {
@@ -72,7 +72,7 @@ const EditRole = () => {
       };
     });
   };
- 
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       <div className="panel h-full w-full">
@@ -122,12 +122,11 @@ const EditRole = () => {
                         <div className="w-12 h-6 relative">
                           <input
                             type="checkbox"
-                            {...register('permissions')}
-                            defaultValue={permission.key}
-                            onChange={() => handlePermissionChange(permission.key)}
-                            checked={roleDetails.permissions.includes(permission.key)}
+                            defaultValue={permission?.key}
+                            onChange={() => handlePermissionChange(permission?.key)}
+                            checked={roleDetails?.permissions &&  roleDetails?.permissions?.includes(permission?.key)}
                             className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
-                            id={permission.key}
+                            id={permission?.key}
                           />
                           <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
                         </div>

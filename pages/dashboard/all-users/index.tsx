@@ -26,7 +26,6 @@ const Users = () => {
 
   // time formation
   const inputDate = (userInfo?.createdAt);
-  // console.log("🚀 ~ Users ~ inputDate:", inputDate)
   const formattedDateTime = useDateFormat(inputDate);
   const { authPermissions } = useAuth();
 
@@ -106,7 +105,6 @@ const Users = () => {
       location: userInfo?.location || data?.location,
       isEmailVerified: userInfo?.isEmailVerified || data?.isEmailVerified,
     }
-    console.log("🚀 ~ onSubmit ~ updatedUserDetails:", updatedUserDetails);
   };
 
   return (

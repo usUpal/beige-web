@@ -79,7 +79,7 @@ const SearchingParams = () => {
     fetch(`${API_ENDPOINT}settings/algo/search`)
       .then((res) => res.json())
       .then((data) => {
-        console.log('🚀 ~ file: searchingParams.tsx:63 ~ .then ~ data:', data);
+        //console.log('🚀 ~ file: searchingParams.tsx:63 ~ .then ~ data:', data);
         setParams(data);
         setTableData(data);
       })
@@ -108,7 +108,7 @@ const SearchingParams = () => {
             console.log('Error:', data);
             return;
           } else {
-            console.log('🚀 ~ file: searchingParams.tsx:43 ~ .then ~ data:', data);
+            //console.log('🚀 ~ file: searchingParams.tsx:43 ~ .then ~ data:', data);
             toast.success('Params Set Successfully.', {
               position: toast.POSITION.TOP_CENTER,
             });

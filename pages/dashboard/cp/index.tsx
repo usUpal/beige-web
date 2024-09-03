@@ -46,31 +46,6 @@ const CpUsers = () => {
   // routing
   const router = useRouter();
 
-  // User Single
-  // Also unUsed Function For APi
-  /* const getUserDetails = async (singleUserId: string) => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
-            const userDetailsRes = await response.json();
-            console.log(userDetailsRes);
-            const cpRoute = `cp/${userDetailsRes?.id}`;
-            router.push(cpRoute);
-
-            if (!userDetailsRes) {
-                setShowError(true);
-                setLoading(false);
-            } else {
-                setUserInfo(userDetailsRes);
-                setLoading(false);
-                setUserModal(true);
-            }
-        } catch (error) {
-            console.error(error);
-            setLoading(false);
-        }
-    }; */
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setPageTitle('Client Dashboard'));
@@ -156,8 +131,6 @@ const CpUsers = () => {
     }));
     return newData;
   };
-
-  console.log(newData);
 
   return (
     <>

@@ -75,7 +75,7 @@ const ProfileForm = () => {
     });
     return;
 
-    
+
     const coordinates = geo_location?.coordinates;
 
     if (coordinates.length === 2) {
@@ -85,8 +85,6 @@ const ProfileForm = () => {
     }
 
     data.geo_location = watchedGeoLocation;
-    console.log(userData);
-
     const updatedProfileInfo = {
       name: data.name,
       email: data.email,

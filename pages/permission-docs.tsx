@@ -6,11 +6,9 @@ const PermissionDocs = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  const { data: data } = useGetErrorStatusQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
-
-  console.log("🚀 ~ PermissionDocs ~ data:", data)
+  // const { data: data } = useGetErrorStatusQuery(undefined, {
+  //   refetchOnMountOrArgChange: true,
+  // });
 
   const permissionEndpoint = (permission: any) => {
     switch (permission) {
@@ -66,11 +64,53 @@ const PermissionDocs = () => {
             return "n/a"
             break;
 
-
           case 'transactions_page':
+            return "Method : GET , Endpoint : payout"
+            break;
+
+            case 'edit_transactions':
             return "n/a"
             break;
 
+            case 'all_users':
+            return "Method : GET , Endpoint : users"
+            break;
+
+            case 'edit_all_users':
+            return "Method : GET , Endpoint : users/:id"
+            break;
+
+            case 'content_provider':
+            return "Method : GET , Endpoint : cp"
+            break;
+
+            case 'edit_content_provider':
+            return "Method : GET , Endpoint : cp/:id"
+            break;
+
+            case 'client_page':
+            return "Method : GET , Endpoint : users"
+            break;
+
+            case 'client_edit':
+            return "Method : GET , Endpoint : users/:id"
+            break;
+
+            case 'client_edit':
+            return "Method : GET , Endpoint : users/:id"
+            break;
+
+            case 'role_page':
+            return "Method : GET , Endpoint : roles"
+            break;
+
+            case 'edit_role':
+            return "Method : GET , Endpoint : roles/:id"
+            break;
+
+            case 'delete_role':
+            return "Method : DELETE , Endpoint : roles/:id"
+            break;
       default:
         break;
     }
@@ -86,7 +126,7 @@ const PermissionDocs = () => {
             <li className='text-lg font-semibold'>{module?.module_name}</li>
             {module?.permissions && module?.permissions?.map((permission: any, index: number) => (
               <div key={index} className='ml-10'>
-                <p>{permission?.name} --- <span className='text-xs'>{permission?.key}</span></p>
+                <p>{permission?.name} --- {permissionEndpoint(permission?.key)} ---<span className='text-xs'>{permission?.key}</span></p>
               </div>
             ))}
           </div>

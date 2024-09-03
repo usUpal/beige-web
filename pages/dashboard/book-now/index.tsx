@@ -487,48 +487,10 @@ const BookNow = () => {
       console.log("Don't create the meeting link");
       toast.error('Something want wrong...!');
     }
-
-    // try {
-    //   const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData);
-    //   const myMeetLink = response?.data?.meetLink;
-    //   if (myMeetLink) {
-    //     try {
-    //       const requestBody = {
-    //         meeting_date_time: meetingDate,
-    //         meeting_status: 'pending',
-    //         meeting_type: 'pre_production',
-    //         order_id: shootInfo?.id,
-    //         meetLink: myMeetLink,
-    //       };
-    //       const response = await fetch(`${API_ENDPOINT}meetings`, {
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify(requestBody),
-    //       });
-    //       if (!response.ok) {
-    //         swalToast('danger', 'Something went wrong !');
-    //         throw new Error(`Error: ${response.statusp}`);
-    //       }
-    //       const meetingInfo = await response.json();
-    //       return meetingInfo;
-    //     } catch (error) {
-    //       console.error('Error occurred while sending POST request:', error);
-    //     }
-    //   } else {
-    //     console.error('Error create meet link after create order');
-    //   }
-    // } catch (error) {
-    //   console.error('Error create meet link after create order:', error);
-    // }
-
   }
 
 
   const [postOrder, { isSuccess, isLoading: isPostOrderLoading }] = usePostOrderMutation();
-  console.log("🚀 ~ BookNow ~ isPostOrderLoading:", isPostOrderLoading)
-  console.log("🚀 ~ BookNow ~ isSuccess:", isSuccess)
 
   const onSubmit = async (data: any) => {
 
@@ -574,7 +536,6 @@ const BookNow = () => {
           return false;
         }
         if (activeTab === 3) {
-          console.log("🚀 ~ onSubmit ~ formattedData:", formattedData)
           const result = await postOrder(formattedData);
           if (result?.data) {
             toast.success('Shoot has been created successfully')
@@ -641,8 +602,6 @@ const BookNow = () => {
   };
 
   const handleClientChange = (client) => {
-    console.log('client', client);
-    //const selectedOption = event.target.options[event.target.selectedIndex];
     setClient_id(client?.id);
     setClientName(client?.name);
     setShowClientDropdown(false);
@@ -755,7 +714,7 @@ const BookNow = () => {
                         </div>
                       </div>
                       <div className="my-5 flex items-center justify-between">
-                        {userData?.role === 'manager' && (
+                        {userData?.role === 'admin' && (
                           <div className="relative flex basis-[45%] flex-col sm:flex-row">
                             <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                               Client
