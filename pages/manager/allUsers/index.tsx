@@ -127,9 +127,9 @@ const Users = () => {
                             <h5 className="text-lg font-semibold dark:text-white-light">All Users</h5>
                             <div className='flex gap-2'>
                                 <Link href="/manager/create-user">
-                                    <button className="outline outline-offset-0 outline-0 btn">Create New User</button>
+                                    <button className="py-2 text-gray-700 px-5 border border-[#e5e7eb] rounded-md">Create New User</button>
                                 </Link>
-                                <button className='outline outline-offset-0 outline-0 btn'> Create New Cp</button>
+                                <button className=' py-2 text-gray-700 px-5 border border-[#e5e7eb] rounded-md'> Create New Cp</button>
                             </div>
                         </div>
                         <div className="mb-5">
@@ -161,7 +161,8 @@ const Users = () => {
                                                             <td className="font-sans text-success">{user?.role}</td>
                                                             <td className='hidden md:block'>
                                                                 <div className="font-sans ">
-                                                                    <StatusBg>{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg>
+                                                                    {/* <StatusBg>{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg> */}
+                                                                    <span className={`badge text-md w-12 bg-[#48cae4] text-center`}>{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</span>
                                                                 </div>
                                                             </td>
                                                             <td>
