@@ -123,13 +123,14 @@ const Users = () => {
 
                 <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
                     <div className="panel">
-                        <div className="mb-5 flex items-center gap-3">
-                            <h5 className="text-xl font-semibold dark:text-white-light">All Users</h5>
-                            {/* <button className='btn btn-primary'> Create New User</button> */}
-                            <Link href="/manager/create-user">
-                                <button className="btn btn-primary">Create New User</button>
-                            </Link>
-                            <button className='btn btn-primary'> Create New Cp</button>
+                        <div className="mb-5 flex items-center justify-between">
+                            <h5 className="text-lg font-semibold dark:text-white-light">All Users</h5>
+                            <div className='flex gap-2'>
+                                <Link href="/manager/create-user">
+                                    <button className="outline outline-offset-0 outline-0 btn">Create New User</button>
+                                </Link>
+                                <button className='outline outline-offset-0 outline-0 btn'> Create New Cp</button>
+                            </div>
                         </div>
                         <div className="mb-5">
                             <div className="inline-block w-full">
