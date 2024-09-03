@@ -18,6 +18,8 @@ export type Token = {
 
 export type UserRole = String;
 
+export type AuthPermissions = string[]
+
 export type AuthContextType = {
   userData: UserData | null;
   setUserData: (data: UserData | null) => void;
@@ -25,6 +27,8 @@ export type AuthContextType = {
   setAccessToken: (data: Token | null) => void;
   refreshToken: Token | null;
   setRefreshToken: (data: Token | null) => void;
+  authPermissions: string[] | null;
+  setAuthPermissions: (data: AuthPermissions | null) => void;
 };
 
 export type AuthProviderProps = {

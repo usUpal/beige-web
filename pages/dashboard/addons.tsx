@@ -7,8 +7,11 @@ import { API_ENDPOINT } from '@/config';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useForm } from 'react-hook-form';
 import useAddons from '@/hooks/useAddons';
+import { useAuth } from '@/contexts/authContext';
 
 const Addons = () => {
+  const { authPermissions } = useAuth();
+
   const [addonsData, setAddonsData, addonsCategories] = useAddons();
   // const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
   // const [allCategory, setAllCategory] = useState([]);
@@ -173,10 +176,7 @@ const Addons = () => {
 
       <div className="mb-5 ">
         {/* buttons for adds ends*/}
-
-        <div className="panel" id="pills_with_icon">
-          {/* tab starts*/}
-
+        {authPermissions?.includes('new_add_ons') && (
           <div className="_ mx-3 mb-5 flex sm:mb-0">
             <button
               onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}
@@ -186,6 +186,11 @@ const Addons = () => {
             </button>
           </div>
 
+        )}
+        <div className="panel" id="pills_with_icon">
+          {/* tab starts*/}
+
+
           <div className="my-5 flex flex-col sm:flex-row">
             <Tab.Group>
               <div className="mx-3 mb-5 sm:mb-0">
@@ -194,9 +199,8 @@ const Addons = () => {
                     <Tab key={index}>
                       {({ selected }) => (
                         <button
-                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${
-                            selected ? 'bg-success text-white outline-none' : ''
-                          }`}
+                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${selected ? 'bg-success text-white outline-none' : ''
+                            }`}
                           title={category}
                         >
                           {category}
@@ -221,7 +225,9 @@ const Addons = () => {
                                 <th className="font-mono">Extend Rate Type</th>
                                 <th className="font-mono">Extend Rate</th>
                                 <th className="font-mono">Status</th>
-                                <th className="font-mono">Action</th>
+                                {authPermissions?.includes('add_ons_edit') && (
+                                  <th className="font-mono">Action</th>
+                                )}
                               </tr>
                             </thead>
 
@@ -252,16 +258,18 @@ const Addons = () => {
                                       </p>
                                     </td>
 
-                                    <td>
-                                      <button
-                                        onClick={() => {
-                                          getAddonsDetails(addon);
-                                          setAddonsModal(true);
-                                        }}
-                                      >
-                                        {allSvgs.pencilIconForEdit}
-                                      </button>
-                                    </td>
+                                    {authPermissions?.includes('add_ons_edit') && (
+                                      <td>
+                                        <button
+                                          onClick={() => {
+                                            getAddonsDetails(addon);
+                                            setAddonsModal(true);
+                                          }}
+                                        >
+                                          {allSvgs.pencilIconForEdit}
+                                        </button>
+                                      </td>
+                                    )}
                                   </tr>
                                 ))}
                             </tbody>

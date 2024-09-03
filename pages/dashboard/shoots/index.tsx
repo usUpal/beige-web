@@ -16,7 +16,7 @@ const Shoots = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [query, setQuery] = useState<string>('');
-  const { userData } = useAuth();
+  const { userData, authPermissions } = useAuth();
 
   // Set page title
   useEffect(() => {
@@ -40,7 +40,7 @@ const Shoots = () => {
   const { data, error, isFetching, isLoading, refetch } = useGetAllShootQuery(queryParams, {
     refetchOnMountOrArgChange: true,
   });
-  
+
 
   // Memoize handlePageChange
   const handlePageChange = useCallback((page: number) => {
@@ -69,9 +69,13 @@ const Shoots = () => {
                 <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Shoot Name</th>
                 <th className="text-[16px] font-semibold">Shoot ID</th>
                 <th className="text-[16px] font-semibold">Price</th>
-                <th className="text-[16px] font-semibold">Files</th>
+                {authPermissions?.includes('shoot_download') && (
+                  <th className="text-[16px] font-semibold">Files</th>
+                )}
                 <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                <th className="text-[16px] font-semibold">View</th>
+                {authPermissions?.includes('shoot_show_details') && (
+                  <th className="text-[16px] font-semibold">View</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -91,37 +95,42 @@ const Shoots = () => {
                     </td>
                     <td>{shoot.id}</td>
                     <td>$ {shoot.shoot_cost}</td>
-                    <td className="text-success">
-                      {shoot.file_path?.status ? (
-                        <span
-                          onClick={async () => {
-                            await api.downloadFolder(`${shoot.file_path.dir_name}`);
-                          }}
-                          className="badge text-md w-12 bg-success text-center"
-                        >
-                          Download
-                        </span>
-                      ) : (
-                        <span
-                          onClick={async () => {
-                            await api.downloadFolder(`${shoot.file_path.dir_name}`);
-                          }}
-                          className="badge text-md w-12 bg-gray-200 text-center text-gray-500"
-                        >
-                          Unavailable
-                        </span>
-                      )}
-                    </td>
+                    {authPermissions?.includes('shoot_download') && (
+                      <td className="text-success">
+                        {shoot.file_path?.status ? (
+                          <span
+                            onClick={async () => {
+                              await api.downloadFolder(`${shoot.file_path.dir_name}`);
+                            }}
+                            className="badge text-md w-12 bg-success text-center"
+                          >
+                            Download
+                          </span>
+                        ) : (
+                          <span
+                            onClick={async () => {
+                              await api.downloadFolder(`${shoot.file_path.dir_name}`);
+                            }}
+                            className="badge text-md w-12 bg-gray-200 text-center text-gray-500"
+                          >
+                            Unavailable
+                          </span>
+                        )}
+                      </td>
+                    )}
+
                     <td>
                       <StatusBg>{shoot.order_status}</StatusBg>
                     </td>
-                    <td>
-                      <Link href={`shoots/${shoot.id}`}>
-                        <button type="button" className="p-0">
-                          <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                        </button>
-                      </Link>
-                    </td>
+                    {authPermissions?.includes('shoot_show_details') && (
+                      <td>
+                        <Link href={`shoots/${shoot.id}`}>
+                          <button type="button" className="p-0">
+                            <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                          </button>
+                        </Link>
+                      </td>
+                    )}
                   </tr>
                 ))
               ) : (

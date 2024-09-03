@@ -11,13 +11,14 @@ import useDateFormat from '@/hooks/useDateFormat';
 import StatusBg from '@/components/Status/StatusBg';
 import ResponsivePagination from 'react-responsive-pagination';
 import useClient from '@/hooks/useClient';
+import { useAuth } from '@/contexts/authContext';
 
 const Users = () => {
   const [allClients, setAllClients, totalPagesCount, setTotalPagesCount, currentPage, setCurrentPage] = useClient();
 
   const [isMounted, setIsMounted] = useState(false);
   const [userModalClient, setUserModalClient] = useState(false);
-
+  const { authPermissions } = useAuth();
   // const [allClients, setAllClients] = useState<any[]>([]);
   // const [currentPage, setCurrentPage] = useState<number>(1);
   // const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
@@ -274,7 +275,9 @@ const Users = () => {
                           <th className="font-mono">Email</th>
                           <th className="font-mono">Role</th>
                           <th className="font-mono ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                          <th className="font-mono">Edit</th>
+                          {authPermissions?.includes('client_edit') && (
+                            <th className="font-mono">Edit</th>
+                          )}
                         </tr>
                       </thead>
                       <tbody>
@@ -300,12 +303,13 @@ const Users = () => {
                                   <StatusBg>{userClient?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg>
                                 </div>
                               </td>
-
-                              <td>
-                                <button type="button" className="p-0" onClick={() => getUserDetails(userClient.id)}>
-                                  {allSvgs.pencilIconForEdit}
-                                </button>
-                              </td>
+                              {authPermissions?.includes('client_edit') && (
+                                <td>
+                                  <button type="button" className="p-0" onClick={() => getUserDetails(userClient.id)}>
+                                    {allSvgs.pencilIconForEdit}
+                                  </button>
+                                </td>
+                              )}
                             </tr>
                           ))}
                       </tbody>

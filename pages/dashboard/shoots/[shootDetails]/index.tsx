@@ -394,7 +394,7 @@ const ShootDetails = () => {
                     </div>
                   )}
                 </div>
-                {userData?.role === 'manager' && (
+                {userData?.role === 'admin' && (
                   <div className="flex space-x-3">
                     <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setStatusBox(!statusBox)}>
                       Change Status
@@ -431,7 +431,7 @@ const ShootDetails = () => {
               <div className="mb-4 basis-[45%]">
                 <div className="mb-3 flex w-full items-center gap-2">
                   <label className="mb-0 font-sans text-[14px] capitalize">Assign CP's</label>
-                  {userData?.role === 'manager' && (
+                  {userData?.role === 'admin' && (
                     <div className="flex gap-3">
                       <button onClick={() => setCpModal(!cpModal)} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
