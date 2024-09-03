@@ -36,9 +36,6 @@ const EditRole = () => {
     refetchOnMountOrArgChange: true,
   });
 
-
-  console.log("🚀 ~ EditRole ~ allPermissions:", allPermissions)
-
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       name: roleData?.name,
