@@ -49,7 +49,7 @@ const PlacesAutocomplete: React.FC<{
   };
 
   return (
-    <div className="block w-full">
+    <div className="block w-full relative">
       <input
         value={value}
         disabled={!ready}
@@ -60,12 +60,12 @@ const PlacesAutocomplete: React.FC<{
         placeholder="Location"
         className="form-input"
       />
-      {status === 'OK' && <ul>{renderSuggestions()}</ul>}
+      {status === 'OK' && <ul className='absolute w-full z-50 shadow-md p-5 rounded-lg bg-white'>{renderSuggestions()}</ul>}
     </div>
   );
 };
 
-const Map: React.FC<MapProps> = ({ setGeo_location, defaultValue, setLocation}) => {
+const Map: React.FC<MapProps> = ({ setGeo_location, defaultValue, setLocation }) => {
   const libraries = useMemo(() => ['places'], []);
 
   const { isLoaded } = useLoadScript({

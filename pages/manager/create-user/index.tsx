@@ -5,6 +5,7 @@ import 'tippy.js/dist/tippy.css';
 import Map from '@/components/Map';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import TimezoneSelect from 'react-timezone-select';
+import { toast } from 'react-toastify'; // Import toast from react-toastify
 
 const CreateUser = () => {
     const [geoLocation, setGeoLocation] = useState('');
@@ -20,6 +21,9 @@ const CreateUser = () => {
         "Post Production Manager", "Sales Representative",
         "User Success"
     ]);
+
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
+    const PasswordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
 
     const handleIconClick = () => {
         fileInputRef.current.click();
@@ -47,11 +51,27 @@ const CreateUser = () => {
     };
 
     const onSubmit = (data) => {
-        //! Include timezone data in the form data
+        const { Password, CPassword, email } = data;
+
+        if (!emailRegex.test(email)) {
+            toast.error('Please enter a valid email.');
+            return;
+        }
+
+        if (!PasswordPattern.test(Password)) {
+            toast.error('Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.).');
+            return;
+        }
+
+        if (Password !== CPassword) {
+            toast.error("Password dosen't match.");
+            return;
+        }
+
         const filteredData = Object.fromEntries(
             Object.entries({ ...data, timezone: timezone?.value, location: location }).filter(([key, value]) => value !== '')
         );
-        console.log(" Data:", filteredData);
+        console.log("Data:", filteredData);
     };
 
     return (
@@ -100,23 +120,25 @@ const CreateUser = () => {
 
                                 <div>
                                     <label htmlFor="name">Full Name</label>
-                                    <input id="name" placeholder="Jimmy Turner" {...register("firstName", { required: true })} className="form-input" />
+                                    <input id="name" placeholder="Exmpal Turner" {...register("firstName", { required: true })} className="form-input" />
                                     {errors.firstName && <span className='text-danger text-sm'>Enter your name</span>}
                                 </div>
 
                                 <div>
                                     <label htmlFor="email">Email</label>
-                                    <input id="email" type="email" defaultValue="" {...register("email", { required: true })} placeholder="Jimmy@gmail.com" className="form-input " />
-                                    {errors.email && <span className='text-danger text-sm'>Enter your Email</span>}
+                                    <input id="email" type="email" defaultValue="" {...register("email", { required: true, pattern: emailRegex })} placeholder="Jimmy@gmail.com" className="form-input" />
+                                    {errors.email && <span className='text-danger text-sm'>Enter a valid Email</span>}
                                 </div>
+
                                 <div>
                                     <label htmlFor="role">Password</label>
-                                    <input type='password' id="password" placeholder="Password" {...register("Password", { required: true })} className="form-input  capitalize" />
-                                    {errors.Password && <span className='text-danger text-sm'>Enter your Password</span>}
+                                    <input type='password' id="password" placeholder="Password" {...register("Password", { required: true, pattern: PasswordPattern })} className="form-input capitalize" />
+                                    {errors.Password && <span className='text-danger text-sm'>Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.)</span>}
                                 </div>
+
                                 <div>
-                                    <label htmlFor="role">Confirm password </label>
-                                    <input type='password' id="confirm_password" {...register("CPassword", { required: true })} placeholder="Confirm password" className="form-input  capitalize" />
+                                    <label htmlFor="role">Confirm password</label>
+                                    <input type='password' id="confirm_password" {...register("CPassword", { required: true })} placeholder="Confirm password" className="form-input capitalize" />
                                     {errors.CPassword && <span className='text-danger text-sm'>Enter your Confirm password</span>}
                                 </div>
 
@@ -129,6 +151,7 @@ const CreateUser = () => {
                                     <label htmlFor="role">Role</label>
                                     {!showRoleInput ? (
                                         <select {...register("role")} className="form-input">
+                                            <option value="select">Select Role</option>
                                             {roleOptions.map((role) => (
                                                 <option key={role} value={role}>{role}</option>
                                             ))}
@@ -141,9 +164,8 @@ const CreateUser = () => {
                                             </button>
                                         </div>
                                     )}
-                                    {/* toggle button */}
                                     <div className="mb-2 mt-2 flex items-center justify-between absolute">
-                                        <button type="button" onClick={() => setShowRoleInput((prev) => !prev)} className=" text-bold cursor-pointer p-0 font-sans text-white-dark">
+                                        <button type="button" onClick={() => setShowRoleInput((prev) => !prev)} className="text-bold cursor-pointer p-0 font-sans text-white-dark">
                                             {showRoleInput ? allSvgs.minusForHide : allSvgs.plusForAddCp}
                                         </button>
                                     </div>
@@ -156,11 +178,8 @@ const CreateUser = () => {
                                         value={timezone}
                                         onChange={(selectedTimezone) => {
                                             setTimezone(selectedTimezone);
-                                            // Update the form value
                                             setValue("Timezone", selectedTimezone?.value || '');
                                         }}
-                                    //! Optional: Default timezone if needed
-                                    //! defaultValue={yourDefaultTimezone}
                                     />
                                 </div>
                             </div>
@@ -171,9 +190,9 @@ const CreateUser = () => {
                                 Create User
                             </button>
                         </div>
-                    </form >
-                </div >
-            </div >
+                    </form>
+                </div>
+            </div>
         </>
     );
 };
