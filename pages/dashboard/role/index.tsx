@@ -104,32 +104,38 @@ const Role = () => {
                         </td>
                         <td>{role?.role}</td>
                         <td className='flex flex-wrap gap-2 w-[60%]'>
-                          {role?.permissions && role?.permissions?.length > 0 && role?.permissions?.map((permission: string, index: number) => (
-                            <div className="" key={index}>
-                              <div className="">
-                                <span className="badge bg-secondary shadow-md dark:group-hover:bg-transparent capitalize">{permission}</span>
-                              </div>
-                            </div>
-                          ))}
+                          {role?.role === 'admin' ? (
+                            <span className='text-secondary font-semibold'>Access All Permissions</span>
+                          ) : (
+                            <>
+                              {role?.permissions && role?.permissions?.length > 0 && role?.permissions?.map((permission: string, index: number) => (
+                                <div className="" key={index}>
+                                  <div className="">
+                                    <span className="badge bg-secondary shadow-md dark:group-hover:bg-transparent capitalize">{permission}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </>
+                          )}
                         </td>
                         {(authPermissions?.includes('edit_role') || authPermissions?.includes('delete_role')) && (
-                        <td>
-                          <div className='space-x-4'>
-                            {authPermissions?.includes('edit_role') && (
-                              <Link href={`/dashboard/role/edit-role/${role?._id}`}>
-                                <button type="button" className="">{allSvgs.editPen}</button>
-                              </Link>
-                            )}
+                          <td>
+                            <div className='space-x-4'>
+                              {authPermissions?.includes('edit_role') && (
+                                <Link href={`/dashboard/role/edit-role/${role?._id}`}>
+                                  <button type="button" className="">{allSvgs.editPen}</button>
+                                </Link>
+                              )}
 
-                            {role?.is_delete && (
-                              <>
-                                {authPermissions?.includes('delete_role') && (
-                                  <button onClick={() => deletePermission(role?._id)} type="button" className="p-0">{allSvgs.trash}</button>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        </td>
+                              {role?.is_delete && (
+                                <>
+                                  {authPermissions?.includes('delete_role') && (
+                                    <button onClick={() => deletePermission(role?._id)} type="button" className="p-0">{allSvgs.trash}</button>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </td>
                         )}
                       </tr>
                     ))

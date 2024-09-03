@@ -218,7 +218,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/role" className="group">
                 <div className="flex items-center">
                   {allSvgs.mettingLinkIcon}
-                  <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Role</span>
+                  <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Role Management</span>
                 </div>
               </Link>
             </li>

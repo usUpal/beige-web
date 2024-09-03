@@ -20,6 +20,15 @@ const roleApi = baseApi.injectEndpoints({
       }
     }),
 
+    getErrorStatus: builder.query({
+      query: () => {
+        return {
+          url: "error",
+          method: 'GET'
+        }
+      }
+    }),
+
     getSingleRole: builder.query({
       query:(data) => {
         return {
@@ -59,7 +68,7 @@ const roleApi = baseApi.injectEndpoints({
   })
 })
 
-export const { useGetAllRolesQuery, useGetAllPermissionsQuery, useGetSingleRoleQuery,usePostRoleMutation,useUpdateRoleMutation,useDeleteRoleMutation } = roleApi
+export const { useGetAllRolesQuery, useGetAllPermissionsQuery, useGetSingleRoleQuery,usePostRoleMutation,useUpdateRoleMutation,useDeleteRoleMutation , useGetErrorStatusQuery} = roleApi
 
 
 
