@@ -39,8 +39,13 @@ const ShootDetails = () => {
   const [metingDate, setMetingDate] = useState<string>('');
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
-  const { data, error: shootDetailsError, isLoading: isDetailsLoading, refetch } = useGetShootDetailsQuery(shootId, {
-    refetchOnMountOrArgChange: true
+  const {
+    data,
+    error: shootDetailsError,
+    isLoading: isDetailsLoading,
+    refetch,
+  } = useGetShootDetailsQuery(shootId, {
+    refetchOnMountOrArgChange: true,
   });
   const [updateStatus, { isLoading: isStatusLoading }] = useUpdateStatusMutation();
   const [assignCp, { isLoading: isAssignCpLoading }] = useAssignCpMutation();
@@ -55,9 +60,13 @@ const ShootDetails = () => {
     }),
     [currentPage, query]
   );
-  const { data: allCp, error: getCpError, isLoading: isGetCpLoading } = useGetAllCpQuery(queryParams, {
+  const {
+    data: allCp,
+    error: getCpError,
+    isLoading: isGetCpLoading,
+  } = useGetAllCpQuery(queryParams, {
     refetchOnMountOrArgChange: true,
-  })
+  });
 
   const coordinates = data?.geo_location?.coordinates;
   const isLocationAvailable = coordinates && coordinates.length === 2;
@@ -67,10 +76,9 @@ const ShootDetails = () => {
   const currentIndex = orderStatusArray.findIndex((status) => status.toLowerCase() === lowerCaseOrderStatus);
   const cancelIndex = rejectStatus.findIndex((status) => status.toLowerCase() === lowerCaseOrderStatus);
 
-
   const submitNewMeting = async () => {
     if (!metingDate) {
-      toast.error("Input a meeting date...!");
+      toast.error('Input a meeting date...!');
       return;
     }
 
@@ -83,10 +91,10 @@ const ShootDetails = () => {
         startDateTime: metingDate,
         endDateTime: metingDate,
         orderId: shootId,
-      }
+      },
     };
 
-    const response = await newMeetLink(requestBody)
+    const response = await newMeetLink(requestBody);
     if (response?.data) {
       const requestBody = {
         meeting_date_time: metingDate,
@@ -109,7 +117,6 @@ const ShootDetails = () => {
     }
   };
 
-
   const handelUpdateStatus = async () => {
     if (!status) {
       return toast.error('Please select a status!');
@@ -117,8 +124,8 @@ const ShootDetails = () => {
 
     const data = {
       order_status: status,
-      id: shootId
-    }
+      id: shootId,
+    };
 
     const result = await updateStatus(data);
 
@@ -150,17 +157,17 @@ const ShootDetails = () => {
 
   const updateCps = async () => {
     if (!cp_ids.length) {
-      toast.error('Please select Cp...!')
+      toast.error('Please select Cp...!');
       return;
     }
     const data = {
       cp_ids: cp_ids,
-      id: shootId
-    }
+      id: shootId,
+    };
     const result = await assignCp(data);
-    if(result?.data){
+    if (result?.data) {
       refetch();
-      toast.success('Cp assigned success...!')
+      toast.success('Cp assigned success...!');
       setCpModal(false);
     }
   };
@@ -289,7 +296,6 @@ const ShootDetails = () => {
                         lng: coordinates[0], // Longitude
                       }}
                       defaultZoom={11}
-
                     >
                       <div>
                         <img src="/assets/images/marker-icon.png" alt="Marker Icon" style={{ height: '25px', width: '20px' }} />
@@ -397,10 +403,7 @@ const ShootDetails = () => {
                       <div className="flex space-x-2">
                         <select name="" id="" onChange={(event) => setStatus(event?.target?.value)} className="rounded-sm border border-black px-2 lg:w-[240px]">
                           {allStatus?.map((item, key) => (
-                            <option
-                              selected={item?.key === status ? true : false}
-                              key={key}
-                              value={item?.key}>
+                            <option selected={item?.key === status ? true : false} key={key} value={item?.key}>
                               {item?.value}
                             </option>
                           ))}
@@ -579,8 +582,9 @@ const ShootDetails = () => {
                             aria-hidden="true"
                           ></span>
                           <div
-                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
-                              } transition-all duration-200`}
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
+                              status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
+                            } transition-all duration-200`}
                           >
                             {status === 'Cancelled' ? (
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -666,8 +670,9 @@ const ShootDetails = () => {
                               <div className="mt-3 flex">
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
-                                    } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
+                                    isSelected ? 'bg-red-500' : 'bg-black'
+                                  } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
                                 </p>

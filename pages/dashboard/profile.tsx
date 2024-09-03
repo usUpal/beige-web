@@ -163,6 +163,20 @@ const Profile = () => {
     setShowImage(false);
   };
 
+  const [profilePicture, setProfilePicture] = useState(userData?.profile_picture || '');
+  const [name, setName] = useState(userData?.name || '');
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div>
       <ul className="flex space-x-2 rtl:space-x-reverse">
