@@ -33,6 +33,7 @@ import RoleProtection from '@/components/RoleProtection';
 import { usePostOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
+import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
 
 interface FormData {
   content_type: string;
@@ -83,6 +84,7 @@ const BookNow = () => {
 
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
+  const { data: pricingData } = useGetAllPricingQuery({});
 
   const {
     register,
@@ -115,7 +117,7 @@ const BookNow = () => {
   //   Calculate shoot cost
   useEffect(() => {
     if (activeTab === 3) {
-      const totalShootCost = shootCostCalculation(getTotalDuration, formDataPageOne?.content_type, cp_ids, formDataPageOne?.content_vertical);
+      const totalShootCost = shootCostCalculation(getTotalDuration, formDataPageOne?.content_type, cp_ids, formDataPageOne?.content_vertical, pricingData?.results);
       setShootCosts(totalShootCost);
     }
   }, [activeTab]);
@@ -495,8 +497,6 @@ const BookNow = () => {
   console.log('🚀 ~ BookNow ~ isSuccess:', isSuccess);
 
   const onSubmit = async (data: any) => {
-    console.log('🚀 ~ onSubmit ~ data:', data);
-    return;
     if (geo_location?.coordinates?.length === 0) {
       toast.error('Please select shoot location...!');
       return;
@@ -1182,13 +1182,7 @@ const BookNow = () => {
 
                       <>
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
-                          <h2
-                            className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                            // onClick={() => shootCostCalculation()}
-                          >
-                            {' '}
-                            Total Calculation
-                          </h2>
+                          <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black"> Total Calculation</h2>
                           <>
                             <div className="flex flex-col sm:flex-row">
                               <div className="flex-1">

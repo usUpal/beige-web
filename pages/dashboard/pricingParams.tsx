@@ -19,10 +19,9 @@ const PricingCalculation = () => {
   const [updatePrice, { isLoading: isPatchLoading, isSuccess, isError }] = useUpdatePriceMutation();
   useEffect(() => {
     if (isSuccess) {
-      // Notify the user of success
       Swal.fire(' Saved!', '', 'success');
       refetch();
-    } else if (isError) {
+    } else if (isError || error) {
       Swal.fire('Error!', 'Something went wrong', 'error');
     }
   }, [isError, isSuccess]);
@@ -82,40 +81,64 @@ const PricingCalculation = () => {
               <thead>
                 <tr>
                   <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
-                  <th>Rate/Hour ($)</th>
+                  <th>Rate/Hour($)</th>
                   <th>Status</th>
                   <th>Edit</th>
                 </tr>
               </thead>
 
               <tbody>
-                {data &&
-                  data?.results?.map((price, index) => {
+                {data?.results
+                  ?.filter((item) => item?.isHourly === true)
+                  .map((price, index) => {
                     const { rate, status, title } = price;
                     return (
                       <tr key={index}>
-                        <td className="capitalize">{title}</td>
+                        <td className="w-4/12 capitalize">{title}</td>
                         <td>
-                          <input disabled name={title} type="number" defaultValue={rate} className="form-input w-3/6" />
+                          <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
                         </td>
                         <td>
                           <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
                         </td>
-                        <td onClick={() => handleRateEdit(price)}>edit</td>
+                        <td onClick={() => handleRateEdit(price)}>
+                          <span className={`badge text-md w-12 bg-[#48cae4] text-center`}>Edit</span>
+                        </td>
                       </tr>
                     );
                   })}
+              </tbody>
+            </table>
+            <table>
+              <thead>
+                <tr>
+                  <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
+                  <th>Extra Rate($)</th>
+                  <th>Status</th>
+                  <th>Edit</th>
+                </tr>
+              </thead>
 
-                {/* })} */}
-
-                {/* Calculate */}
-                {/* <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>
-                    <button type="submit" className="btn bg-black font-sans text-white" onClick={getValue}>
-                      Save
-                    </button>
-                  </td>
-                </tr> */}
+              <tbody>
+                {data?.results
+                  ?.filter((item) => item?.isHourly === false)
+                  .map((price, index) => {
+                    const { rate, status, title } = price;
+                    return (
+                      <tr key={index}>
+                        <td className="w-4/12 capitalize">{title}</td>
+                        <td>
+                          <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
+                        </td>
+                        <td>
+                          <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
+                        </td>
+                        <td onClick={() => handleRateEdit(price)}>
+                          <span className={`badge text-md w-12 bg-[#48cae4] text-center`}>Edit</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
@@ -126,6 +149,3 @@ const PricingCalculation = () => {
 };
 
 export default PricingCalculation;
-function useGetPricesQuery(): { isLoading: any; data: any; error: any } {
-  throw new Error('Function not implemented.');
-}

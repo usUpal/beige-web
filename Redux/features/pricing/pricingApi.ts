@@ -6,7 +6,7 @@ const priceApi = baseApi.injectEndpoints({
         getAllPricing: builder.query({
             query: () => {
                 return {
-                    url: `prices`,
+                    url: `prices?limit=25`,
                     method: 'GET',
                 };
             }
