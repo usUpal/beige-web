@@ -8,9 +8,6 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 const SidebarManager = (props: any) => {
   const { currentMenu, toggleMenu } = props;
   const { userData, authPermissions } = useAuth();
-
-  //console.log("🚀 ~ SidebarManager ~ userData:", userData)
-  // const isAccessible = (item: any) => item.inAccessible.includes(userData.role);
   return (
     <ul className="relative space-y-0.5 p-4 py-0 font-semibold">
       {authPermissions?.includes('dashboard_page') && (

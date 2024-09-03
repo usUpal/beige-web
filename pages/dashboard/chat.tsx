@@ -68,7 +68,7 @@ const Chat = () => {
         setChats(newChats.results);
         setTotalPagesCount(newChats?.totalPages)
       }
-        console.log("🚀 ~ fetchChats ~ newChats:", newChats)
+        //console.log("🚀 ~ fetchChats ~ newChats:", newChats)
     } catch (error) {
       console.error(error);
       setIsLoading(false);

@@ -176,9 +176,6 @@ const ShootDetails = () => {
     if (!cp || !cp._id) {
       return swalToast('danger', 'Invalid CP data.');
     }
-
-    console.log('cp._id', cp);
-
     try {
       const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
         method: 'PATCH',

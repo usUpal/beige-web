@@ -39,9 +39,6 @@ const SettingsModal = ({ open, closeModal }) => {
     closeModal();
   };
 
-  console.log(settings);
-
-
   return (
     <div>
 
@@ -159,7 +156,7 @@ const SettingsModal = ({ open, closeModal }) => {
                           <input type="email" placeholder="Enter Email" className="form-input" onChange={(e) => setSettings({ ...settings, cdnAdmins: e.currentTarget.value })} value={settings.cdnAdmins} />
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-end items-center mt-8">
                         <button
                           className='flex items-center btn btn-outline-dark relative text-[16px]'

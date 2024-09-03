@@ -37,7 +37,6 @@ const shootApi = baseApi.injectEndpoints({
     }),
     postOrder: builder.mutation({
       query: (data) => {
-        console.log("🚀 ~ data:", data)
         return {
           url: 'orders',
           method: 'POST',

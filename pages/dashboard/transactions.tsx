@@ -45,7 +45,6 @@ const Transactions = () => {
 
   const { data: allPayments, isLoading: isAllPaymentLoading } = useGetAllTransactionQuery(queryParams)
   const [updateTransactionStatus, { isLoading: updateTransactionStatusLoading, isError: updateTransactionStatusError }] = useUpdateTransactionStatusMutation();
-  console.log("🚀 ~ Transactions ~ updateTransactionStatusError:", updateTransactionStatusError)
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -74,33 +73,6 @@ const Transactions = () => {
       toast.error('Something want wrong...!');
       console.error('Patch error:', error);
     }
-
-
-    // try {
-    //   const patchResponse = await fetch(`${API_ENDPOINT}payout/${id}`, {
-    //     method: 'PATCH',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ status: selectedStatus }),
-    //   });
-
-    //   if (!patchResponse.ok) {
-    //     throw new Error('Failed to patch data');
-    //   }
-
-    //   const updatedPayoutRes = await patchResponse.json();
-
-    //   // console.log(updatedPayoutRes);
-
-    //   setAllPayouts((prevPayouts) => {
-    //     return prevPayouts.map((payout) => (payout.id === id ? { ...payout, status: updatedPayoutRes.status } : payout));
-    //   });
-    //   setPayoutModal(false);
-    //   coloredToast('success', 'Payment status update successfully');
-    // } catch (error) {
-    //   console.error('Patch error:', error);
-    // }
   };
 
   return (
@@ -126,14 +98,12 @@ const Transactions = () => {
             </thead>
 
             <tbody>
-
               {isAllPaymentLoading ? (
                 <>
                   <PreLoader></PreLoader>
                 </>
               ) : (
                 <>
-
                   {allPayments?.results && allPayments?.results?.length > 0 ? (
                     allPayments?.results?.map((data: any) => {
                       return (

@@ -81,7 +81,6 @@ const Users = () => {
     try {
       const response = await fetch(`${API_ENDPOINT}users?limit=30&page=${currentPage}`);
       const users = await response.json();
-      console.log('🚀 ~ getAllClients ~ users:', users);
       setTotalPagesCount(users?.totalPages);
       setAllClients(users.results);
     } catch (error) {

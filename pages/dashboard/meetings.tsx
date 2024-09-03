@@ -103,7 +103,6 @@ const Meeting = () => {
         },
       };
       const result = await updateReschedule(data);
-      console.log('🚀 ~ handelRescheduleMeeting ~ result:', result);
     } catch (error) {
       console.error('Error occurred while sending POST request:', error);
     }

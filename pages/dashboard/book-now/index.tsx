@@ -493,8 +493,6 @@ const BookNow = () => {
   };
 
   const [postOrder, { isSuccess, isLoading: isPostOrderLoading }] = usePostOrderMutation();
-  console.log('🚀 ~ BookNow ~ isPostOrderLoading:', isPostOrderLoading);
-  console.log('🚀 ~ BookNow ~ isSuccess:', isSuccess);
 
   const onSubmit = async (data: any) => {
     if (geo_location?.coordinates?.length === 0) {
@@ -539,7 +537,6 @@ const BookNow = () => {
           return false;
         }
         if (activeTab === 3) {
-          console.log('🚀 ~ onSubmit ~ formattedData:', formattedData);
           const result = await postOrder(formattedData);
           if (result?.data) {
             toast.success('Shoot has been created successfully');
@@ -606,8 +603,6 @@ const BookNow = () => {
   };
 
   const handleClientChange = (client) => {
-    console.log('client', client);
-    //const selectedOption = event.target.options[event.target.selectedIndex];
     setClient_id(client?.id);
     setClientName(client?.name);
     setShowClientDropdown(false);
@@ -720,7 +715,7 @@ const BookNow = () => {
                         </div>
                       </div>
                       <div className="my-5 flex items-center justify-between">
-                        {userData?.role === 'manager' && (
+                        {userData?.role === 'admin' && (
                           <div className="relative flex basis-[45%] flex-col sm:flex-row">
                             <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                               Client

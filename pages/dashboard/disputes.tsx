@@ -32,7 +32,6 @@ const Disputes = () => {
 
   const { userData } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
-  //   console.log(userData);
 
   // all disputes user base
   const getAllDusputes = async () => {
@@ -41,7 +40,7 @@ const Disputes = () => {
     if (userRole === 'client' || userRole === 'cp') {
       url = `${API_ENDPOINT}disputes/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
     }
-    // console.log('🚀 ~ getAllMyShoots ~ url:', url);
+
     try {
       const response = await fetch(url);
       const allDusputes = await response.json();
@@ -61,7 +60,6 @@ const Disputes = () => {
       const disputeDetailsRes = await response.json();
 
       if (!disputeDetailsRes) {
-        // console.log(response);
       } else {
         setDisputeModal(true);
         setDisputeInfo(disputeDetailsRes);

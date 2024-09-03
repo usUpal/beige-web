@@ -136,7 +136,6 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   };
   const fileCards = () => {
     return filesInPath(path, ignoringFileStructure).map((file) => (
-      // console.log(file);
       <FileCard
         key={file.id}
         id={file.id}
