@@ -17,6 +17,7 @@ const Header = () => {
   const handleLogout = async () => {
     //Remove cookies
     Cookies.remove('userData');
+    Cookies.remove('authPermissions');
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
 
