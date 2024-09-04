@@ -77,29 +77,3 @@ export const menuData = [
   },
 ];
 
-export const permissions = [
-  {
-    role: 'user',
-    key: 'add_booking',
-    name: 'Shoot Booking',
-    status: true,
-  },
-  {
-    role: 'user',
-    key: 'shoots',
-    name: 'Shoots',
-    status: false,
-  },
-  {
-    role: 'admin',
-    key: 'dashboard',
-    name: 'Dashboard',
-    status: false,
-  },
-  {
-    role: 'cp',
-    key: 'dashboard',
-    name: 'Dashboard',
-    status: false,
-  },
-];
