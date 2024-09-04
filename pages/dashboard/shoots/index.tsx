@@ -41,7 +41,6 @@ const Shoots = () => {
     refetchOnMountOrArgChange: true,
   });
 
-
   // Memoize handlePageChange
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
@@ -67,15 +66,11 @@ const Shoots = () => {
             <thead>
               <tr>
                 <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Shoot Name</th>
-                <th className="text-[16px] font-semibold">Shoot ID</th>
+                {/* <th className="text-[16px] font-semibold">Shoot ID</th> */}
                 <th className="text-[16px] font-semibold">Price</th>
-                {authPermissions?.includes('shoot_download') && (
-                  <th className="text-[16px] font-semibold">Files</th>
-                )}
+                {authPermissions?.includes('shoot_download') && <th className="text-[16px] font-semibold">Files</th>}
                 <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                {authPermissions?.includes('shoot_show_details') && (
-                  <th className="text-[16px] font-semibold">View</th>
-                )}
+                {authPermissions?.includes('shoot_show_details') && <th className="text-[16px] font-semibold">View</th>}
               </tr>
             </thead>
             <tbody>

@@ -169,16 +169,19 @@ const CpUsers = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {allCpUsers?.map((cpUser) => (
-                          <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                            <td className="min-w-[150px] font-sans text-black dark:text-white">
-                              <div className="flex items-center">
-                                <p className="whitespace-nowrap">{cpUser?.userId?._id}</p>
-                              </div>
-                            </td>
-                            <td>{cpUser?.userId?.name}</td>
-                            <td>{cpUser?.userId?.email}</td>
-                            <td className="font-sans text-success">{cpUser?.userId?.role}</td>
+                        {allCpUsers?.map(
+                          (cpUser) => (
+                            console.log(' ---> ', cpUser),
+                            (
+                              <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                                <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                  <div className="flex items-center">
+                                    <p className="whitespace-nowrap">{cpUser?.userId?._id}</p>
+                                  </div>
+                                </td>
+                                <td>{cpUser?.userId?.name}</td>
+                                <td>{cpUser?.userId?.email}</td>
+                                <td className="font-sans text-success">{cpUser?.userId?.role}</td>
 
                             <td>
                               <div className="font-sans">
