@@ -477,7 +477,7 @@ const ShootDetails = () => {
                               </td>
                               <td className="border-b px-4 py-2 text-right">
                                 <div className="flex justify-center">
-                                  {userData?.role === 'manager' ? (
+                                  {userData?.role === 'admin' ? (
                                     <Tippy content="Cancel">
                                       <button onClick={() => cancelCp(cp)} className={`rounded bg-red-500 p-1 text-white`}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -524,7 +524,7 @@ const ShootDetails = () => {
                             <div className="mx-auto h-12 w-12 overflow-hidden rounded-full">
                               <img src={cpShortDetailsInfo?.profile_picture} alt="img" className="h-full w-full object-cover" />
                             </div>
-                            {userData?.role === 'manager' && (
+                            {userData?.role === 'admin' && (
                               <div className="details">
                                 <div className="flex justify-center ">
                                   <Link href={`cp/${cpShortDetailsInfo?.id}`}>

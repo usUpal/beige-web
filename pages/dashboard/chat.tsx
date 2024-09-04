@@ -444,7 +444,7 @@ const Chat = () => {
                             <div key={index}>
                               <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
                                 <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
-                                  {message?.senderId === userData.id ? (userRole == 'manager' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
+                                  {message?.senderId === userData.id ? (userRole == 'admin' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
                                   {message?.senderId !== userData.id
                                     ? message?.senderName == 'Admin User'
                                       ? createImageByName('MA')
@@ -582,7 +582,7 @@ const Chat = () => {
                           })),
                           ...selectedChatRoom?.manager_ids.map((manager) => ({
                             ...manager,
-                            type: 'manager',
+                            type: 'admin',
                           })),
                         ].map(
                           (item, index) => (
@@ -593,8 +593,8 @@ const Chat = () => {
                                 <div className="flex flex-col space-y-0">
                                   <span className="text-black dark:text-white">{item?.id?.name}</span>
                                   <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
-                                    {/* {item.type === 'manager' ? (item?.id?.role === 'manager' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp') : 'Cp'} */}
-                                    {item?.id?.role === 'manager' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
+                                    {/* {item.type === 'admin' ? (item?.id?.role === 'admin' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp') : 'Cp'} */}
+                                    {item?.id?.role === 'admin' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
                                   </span>
                                 </div>
                               </li>
