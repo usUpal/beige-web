@@ -102,7 +102,7 @@ const PricingCalculation = () => {
                           <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
                         </td>
                         <td onClick={() => handleRateEdit(price)}>
-                          <span className={`badge text-md w-12 bg-[#48cae4] text-center`}>Edit</span>
+                          <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>Edit</span>
                         </td>
                       </tr>
                     );
@@ -134,7 +134,7 @@ const PricingCalculation = () => {
                           <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
                         </td>
                         <td onClick={() => handleRateEdit(price)}>
-                          <span className={`badge text-md w-12 bg-[#48cae4] text-center`}>Edit</span>
+                          <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>Edit</span>
                         </td>
                       </tr>
                     );

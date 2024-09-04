@@ -35,7 +35,7 @@ const rootReducer = combineReducers({
 const errorHandlerMiddleware = ({ dispatch }) => (next) => (action) => {
   // Check if the action contains an API response
   if (action.payload && action.payload.status === 403) {
-    Router.push('/errors/access-denied')
+    window.location.href = '/errors/access-denied';
   }
   return next(action);
 };
