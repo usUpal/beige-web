@@ -852,7 +852,7 @@ const BookNow = () => {
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
-                              <p className="btn btn-success ml-2 mt-4 h-9 cursor-pointer" onClick={addDateTime}>
+                              <p className="btn rounded-md border-2 border-[#b7aa85] text-[#b7aa85] ml-2 mt-4 h-9 cursor-pointer shadow-none" onClick={addDateTime}>
                                 Add
                               </p>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
