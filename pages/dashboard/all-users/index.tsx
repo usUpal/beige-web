@@ -125,6 +125,12 @@ const Users = () => {
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">
               <h5 className="text-lg font-semibold dark:text-white-light">All Users</h5>
+              <div className="flex gap-2">
+                <Link href="/dashboard/create-user">
+                  <button className="rounded-md border-2 border-[#b7aa85] px-4 py-1 text-[#b7aa85]">Create New User</button>
+                </Link>
+                <button className=" rounded-md border-2 border-[#b7aa85] px-4 py-1 text-[#b7aa85]"> Create New Cp</button>
+              </div>
             </div>
             <div className="mb-5">
               <div className="inline-block w-full">
@@ -157,7 +163,10 @@ const Users = () => {
                               <td className="font-sans text-success">{user?.role}</td>
                               <td className='hidden md:block'>
                                 <div className="font-sans ">
-                                  <StatusBg>{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg>
+                                  {/* <StatusBg>{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg> */}
+                                  <span className={`badge text-md w-12 ${!user?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
+                                    {user?.isEmailVerified === true ? 'Verified' : 'Unverified'}
+                                  </span>
                                 </div>
                               </td>
                               {authPermissions?.includes('edit_all_users') && (
