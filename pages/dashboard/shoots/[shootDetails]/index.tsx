@@ -17,7 +17,7 @@ import Loader from '@/components/SharedComponent/Loader';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
-import flatpickr from 'flatpickr';
+// import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 
@@ -176,9 +176,6 @@ const ShootDetails = () => {
     if (!cp || !cp._id) {
       return swalToast('danger', 'Invalid CP data.');
     }
-
-    console.log('cp._id', cp);
-
     try {
       const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
         method: 'PATCH',
@@ -394,7 +391,7 @@ const ShootDetails = () => {
                     </div>
                   )}
                 </div>
-                {userData?.role === 'manager' && (
+                {userData?.role === 'admin' && (
                   <div className="flex space-x-3">
                     <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setStatusBox(!statusBox)}>
                       Change Status
@@ -431,7 +428,7 @@ const ShootDetails = () => {
               <div className="mb-4 basis-[45%]">
                 <div className="mb-3 flex w-full items-center gap-2">
                   <label className="mb-0 font-sans text-[14px] capitalize">Assign CP's</label>
-                  {userData?.role === 'manager' && (
+                  {userData?.role === 'admin' && (
                     <div className="flex gap-3">
                       <button onClick={() => setCpModal(!cpModal)} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
@@ -454,8 +451,11 @@ const ShootDetails = () => {
                             <th className="border-b px-4 py-2">
                               <div className="flex justify-center">Decision</div>
                             </th>
-                            <th className="border-b px-4 py-2 text-right">
+                            <th className="border-b px-4 py-2">
                               <div className="flex justify-center">Action</div>
+                            </th>
+                            <th className="border-b px-4 py-2 text-right">
+                              <div className="flex justify-center">Details</div>
                             </th>
                           </tr>
                         </thead>
@@ -496,10 +496,59 @@ const ShootDetails = () => {
                                   )}
                                 </div>
                               </td>
+                              <td className="border-b px-4 py-2 text-right">
+                                <p className="flex justify-center" onClick={() => handleDetailsInfo(cp?._id)}>
+                                  {allSvgs?.threeDotMenuIcon}
+                                </p>
+                              </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
+                    </div>
+                  )}
+
+                  {/* <Modal isOpen={shortProfileModal} onClose={() => setShortProfileModal(false)} cpShortDetailsInfo={cpShortDetailsInfo} /> */}
+
+                  {shortProfileModal && cpShortDetailsInfo && (
+                    <div className="absolute bottom-0 right-[81px] top-[48px] h-min w-[50%] rounded-md bg-white p-2 shadow-md">
+                      <div className="flex justify-end">
+                        <button onClick={() => handleDetailsInfo(selectedCpId || '')} type="button" className="h-1 text-white-dark hover:text-dark ">
+                          {allSvgs.closeModalSvg}
+                        </button>
+                      </div>
+
+                      <div className="px-2 pb-2">
+                        <div className="flex items-start justify-evenly gap-4 py-1 text-white dark:text-white-light">
+                          <div>
+                            <div className="mx-auto h-12 w-12 overflow-hidden rounded-full">
+                              <img src={cpShortDetailsInfo?.profile_picture} alt="img" className="h-full w-full object-cover" />
+                            </div>
+                            {userData?.role === 'manager' && (
+                              <div className="details">
+                                <div className="flex justify-center ">
+                                  <Link href={`cp/${cpShortDetailsInfo?.id}`}>
+                                    <button type="button" className=" mx-auto mt-1 hidden text-[12px] text-black underline md:me-0 md:block">
+                                      View Details
+                                    </button>
+                                  </Link>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-[12px]">
+                            <p className="font-semibold text-black">
+                              Name: <span className="font-light">{cpShortDetailsInfo?.name}</span>
+                            </p>
+                            <p className="font-semibold text-black">
+                              Email: <span className="font-light"> {cpShortDetailsInfo?.email}</span>
+                            </p>
+                            <p className="font-semibold text-black">
+                              Location: <span className="font-light">{cpShortDetailsInfo?.location}</span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>

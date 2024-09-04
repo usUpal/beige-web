@@ -1,5 +1,5 @@
-import { API_ENDPOINT } from "@/config";
-import { useEffect, useState } from "react";
+import { API_ENDPOINT } from '@/config';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 const useAllCp = () => {
@@ -12,7 +12,6 @@ const useAllCp = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [userInfo, setUserInfo] = useState<any | null>(null);
   const [userModal, setUserModal] = useState(false);
-
 
   const getAllCpUsers = async () => {
     try {
@@ -57,9 +56,9 @@ const useAllCp = () => {
 
   useEffect(() => {
     getAllCpUsers();
-  }, [currentPage,query]);
+  }, [currentPage, query]);
 
-  return ([allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query,setQuery]);
+  return [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery];
 };
 
 export default useAllCp;

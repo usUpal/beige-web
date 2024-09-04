@@ -82,7 +82,7 @@ const ProfileForm = () => {
 
   const onSubmit = async (data: userData) => {
     setIsLoading(true);
-    if(userRole == 'manager'){
+    if (userRole == 'manager') {
       coloredToast('danger', 'Admin profile update is under development');
       setIsLoading(false);
       return;
@@ -105,7 +105,7 @@ const ProfileForm = () => {
         throw new Error('Failed to patch data');
       }
 
-      if(userRole == 'cp'){
+      if (userRole == 'cp') {
         try {
           const cpResponse = await fetch(`${API_ENDPOINT}cp/${userData?.id}`, {
             method: 'PATCH',
@@ -117,7 +117,6 @@ const ProfileForm = () => {
           if (!cpResponse.ok) {
             throw new Error('Failed to patch data');
           }
-
         } catch (error) {
           console.error('Cp patch error:', error);
         }

@@ -325,7 +325,7 @@ hover:text-primary hover:before:!bg-primary ltr:before:mr-2 rtl:before:ml-2 dark
     /* @apply  border-danger text-danger shadow-none hover:bg-danger hover:text-white;; */
   }
     .btn-outline-darkness {
-      @apply border-black text-white shadow-none hover:bg-black hover:text-white;
+      @apply border-black text-dark shadow-none hover:bg-black hover:text-white;
       
     }
   .btn-gradient {

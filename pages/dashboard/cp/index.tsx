@@ -10,6 +10,7 @@ import StatusBg from '@/components/Status/StatusBg';
 import Pagination from '@/components/Pagination';
 import { useRouter } from 'next/router';
 import ResponsivePagination from 'react-responsive-pagination';
+import { useAuth } from '@/contexts/authContext';
 
 const CpUsers = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -21,7 +22,7 @@ const CpUsers = () => {
   const [showError, setShowError] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<any | null>(null);
   const [formData, setFormData] = useState<any>({});
-
+  const { authPermissions } = useAuth();
   useEffect(() => {
     getAllCpUsers();
   }, [currentPage]);
@@ -44,31 +45,6 @@ const CpUsers = () => {
 
   // routing
   const router = useRouter();
-
-  // User Single
-  // Also unUsed Function For APi
-  /* const getUserDetails = async (singleUserId: string) => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
-            const userDetailsRes = await response.json();
-            console.log(userDetailsRes);
-            const cpRoute = `cp/${userDetailsRes?.id}`;
-            router.push(cpRoute);
-
-            if (!userDetailsRes) {
-                setShowError(true);
-                setLoading(false);
-            } else {
-                setUserInfo(userDetailsRes);
-                setLoading(false);
-                setUserModal(true);
-            }
-        } catch (error) {
-            console.error(error);
-            setLoading(false);
-        }
-    }; */
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -156,8 +132,6 @@ const CpUsers = () => {
     return newData;
   };
 
-  console.log(newData);
-
   return (
     <>
       <div>
@@ -189,20 +163,25 @@ const CpUsers = () => {
                           <th className="font-mono">Email</th>
                           <th className="font-mono">Role</th>
                           <th className="font-mono ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                          <th className="font-mono">Edit</th>
+                          {authPermissions?.includes('edit_content_provider') && (
+                            <th className="font-mono">Edit</th>
+                          )}
                         </tr>
                       </thead>
                       <tbody>
-                        {allCpUsers?.map((cpUser) => (
-                          <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                            <td className="min-w-[150px] font-sans text-black dark:text-white">
-                              <div className="flex items-center">
-                                <p className="whitespace-nowrap">{cpUser?.userId?._id}</p>
-                              </div>
-                            </td>
-                            <td>{cpUser?.userId?.name}</td>
-                            <td>{cpUser?.userId?.email}</td>
-                            <td className="font-sans text-success">{cpUser?.userId?.role}</td>
+                        {allCpUsers?.map(
+                          (cpUser) => (
+                            console.log(' ---> ', cpUser),
+                            (
+                              <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                                <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                  <div className="flex items-center">
+                                    <p className="whitespace-nowrap">{cpUser?.userId?._id}</p>
+                                  </div>
+                                </td>
+                                <td>{cpUser?.userId?.name}</td>
+                                <td>{cpUser?.userId?.email}</td>
+                                <td className="font-sans text-success">{cpUser?.userId?.role}</td>
 
                             <td>
                               <div className="font-sans">
@@ -211,14 +190,15 @@ const CpUsers = () => {
                                 </div>
                               </div>
                             </td>
-
-                            <td>
-                              <Link href={`cp/${cpUser?.userId?._id}`}>
-                                <button type="button" className="p-0">
-                                  {allSvgs.pencilIconForEdit}
-                                </button>
-                              </Link>
-                            </td>
+                            {authPermissions?.includes('edit_content_provider') && (
+                              <td>
+                                <Link href={`cp/${cpUser?.userId?._id}`}>
+                                  <button type="button" className="p-0">
+                                    {allSvgs.pencilIconForEdit}
+                                  </button>
+                                </Link>
+                              </td>
+                            )}
                           </tr>
                         ))}
                       </tbody>

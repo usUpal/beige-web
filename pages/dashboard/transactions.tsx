@@ -17,7 +17,7 @@ import { toast } from 'react-toastify';
 
 const Transactions = () => {
   const dispatch = useDispatch();
-  const { userData } = useAuth();
+  const { userData, authPermissions } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
   const [query, setQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -44,8 +44,7 @@ const Transactions = () => {
   );
 
   const { data: allPayments, isLoading: isAllPaymentLoading } = useGetAllTransactionQuery(queryParams)
-  const [updateTransactionStatus, { isLoading: updateTransactionStatusLoading,isError:updateTransactionStatusError }] = useUpdateTransactionStatusMutation();
-  console.log("🚀 ~ Transactions ~ updateTransactionStatusError:", updateTransactionStatusError)
+  const [updateTransactionStatus, { isLoading: updateTransactionStatusLoading, isError: updateTransactionStatusError }] = useUpdateTransactionStatusMutation();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -74,33 +73,6 @@ const Transactions = () => {
       toast.error('Something want wrong...!');
       console.error('Patch error:', error);
     }
-
-
-    // try {
-    //   const patchResponse = await fetch(`${API_ENDPOINT}payout/${id}`, {
-    //     method: 'PATCH',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ status: selectedStatus }),
-    //   });
-
-    //   if (!patchResponse.ok) {
-    //     throw new Error('Failed to patch data');
-    //   }
-
-    //   const updatedPayoutRes = await patchResponse.json();
-
-    //   // console.log(updatedPayoutRes);
-
-    //   setAllPayouts((prevPayouts) => {
-    //     return prevPayouts.map((payout) => (payout.id === id ? { ...payout, status: updatedPayoutRes.status } : payout));
-    //   });
-    //   setPayoutModal(false);
-    //   coloredToast('success', 'Payment status update successfully');
-    // } catch (error) {
-    //   console.error('Patch error:', error);
-    // }
   };
 
   return (
@@ -119,19 +91,19 @@ const Transactions = () => {
                 <th>Account Holder</th>
                 <th>Withdraw Ammount</th>
                 <th>Status</th>
-                {(userRole === 'manager') ? <th className="text-center">Edit</th> : null}
+                {userRole === 'admin' && authPermissions?.includes('edit_transactions') && (
+                  <th className="text-center">Edit</th>
+                )}
               </tr>
             </thead>
 
             <tbody>
-
               {isAllPaymentLoading ? (
                 <>
                   <PreLoader></PreLoader>
                 </>
               ) : (
                 <>
-
                   {allPayments?.results && allPayments?.results?.length > 0 ? (
                     allPayments?.results?.map((data: any) => {
                       return (
@@ -146,12 +118,13 @@ const Transactions = () => {
                           <td>
                             <StatusBg>{data?.status}</StatusBg>
                           </td>
-                          {(userRole === 'manager') ?
+                          {userRole === 'admin' && authPermissions?.includes('edit_transactions') && (
                             <td className="text-center">
                               <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
                                 {allSvgs.pencilIconForEdit}
                               </button>
-                            </td> : null}
+                            </td>
+                          )}
                         </tr>
                       );
                     })

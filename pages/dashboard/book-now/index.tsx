@@ -33,6 +33,7 @@ import RoleProtection from '@/components/RoleProtection';
 import { usePostOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
+import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
 
 interface FormData {
   content_type: string;
@@ -55,7 +56,7 @@ const BookNow = () => {
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
   const { userData } = useAuth();
-  const [allClients, onlyClients] = useClient();
+  const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
   const [startDateTime, setStartDateTime] = useState('');
@@ -83,6 +84,7 @@ const BookNow = () => {
 
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
+  const { data: pricingData } = useGetAllPricingQuery({});
 
   const {
     register,
@@ -110,11 +112,12 @@ const BookNow = () => {
       handleShowAddonsData();
     }
   }, [formDataPageOne?.content_type?.length]);
+  // get all calculate price params
 
   //   Calculate shoot cost
   useEffect(() => {
     if (activeTab === 3) {
-      const totalShootCost = shootCostCalculation(getTotalDuration, formDataPageOne?.content_type, cp_ids, formDataPageOne?.content_vertical);
+      const totalShootCost = shootCostCalculation(getTotalDuration, formDataPageOne?.content_type, cp_ids, formDataPageOne?.content_vertical, pricingData?.results);
       setShootCosts(totalShootCost);
     }
   }, [activeTab]);
@@ -455,18 +458,18 @@ const BookNow = () => {
 
   const getMeetingLink = async (shootInfo: any, meetingDate: any) => {
     const requestBody = {
-      userId:userData?.id,
-      requestData : {
+      userId: userData?.id,
+      requestData: {
         summary: shootInfo?.order_name ? shootInfo?.order_name : 'Beige Meeting',
         location: 'Online',
         description: `Meeting to discuss ${shootInfo?.order_name ? shootInfo?.order_name : 'Beige'} order.`,
         startDateTime: meetingDate,
         endDateTime: meetingDate,
         orderId: shootInfo?.id,
-      }
+      },
     };
 
-    const response = await newMeetLink(requestBody)
+    const response = await newMeetLink(requestBody);
     if (response?.data) {
       const requestBody = {
         meeting_date_time: meetingDate,
@@ -487,51 +490,11 @@ const BookNow = () => {
       console.log("Don't create the meeting link");
       toast.error('Something want wrong...!');
     }
-
-    // try {
-    //   const response = await axios.post(`${API_ENDPOINT}create-event?userId=${userData?.id}`, requestData);
-    //   const myMeetLink = response?.data?.meetLink;
-    //   if (myMeetLink) {
-    //     try {
-    //       const requestBody = {
-    //         meeting_date_time: meetingDate,
-    //         meeting_status: 'pending',
-    //         meeting_type: 'pre_production',
-    //         order_id: shootInfo?.id,
-    //         meetLink: myMeetLink,
-    //       };
-    //       const response = await fetch(`${API_ENDPOINT}meetings`, {
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify(requestBody),
-    //       });
-    //       if (!response.ok) {
-    //         swalToast('danger', 'Something went wrong !');
-    //         throw new Error(`Error: ${response.statusp}`);
-    //       }
-    //       const meetingInfo = await response.json();
-    //       return meetingInfo;
-    //     } catch (error) {
-    //       console.error('Error occurred while sending POST request:', error);
-    //     }
-    //   } else {
-    //     console.error('Error create meet link after create order');
-    //   }
-    // } catch (error) {
-    //   console.error('Error create meet link after create order:', error);
-    // }
-
-  }
-
+  };
 
   const [postOrder, { isSuccess, isLoading: isPostOrderLoading }] = usePostOrderMutation();
-  console.log("🚀 ~ BookNow ~ isPostOrderLoading:", isPostOrderLoading)
-  console.log("🚀 ~ BookNow ~ isSuccess:", isSuccess)
 
   const onSubmit = async (data: any) => {
-
     if (geo_location?.coordinates?.length === 0) {
       toast.error('Please select shoot location...!');
       return;
@@ -574,10 +537,9 @@ const BookNow = () => {
           return false;
         }
         if (activeTab === 3) {
-          console.log("🚀 ~ onSubmit ~ formattedData:", formattedData)
           const result = await postOrder(formattedData);
           if (result?.data) {
-            toast.success('Shoot has been created successfully')
+            toast.success('Shoot has been created successfully');
             if (data.meeting_time) {
               const meeting_time = convertToISO(data.meeting_time);
               const meetingInfo = await getMeetingLink(result?.data, meeting_time);
@@ -641,8 +603,6 @@ const BookNow = () => {
   };
 
   const handleClientChange = (client) => {
-    console.log('client', client);
-    //const selectedOption = event.target.options[event.target.selectedIndex];
     setClient_id(client?.id);
     setClientName(client?.name);
     setShowClientDropdown(false);
@@ -755,7 +715,7 @@ const BookNow = () => {
                         </div>
                       </div>
                       <div className="my-5 flex items-center justify-between">
-                        {userData?.role === 'manager' && (
+                        {userData?.role === 'admin' && (
                           <div className="relative flex basis-[45%] flex-col sm:flex-row">
                             <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                               Client
@@ -821,7 +781,7 @@ const BookNow = () => {
                             Location
                           </label>
                           <div className="flex-grow">
-                            <Map setGeo_location={setGeo_location} />
+                            <Map setGeo_location={setGeo_location} setLocation={setLocation} />
                           </div>
                         </div>
                       </div>
@@ -986,45 +946,47 @@ const BookNow = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="mt-5 flex items-center justify-between">
-                        {/* Special Note */}
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Special Note
-                          </label>
-                          <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
-                        </div>
-                        <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
-                          <label htmlFor="meeting_time" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
-                            Meeting time
-                          </label>
+                      {userData?.role === 'admin' && (
+                        <div className="mt-5 flex items-center justify-between">
+                          {/* Special Note */}
+                          <div className="flex basis-[45%] flex-col sm:flex-row">
+                            <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                              Special Note
+                            </label>
+                            <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
+                          </div>
+                          <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
+                            <label htmlFor="meeting_time" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
+                              Meeting time
+                            </label>
 
-                          <div className="relative w-[98%] pl-5">
-                            <Flatpickr
-                              id="meeting_time"
-                              className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
-                              value={meetingTime}
-                              placeholder="Meeting time ..."
-                              options={{
-                                altInput: true,
-                                altFormat: 'F j, Y h:i K',
-                                dateFormat: 'Y-m-d H:i',
-                                enableTime: true,
-                                time_24hr: false,
-                                minDate: 'today',
-                              }}
-                              onChange={(date) => {
-                                setMeetingTime(date[0]); // Set the selected date
-                                setValue('meeting_time', date[0]); // Update form value
-                              }}
-                            />
-                            <input type="hidden" {...register('meeting_time')} />
+                            <div className="relative w-[98%] pl-5">
+                              <Flatpickr
+                                id="meeting_time"
+                                className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
+                                value={meetingTime}
+                                placeholder="Meeting time ..."
+                                options={{
+                                  altInput: true,
+                                  altFormat: 'F j, Y h:i K',
+                                  dateFormat: 'Y-m-d H:i',
+                                  enableTime: true,
+                                  time_24hr: false,
+                                  minDate: 'today',
+                                }}
+                                onChange={(date) => {
+                                  setMeetingTime(date[0]); // Set the selected date
+                                  setValue('meeting_time', date[0]); // Update form value
+                                }}
+                              />
+                              <input type="hidden" {...register('meeting_time')} />
 
-                            <span className="-translate-y-1/6 pointer-events-none absolute right-2 top-1 transform">🗓️</span>
-                            {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
+                              <span className="-translate-y-1/6 pointer-events-none absolute right-2 top-1 transform">🗓️</span>
+                              {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
 
                       <button
                         type="submit"
@@ -1092,8 +1054,9 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
+                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1157,7 +1120,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                            // disabled={disableInput}
+                                              // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1216,13 +1179,7 @@ const BookNow = () => {
 
                       <>
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
-                          <h2
-                            className="mb-[20px] font-sans text-[24px] capitalize text-black"
-                          // onClick={() => shootCostCalculation()}
-                          >
-                            {' '}
-                            Total Calculation
-                          </h2>
+                          <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black"> Total Calculation</h2>
                           <>
                             <div className="flex flex-col sm:flex-row">
                               <div className="flex-1">
@@ -1308,4 +1265,4 @@ const BookNow = () => {
   );
 };
 
-export default RoleProtection(BookNow, ['user', 'manager']);
+export default BookNow;

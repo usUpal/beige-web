@@ -136,7 +136,6 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   };
   const fileCards = () => {
     return filesInPath(path, ignoringFileStructure).map((file) => (
-      // console.log(file);
       <FileCard
         key={file.id}
         id={file.id}
@@ -256,7 +255,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
       </div>
 
       <div className="flex items-center justify-start gap-4">
-        <label className="flex cursor-pointer items-center">
+        {/* <label className="flex cursor-pointer items-center">
           <input
             type="checkbox"
             className="form-checkbox h-4 w-4 border-black text-black focus:outline-black"
@@ -264,12 +263,13 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             onChange={() => setIgnoringFileStructure(!ignoringFileStructure)}
           />
           <span className="ml-2 text-lg font-normal text-gray-900">Ignore Folder Structure</span>
-        </label>
+        </label> */}
 
-        <p className="mb-0 flex items-center gap-2 px-4	 text-lg cursor-pointer" onClick={getFiles}>
+        <p className="mb-0 flex cursor-pointer items-center gap-2	 px-4 text-lg" onClick={getFiles}>
           <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
           Refresh
         </p>
+
         <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
       </div>
 

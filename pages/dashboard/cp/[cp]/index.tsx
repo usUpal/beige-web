@@ -14,7 +14,6 @@ const CpDetails = () => {
   const [showError, setShowError] = useState<boolean>(false);
 
   const [formData, setFormData] = useState<any | null>(null);
-  console.log('🚀 ~ CpDetails ~ formData:', formData);
 
   const params = useParams();
   const dob = formData?.date_of_birth;
@@ -226,7 +225,6 @@ const CpDetails = () => {
       ...booleanFields,
     };
 
-    console.log('🚀 ~ onSubmit ~ updatedData:', updatedData);
     const patchResponse = await fetch(`${API_ENDPOINT}cp/${singleUserId}?role=manager`, {
       method: 'PATCH',
       headers: {

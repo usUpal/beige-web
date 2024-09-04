@@ -1,76 +1,60 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import Link from 'next/link';
+import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
+import Swal from 'sweetalert2';
+import { API_ENDPOINT } from '@/config';
+import { useUpdatePriceMutation } from '@/Redux/features/algo/pricesApi';
 
 const PricingCalculation = () => {
   const dispatch = useDispatch();
-
   //Start theme functionality
   useEffect(() => {
-    dispatch(setPageTitle('Pricing Calculation - Client Web App - Beige'));
+    dispatch(setPageTitle('Pricing parameters'));
   });
 
-  const [isData, setData] = useState(null);
-  const cleanedData = { ...isData };
-  delete cleanedData.__v;
-  delete cleanedData._id;
-
+  const { isLoading, data, error, refetch } = useGetAllPricingQuery({});
+  const [updatePrice, { isLoading: isPatchLoading, isSuccess, isError }] = useUpdatePriceMutation();
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`https://api.beigecorporation.io/v1/prices`);
-        if (!res.ok) {
-          throw new Error(`Error: ${res.status}`);
-        }
-        const jsonData = await res.json();
-        setData(jsonData);
-      } catch (error) {
-        console.error(`Error fetching data`);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleStatusChange = (key: string) => {
-    if (isData[key]) {
-      const updatedData = { ...isData };
-      updatedData[key].status = updatedData[key].status === 0 ? 1 : 0;
-      setData(updatedData);
+    if (isSuccess) {
+      Swal.fire(' Saved!', '', 'success');
+      refetch();
+    } else if (isError || error) {
+      Swal.fire('Error!', 'Something went wrong', 'error');
     }
-  };
+  }, [isError, isSuccess]);
 
-  const handleRateChange = (key, newValue) => {
-    const updatedData = { ...isData };
-    updatedData[key].rate = newValue;
-    setData(updatedData);
-  };
+  const handleRateEdit = async (data: any) => {
+    const { rate, title, id } = data;
 
-  const getValue = () => {
-    const updatedData = JSON.parse(JSON.stringify(cleanedData));
-    const url = 'https://api.beigecorporation.io/v1/prices';
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedData),
-    };
-
-    fetch(url, requestOptions)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+    // Prompt the user for the new rate
+    const result = await Swal.fire({
+      title: 'Update Rate',
+      input: 'number',
+      inputLabel: title,
+      inputValue: rate,
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value) {
+          return 'You need to write the rate!';
+        } else if (value <= 0) {
+          return 'Rate should be positive!';
         }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+        return null;
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        // Perform the rate update
+        await updatePrice({ id, rate: result.value });
+      } catch (error) {
+        // Handle any errors and notify the user
+        Swal.fire('Error!', 'Something went wrong', 'error');
+      }
+    }
   };
 
   return (
@@ -82,7 +66,7 @@ const PricingCalculation = () => {
           </Link>
         </li>
         <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span>Pricing Calculator</span>
+          <span>Pricing Params</span>
         </li>
       </ul>
 
@@ -97,40 +81,64 @@ const PricingCalculation = () => {
               <thead>
                 <tr>
                   <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
-                  <th>Rate/Hour ($)</th>
+                  <th>Rate/Hour($)</th>
                   <th>Status</th>
+                  <th>Edit</th>
                 </tr>
               </thead>
 
               <tbody>
-                {isData &&
-                  Object.keys(cleanedData).map((key, index) => {
-                    const { rate, status } = isData[key];
+                {data?.results
+                  ?.filter((item) => item?.isHourly === true)
+                  .map((price, index) => {
+                    const { rate, status, title } = price;
                     return (
                       <tr key={index}>
-                        <td className="capitalize">{key}</td>
+                        <td className="w-4/12 capitalize">{title}</td>
                         <td>
-                          <input name={key} type="number" value={rate} className="form-input w-3/6" onChange={(e) => handleRateChange(key, e.target.value)} />
+                          <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
                         </td>
                         <td>
-                          <button type="button" className={`rounded-full px-5 py-2 text-white ${status === 1 ? 'bg-success' : 'bg-danger'}`} onClick={() => handleStatusChange(key)}>
-                            {status === 1 ? 'Active' : 'Inactive'}
-                          </button>
+                          <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
+                        </td>
+                        <td onClick={() => handleRateEdit(price)}>
+                          <span className={`badge text-md w-12 bg-[#48cae4] text-center`}>Edit</span>
                         </td>
                       </tr>
                     );
                   })}
-
-                {/* })} */}
-
-                {/* Calculate */}
-                <tr className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                  <td>
-                    <button type="submit" className="btn bg-black font-sans text-white" onClick={getValue}>
-                      Save
-                    </button>
-                  </td>
+              </tbody>
+            </table>
+            <table>
+              <thead>
+                <tr>
+                  <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
+                  <th>Extra Rate($)</th>
+                  <th>Status</th>
+                  <th>Edit</th>
                 </tr>
+              </thead>
+
+              <tbody>
+                {data?.results
+                  ?.filter((item) => item?.isHourly === false)
+                  .map((price, index) => {
+                    const { rate, status, title } = price;
+                    return (
+                      <tr key={index}>
+                        <td className="w-4/12 capitalize">{title}</td>
+                        <td>
+                          <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
+                        </td>
+                        <td>
+                          <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
+                        </td>
+                        <td onClick={() => handleRateEdit(price)}>
+                          <span className={`badge text-md w-12 bg-[#48cae4] text-center`}>Edit</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>

@@ -18,7 +18,6 @@ const transactionApi = baseApi.injectEndpoints({
     }),
     updateTransactionStatus: builder.mutation({
       query: (data) => {
-        console.log("🚀 ~ data:", data)
         return {
           url: `payout/${data?.id}`,
           method: 'PATCH',
