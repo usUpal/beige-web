@@ -7,7 +7,6 @@ import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import StatusBg from '@/components/Status/StatusBg';
-import Pagination from '@/components/Pagination';
 import { useRouter } from 'next/router';
 import ResponsivePagination from 'react-responsive-pagination';
 import { useAuth } from '@/contexts/authContext';
@@ -200,7 +199,7 @@ const CpUsers = () => {
                               </td>
                             )}
                           </tr>
-                        ))}
+                        )))}
                       </tbody>
                     </table>
 
