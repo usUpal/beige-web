@@ -126,7 +126,7 @@ const SidebarManager = (props: any) => {
             </li>
           )}
 
-          {authPermissions?.includes('searching_params') && (
+          {(authPermissions?.includes('searching_params') || authPermissions?.includes('pricing_params')) && (
             <li className="menu nav-item">
               <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('settings')}>
                 <div className="flex items-center">
@@ -143,12 +143,16 @@ const SidebarManager = (props: any) => {
 
               <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
                 <ul className="sub-menu flex flex-col text-gray-500 ">
-                  <li>
-                    <Link href="/dashboard/searchingParams">Set Searching Params</Link>
-                  </li>
-                  <li>
-                    <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
-                  </li>
+                  {authPermissions?.includes('searching_params') && (
+                    <li>
+                      <Link href="/dashboard/searchingParams">Set Searching Params</Link>
+                    </li>
+                  )}
+                  {authPermissions?.includes('pricing_params') && (
+                    <li>
+                      <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
+                    </li>
+                  )}
                 </ul>
               </AnimateHeight>
             </li>

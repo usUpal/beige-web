@@ -41,6 +41,9 @@ const Shoots = () => {
     refetchOnMountOrArgChange: true,
   });
 
+
+  console.log("🚀 ~ Shoots ~ error:", error)
+
   // Memoize handlePageChange
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
