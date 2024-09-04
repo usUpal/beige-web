@@ -145,12 +145,12 @@ const SidebarManager = (props: any) => {
                 <ul className="sub-menu flex flex-col text-gray-500 ">
                   {authPermissions?.includes('searching_params') && (
                     <li>
-                      <Link href="/dashboard/searchingParams">Set Searching Params</Link>
+                      <Link href="/dashboard/searching-params">Set Searching Params</Link>
                     </li>
                   )}
                   {authPermissions?.includes('pricing_params') && (
                     <li>
-                      <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
+                      <Link href="/dashboard/pricing-params">Set Pricing Params</Link>
                     </li>
                   )}
                 </ul>
