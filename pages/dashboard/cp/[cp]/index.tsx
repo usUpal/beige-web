@@ -971,7 +971,8 @@ const CpDetails = () => {
         {/* array fields ends */}
         <div className="flex items-center justify-between">
           <DefaultButton css='font-semibold ml-4'>
-            <Link className='flex items-center' href={'/dashboard/all-users'}>
+            {/* http://localhost:3000/dashboard/all-users */}
+            <Link className='flex items-center' href={`/dashboard/all-users`}>
               Back
             </Link>
           </DefaultButton>

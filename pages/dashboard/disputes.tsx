@@ -107,7 +107,7 @@ const Disputes = () => {
               ) : (
                 <>
 
-                  {desputes && desputes.length >= 0 ? (
+                  {desputes && desputes.length > 0 ? (
 
                     desputes?.map((dispute) => (
                       <tr key={dispute.id ? dispute?.id : dispute?._id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">

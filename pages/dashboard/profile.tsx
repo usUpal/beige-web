@@ -260,12 +260,7 @@ const Profile = () => {
         {userRole === 'cp' && (
           <div className="panel mt-5">
             <div className="flex flex-wrap items-center gap-2">
-              {/* <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleImageClick}>
-                Image
-              </button> */}
-              {/* <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleVideoClick}>
-                Video
-              </button> */}
+
               <DefaultButton onClick={handleImageClick} css=''>Image</DefaultButton>
               <DefaultButton onClick={handleVideoClick} css=''>Vedio</DefaultButton>
 

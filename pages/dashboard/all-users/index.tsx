@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form';
 import ResponsivePagination from 'react-responsive-pagination';
 import { useAuth } from '@/contexts/authContext';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { toast } from 'react-toastify';
 
 const Users = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -108,6 +109,10 @@ const Users = () => {
     }
   };
 
+  const handleCreateNewCp = () => {
+    toast.warning("This page is under Development.")
+  }
+
   return (
     <>
       <div>
@@ -130,7 +135,7 @@ const Users = () => {
                 <Link href="/dashboard/create-user">
                   <DefaultButton css=''>Create New User</DefaultButton>
                 </Link>
-                <DefaultButton css=''>Create New Cp</DefaultButton>
+                <DefaultButton onClick={handleCreateNewCp} css=''>Create New Cp</DefaultButton>
               </div>
             </div>
             <div className="mb-5">
