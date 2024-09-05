@@ -29,6 +29,7 @@ import { toast } from 'react-toastify';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
 import Button from '@/components/Button';
+import DefaultButton, { DefaultSubmitButton } from '@/components/SharedComponent/DefaultButton';
 
 interface FormData {
   content_type: string;
@@ -149,7 +150,7 @@ const BookNow = () => {
   const endDateTimeRef = useRef(null);
 
   const handleBack = () => {
-    setActiveTab(activeTab === 3 ? 2 : 1);
+    setActiveTab(prev => (prev === 3 ? 2 : 1));
     // Use setTimeout to delay the Flatpickr initialization
     setTimeout(() => {
       if (startDateTimeRef.current) {
@@ -181,6 +182,47 @@ const BookNow = () => {
       }
     }, 0);
   };
+
+  // const handleBack = () => {
+  //   setActiveTab(prev => {
+  //     const newTab = prev === 3 ? 2 : 1;
+  //     // console.log('Updating tab to:', newTab); 
+
+  //     setTimeout(() => {
+  //       if (startDateTimeRef.current) {
+  //         flatpickr(startDateTimeRef.current, {
+  //           altInput: true,
+  //           altFormat: 'F j, Y h:i K',
+  //           dateFormat: 'Y-m-d H:i',
+  //           enableTime: true,
+  //           time_24hr: false,
+  //           minDate: 'today',
+  //           onChange: (selectedDates, dateStr) => {
+  //             // Handle date change
+  //             handleChangeStartDateTime(dateStr);
+  //           },
+  //         });
+  //       }
+
+  //       if (endDateTimeRef.current) {
+  //         flatpickr(endDateTimeRef.current, {
+  //           altInput: true,
+  //           altFormat: 'F j, Y h:i K',
+  //           dateFormat: 'Y-m-d H:i',
+  //           enableTime: true,
+  //           time_24hr: false,
+  //           minDate: 'today',
+  //           onChange: (selectedDates, dateStr) => {
+  //             // Handle date change
+  //             handleChangeEndDateTime(dateStr);
+  //           },
+  //         });
+  //       }
+  //     }, 0);
+
+  //     return newTab;
+  //   });
+  // };
 
   useEffect(() => {
     if (startDateTimeRef.current) {
@@ -846,9 +888,12 @@ const BookNow = () => {
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
-                              <p className="btn rounded-md border-2 border-[#b7aa85] text-[#b7aa85] ml-2 mt-4 h-9 cursor-pointer shadow-none" onClick={addDateTime}>
+                              {/* <p className="btn rounded-md border-2 border-[#b7aa85] text-[#b7aa85] ml-2 mt-4 h-9 cursor-pointer shadow-none"
+                                onClick={addDateTime}
+                              >
                                 Add
-                              </p>
+                              </p> */}
+                              <DefaultButton css='h-9 ml-2 mt-4' onClick={addDateTime} >Add</DefaultButton>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
                           </div>
@@ -969,8 +1014,8 @@ const BookNow = () => {
                                   minDate: 'today',
                                 }}
                                 onChange={(date) => {
-                                  setMeetingTime(date[0]); // Set the selected date
-                                  setValue('meeting_time', date[0]); // Update form value
+                                  setMeetingTime(date[0]);
+                                  setValue('meeting_time', date[0]);
                                 }}
                               />
                               <input type="hidden" {...register('meeting_time')} />
@@ -982,7 +1027,7 @@ const BookNow = () => {
                         </div>
                       )}
                       <div className='mt-5 flex items-center justify-end ltr:ml-auto rtl:mr-auto'>
-                        <Button>Next</Button>
+                        <DefaultButton css='font-semibold text-[16px] h-9'>Next</DefaultButton>
                       </div>
                     </>
                   )}
@@ -1217,32 +1262,46 @@ const BookNow = () => {
                 <div className="flex justify-between">
                   <button
                     type="button"
-                    className={`btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
+                    className={`btn flex flex-col items-center justify-center rounded-lg 
+                    bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
                     onClick={() => handleBack()}
                   >
                     Back
                   </button>
 
+                  {/* <DefaultButton
+                    onClick={() => handleBack()}
+                    css={`btn flex flex-col items-center justify-center ${activeTab === 1 ? 'hidden' : ''}`}
+                  >
+                    Backk
+                  </DefaultButton> */}
+
                   {activeTab === 2 && (
-                    <button type="submit" className="btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none">
-                      Next
-                    </button>
+                    <DefaultButton css='font-semibold text-[16px] h-9'>Next</DefaultButton>
                   )}
 
                   {activeTab === 3 && (
-                    <button
-                      type="submit"
-                      onClick={() => setIsLoading(true)}
-                      className="btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none"
-                    >
-                      {isLoading ? (
-                        <span>
-                          <Loader />
-                        </span>
-                      ) : (
-                        'Confirm Shoot'
-                      )}
-                    </button>
+                    // <button
+                    //   type="submit"
+                    //   onClick={() => setIsLoading(true)}
+                    //   className="btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none"
+                    // >
+                    //   {isLoading ? (
+                    //     <span>
+                    //       <Loader />
+                    //     </span>
+                    //   ) : (
+                    //     'Confirm Shoot'
+                    //   )}
+                    // </button>
+
+                    <DefaultButton onClick={() => setIsLoading(true)} css='font-semibold text-[16px] h-9'> {isLoading ? (
+                      <span>
+                        <Loader />
+                      </span>
+                    ) : (
+                      'Confirm Shoot'
+                    )} </DefaultButton>
                   )}
                 </div>
               </form>
