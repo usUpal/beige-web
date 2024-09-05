@@ -110,6 +110,7 @@ const BookNow = () => {
   // get all calculate price params
 
   //   Calculate shoot cost
+  //   Calculate shoot cost
   useEffect(() => {
     if (activeTab === 3) {
       const totalShootCost = shootCostCalculation(getTotalDuration, formDataPageOne?.content_type, cp_ids, formDataPageOne?.content_vertical, pricingData?.results);
@@ -150,7 +151,7 @@ const BookNow = () => {
   const endDateTimeRef = useRef(null);
 
   const handleBack = () => {
-    setActiveTab(prev => (prev === 3 ? 2 : 1));
+    setActiveTab((prev) => (prev === 3 ? 2 : 1));
     // Use setTimeout to delay the Flatpickr initialization
     setTimeout(() => {
       if (startDateTimeRef.current) {
@@ -186,7 +187,7 @@ const BookNow = () => {
   // const handleBack = () => {
   //   setActiveTab(prev => {
   //     const newTab = prev === 3 ? 2 : 1;
-  //     // console.log('Updating tab to:', newTab); 
+  //     // console.log('Updating tab to:', newTab);
 
   //     setTimeout(() => {
   //       if (startDateTimeRef.current) {
@@ -750,9 +751,9 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      <div className="my-5 md:flex md:flex-row flex-col items-center justify-between gap-4">
+                      <div className="my-5 flex-col items-center justify-between gap-4 md:flex md:flex-row">
                         {userData?.role === 'admin' && (
-                          <div className="relative flex  flex-col sm:flex-row w-full ">
+                          <div className="relative flex  w-full flex-col sm:flex-row ">
                             <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                               Client
                             </label>
@@ -812,7 +813,7 @@ const BookNow = () => {
                         )}
 
                         {/* Location */}
-                        <div className="flex  flex-col sm:flex-row w-full md:mt-0 mt-2">
+                        <div className="mt-2  flex w-full flex-col sm:flex-row md:mt-0">
                           <label htmlFor="location" className="mb-0 capitalize rtl:ml-2 sm:ltr:mr-2 md:w-[87px] 2xl:w-[138px]">
                             Location
                           </label>
@@ -821,10 +822,9 @@ const BookNow = () => {
                           </div>
                         </div>
                       </div>
-
-                      <div className="mt-5 md:flex md:flex-row flex-col items-start justify-between w-full gap-4">
+                      <div className="mt-5 w-full flex-col items-start justify-between gap-4 md:flex md:flex-row">
                         {/* Shoot Name */}
-                        <div className="flex  flex-col  w-full sm:flex-row">
+                        <div className="flex  w-full  flex-col sm:flex-row">
                           <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Shoot Name
                           </label>
@@ -841,7 +841,7 @@ const BookNow = () => {
                         </div>
 
                         {/* references */}
-                        <div className="flex  flex-col sm:flex-row w-full mt-2 md:mt-0">
+                        <div className="mt-2  flex w-full flex-col sm:flex-row md:mt-0">
                           <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 ">
                             References
                           </label>
@@ -853,18 +853,18 @@ const BookNow = () => {
                         <div className="table-responsive">
                           <div className="mb-8 items-center justify-between md:flex">
                             {/* Starting Date and Time */}
-                            <div className="mb-3 flex  flex-col sm:flex-row w-full md:mb-0">
-                              <label htmlFor="start_date_time" className="mb-3 md:mb-0 mt-4 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
+                            <div className="mb-3 flex  w-full flex-col sm:flex-row md:mb-0">
+                              <label htmlFor="start_date_time" className="mb-3 mt-4 w-24 rtl:ml-2 sm:ltr:mr-2 md:mb-0 2xl:w-36">
                                 Shoot Time
                               </label>
 
                               <div className="relative">
-                                <p className="text-xs font-bold sm:mb-0 mb-1">Start Time</p>
+                                <p className="mb-1 text-xs font-bold sm:mb-0">Start Time</p>
                                 <input
                                   id="start_date_time"
                                   ref={startDateTimeRef}
                                   type="text"
-                                  className={`form-input sm:w-[220px] w-full cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`}
+                                  className={`form-input w-full cursor-pointer sm:w-[220px] ${errors?.start_date_time ? 'border-red-500' : ''}`}
                                   placeholder="Start time"
                                   required={startDateTime?.length === 0}
                                 />
@@ -873,13 +873,13 @@ const BookNow = () => {
                                 {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                               </div>
 
-                              <div className="relative sm:mt-0 mt-3">
-                                <p className="ml-1 text-xs font-bold sm:mb-0 mb-1">End Time</p>
+                              <div className="relative mt-3 sm:mt-0">
+                                <p className="mb-1 ml-1 text-xs font-bold sm:mb-0">End Time</p>
                                 <input
                                   id="end_date_time"
                                   ref={endDateTimeRef}
                                   type="text"
-                                  className={`form-input ml-1 sm:w-[220px] w-full cursor-pointer ${errors?.end_date_time ? 'border-red-500' : ''}`}
+                                  className={`form-input ml-1 w-full cursor-pointer sm:w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`}
                                   placeholder="End time"
                                   required={endDateTime?.length === 0}
                                 />
@@ -893,7 +893,9 @@ const BookNow = () => {
                               >
                                 Add
                               </p> */}
-                              <DefaultButton css='h-9 ml-2 mt-4' onClick={addDateTime} >Add</DefaultButton>
+                              <DefaultButton css="h-9 ml-2 mt-4" onClick={addDateTime}>
+                                Add
+                              </DefaultButton>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
                           </div>
@@ -932,13 +934,13 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      <div className="md:flex md:flex-row flex-col items-center justify-between w-full md:gap-4">
+                      <div className="w-full flex-col items-center justify-between md:flex md:flex-row md:gap-4">
                         {/* min_budget budget */}
-                        <div className="flex  flex-col sm:flex-row w-full mt-2">
-                          <label htmlFor="min_budget" className="mb-0  rtl:ml-2 sm:ltr:mr-2 md:w-[24%]  w-full mb-3">
+                        <div className="mt-2  flex w-full flex-col sm:flex-row">
+                          <label htmlFor="min_budget" className="mb-0  mb-3 w-full rtl:ml-2  sm:ltr:mr-2 md:w-[24%]">
                             Min Budget
                           </label>
-                          <div className="flex flex-col w-full">
+                          <div className="flex w-full flex-col">
                             <input
                               id="min_budget"
                               type="number"
@@ -958,11 +960,11 @@ const BookNow = () => {
                           </div>
                         </div>
 
-                        <div className="flex  flex-col sm:flex-row w-full mt-2">
+                        <div className="mt-2  flex w-full flex-col sm:flex-row">
                           <label htmlFor="max_budget" className="mb-2 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-[23%]">
                             Max Budget
                           </label>
-                          <div className="flex flex-col w-full">
+                          <div className="flex w-full flex-col">
                             <input
                               id="max_budget"
                               type="number"
@@ -986,16 +988,16 @@ const BookNow = () => {
                         </div>
                       </div>
                       {userData?.role === 'admin' && (
-                        <div className="md:flex md:flex-row flex-col items-center justify-between w-full md:gap-4 mt-4">
+                        <div className="mt-4 w-full flex-col items-center justify-between md:flex md:flex-row md:gap-4">
                           {/* Special Note */}
-                          <div className="flex  flex-col sm:flex-row w-full">
+                          <div className="flex  w-full flex-col sm:flex-row">
                             <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                               Special Note
                             </label>
                             <textarea id="description" rows={1} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
                           </div>
-                          <div className="mb-3 flex  flex-col sm:flex-row w-full md:mb-0 sm:mt-0 mt-3">
-                            <label htmlFor="meeting_time" className="mb-0  rtl:ml-2 sm:ltr:mr-2 md:w-[24%] w-full ">
+                          <div className="mb-3 mt-3  flex w-full flex-col sm:mt-0 sm:flex-row md:mb-0">
+                            <label htmlFor="meeting_time" className="mb-0  w-full rtl:ml-2 sm:ltr:mr-2 md:w-[24%] ">
                               Meeting time
                             </label>
 
@@ -1026,8 +1028,8 @@ const BookNow = () => {
                           </div>
                         </div>
                       )}
-                      <div className='mt-5 flex items-center justify-end ltr:ml-auto rtl:mr-auto'>
-                        <DefaultButton css='font-semibold text-[16px] h-9'>Next</DefaultButton>
+                      <div className="mt-5 flex items-center justify-end ltr:ml-auto rtl:mr-auto">
+                        <DefaultButton css="font-semibold text-[16px] h-9">Next</DefaultButton>
                       </div>
                     </>
                   )}
@@ -1036,14 +1038,14 @@ const BookNow = () => {
                 <div className="">
                   {activeTab === 2 && (
                     <div>
-                      <div className="md:flex md:flex-row flex-col items-center justify-between">
+                      <div className="flex-col items-center justify-between md:flex md:flex-row">
                         <div className="">
                           <div className="mb-[30px]">
                             <h2 className="mb-2 font-sans text-[18px] capitalize leading-none text-black">Select Producer</h2>
                             <p className="text-[14px] capitalize leading-none text-[#838383]">choose your beige photographer/videographer</p>
                           </div>
                         </div>
-                        <div className='md:mb-0 mb-5'>
+                        <div className="mb-5 md:mb-0">
                           <input
                             type="text"
                             className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
@@ -1055,7 +1057,7 @@ const BookNow = () => {
                         {/* search ends */}
                       </div>
                       {/* Showing all cps */}
-                      <div className="grid md:grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 2xl:grid-cols-4">
+                      <div className="grid grid-cols-1 gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                         {allCpUsers?.length > 0 ? (
                           allCpUsers?.map((cp) => {
                             const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
@@ -1089,8 +1091,9 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
+                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1154,7 +1157,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                            // disabled={disableInput}
+                                              // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1276,9 +1279,7 @@ const BookNow = () => {
                     Backk
                   </DefaultButton> */}
 
-                  {activeTab === 2 && (
-                    <DefaultButton css='font-semibold text-[16px] h-9'>Next</DefaultButton>
-                  )}
+                  {activeTab === 2 && <DefaultButton css="font-semibold text-[16px] h-9">Next</DefaultButton>}
 
                   {activeTab === 3 && (
                     // <button
@@ -1295,13 +1296,16 @@ const BookNow = () => {
                     //   )}
                     // </button>
 
-                    <DefaultButton onClick={() => setIsLoading(true)} css='font-semibold text-[16px] h-9'> {isLoading ? (
-                      <span>
-                        <Loader />
-                      </span>
-                    ) : (
-                      'Confirm Shoot'
-                    )} </DefaultButton>
+                    <DefaultButton onClick={() => setIsLoading(true)} css="font-semibold text-[16px] h-9">
+                      {' '}
+                      {isLoading ? (
+                        <span>
+                          <Loader />
+                        </span>
+                      ) : (
+                        'Confirm Shoot'
+                      )}{' '}
+                    </DefaultButton>
                   )}
                 </div>
               </form>
