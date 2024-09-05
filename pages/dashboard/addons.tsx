@@ -305,10 +305,10 @@ const Addons = () => {
                   </button>
                 </div>
 
-                <div className="w-full ml-0 p-7 ">
+                <div className="w-full ml-0 px-7 pt-2 pb-4">
                   <div className={`w-full justify-between `}>
-                    <div className=" pb-5 dark:text-white  w-full">
-                      <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between w-full gap-3">
+                    <div className=" dark:text-white  w-full">
+                      <div className="flex flex-col md:flex md:flex-row md:justify-between w-full gap-3">
                         <p className="flex flex-col w-full">
                           <span className="text-[14px]  capitalize leading-none text-[#000000] mb-2 font-bold">Title</span>
                           <input
@@ -333,22 +333,22 @@ const Addons = () => {
                         </div>
                       </div>
 
-                      <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
+                      <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row w-full gap-4" >
                         {addonsInfo?.ExtendRate && (
-                          <div className="mt-3 flex flex-col md:mt-0">
-                            <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Extend Rate</span>
+                          <div className="mt-3 flex flex-col md:mt-0 w-full">
+                            <span className="text-[14px] font-bold pb-2 capitalize leading-none text-[#000000]">Extend Rate</span>
                             <input
                               {...register('ExtendRate')}
                               onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
                               value={addonsInfo?.ExtendRate || 0}
-                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 "
                             />
                           </div>
                         )}
 
                         {addonsInfo?.ExtendRateType && (
-                          <p className="mt-3 flex flex-col md:mt-0">
-                            <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Extend Rate Type</span>
+                          <p className="mt-3 flex flex-col md:mt-0 w-full">
+                            <span className="text-[14px] font-bold pb-2 capitalize leading-none text-[#000000]">Extend Rate Type</span>
                             <select
                               {...register('ExtendRateType')}
                               className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
