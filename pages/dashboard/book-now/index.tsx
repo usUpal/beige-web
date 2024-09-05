@@ -5,7 +5,6 @@ import Map from '@/components/Map';
 import Loader from '@/components/SharedComponent/Loader';
 import useAddons from '@/hooks/useAddons';
 import useAllCp from '@/hooks/useAllCp';
-import useClient from '@/hooks/useClient';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation';
 import { swalToast } from '@/utils/Toast/SwalToast';
@@ -13,27 +12,23 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format, isValid, parseISO } from 'date-fns';
 import 'flatpickr/dist/flatpickr.css';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '@/store/themeConfigSlice';
-
+import { useDispatch } from 'react-redux';
 import { useAuth } from '@/contexts/authContext';
-import axios from 'axios';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import { API_ENDPOINT } from '@/config';
-import RoleProtection from '@/components/RoleProtection';
 import { usePostOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
+import Button from '@/components/Button';
 
 interface FormData {
   content_type: string;
@@ -52,7 +47,6 @@ interface FormData {
   vst: string;
 }
 const BookNow = () => {
-  const router = useRouter();
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
   const { userData } = useAuth();
@@ -689,7 +683,6 @@ const BookNow = () => {
                             </div>
                           </div>
                         </div>
-
                         {/* Category || content vertical*/}
                         <div className="flex basis-[45%] flex-col sm:flex-row">
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
@@ -714,6 +707,7 @@ const BookNow = () => {
                           </select>
                         </div>
                       </div>
+
                       <div className="my-5 flex items-center justify-between">
                         {userData?.role === 'admin' && (
                           <div className="relative flex basis-[45%] flex-col sm:flex-row">
@@ -852,7 +846,7 @@ const BookNow = () => {
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
-                              <p className="btn btn-success ml-2 mt-4 h-9 cursor-pointer" onClick={addDateTime}>
+                              <p className="btn rounded-md border-2 border-[#b7aa85] text-[#b7aa85] ml-2 mt-4 h-9 cursor-pointer shadow-none" onClick={addDateTime}>
                                 Add
                               </p>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
@@ -987,13 +981,9 @@ const BookNow = () => {
                           </div>
                         </div>
                       )}
-
-                      <button
-                        type="submit"
-                        className="btn btn-outline-dark mt-5 flex flex-col items-center justify-center rounded-lg text-[14px] font-bold capitalize text-black hover:text-white ltr:ml-auto rtl:mr-auto"
-                      >
-                        Next
-                      </button>
+                      <div className='mt-5 flex items-center justify-end ltr:ml-auto rtl:mr-auto'>
+                        <Button>Next</Button>
+                      </div>
                     </>
                   )}
                 </div>

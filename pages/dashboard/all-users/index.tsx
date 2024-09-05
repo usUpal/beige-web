@@ -139,13 +139,13 @@ const Users = () => {
                     <table>
                       <thead>
                         <tr>
-                          <th className="font-mono hidden md:block">User ID</th>
-                          <th className="font-mono ltr:rounded-l-md rtl:rounded-r-md">Name</th>
-                          <th className="font-mono">Email</th>
-                          <th className="font-mono">Role</th>
-                          <th className="font-mono ltr:rounded-r-md rtl:rounded-l-md hidden md:block">Status</th>
+                          <th className=" hidden md:block">User ID</th>
+                          <th className=" ltr:rounded-l-md rtl:rounded-r-md">Name</th>
+                          <th className="">Email</th>
+                          <th className="">Role</th>
+                          <th className=" ltr:rounded-r-md rtl:rounded-l-md hidden md:block">Status</th>
                           {authPermissions?.includes('edit_all_users') && (
-                            <th className="font-mono">Edit</th>
+                            <th className="">Edit</th>
                           )}
                         </tr>
                       </thead>
@@ -172,7 +172,7 @@ const Users = () => {
                               {authPermissions?.includes('edit_all_users') && (
                                 <td>
                                   <button onClick={() => getUserDetails(user.id)} type="button" className="p-0">
-                                    {allSvgs.pencilIconForEdit}
+                                    {allSvgs.editPen}
                                   </button>
                                 </td>
                               )}

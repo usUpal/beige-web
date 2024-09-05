@@ -269,13 +269,13 @@ const Users = () => {
                     <table>
                       <thead>
                         <tr>
-                          <th className="font-mono">User ID</th>
-                          <th className="font-mono ltr:rounded-l-md rtl:rounded-r-md">Name</th>
-                          <th className="font-mono">Email</th>
-                          <th className="font-mono">Role</th>
-                          <th className="font-mono ltr:rounded-r-md rtl:rounded-l-md">Status</th>
+                          <th className="">User ID</th>
+                          <th className=" ltr:rounded-l-md rtl:rounded-r-md">Name</th>
+                          <th className="">Email</th>
+                          <th className="">Role</th>
+                          <th className=" ltr:rounded-r-md rtl:rounded-l-md">Status</th>
                           {authPermissions?.includes('client_edit') && (
-                            <th className="font-mono">Edit</th>
+                            <th className="">Edit</th>
                           )}
                         </tr>
                       </thead>
@@ -305,7 +305,7 @@ const Users = () => {
                               {authPermissions?.includes('client_edit') && (
                                 <td>
                                   <button type="button" className="p-0" onClick={() => getUserDetails(userClient.id)}>
-                                    {allSvgs.pencilIconForEdit}
+                                    {allSvgs.editPen}
                                   </button>
                                 </td>
                               )}
@@ -313,12 +313,10 @@ const Users = () => {
                           ))}
                       </tbody>
                     </table>
-
                     <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
                       <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
                     </div>
                   </div>
-
                   {/* modal Starts*/}
                   <Transition appear show={userModalClient} as={Fragment}>
                     <Dialog as="div" open={userModalClient} onClose={() => setUserModalClient(false)}>

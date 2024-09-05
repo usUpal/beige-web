@@ -477,7 +477,7 @@ const ShootDetails = () => {
                               </td>
                               <td className="border-b px-4 py-2 text-right">
                                 <div className="flex justify-center">
-                                  {userData?.role === 'manager' ? (
+                                  {userData?.role === 'admin' ? (
                                     <Tippy content="Cancel">
                                       <button onClick={() => cancelCp(cp)} className={`rounded bg-red-500 p-1 text-white`}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -505,50 +505,6 @@ const ShootDetails = () => {
                           ))}
                         </tbody>
                       </table>
-                    </div>
-                  )}
-
-                  {/* <Modal isOpen={shortProfileModal} onClose={() => setShortProfileModal(false)} cpShortDetailsInfo={cpShortDetailsInfo} /> */}
-
-                  {shortProfileModal && cpShortDetailsInfo && (
-                    <div className="absolute bottom-0 right-[81px] top-[48px] h-min w-[50%] rounded-md bg-white p-2 shadow-md">
-                      <div className="flex justify-end">
-                        <button onClick={() => handleDetailsInfo(selectedCpId || '')} type="button" className="h-1 text-white-dark hover:text-dark ">
-                          {allSvgs.closeModalSvg}
-                        </button>
-                      </div>
-
-                      <div className="px-2 pb-2">
-                        <div className="flex items-start justify-evenly gap-4 py-1 text-white dark:text-white-light">
-                          <div>
-                            <div className="mx-auto h-12 w-12 overflow-hidden rounded-full">
-                              <img src={cpShortDetailsInfo?.profile_picture} alt="img" className="h-full w-full object-cover" />
-                            </div>
-                            {userData?.role === 'manager' && (
-                              <div className="details">
-                                <div className="flex justify-center ">
-                                  <Link href={`cp/${cpShortDetailsInfo?.id}`}>
-                                    <button type="button" className=" mx-auto mt-1 hidden text-[12px] text-black underline md:me-0 md:block">
-                                      View Details
-                                    </button>
-                                  </Link>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          <div className="text-[12px]">
-                            <p className="font-semibold text-black">
-                              Name: <span className="font-light">{cpShortDetailsInfo?.name}</span>
-                            </p>
-                            <p className="font-semibold text-black">
-                              Email: <span className="font-light"> {cpShortDetailsInfo?.email}</span>
-                            </p>
-                            <p className="font-semibold text-black">
-                              Location: <span className="font-light">{cpShortDetailsInfo?.location}</span>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   )}
                 </div>

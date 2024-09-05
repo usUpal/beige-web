@@ -535,7 +535,7 @@ const SearchingParams = () => {
               </tbody>
             </table>
             <div className="flex w-full justify-end">
-              <button className="rounded-xl bg-black px-6 py-3 text-white" type="submit">
+              <button className="custom-button" type="submit">
                 Save
               </button>
             </div>

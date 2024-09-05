@@ -8,6 +8,7 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useForm } from 'react-hook-form';
 import useAddons from '@/hooks/useAddons';
 import { useAuth } from '@/contexts/authContext';
+import Button from '@/components/Button';
 
 const Addons = () => {
   const { authPermissions } = useAuth();
@@ -163,19 +164,24 @@ const Addons = () => {
 
   return (
     <div>
-      <ul className="flex space-x-2 rtl:space-x-reverse">
-        <li>
-          <Link href="/" className="text-warning hover:underline">
-            Dashboard
-          </Link>
-        </li>
-        <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span>Addons </span>
-        </li>
-      </ul>
+      <div className='flex justify-between items-center'>
+        <ul className="flex space-x-2 rtl:space-x-reverse">
+          <li>
+            <Link href="/" className="text-warning hover:underline">
+              Dashboard
+            </Link>
+          </li>
+          <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
+            <span>Addons </span>
+          </li>
+        </ul>
+        <div>
+          <button className='custom-button' onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}>Add New</button>
+        </div>
+      </div>
+
 
       <div className="mb-5 ">
-        {/* buttons for adds ends*/}
         {authPermissions?.includes('new_add_ons') && (
           <div className="_ mx-3 mb-5 flex sm:mb-0">
             <button
@@ -185,7 +191,6 @@ const Addons = () => {
               add new
             </button>
           </div>
-
         )}
         <div className="panel" id="pills_with_icon">
           {/* tab starts*/}
@@ -220,13 +225,13 @@ const Addons = () => {
                           <table className="w-full">
                             <thead>
                               <tr>
-                                <th className="font-mono">Title</th>
-                                <th className="font-mono">Rate</th>
-                                <th className="font-mono">Extend Rate Type</th>
-                                <th className="font-mono">Extend Rate</th>
-                                <th className="font-mono">Status</th>
+                                <th className="">Title</th>
+                                <th className="">Rate</th>
+                                <th className="">Extend Rate Type</th>
+                                <th className="">Extend Rate</th>
+                                <th className="">Status</th>
                                 {authPermissions?.includes('add_ons_edit') && (
-                                  <th className="font-mono">Action</th>
+                                  <th className="">Edit</th>
                                 )}
                               </tr>
                             </thead>
@@ -266,7 +271,7 @@ const Addons = () => {
                                             setAddonsModal(true);
                                           }}
                                         >
-                                          {allSvgs.pencilIconForEdit}
+                                          {allSvgs.editPen}
                                         </button>
                                       </td>
                                     )}

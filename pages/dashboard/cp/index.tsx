@@ -7,7 +7,6 @@ import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import StatusBg from '@/components/Status/StatusBg';
-import Pagination from '@/components/Pagination';
 import { useRouter } from 'next/router';
 import ResponsivePagination from 'react-responsive-pagination';
 import { useAuth } from '@/contexts/authContext';
@@ -158,20 +157,19 @@ const CpUsers = () => {
                     <table>
                       <thead>
                         <tr>
-                          <th className="font-mono">User ID</th>
+                          <th className="">User ID</th>
                           <th className="ltr:rounded-l-md rtl:rounded-r-md">Name</th>
-                          <th className="font-mono">Email</th>
-                          <th className="font-mono">Role</th>
-                          <th className="font-mono ltr:rounded-r-md rtl:rounded-l-md">Status</th>
+                          <th className="">Email</th>
+                          <th className="">Role</th>
+                          <th className=" ltr:rounded-r-md rtl:rounded-l-md">Status</th>
                           {authPermissions?.includes('edit_content_provider') && (
-                            <th className="font-mono">Edit</th>
+                            <th className="">Edit</th>
                           )}
                         </tr>
                       </thead>
                       <tbody>
                         {allCpUsers?.map(
                           (cpUser) => (
-                            console.log(' ---> ', cpUser),
                             (
                               <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                                 <td className="min-w-[150px] font-sans text-black dark:text-white">
@@ -194,13 +192,13 @@ const CpUsers = () => {
                               <td>
                                 <Link href={`cp/${cpUser?.userId?._id}`}>
                                   <button type="button" className="p-0">
-                                    {allSvgs.pencilIconForEdit}
+                                    {allSvgs.editPen}
                                   </button>
                                 </Link>
                               </td>
                             )}
                           </tr>
-                        ))}
+                        )))}
                       </tbody>
                     </table>
 

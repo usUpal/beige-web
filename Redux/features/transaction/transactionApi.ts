@@ -4,7 +4,7 @@ const transactionApi = baseApi.injectEndpoints({
     getAllTransaction: builder.query({
       query: (args) => {
         let URL;
-        if (args?.userData?.role == 'manager') {
+        if (args?.userData?.role == 'admin') {
           URL = `payout?sortBy=createdAt:desc&limit=10&page=${args?.page}`;
         } else {
           URL = `payout?userId=${args?.userData?.id}&sortBy=${args?.sortBy}&limit=${args?.limit}&page=${args?.page}`;

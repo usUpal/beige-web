@@ -81,7 +81,7 @@ const Profile = () => {
       case 'cp':
         return 'Beige Producer';
         break;
-      case 'manager':
+      case 'admin':
         return 'Beige Manager';
         break;
 

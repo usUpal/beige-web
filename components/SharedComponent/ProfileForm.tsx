@@ -82,7 +82,7 @@ const ProfileForm = () => {
 
   const onSubmit = async (data: userData) => {
     setIsLoading(true);
-    if (userRole == 'manager') {
+    if (userRole == 'admin') {
       coloredToast('danger', 'Admin profile update is under development');
       setIsLoading(false);
       return;

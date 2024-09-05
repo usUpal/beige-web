@@ -586,32 +586,32 @@ const Chat = () => {
               </div>
               <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
 
-              <PerfectScrollbar
-                className="chat-conversation-box relative h-full sm:h-[calc(100vh_-_300px)]"
-                onScrollY={(container) => {
-                  if (container.scrollTop === 0) {
-                    handleScroll();
-                  }
-                }}
-              >
-                <div className="min-h-[400px] space-y-5 p-4 pb-[68px] sm:min-h-[300px] sm:pb-0">
-                  <div className="m-6 mt-0 block">
-                    <h4 className="relative border-b border-[#f4f4f4] text-center text-xs dark:border-gray-800">
-                      <span className="relative top-2 bg-white px-3 dark:bg-black">{'Today, ' + createdDateTime?.time}</span>
-                    </h4>
-                  </div>
-                  {newMessages?.length ? (
-                    <>
-                      {newMessages?.map((message: any, index: any) => {
-                        return (
-                          <div key={index}>
-                            <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
-                              <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
-                                {message?.senderId === userData.id ? (userRole == 'manager' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
-                                {message?.senderId !== userData.id
-                                  ? message?.senderName == 'Admin User'
-                                    ? createImageByName('MA')
-                                    : message?.senderName == 'User'
+                <PerfectScrollbar
+                  className="chat-conversation-box relative h-full sm:h-[calc(100vh_-_300px)]"
+                  onScrollY={(container) => {
+                    if (container.scrollTop === 0) {
+                      handleScroll();
+                    }
+                  }}
+                >
+                  <div className="min-h-[400px] space-y-5 p-4 pb-[68px] sm:min-h-[300px] sm:pb-0">
+                    <div className="m-6 mt-0 block">
+                      <h4 className="relative border-b border-[#f4f4f4] text-center text-xs dark:border-gray-800">
+                        <span className="relative top-2 bg-white px-3 dark:bg-black">{'Today, ' + createdDateTime?.time}</span>
+                      </h4>
+                    </div>
+                    {newMessages?.length ? (
+                      <>
+                        {newMessages?.map((message: any, index: any) => {
+                          return (
+                            <div key={index}>
+                              <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
+                                <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
+                                  {message?.senderId === userData.id ? (userRole == 'admin' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
+                                  {message?.senderId !== userData.id
+                                    ? message?.senderName == 'Admin User'
+                                      ? createImageByName('MA')
+                                      : message?.senderName == 'User'
                                       ? createImageByName('User')
                                       : createImageByName('CP')
                                   : ''}
@@ -714,27 +714,51 @@ const Chat = () => {
                 </li>
               </ul>
 
-              <div>
-                {activeTab === '1' && (
-                  <div className="pt-4">
+            <div>
+              {activeTab === '1' && (
+                <div className="pt-4">
+                  <div className="mt-1">
+                    <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
+                      <ul className="space-y-2">
+                        <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
+                          <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
 
-                    {/*  */}
-                    <div className="mt-1">
-                      <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
-                        <ul className="space-y-2">
-                          {allChatParticipants
-                            .map(
-                              (item, index) => (
+                          {/* <span className="flex  text-black dark:text-white">
+                              {selectedChatRoom?.client_id?.name}
+                              <span className="ms-5 text-[12px] text-blue-500">{selectedChatRoom?.client_id?.role}</span>
+                            </span> */}
 
-                                <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
-                                  <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
-                                  <div className="flex flex-col space-y-0">
-                                    <span className="text-black dark:text-white">{item?.role === "user" ? item?.name : item?.id?.name}</span>
-                                    <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
-                                      {item?.id?.role === 'manager' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
-                                    </span>
-                                  </div>
-                                </li>)
+                          <div className="flex flex-col justify-start space-y-0 ">
+                            <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
+                            <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
+                          </div>
+                        </li>
+
+                        {/* {perticipants} */}
+
+                        {[
+                          ...selectedChatRoom?.cp_ids.map((cp) => ({
+                            ...cp,
+                            type: 'cp',
+                          })),
+                          ...selectedChatRoom?.manager_ids.map((manager) => ({
+                            ...manager,
+                            type: 'admin',
+                          })),
+                        ].map(
+                          (item, index) => (
+                            console.log('--Item-->', item),
+                            (
+                              <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
+                                <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
+                                <div className="flex flex-col space-y-0">
+                                  <span className="text-black dark:text-white">{item?.id?.name}</span>
+                                  <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
+                                    {/* {item.type === 'admin' ? (item?.id?.role === 'admin' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp') : 'Cp'} */}
+                                    {item?.id?.role === 'admin' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
+                                  </span>
+                                </div>
+                              </li>
                             )
                           }
                         </ul>
