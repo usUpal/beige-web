@@ -11,6 +11,7 @@ import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePagination from 'react-responsive-pagination';
 import { useAuth } from '@/contexts/authContext';
 import PreLoader from '@/components/ProfileImage/PreLoader';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const Disputes = () => {
   // previous code
@@ -104,53 +105,53 @@ const Disputes = () => {
                   <PreLoader></PreLoader>
                 </>
               ) : (
-              <>
+                <>
 
-              {desputes && desputes.length > 0 ? (
+                  {desputes && desputes.length >= 0 ? (
 
-                desputes?.map((dispute) => (
-                  <tr key={dispute.id ? dispute?.id : dispute?._id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                    <td className=" min-w-[150px] text-black dark:text-white">
-                      <div className="flex items-center">
-                        <p className="whitespace-nowrap break-words">{dispute?.reason}</p>
-                      </div>
-                    </td>
+                    desputes?.map((dispute) => (
+                      <tr key={dispute.id ? dispute?.id : dispute?._id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                        <td className=" min-w-[150px] text-black dark:text-white">
+                          <div className="flex items-center">
+                            <p className="whitespace-nowrap break-words">{dispute?.reason}</p>
+                          </div>
+                        </td>
 
-                    <td>
-                      {new Date(dispute?.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}{' '} ,
-                      Time: {new Date(dispute?.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
-                    </td>
+                        <td>
+                          {new Date(dispute?.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}{' '} ,
+                          Time: {new Date(dispute?.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
+                        </td>
 
 
 
-                    <td className="">
-                      <StatusBg>{dispute?.status}</StatusBg>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="p-0"
-                        onClick={() => {
-                          dispute?.id ? getSingleDesputeDetails(dispute?.id) : getSingleDesputeDetails(dispute?._id);
-                        }}
-                      >
-                        <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                        <td className="">
+                          <StatusBg>{dispute?.status}</StatusBg>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="p-0"
+                            onClick={() => {
+                              dispute?.id ? getSingleDesputeDetails(dispute?.id) : getSingleDesputeDetails(dispute?._id);
+                            }}
+                          >
+                            <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
 
-              ) : (
-                <tr>
-                  <td colSpan={50} className="text-center">
-                    <span className="text-[red] font-semibold flex justify-center"> No desputes found </span>
-                  </td>
-                </tr>
+                  ) : (
+                    <tr>
+                      <td colSpan={50} className="text-center">
+                        <span className="text-[red] font-semibold flex justify-center"> No desputes found </span>
+                      </td>
+                    </tr>
+                  )}
+
+
+                </>
               )}
-
-
-            </>
-            )}
 
 
 
@@ -217,9 +218,10 @@ const Disputes = () => {
                         </span>
                       </p>
 
-                      <button onClick={() => setDisputeModal(false)} type="submit" className="btn mx-auto mt-8 bg-black font-sans text-white md:me-0 md:mt-24">
+                      {/* <button onClick={() => setDisputeModal(false)} type="submit" className="btn mx-auto mt-8 bg-black font-sans text-white md:me-0 md:mt-24">
                         Close
-                      </button>
+                      </button> */}
+                      <DefaultButton onClick={() => setDisputeModal(false)} css=''>Close</DefaultButton>
                       {/* </div> */}
                     </div>
                   </div>

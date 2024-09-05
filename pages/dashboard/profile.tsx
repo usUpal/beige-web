@@ -14,6 +14,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { API_ENDPOINT } from '@/config';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
 import Swal from 'sweetalert2';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 
@@ -259,12 +260,16 @@ const Profile = () => {
         {userRole === 'cp' && (
           <div className="panel mt-5">
             <div className="flex flex-wrap items-center gap-2">
-              <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleImageClick}>
+              {/* <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleImageClick}>
                 Image
-              </button>
-              <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleVideoClick}>
+              </button> */}
+              {/* <button className="rounded-md bg-[#007aff] px-4 py-2 text-[15px] font-bold text-white" onClick={handleVideoClick}>
                 Video
-              </button>
+              </button> */}
+              <DefaultButton onClick={handleImageClick} css=''>Image</DefaultButton>
+              <DefaultButton onClick={handleVideoClick} css=''>Vedio</DefaultButton>
+
+
               {/* {showImage &&
                     <button
                       className="py-1 px-4 flex items-center gap-2 justify-center bg-[#007aff] text-white text-[13px] font-bold rounded-md">

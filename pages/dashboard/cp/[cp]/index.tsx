@@ -8,10 +8,10 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useForm } from 'react-hook-form';
 import Loader from '@/components/SharedComponent/Loader';
 import Swal from 'sweetalert2';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const CpDetails = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showError, setShowError] = useState<boolean>(false);
 
   const [formData, setFormData] = useState<any | null>(null);
 
@@ -243,14 +243,6 @@ const CpDetails = () => {
     const patchedData = await patchResponse.json();
     console.log('Patch successful:', patchedData);
   };
-
-  /* if (!formData) {
-        return <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center dark:bg-gray-800">
-            <div className="flex items-center space-x-2 dark:bg-black p-4 rounded-lg">
-                {allSvgs.dataLoadingLoader}
-            </div>
-        </div>;
-    } */
 
   return (
     <div className="p-5">
@@ -977,19 +969,19 @@ const CpDetails = () => {
 
 
         {/* array fields ends */}
-        <div className="flex items-center justify-end">
-          <button type="button" className="btn btn-dark font-sans">
-            <Link href={'/manager/cp'}>Back</Link>
-          </button>
-          <button type="submit" className="btn btn-success font-sans ltr:ml-4 rtl:mr-4">
-            {isLoading ? (
-              <span role="status" className="flex h-5 items-center space-x-2">
-                <Loader />
-              </span>
-            ) : (
-              'Save'
-            )}
-          </button>
+        <div className="flex items-center justify-between">
+          <DefaultButton css='font-semibold ml-4'>
+            <Link className='flex items-center' href={'/dashboard/all-users'}>
+              Back
+            </Link>
+          </DefaultButton>
+
+          <DefaultButton css='font-semibold ml-4'>{isLoading ? (
+            <Loader />
+          ) : (
+            'Save'
+          )}</DefaultButton>
+
         </div>
       </form>
     </div>

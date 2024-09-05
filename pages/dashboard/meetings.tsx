@@ -13,6 +13,7 @@ import Flatpickr from 'react-flatpickr';
 import { toast } from 'react-toastify';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -273,9 +274,10 @@ const Meeting = () => {
                                   onChange={(date) => setMetingDate(date[0])}
                                 />
 
-                                <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
+                                {/* <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
                                   Reschedule Request
-                                </button>
+                                </button> */}
+                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2'> Reschedule Request</DefaultButton>
                               </div>
                             </div>
                           )}
