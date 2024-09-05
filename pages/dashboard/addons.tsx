@@ -10,6 +10,8 @@ import useAddons from '@/hooks/useAddons';
 import { useAuth } from '@/contexts/authContext';
 import Button from '@/components/Button';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Addons = () => {
   const { authPermissions } = useAuth();
@@ -94,7 +96,8 @@ const Addons = () => {
     });
   };
 
-  const handleUpdateTestSubmit = async (data: any) => {
+
+  const handleUpdateTestSubmit = async (data) => {
     const updatedAddonDetails = {
       title: addonsInfo?.title || data?.title,
       rate: addonsInfo?.rate || data?.rate,
@@ -113,17 +116,35 @@ const Addons = () => {
       });
 
       if (!patchResponse.ok) {
-        throw new Error('Failed to patch data');
+        throw new Error('Failed to update addon');
       }
 
-      const updatedAddon = await patchResponse.json(); //
+      const updatedAddon = await patchResponse.json();
 
-      const updatedAddonsData = addonsData.map((addon: any) => (addon._id === addonsInfo?._id ? updatedAddon : addon));
+      const updatedAddonsData = addonsData.map((addon) =>
+        addon._id === addonsInfo?._id ? updatedAddon : addon
+      );
       setAddonsData(updatedAddonsData);
 
       setAddonsModal(false);
+      toast.success('Addon updated successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
-      console.error('Patch error:', error);
+      console.error('Update error:', error);
+      toast.error('Failed to update addon. Please try again.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -381,6 +402,9 @@ const Addons = () => {
                         </div>
                       </div>
 
+                      {/* <div className="mt-8 flex justify-end md:mt-8">
+                        <DefaultButton css='' onClick={handleUpdateTestSubmit}>Update</DefaultButton>
+                      </div> */}
                       <div className="mt-8 flex justify-end md:mt-8">
                         <DefaultButton css='' onClick={handleUpdateTestSubmit}>Update</DefaultButton>
                       </div>
