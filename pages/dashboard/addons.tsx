@@ -296,7 +296,7 @@ const Addons = () => {
         <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 space-x-6  overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 w-[80%] md:px-0">
+              <Dialog.Panel as="div" className="panel my-24   overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 w-[80%] md:px-0">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
                   <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
 
@@ -305,8 +305,8 @@ const Addons = () => {
                   </button>
                 </div>
 
-                <div className="w-full ml-0 p-7">
-                  <div className={`w-full justify-between w-full`}>
+                <div className="w-full ml-0 p-7 ">
+                  <div className={`w-full justify-between `}>
                     <div className=" pb-5 dark:text-white  w-full">
                       <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between w-full gap-3">
                         <p className="flex flex-col w-full">
