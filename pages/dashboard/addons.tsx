@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import useAddons from '@/hooks/useAddons';
 import { useAuth } from '@/contexts/authContext';
 import Button from '@/components/Button';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const Addons = () => {
   const { authPermissions } = useAuth();
@@ -184,22 +185,22 @@ const Addons = () => {
       <div className="mb-5 ">
         {authPermissions?.includes('new_add_ons') && (
           <div className="_ mx-3 mb-5 flex sm:mb-0">
-            <button
+            {/* <button
               onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}
               className={`btn btn-outline-darkness flex h-10 w-24 flex-col items-center justify-center rounded-lg px-2 py-3 text-[13px] font-bold capitalize text-black hover:text-white`}
             >
               add new
-            </button>
+            </button> */}
           </div>
         )}
-        <div className="panel" id="pills_with_icon">
+        <div className="panel mt-6" id="pills_with_icon">
           {/* tab starts*/}
 
 
           <div className="my-5 flex flex-col sm:flex-row">
             <Tab.Group>
               <div className="mx-3 mb-5 sm:mb-0">
-                <Tab.List className="mb-5 grid w-44 grid-cols-4 flex-col gap-2 rtl:space-x-reverse sm:flex sm:flex-wrap sm:justify-center">
+                <Tab.List className="mb-5 flex-row flex overflow-hidden overflow-x-auto  sm:flex-col sm:flex gap-2">
                   {addonsCategories.map((category: any, index: any) => (
                     <Tab key={index}>
                       {({ selected }) => (
@@ -216,7 +217,7 @@ const Addons = () => {
                 </Tab.List>
               </div>
 
-              <div className="ms-4 w-full">
+              <div className="ms-4 w-full overflow-hidden overflow-x-auto">
                 <Tab.Panels>
                   {addonsCategories?.map((category: any, index: any) => (
                     <Tab.Panel key={index}>
@@ -295,7 +296,7 @@ const Addons = () => {
         <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 space-x-6  overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 md:px-0">
+              <Dialog.Panel as="div" className="panel my-24 space-x-6  overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 w-[80%] md:px-0">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
                   <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
 
@@ -304,25 +305,25 @@ const Addons = () => {
                   </button>
                 </div>
 
-                <div className="basis-[49%]">
-                  <div className={`w-12/12 me-6 justify-between `}>
-                    <div className="w-12/12 space-y-2 pb-5 dark:text-white">
-                      <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between">
-                        <p className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Title</span>
+                <div className="w-full ml-0 p-7">
+                  <div className={`w-full justify-between w-full`}>
+                    <div className=" pb-5 dark:text-white  w-full">
+                      <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between w-full gap-3">
+                        <p className="flex flex-col w-full">
+                          <span className="text-[14px]  capitalize leading-none text-[#000000] mb-2 font-bold">Title</span>
                           <input
                             {...register('title')}
                             onChange={(e) => handleInputChange('title', e.target.value)}
                             value={addonsInfo?.title || ''}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9  rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0  w-full"
                           />
                         </p>
 
-                        <div className="mt-3 flex flex-col md:mt-0">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Status</span>
+                        <div className="mt-3 flex w-full flex-col md:mt-0">
+                          <span className="text-[14px]  capitalize leading-none text-[#000000] mb-2 font-bold">Status</span>
                           <select
                             {...register('status')}
-                            className=" h-9 w-28 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
+                            className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
                             value={addonsInfo?.status || ''}
                             onChange={(e) => handleInputChange('status', e.target.value)}
                           >
@@ -369,21 +370,19 @@ const Addons = () => {
                       </div>
 
                       <div className="mt-3 flex flex-col justify-between md:flex md:flex-row">
-                        <div className="mt-3 flex flex-col md:mt-0">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Rate</span>
+                        <div className="mt-3 flex flex-col md:mt-0 w-full">
+                          <span className="text-[14px] font-bold capitalize leading-none text-[#000000] mb-2">Rate</span>
                           <input
                             {...register('rate')}
                             onChange={(e) => handleInputChange('rate', e.target.value)}
                             value={addonsInfo?.rate || 0}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 "
                           />
                         </div>
                       </div>
 
-                      <div className="mt-8 flex justify-end md:mt-0">
-                        <button type="submit" className="btn flex items-center justify-center rounded-lg bg-black text-[13px] font-bold capitalize text-white" onClick={handleUpdateTestSubmit}>
-                          Update
-                        </button>
+                      <div className="mt-8 flex justify-end md:mt-8">
+                        <DefaultButton css='' onClick={handleUpdateTestSubmit}>Update</DefaultButton>
                       </div>
                     </div>
                   </div>

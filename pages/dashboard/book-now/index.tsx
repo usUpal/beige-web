@@ -697,7 +697,7 @@ const BookNow = () => {
                     <>
                       <div className="flex items-center justify-between">
                         {/* Content Type */}
-                        <div className="flex basis-[35%] flex-col sm:flex-row">
+                        <div className="flex w-full flex-col sm:flex-row">
                           <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Content Type</label>
                           <div className="flex-1">
                             {/* Video */}
@@ -726,7 +726,7 @@ const BookNow = () => {
                           </div>
                         </div>
                         {/* Category || content vertical*/}
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <div className="flex w-full flex-col sm:flex-row">
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Category
                           </label>
@@ -750,9 +750,9 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      <div className="my-5 flex items-center justify-between">
+                      <div className="my-5 md:flex md:flex-row flex-col items-center justify-between gap-4">
                         {userData?.role === 'admin' && (
-                          <div className="relative flex basis-[45%] flex-col sm:flex-row">
+                          <div className="relative flex  flex-col sm:flex-row w-full ">
                             <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                               Client
                             </label>
@@ -812,7 +812,7 @@ const BookNow = () => {
                         )}
 
                         {/* Location */}
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
+                        <div className="flex  flex-col sm:flex-row w-full md:mt-0 mt-2">
                           <label htmlFor="location" className="mb-0 capitalize rtl:ml-2 sm:ltr:mr-2 md:w-[87px] 2xl:w-[138px]">
                             Location
                           </label>
@@ -822,9 +822,9 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      <div className="mt-5 flex items-start justify-between">
+                      <div className="mt-5 md:flex md:flex-row flex-col items-start justify-between w-full gap-4">
                         {/* Shoot Name */}
-                        <div className="flex basis-[45%] flex-col  sm:flex-row">
+                        <div className="flex  flex-col  w-full sm:flex-row">
                           <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Shoot Name
                           </label>
@@ -841,8 +841,8 @@ const BookNow = () => {
                         </div>
 
                         {/* references */}
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <div className="flex  flex-col sm:flex-row w-full mt-2 md:mt-0">
+                          <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 ">
                             References
                           </label>
                           <input id="references" type="text" placeholder="https://sitename.com" className="form-input" {...register('references')} />
@@ -853,38 +853,38 @@ const BookNow = () => {
                         <div className="table-responsive">
                           <div className="mb-8 items-center justify-between md:flex">
                             {/* Starting Date and Time */}
-                            <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
-                              <label htmlFor="start_date_time" className="mb-0 mt-4 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
+                            <div className="mb-3 flex  flex-col sm:flex-row w-full md:mb-0">
+                              <label htmlFor="start_date_time" className="mb-3 md:mb-0 mt-4 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
                                 Shoot Time
                               </label>
 
                               <div className="relative">
-                                <p className="text-xs font-bold">Start Time</p>
+                                <p className="text-xs font-bold sm:mb-0 mb-1">Start Time</p>
                                 <input
                                   id="start_date_time"
                                   ref={startDateTimeRef}
                                   type="text"
-                                  className={`form-input w-[220px] cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`}
+                                  className={`form-input sm:w-[220px] w-full cursor-pointer ${errors?.start_date_time ? 'border-red-500' : ''}`}
                                   placeholder="Start time"
                                   required={startDateTime?.length === 0}
                                 />
-                                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/4 transform">🗓️</span>
+                                <span className="pointer-events-none absolute right-[14px] top-[55%] -translate-y-1/4 transform">🗓️</span>
 
                                 {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                               </div>
 
-                              <div className="relative">
-                                <p className="ml-1 text-xs font-bold">End Time</p>
+                              <div className="relative sm:mt-0 mt-3">
+                                <p className="ml-1 text-xs font-bold sm:mb-0 mb-1">End Time</p>
                                 <input
                                   id="end_date_time"
                                   ref={endDateTimeRef}
                                   type="text"
-                                  className={`form-input ml-1 w-[220px] cursor-pointer ${errors?.end_date_time ? 'border-red-500' : ''}`}
+                                  className={`form-input ml-1 sm:w-[220px] w-full cursor-pointer ${errors?.end_date_time ? 'border-red-500' : ''}`}
                                   placeholder="End time"
                                   required={endDateTime?.length === 0}
                                 />
 
-                                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/4 transform">🗓️</span>
+                                <span className="pointer-events-none absolute right-[14px] top-[55%] -translate-y-1/4 transform">🗓️</span>
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
@@ -932,18 +932,18 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between">
+                      <div className="md:flex md:flex-row flex-col items-center justify-between w-full md:gap-4">
                         {/* min_budget budget */}
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="min_budget" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-32">
+                        <div className="flex  flex-col sm:flex-row w-full mt-2">
+                          <label htmlFor="min_budget" className="mb-0  rtl:ml-2 sm:ltr:mr-2 md:w-[24%]  w-full mb-3">
                             Min Budget
                           </label>
-                          <div className="flex flex-col">
+                          <div className="flex flex-col w-full">
                             <input
                               id="min_budget"
                               type="number"
                               placeholder="Min Budget"
-                              className={`form-input block md:ms-2 md:w-[355px] 2xl:ml-[18px] 2xl:w-[550px] ${errors.min_budget ? 'border-red-500' : ''}`}
+                              className={`form-input block w-full ${errors.min_budget ? 'border-red-500' : ''}`}
                               {...register('min_budget', {
                                 required: 'Min Budget is required',
                                 min: {
@@ -958,16 +958,16 @@ const BookNow = () => {
                           </div>
                         </div>
 
-                        <div className="flex basis-[45%] flex-col sm:flex-row">
-                          <label htmlFor="max_budget" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-32">
+                        <div className="flex  flex-col sm:flex-row w-full mt-2">
+                          <label htmlFor="max_budget" className="mb-2 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-[23%]">
                             Max Budget
                           </label>
-                          <div className="flex flex-col">
+                          <div className="flex flex-col w-full">
                             <input
                               id="max_budget"
                               type="number"
                               placeholder="Max Budget"
-                              className={`form-input block md:ms-2 md:w-[355px] 2xl:ml-[18px] 2xl:w-[560px] ${errors.max_budget ? 'border-red-500' : ''}`}
+                              className={`form-input block w-full ${errors.max_budget ? 'border-red-500' : ''}`}
                               {...register('max_budget', {
                                 required: 'Max Budget is required',
                                 min: {
@@ -986,20 +986,20 @@ const BookNow = () => {
                         </div>
                       </div>
                       {userData?.role === 'admin' && (
-                        <div className="mt-5 flex items-center justify-between">
+                        <div className="md:flex md:flex-row flex-col items-center justify-between w-full md:gap-4 mt-4">
                           {/* Special Note */}
-                          <div className="flex basis-[45%] flex-col sm:flex-row">
+                          <div className="flex  flex-col sm:flex-row w-full">
                             <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                               Special Note
                             </label>
-                            <textarea id="description" rows={3} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
+                            <textarea id="description" rows={1} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
                           </div>
-                          <div className="mb-3 flex basis-[45%] flex-col sm:flex-row md:mb-0">
-                            <label htmlFor="meeting_time" className="mb-0 w-24 rtl:ml-2 sm:ltr:mr-2 2xl:w-36">
+                          <div className="mb-3 flex  flex-col sm:flex-row w-full md:mb-0 sm:mt-0 mt-3">
+                            <label htmlFor="meeting_time" className="mb-0  rtl:ml-2 sm:ltr:mr-2 md:w-[24%] w-full ">
                               Meeting time
                             </label>
 
-                            <div className="relative w-[98%] pl-5">
+                            <div className="relative w-full ">
                               <Flatpickr
                                 id="meeting_time"
                                 className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
@@ -1020,7 +1020,7 @@ const BookNow = () => {
                               />
                               <input type="hidden" {...register('meeting_time')} />
 
-                              <span className="-translate-y-1/6 pointer-events-none absolute right-2 top-1 transform">🗓️</span>
+                              <span className="-translate-y-1/6 pointer-events-none absolute right-[14px] top-[21%]  transform">🗓️</span>
                               {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
                             </div>
                           </div>
@@ -1036,14 +1036,14 @@ const BookNow = () => {
                 <div className="">
                   {activeTab === 2 && (
                     <div>
-                      <div className="flex items-center justify-between">
+                      <div className="md:flex md:flex-row flex-col items-center justify-between">
                         <div className="">
                           <div className="mb-[30px]">
                             <h2 className="mb-2 font-sans text-[18px] capitalize leading-none text-black">Select Producer</h2>
                             <p className="text-[14px] capitalize leading-none text-[#838383]">choose your beige photographer/videographer</p>
                           </div>
                         </div>
-                        <div>
+                        <div className='md:mb-0 mb-5'>
                           <input
                             type="text"
                             className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
@@ -1055,12 +1055,12 @@ const BookNow = () => {
                         {/* search ends */}
                       </div>
                       {/* Showing all cps */}
-                      <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
+                      <div className="grid md:grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 2xl:grid-cols-4">
                         {allCpUsers?.length > 0 ? (
                           allCpUsers?.map((cp) => {
                             const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
-                              <div key={cp?.userId?._id} className="single-match mb-6 basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
+                              <div key={cp?.userId?._id} className="single-match  basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
                                 <div className="grid grid-cols-3">
                                   <div className="media relative h-14 w-14">
                                     <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} style={{ width: '100%', height: '100%' }} className="mr-3 rounded-full" alt="img" />
@@ -1081,9 +1081,9 @@ const BookNow = () => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="mt-[30px] flex">
+                                <div className="mt-[30px] flex gap-3">
                                   <Link href={`cp/${cp?.userId?._id}`}>
-                                    <p className="single-match-btn mr-[15px] inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                    <p className="single-match-btn  inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
                                       view profile
                                     </p>
                                   </Link>
