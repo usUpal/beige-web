@@ -110,7 +110,6 @@ const BookNow = () => {
   // get all calculate price params
 
   //   Calculate shoot cost
-  //   Calculate shoot cost
   useEffect(() => {
     if (activeTab === 3) {
       const totalShootCost = shootCostCalculation(getTotalDuration, formDataPageOne?.content_type, cp_ids, formDataPageOne?.content_vertical, pricingData?.results);
