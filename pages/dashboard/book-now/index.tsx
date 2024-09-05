@@ -750,9 +750,9 @@ const BookNow = () => {
                                               className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
                                             >
                                               <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                                <img src={client?.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                                <img src={client.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
                                               </div>
-                                              <a href="#">{client?.name}</a>
+                                              <a href="#">{client.name}</a>
                                             </li>
                                           ))}
                                         </ul>

@@ -61,10 +61,17 @@ const shootApi = baseApi.injectEndpoints({
           body: JSON.stringify({ cp_ids: data?.cp_ids })
         }
       }
+    }),
+    getAlgoCp: builder.query({
+      query: (data) => {
+        return {
+          url: `algo?orderID=${data}&page=1&limit=10`,
+          method: 'GET'
+        }
+      }
     })
-
   }),
   overrideExisting: true,
 });
 
-export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation } = shootApi;
+export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation ,useLazyGetAlgoCpQuery} = shootApi;
