@@ -1,4 +1,4 @@
-import { API_ENDPOINT, SOCKET_URL } from '@/config';
+dimport { API_ENDPOINT, SOCKET_URL } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import transformMessages from '@/utils/transformMessage';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -16,6 +16,7 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePaginationComponent from 'react-responsive-pagination';
 import { toast } from 'react-toastify';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 // types
 
 const Chat = () => {
@@ -483,7 +484,13 @@ const Chat = () => {
                       <div className="flex gap-3 sm:gap-5">
                         <>
                           {(!isAddParticipant && (userRole === "manager" || userRole === "admin")) &&
-                            <button className="capitalize bg-black  px-2 rounded text-white text-[14px]" onClick={() => setIsAddParticipant(true)}>add participants</button>
+                            <>
+                              {/* <button className="capitalize bg-black  px-2 rounded text-white text-[14px]" onClick={() => setIsAddParticipant(true)}>add participants</button> */}
+                              {/* <DefaultButton onClick={() => setIsAddParticipant(true)}>
+                                Add Participant
+                              </DefaultButton> */}
+                              <DefaultButton onClick={() => setIsAddParticipant(true)} css={"px-3 py-0 text-[14px]"}>Add Participant</DefaultButton>
+                            </>
                           }
 
                           {isAddParticipant &&
@@ -607,7 +614,7 @@ const Chat = () => {
                           <div key={index}>
                             <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
                               <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
-                                {message?.senderId === userData.id ? (userRole == 'admin' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
+                                {message?.senderId === userData.id ? (userRole == 'manager' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
                                 {message?.senderId !== userData.id
                                   ? message?.senderName == 'Admin User'
                                     ? createImageByName('MA')
@@ -777,7 +784,6 @@ const Chat = () => {
                             </div>
                           )}
 
-
                           {activeTab === '2' && (
                             <div className="pt-4">
                               <h2 className="text-lg font-medium">Image files</h2>
@@ -803,5 +809,5 @@ const Chat = () => {
               </div >
               );
 };
-
+</div>
               export default Chat;

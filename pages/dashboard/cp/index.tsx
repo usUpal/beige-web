@@ -181,24 +181,23 @@ const CpUsers = () => {
                                 <td>{cpUser?.userId?.email}</td>
                                 <td className="font-sans text-success">{cpUser?.userId?.role}</td>
 
-                            <td>
-                              <div className="font-sans">
-                                <div className="font-sans">
-                                  <StatusBg>{cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg>
-                                </div>
-                              </div>
-                            </td>
-                            {authPermissions?.includes('edit_content_provider') && (
-                              <td>
-                                <Link href={`cp/${cpUser?.userId?._id}`}>
-                                  <button type="button" className="p-0">
-                                    {allSvgs.editPen}
-                                  </button>
-                                </Link>
-                              </td>
-                            )}
-                          </tr>
-                        )))}
+                                <td>
+                                  <span className={`badge text-md w-12 ${!cpUser?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
+                                    {cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}
+                                  </span>
+                                </td>
+
+                                {authPermissions?.includes('edit_content_provider') && (
+                                  <td>
+                                    <Link href={`cp/${cpUser?.userId?._id}`}>
+                                      <button type="button" className="p-0">
+                                        {allSvgs.editPen}
+                                      </button>
+                                    </Link>
+                                  </td>
+                                )}
+                              </tr>
+                            )))}
                       </tbody>
                     </table>
 

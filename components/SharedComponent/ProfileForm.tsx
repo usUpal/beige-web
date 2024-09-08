@@ -7,6 +7,7 @@ import { API_ENDPOINT } from '@/config';
 import Swal from 'sweetalert2';
 import Cookies from 'js-cookie';
 import { setLazyProp } from 'next/dist/server/api-utils';
+import DefaultButton from './DefaultButton';
 
 interface FormData {
   name: string;
@@ -167,9 +168,10 @@ const ProfileForm = () => {
         </div>
 
         <div className="mt-3 sm:col-span-2">
-          <button type="submit" className="btn btn-primary" disabled={isLoading}>
+          {/* <button type="submit" className="btn btn-primary" disabled={isLoading}>
             {isLoading ? 'Saving...' : 'Save'}
-          </button>
+          </button> */}
+          <DefaultButton css='font-semibold'>{isLoading ? 'Saving...' : 'Save'}</DefaultButton>
         </div>
       </form>
     </div>

@@ -12,6 +12,8 @@ import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import ResponsivePagination from 'react-responsive-pagination';
 import { useAuth } from '@/contexts/authContext';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { toast } from 'react-toastify';
 
 const Users = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -107,6 +109,10 @@ const Users = () => {
     }
   };
 
+  const handleCreateNewCp = () => {
+    toast.warning("This page is under Development.")
+  }
+
   return (
     <>
       <div>
@@ -127,9 +133,9 @@ const Users = () => {
               <h5 className="text-lg font-semibold dark:text-white-light">All Users</h5>
               <div className="flex gap-2">
                 <Link href="/dashboard/create-user">
-                  <button className="rounded-md border-2 border-[#b7aa85] px-4 py-1 text-[#b7aa85]">Create New User</button>
+                  <DefaultButton css=''>Create New User</DefaultButton>
                 </Link>
-                <button className=" rounded-md border-2 border-[#b7aa85] px-4 py-1 text-[#b7aa85]"> Create New Cp</button>
+                <DefaultButton onClick={handleCreateNewCp} css=''>Create New Cp</DefaultButton>
               </div>
             </div>
             <div className="mb-5">
@@ -274,9 +280,10 @@ const Users = () => {
                                   </div>
                                 </div>
                                 <div className="flex justify-end">
-                                  <button type="submit" className="btn bg-black font-sans text-white  capitalize md:block ">
+                                  {/* <button type="submit" className="btn bg-black font-sans text-white  capitalize md:block ">
                                     Save
-                                  </button>
+                                  </button> */}
+                                  <DefaultButton css='font-semibold'>Save</DefaultButton>
                                 </div>
                               </form>
 

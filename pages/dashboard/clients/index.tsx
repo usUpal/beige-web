@@ -12,6 +12,7 @@ import StatusBg from '@/components/Status/StatusBg';
 import ResponsivePagination from 'react-responsive-pagination';
 import useClient from '@/hooks/useClient';
 import { useAuth } from '@/contexts/authContext';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const Users = () => {
   const [allClients, setAllClients, totalPagesCount, setTotalPagesCount, currentPage, setCurrentPage] = useClient();
@@ -298,9 +299,9 @@ const Users = () => {
                               <td className="font-sans text-success">{userClient?.role}</td>
 
                               <td>
-                                <div className="font-sans">
-                                  <StatusBg>{userClient?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg>
-                                </div>
+                                <span className={`badge text-md w-12 ${!userClient?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
+                                  {userClient?.isEmailVerified === true ? 'Verified' : 'Unverified'}
+                                </span>
                               </td>
                               {authPermissions?.includes('client_edit') && (
                                 <td>
@@ -361,10 +362,8 @@ const Users = () => {
                                   <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Email  </span>
                                   <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.email}</span>
                                 </span>
-                                <div className="btn-group flex">
-                                  <button onClick={() => setUserModalClient(false)} type="submit" className="btn mx-auto mt-12 hidden bg-black font-sans text-white md:me-0 md:block">
-                                    Close
-                                  </button>
+                                <div className="btn-group flex justify-end">
+                                  <DefaultButton onClick={() => setUserModalClient(false)} css='font-semibold mt-10'>Close</DefaultButton>
                                 </div>
                               </div>
                             </div>
