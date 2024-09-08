@@ -10,26 +10,26 @@
     position: relative;
     display: block;
     margin: 0 2px;
-    min-height: 40px;
-    min-width: 40px;
+    min-height: 32px;
+    min-width: 32px;
 
     border-radius: 6px;
     text-align: center;
-    line-height: 40px;
+    line-height: 32px;
     color: #000;
     text-decoration: none;
     background-color: #E0E6ED;
 }
 
 .page-item a.page-link:hover {
-    background-color: #ACA686;
+    background-color: #000;
     color: #fff;
 }
 
 .page-item.active .page-link {
     font-weight: 700;
     color: #ffffff;
-    background-color: #ACA686;
+    background-color: #000;
 }
 
 .page-item.disabled .page-link {

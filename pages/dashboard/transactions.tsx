@@ -142,7 +142,6 @@ const Transactions = () => {
                     </tr>
                   )}
 
-
                 </>
               )}
 
@@ -156,7 +155,6 @@ const Transactions = () => {
               total={allPayments?.totalPages || 1}
               onPageChange={handlePageChange}
               maxWidth={400}
-            // styles={styles}
             />
           </div>
 
