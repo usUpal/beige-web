@@ -1,4 +1,4 @@
-dimport { API_ENDPOINT, SOCKET_URL } from '@/config';
+import { API_ENDPOINT, SOCKET_URL } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import transformMessages from '@/utils/transformMessage';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -801,13 +801,18 @@ const Chat = () => {
                               </div>
                             </div>
                           )}
-                        </div>
+                        </ul>
+                      </PerfectScrollbar>
                     </div>
                   </div>
-                )
-                }
+                )}
               </div >
-              );
-};
-</div>
-              export default Chat;
+
+            </div>
+          </div>
+
+        )};
+    </div>
+  );
+}
+export default Chat;
