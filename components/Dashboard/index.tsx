@@ -11,10 +11,10 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
 });
 
-const Dashboard = (props : any) => {
-  const {userData} = useAuth();
+const Dashboard = (props: any) => {
+  const { userData } = useAuth();
   const { isDark, isRtl, isMounted } = props;
-  const {authPermissions} = useAuth();
+  const { authPermissions } = useAuth();
 
   //Revenue Chart
   const revenueChart: any = {
@@ -306,7 +306,7 @@ const Dashboard = (props : any) => {
       const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=5`);
       const allShots = await response.json();
       setMyShoots((prevShoots: any) => {
-        const newShoots = allShots.results.filter((shoot: any) => !prevShoots.some((prevShoot: any) => prevShoot.id === shoot.id));
+        const newShoots = allShots.results?.filter((shoot: any) => !prevShoots.some((prevShoot: any) => prevShoot.id === shoot.id));
         return [...prevShoots, ...newShoots];
       });
     } catch (error) {

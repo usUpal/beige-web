@@ -159,12 +159,12 @@ const Profile = () => {
 
   const handleImageClick = () => {
     setShowImage(true);
-    toast.warning("This page is under Development.");
+    // toast.warning("This page is under Development.");
   };
 
   const handleVideoClick = () => {
     setShowImage(false);
-    toast.warning("This page is under Development.");
+    // toast.warning("This page is under Development.");
   };
 
   const [profilePicture, setProfilePicture] = useState(userData?.profile_picture || '');
@@ -220,12 +220,12 @@ const Profile = () => {
               <div className="mb-7 font-bold">All Reviews</div>
               <Swiper spaceBetween={30} slidesPerView={3} navigation={false} pagination={{ clickable: true }} className="mySwiper">
                 {isLoading && reviews?.length > 0 ? (
-                  reviews?.map((review, index) => (
+                  reviews?.map((review, index) => ((console.log(review)),
                     <SwiperSlide key={index}>
                       <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
                         <div className="flex gap-4">
                           {!review?.client_id?.profile_picture ? (
-                            <MakeProfileImage>{review?.client_id?.name}</MakeProfileImage>
+                            <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : ""}</MakeProfileImage>
                           ) : (
                             <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="User profile picture" />
                           )}
