@@ -44,6 +44,15 @@ const shootApi = baseApi.injectEndpoints({
         }
       },
     }),
+    updateOrder: builder.mutation({
+      query: (data) => {
+        return {
+          url: `orders/${data?.id}`,
+          method: 'PATCH',
+          body: data?.requestData,
+        }
+      },
+    }),
     updateStatus: builder.mutation({
       query: (data) => {
         return {
@@ -74,4 +83,4 @@ const shootApi = baseApi.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation ,useLazyGetAlgoCpQuery} = shootApi;
+export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation, useLazyGetAlgoCpQuery,useUpdateOrderMutation } = shootApi;
