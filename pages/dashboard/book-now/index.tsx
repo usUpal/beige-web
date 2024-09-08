@@ -892,7 +892,7 @@ const BookNow = () => {
                               >
                                 Add
                               </p> */}
-                              <span css="h-9 ml-2 mt-4" className="ml-2 mt-4 h-9 rounded-md bg-black px-4 py-1 font-sans text-[14px] capitalize leading-[28px] text-white" onClick={addDateTime}>
+                              <span css="h-9 ml-2 mt-4" className=" cursor-pointer ml-2 mt-4 h-9 rounded-md bg-black px-4 py-1 font-sans text-[14px] capitalize leading-[28px] text-white" onClick={addDateTime}>
                                 Add
                               </span>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
@@ -1090,9 +1090,8 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1156,7 +1155,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1271,29 +1270,9 @@ const BookNow = () => {
                     Back
                   </button>
 
-                  {/* <DefaultButton
-                    onClick={() => handleBack()}
-                    css={`btn flex flex-col items-center justify-center ${activeTab === 1 ? 'hidden' : ''}`}
-                  >
-                    Backk
-                  </DefaultButton> */}
-
                   {activeTab === 2 && <DefaultButton css="font-semibold text-[16px] h-9">Next</DefaultButton>}
 
                   {activeTab === 3 && (
-                    // <button
-                    //   type="submit"
-                    //   onClick={() => setIsLoading(true)}
-                    //   className="btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none"
-                    // >
-                    //   {isLoading ? (
-                    //     <span>
-                    //       <Loader />
-                    //     </span>
-                    //   ) : (
-                    //     'Confirm Shoot'
-                    //   )}
-                    // </button>
 
                     <DefaultButton onClick={() => setIsLoading(true)} css="font-semibold text-[16px] h-9">
                       {' '}
