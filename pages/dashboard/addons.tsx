@@ -9,6 +9,8 @@ import { useForm } from 'react-hook-form';
 import useAddons from '@/hooks/useAddons';
 import { useAuth } from '@/contexts/authContext';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Addons = () => {
   const { authPermissions } = useAuth();
@@ -93,7 +95,8 @@ const Addons = () => {
     });
   };
 
-  const handleUpdateTestSubmit = async (data: any) => {
+
+  const handleUpdateTestSubmit = async (data) => {
     const updatedAddonDetails = {
       title: addonsInfo?.title || data?.title,
       rate: addonsInfo?.rate || data?.rate,
@@ -112,17 +115,35 @@ const Addons = () => {
       });
 
       if (!patchResponse.ok) {
-        throw new Error('Failed to patch data');
+        throw new Error('Failed to update addon');
       }
 
-      const updatedAddon = await patchResponse.json(); //
+      const updatedAddon = await patchResponse.json();
 
-      const updatedAddonsData = addonsData.map((addon: any) => (addon._id === addonsInfo?._id ? updatedAddon : addon));
+      const updatedAddonsData = addonsData.map((addon) =>
+        addon._id === addonsInfo?._id ? updatedAddon : addon
+      );
       setAddonsData(updatedAddonsData);
 
       setAddonsModal(false);
+      toast.success('Addon updated successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
-      console.error('Patch error:', error);
+      console.error('Update error:', error);
+      toast.error('Failed to update addon. Please try again.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -296,7 +317,7 @@ const Addons = () => {
         <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 space-x-6  overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 w-[80%] md:px-0">
+              <Dialog.Panel as="div" className="panel my-24   overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 w-[80%] md:px-0">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
                   <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
 
@@ -305,10 +326,10 @@ const Addons = () => {
                   </button>
                 </div>
 
-                <div className="w-full ml-0 p-7">
-                  <div className={`w-full justify-between w-full`}>
-                    <div className=" pb-5 dark:text-white  w-full">
-                      <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between w-full gap-3">
+                <div className="w-full ml-0 px-7 pt-2 pb-4">
+                  <div className={`w-full justify-between `}>
+                    <div className=" dark:text-white  w-full">
+                      <div className="flex flex-col md:flex md:flex-row md:justify-between w-full gap-3">
                         <p className="flex flex-col w-full">
                           <span className="text-[14px]  capitalize leading-none text-[#000000] mb-2 font-bold">Title</span>
                           <input
@@ -333,22 +354,22 @@ const Addons = () => {
                         </div>
                       </div>
 
-                      <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
+                      <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row w-full gap-4" >
                         {addonsInfo?.ExtendRate && (
-                          <div className="mt-3 flex flex-col md:mt-0">
-                            <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Extend Rate</span>
+                          <div className="mt-3 flex flex-col md:mt-0 w-full">
+                            <span className="text-[14px] font-bold pb-2 capitalize leading-none text-[#000000]">Extend Rate</span>
                             <input
                               {...register('ExtendRate')}
                               onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
                               value={addonsInfo?.ExtendRate || 0}
-                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 "
                             />
                           </div>
                         )}
 
                         {addonsInfo?.ExtendRateType && (
-                          <p className="mt-3 flex flex-col md:mt-0">
-                            <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Extend Rate Type</span>
+                          <p className="mt-3 flex flex-col md:mt-0 w-full">
+                            <span className="text-[14px] font-bold pb-2 capitalize leading-none text-[#000000]">Extend Rate Type</span>
                             <select
                               {...register('ExtendRateType')}
                               className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
@@ -381,6 +402,9 @@ const Addons = () => {
                         </div>
                       </div>
 
+                      {/* <div className="mt-8 flex justify-end md:mt-8">
+                        <DefaultButton css='' onClick={handleUpdateTestSubmit}>Update</DefaultButton>
+                      </div> */}
                       <div className="mt-8 flex justify-end md:mt-8">
                         <DefaultButton onClick={handleUpdateTestSubmit} css=''>Update</DefaultButton>
                       </div>

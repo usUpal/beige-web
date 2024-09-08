@@ -892,9 +892,9 @@ const BookNow = () => {
                               >
                                 Add
                               </p> */}
-                              <DefaultButton css="h-9 ml-2 mt-4" onClick={addDateTime}>
+                              <span css="h-9 ml-2 mt-4" className="ml-2 mt-4 h-9 rounded-md bg-black px-4 py-1 font-sans text-[14px] capitalize leading-[28px] text-white" onClick={addDateTime}>
                                 Add
-                              </DefaultButton>
+                              </span>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
                           </div>
@@ -1190,10 +1190,10 @@ const BookNow = () => {
                       <>
                         <div className="panel mb-8">
                           <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black"> Selected {cp_ids?.length > 1 ? 'producers' : 'producer'}</h2>
-                          <div className="">
+                          <div className="grid grid-cols-1 gap-3 md:grid md:grid-cols-3">
                             {cp_ids?.length !== 0 &&
                               cp_ids?.map((cp: any) => (
-                                <div key={cp?.id} className="single-match mb-6 w-5/12 basis-[49%] rounded-[10px] border px-4 py-2">
+                                <div key={cp?.id} className="single-match w-full rounded-[10px] border px-4 py-2">
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center justify-start">
                                       <div className="relative h-14 w-14">
