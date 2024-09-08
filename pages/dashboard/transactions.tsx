@@ -14,6 +14,7 @@ import ResponsivePagination from 'react-responsive-pagination';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import { useGetAllTransactionQuery, useUpdateTransactionStatusMutation } from '@/Redux/features/transaction/transactionApi';
 import { toast } from 'react-toastify';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const Transactions = () => {
   const dispatch = useDispatch();
@@ -43,7 +44,9 @@ const Transactions = () => {
     [currentPage, query, userData]
   );
 
-  const { data: allPayments, isLoading: isAllPaymentLoading } = useGetAllTransactionQuery(queryParams)
+  const { data: allPayments, isLoading: isAllPaymentLoading, refetch } = useGetAllTransactionQuery(queryParams, {
+    refetchOnMountOrArgChange: true,
+  })
   const [updateTransactionStatus, { isLoading: updateTransactionStatusLoading, isError: updateTransactionStatusError }] = useUpdateTransactionStatusMutation();
 
   const handlePageChange = (page: number) => {
@@ -66,8 +69,10 @@ const Transactions = () => {
   const handleUpdateTestSubmit = async (id: string) => {
     try {
       const selectedStatus = statusRef.current?.value;
-      const result = updateTransactionStatus({ id, status: selectedStatus })
+      const result = updateTransactionStatus({ id, status: selectedStatus });
+
       setPayoutModal(false);
+      refetch();
       toast.success('Payment status update successfully');
     } catch (error) {
       toast.error('Something want wrong...!');
@@ -292,25 +297,6 @@ const Transactions = () => {
                         )}
                       </div>
 
-                      {/* <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
-                        <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">user Id</span>
-                          <input
-                            value={selectedPayoutInfo?.userId}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                            disabled
-                          />
-                        </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">id</span>
-                          <input
-                            value={selectedPayoutInfo?.id}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                            disabled
-                          />
-                        </div>
-                      </div> */}
 
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
                         <div className="flex flex-col">
@@ -322,17 +308,6 @@ const Transactions = () => {
                             disabled
                           />
                         </div>
-
-                        {/* <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">created date</span>
-                          <input
-                            // value={selectedPayoutInfo?.createdAt}
-                            value={createdAtDate?.date}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                            disabled
-                          />
-                        </div> */}
-
                       </div>
                       {/*  */}
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
@@ -347,26 +322,11 @@ const Transactions = () => {
                           </div>
                         )}
 
-                        {/* <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">updatedAt</span>
-                          <input
-                            // value={selectedPayoutInfo?.updatedAt}
-                            value={updatedDate?.date}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                            disabled
-                          />
-                        </div> */}
-
                       </div>
 
                       <div className="mt-8 flex justify-end md:mt-0">
-                        <button
-                          type="submit"
-                          className="btn flex items-center justify-center rounded-lg bg-black text-[13px] font-bold capitalize text-white"
-                          onClick={() => handleUpdateTestSubmit(selectedPayoutInfo?.id)}
-                        >
-                          Update
-                        </button>
+                        <DefaultButton onClick={() => handleUpdateTestSubmit(selectedPayoutInfo?.id)} type="submit">Update</DefaultButton>
+
                       </div>
                     </div>
                   </div>

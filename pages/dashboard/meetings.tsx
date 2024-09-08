@@ -277,7 +277,7 @@ const Meeting = () => {
                                 {/* <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
                                   Reschedule Request
                                 </button> */}
-                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2'> Reschedule Request</DefaultButton>
+                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2' submit={"submit"}> Reschedule Request</DefaultButton>
                               </div>
                             </div>
                           )}

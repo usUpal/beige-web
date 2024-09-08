@@ -25,6 +25,8 @@ import { useAssignCpMutation, useGetShootDetailsQuery, useUpdateStatusMutation }
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';
 import { shootStatusMessage, allStatus } from '@/utils/shootUtils/shootDetails';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import DefaultLayout from '@/components/Layouts/DefaultLayout';
 
 const ShootDetails = () => {
   const { userData } = useAuth();
@@ -208,6 +210,12 @@ const ShootDetails = () => {
       console.error('Error occurred while sending PATCH request:', error);
     }
   };
+
+  // handleDetailsInfo
+  const handleDetailsInfo = (cpId) => {
+    console.log("cpId:", cpId);
+    toast.warning("This page is under development.")
+  }
 
   return (
     <>
@@ -397,9 +405,7 @@ const ShootDetails = () => {
 
                 {userData?.role === 'admin' && (
                   <div className="flex space-x-3">
-                    <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setStatusBox(!statusBox)}>
-                      Change Status
-                    </button>
+                    <DefaultButton onClick={() => setStatusBox(!statusBox)}>Change Status</DefaultButton>
                     {statusBox && (
                       <div className="flex space-x-2">
                         <select name="" id="" onChange={(event) => setStatus(event?.target?.value)} className="rounded-sm border border-black px-2 lg:w-[240px]">
@@ -409,6 +415,15 @@ const ShootDetails = () => {
                             </option>
                           ))}
                         </select>
+
+                        {/* <DefaultLayout onClick={handelUpdateStatus} css={"flex items-center justify-center"} disabled={isStatusLoading === true ? true : false}>{isStatusLoading === true ? (
+                          <Loader />
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                          </svg>
+                        )}</DefaultLayout> */}
+
                         <button
                           disabled={isStatusLoading === true ? true : false}
                           onClick={handelUpdateStatus}
@@ -422,6 +437,7 @@ const ShootDetails = () => {
                             </svg>
                           )}
                         </button>
+
                       </div>
                     )}
                   </div>
@@ -701,9 +717,11 @@ const ShootDetails = () => {
                       <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
                         <ResponsivePagination current={currentPage} total={allCp?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
                       </div>
-                      <button disabled={false} onClick={updateCps} className="mt-5 rounded-sm bg-black px-3 py-1 text-white">
+
+                      <DefaultButton onClick={updateCps} disabled={false} css='my-5' >Submit</DefaultButton>
+                      {/* <button disabled={false} onClick={updateCps} className="mt-5 rounded-sm bg-black px-3 py-1 text-white">
                         Submit
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </Dialog.Panel>
@@ -711,7 +729,7 @@ const ShootDetails = () => {
             </div>
           </Dialog>
         </Transition>
-      </div>
+      </div >
     </>
   );
 };

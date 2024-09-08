@@ -406,7 +406,7 @@ const Addons = () => {
                         <DefaultButton css='' onClick={handleUpdateTestSubmit}>Update</DefaultButton>
                       </div> */}
                       <div className="mt-8 flex justify-end md:mt-8">
-                        <DefaultButton onClick={handleUpdateTestSubmit} css=''>Update</DefaultButton>
+                        <DefaultButton onClick={handleUpdateTestSubmit} type='submit'>Update</DefaultButton>
                       </div>
                     </div>
                   </div>

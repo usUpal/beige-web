@@ -15,6 +15,7 @@ import { API_ENDPOINT } from '@/config';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
 import Swal from 'sweetalert2';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { toast } from 'react-toastify';
 
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 
@@ -158,10 +159,12 @@ const Profile = () => {
 
   const handleImageClick = () => {
     setShowImage(true);
+    toast.warning("This page is under Development.");
   };
 
   const handleVideoClick = () => {
     setShowImage(false);
+    toast.warning("This page is under Development.");
   };
 
   const [profilePicture, setProfilePicture] = useState(userData?.profile_picture || '');
