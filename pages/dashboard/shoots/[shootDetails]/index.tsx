@@ -663,11 +663,11 @@ const ShootDetails = () => {
                         onChange={(event) => setQuery(event.target.value)}
                         type="search"
                         value={query}
-                        className="w-[20%] rounded-lg border border-solid border-[#ACA686] px-3 py-2"
+                        className=" w-full lg:w-[20%] rounded-lg border border-solid border-[#ACA686] px-3 py-2"
                         placeholder="Search"
                       />
                     </div>
-                    <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
+                    <div className="lg:grid lg:grid-cols-3 md:grid md:grid-cols-2 grid grid-cols-1 gap-6 2xl:grid-cols-4">
                       {allCp?.results?.length > 0 ? (
                         allCp?.results?.map((cp: any) => {
                           const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
