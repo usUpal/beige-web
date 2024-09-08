@@ -121,7 +121,7 @@ const Transactions = () => {
                           {userRole === 'admin' && authPermissions?.includes('edit_transactions') && (
                             <td className="text-center">
                               <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
-                                {allSvgs.pencilIconForEdit}
+                                {allSvgs.editPen}
                               </button>
                             </td>
                           )}

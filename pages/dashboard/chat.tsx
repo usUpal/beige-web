@@ -1,4 +1,4 @@
-import { SOCKET_URL } from '@/config';
+import { API_ENDPOINT, SOCKET_URL } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import transformMessages from '@/utils/transformMessage';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -14,6 +14,9 @@ import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
 import { useGetAllChatQuery, useLazyGetChatDetailsQuery } from '@/Redux/features/chat/chatApi';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
+import ResponsivePaginationComponent from 'react-responsive-pagination';
+import { toast } from 'react-toastify';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 // types
 
 const Chat = () => {
@@ -30,11 +33,8 @@ const Chat = () => {
   const [isShowUserChat, setIsShowUserChat] = useState(false);
   const [selectedChatRoom, setSelectedChatRoom] = useState<any>(null);
   const [textMessage, setTextMessage] = useState('');
-  //   New states
-  // const [showError, setShowError] = useState(false);
+
   const [newMessages, setNewMessages] = useState<any>([]);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [fetchData, setFetchData] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [typtingUser, setTyptingUser] = useState<MessageTypingProps>();
   const [msgPage, setMsgPage] = useState(1);
@@ -49,6 +49,16 @@ const Chat = () => {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
+
+  // search
+  const [isAddParticipant, setIsAddParticipant] = useState(false);
+  const [clients, setClients] = useState([]);
+  const [clientName, setClientName] = useState('');
+  const [showClientDropdown, setShowClientDropdown] = useState(false);
+  const [isClientLoading, setIsClientLoading] = useState(false);
+  const dropdownRef = useRef(null);
+  const [newParticipantInfo, setNewParticipantInfo] = useState({});
+
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -78,7 +88,6 @@ const Chat = () => {
   const updatedAtDateTime = useDateFormat(selectedChatRoom?.updatedAt);
   const createdDateTime = useDateFormat(selectedChatRoom?.createdAt);
 
-  console.log(createdDateTime?.time);
 
   useEffect(() => {
     if (selectedChatRoom) {
@@ -185,15 +194,83 @@ const Chat = () => {
     return <span className="flex h-[35px] w-[35px] items-center justify-center rounded-full bg-gray-300 text-[13px] leading-[45px]">{name}</span>;
   };
 
-  const getChatByQuery = (event) => {
-    setSearchUser(event.target.value);
+  const getSearchResultByQuery = (event: any, searchInput: string) => {
+    if (searchInput?.toLowerCase() === "searchchat") {
+      setSearchUser(event?.target?.value);
+    } else {
+      setClientName(event?.target?.value);
+    }
   };
+
+  const allChatParticipants =
+    [
+      selectedChatRoom?.client_id ? {
+        ...selectedChatRoom.client_id,
+        type: 'client',
+      } : null,
+
+      ...(selectedChatRoom?.cp_ids || []).map((cp) => ({
+        ...cp,
+        type: 'cp',
+      })),
+      ...(selectedChatRoom?.manager_ids || []).map((manager) => ({
+        ...manager,
+        type: 'manager',
+      })),
+    ];
+
+
+  const getAllClients = async () => {
+    setIsClientLoading(true);
+    try {
+      let res;
+      if (clientName) {
+        res = await fetch(`${API_ENDPOINT}users?role=user&search=${clientName}`);
+      } else {
+        res = await fetch(`${API_ENDPOINT}users?role=user`);
+      }
+      const users = await res.json();
+      setClients(users?.results || []);
+      setShowClientDropdown(true);
+      setIsClientLoading(false);
+    } catch (error) {
+      setIsClientLoading(false);
+    }
+  };
+
+  // handleClientChange
+  const handleClientChange = (client: any) => {
+    // console.log("client", client);
+
+    setNewParticipantInfo(client);
+    setShowClientDropdown(false);
+    setIsAddParticipant(false);
+    setClientName('');
+    toast.success(
+      <>
+        <span className='text-primary'>{client?.name} </span> is successfully added to participants.
+      </>
+    )
+  };
+
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowClientDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   return (
     <div className={`relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)] sm:min-h-0 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
       <div className={`panel absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
         <div className="relative">
-          <input type="text" className="peer form-input ltr:pr-9 rtl:pl-9" placeholder="Searching..." value={searchUser} onChange={getChatByQuery} />
+          <input type="text" className="peer form-input ltr:pr-9 rtl:pl-9" placeholder="Searching..." value={searchUser} onChange={(event) => getSearchResultByQuery(event, "searchChat")} />
           <div className="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-2 rtl:left-2">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5"></circle>
@@ -208,9 +285,8 @@ const Chat = () => {
                 <div key={chat.id}>
                   <button
                     type="button"
-                    className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${
-                      selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
-                    }`}
+                    className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
+                      }`}
                     onClick={() => selectUser(chat)}
                   >
                     <div className="flex-1">
@@ -233,15 +309,15 @@ const Chat = () => {
             })}
           </PerfectScrollbar>
 
-          {/* <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-              <ResponsivePagination
-                current={currentPage}
-                total={totalPagesCount}
-                onPageChange={handlePageChange}
-                maxWidth={400}
-                // styles={styles}
-              />
-            </div> */}
+          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <ResponsivePaginationComponent
+              current={currentPage}
+              total={totalPagesCount}
+              onPageChange={handlePageChange}
+              maxWidth={400}
+            // styles={styles}
+            />
+          </div>
         </div>
       </div>
 
@@ -375,272 +451,368 @@ const Chat = () => {
           </div>
         )}
         {isShowUserChat && selectedChatRoom
-          ? (console.log('selectedChatRoom--->', selectedChatRoom),
-            (
-              <div className="relative h-full">
-                <div className="flex items-center justify-between p-4">
-                  <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <button type="button" className="hover:text-primary xl:hidden" onClick={() => setIsShowChatMenu(!isShowChatMenu)}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 7L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                        <path opacity="0.5" d="M20 12L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                        <path d="M20 17L4 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      </svg>
-                    </button>
-                    <div className="relative flex-none">
-                      {/* <img src="/public/favicon.png" className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" alt="img" /> */}
-                      <MakeProfileImage>{selectedChatRoom?.order_id?.order_name}</MakeProfileImage>
-                      <div className="absolute bottom-0 ltr:right-0 rtl:left-0">
-                        <div className="h-3 w-3 rounded-full bg-success"></div>
-                      </div>
-                    </div>
-                    <div className="mx-3">
-                      <Link href={`./shoots/${selectedChatRoom?.order_id?.id}`}>
-                        <p className="font-semibold">{selectedChatRoom?.order_id?.order_name}</p>
-                        <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + updatedAtDateTime?.time}</p>
-                      </Link>
+          ?
+          (
+            <div className="relative h-full">
+              <div className="flex items-center justify-between p-4">
+
+                <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                  <button type="button" className="hover:text-primary xl:hidden" onClick={() => setIsShowChatMenu(!isShowChatMenu)}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20 7L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path opacity="0.5" d="M20 12L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M20 17L4 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                  <div className="relative flex-none">
+                    <MakeProfileImage>{selectedChatRoom?.order_id?.order_name}</MakeProfileImage>
+                    <div className="absolute bottom-0 ltr:right-0 rtl:left-0">
+                      <div className="h-3 w-3 rounded-full bg-success"></div>
                     </div>
                   </div>
-                  {!isSidebarOpen && (
-                    <div className="flex gap-3 sm:gap-5">
-                      <div className="dropdown">
-                        <Dropdown
-                          placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                          btnClassName="bg-[#f4f4f4] dark:bg-[#1b2e4b] hover:bg-primary-light w-8 h-8 rounded-full !flex justify-center items-center"
-                          button={
-                            <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="#000000" className="bi bi-three-dots-vertical ml-2 mt-1" onClick={toggleSidebar}>
-                              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                              <g id="SVGRepo_iconCarrier">
-                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                              </g>
-                            </svg>
-                          }
-                        ></Dropdown>
-                      </div>
-                    </div>
-                  )}
+                  <div className="mx-3">
+                    <Link href={`./shoots/${selectedChatRoom?.order_id?.id}`}>
+                      <p className="font-semibold">{selectedChatRoom?.order_id?.order_name}</p>
+                      <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + updatedAtDateTime?.time}</p>
+                    </Link>
+                  </div>
                 </div>
-                <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
 
-                <PerfectScrollbar
-                  className="chat-conversation-box relative h-full sm:h-[calc(100vh_-_300px)]"
-                  onScrollY={(container) => {
-                    if (container.scrollTop === 0) {
-                      handleScroll();
-                    }
-                  }}
-                >
-                  <div className="min-h-[400px] space-y-5 p-4 pb-[68px] sm:min-h-[300px] sm:pb-0">
-                    <div className="m-6 mt-0 block">
-                      <h4 className="relative border-b border-[#f4f4f4] text-center text-xs dark:border-gray-800">
-                        <span className="relative top-2 bg-white px-3 dark:bg-black">{'Today, ' + createdDateTime?.time}</span>
-                      </h4>
-                    </div>
-                    {newMessages?.length ? (
-                      <>
-                        {newMessages?.map((message: any, index: any) => {
-                          return (
-                            <div key={index}>
-                              <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
-                                <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
-                                  {message?.senderId === userData.id ? (userRole == 'admin' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
-                                  {message?.senderId !== userData.id
-                                    ? message?.senderName == 'Admin User'
-                                      ? createImageByName('MA')
-                                      : message?.senderName == 'User'
+                <>
+                  {!isSidebarOpen && (
+                    <>
+                      <div className="flex gap-3 sm:gap-5">
+                        <>
+                          {(!isAddParticipant && (userRole === "manager" || userRole === "admin")) &&
+                            <>
+                              {/* <button className="capitalize bg-black  px-2 rounded text-white text-[14px]" onClick={() => setIsAddParticipant(true)}>add participants</button> */}
+                              {/* <DefaultButton onClick={() => setIsAddParticipant(true)}>
+                                Add Participant
+                              </DefaultButton> */}
+                              <DefaultButton onClick={() => setIsAddParticipant(true)} css={"px-3 py-0 text-[14px]"}>Add Participant</DefaultButton>
+                            </>
+                          }
+
+                          {isAddParticipant &&
+
+                            <>
+                              {/* test start */}
+                              <div className="flex items-center justify-end relative">
+                                {userData?.role === 'admin' && (
+                                  <div className="relative flex basis-[45%] flex-col sm:flex-row">
+                                    <input
+                                      type="search"
+                                      onChange={(event) => {
+                                        setClientName(event?.target?.value);
+                                        getAllClients();
+                                      }}
+                                      className={`form-input flex-grow bg-slate-100 w-64`}
+                                      value={clientName}
+                                      placeholder="SearchParticipant..."
+                                      required={!clientName}
+                                    />
+
+                                    {clients.length <= 0 &&
+                                      <div className="absolute top-1/2 -translate-y-1/2  ltr:right-2 rtl:left-2 cursor-pointer"
+                                      // onClick={handleSearchParticipants}
+                                      >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5"></circle>
+                                          <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
+                                        </svg>
+                                      </div>
+                                    }
+
+                                    {showClientDropdown && (
+                                      <>
+                                        <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
+                                          {isClientLoading ? (
+                                            <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
+                                              {[...Array(5)].map((_, i) => (
+                                                <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
+                                                  <div className="h-7 w-7 rounded-full bg-slate-200"></div>
+                                                  <div className="h-7 w-full rounded-sm bg-slate-200"></div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          ) : (
+                                            <>
+                                              {clients && clients.length > 0 ? (
+                                                <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
+                                                  {clients?.map((client) => (
+                                                    // search result
+                                                    <li
+                                                      key={client.id}
+                                                      onClick={() => handleClientChange(client)}
+                                                      className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
+                                                    >
+                                                      <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
+                                                        <img src={client?.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                                      </div>
+                                                      <a href="#">{client?.name}</a>
+                                                    </li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
+                                                  <p className="text-center text-red-500">No client found</p>
+                                                </div>
+                                              )}
+                                            </>
+                                          )}
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          }
+
+                        </>
+
+                        <div className="dropdown">
+                          <Dropdown
+                            placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
+                            btnClassName="bg-[#f4f4f4] dark:bg-[#1b2e4b] hover:bg-primary-light w-8 h-8 rounded-full !flex justify-center items-center mt-1"
+                            button={
+                              <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="#000000" className="bi bi-three-dots-vertical ml-2 mt-1" onClick={toggleSidebar}>
+                                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                  <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
+                                </g>
+                              </svg>
+                            }
+                          ></Dropdown>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </>
+              </div>
+              <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
+
+              <PerfectScrollbar
+                className="chat-conversation-box relative h-full sm:h-[calc(100vh_-_300px)]"
+                onScrollY={(container) => {
+                  if (container.scrollTop === 0) {
+                    handleScroll();
+                  }
+                }}
+              >
+                <div className="min-h-[400px] space-y-5 p-4 pb-[68px] sm:min-h-[300px] sm:pb-0">
+                  <div className="m-6 mt-0 block">
+                    <h4 className="relative border-b border-[#f4f4f4] text-center text-xs dark:border-gray-800">
+                      <span className="relative top-2 bg-white px-3 dark:bg-black">{'Today, ' + createdDateTime?.time}</span>
+                    </h4>
+                  </div>
+                  {newMessages?.length ? (
+                    <>
+                      {newMessages?.map((message: any, index: any) => {
+                        return (
+                          <div key={index}>
+                            <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
+                              <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
+                                {message?.senderId === userData.id ? (userRole == 'manager' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
+                                {message?.senderId !== userData.id
+                                  ? message?.senderName == 'Admin User'
+                                    ? createImageByName('MA')
+                                    : message?.senderName == 'User'
                                       ? createImageByName('User')
                                       : createImageByName('CP')
-                                    : ''}
-                                </div>
-                                <div className="">
-                                  <div className="flex items-center gap-3">
-                                    <div
-                                      className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${
-                                        message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
+                                  : ''}
+                              </div>
+                              <div className="">
+                                <div className="flex items-center gap-3">
+                                  <div
+                                    className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
                                       }`}
-                                    >
-                                      {message?.message}
-                                    </div>
-
-                                    <div className={`${message?.senderId === userData.id ? 'hidden' : ''}`}>
-                                      <span>{allSvgs.chatSmileIcon}</span>
-                                    </div>
+                                  >
+                                    {message?.message}
                                   </div>
-                                  <div className="text-xs text-white-dark">{message?.senderName}</div>
-                                  {/* <div className={`text-xs text-white-dark ${message?.senderId === userData.id ? 'ltr:text-right rtl:text-left' : ''}`}>{message.time ? message.time : '5h ago'}</div> */}
+
+                                  <div className={`${message?.senderId === userData.id ? 'hidden' : ''}`}>
+                                    <span>{allSvgs.chatSmileIcon}</span>
+                                  </div>
                                 </div>
+                                <div className="text-xs text-white-dark">{message?.senderName}</div>
+                                {/* <div className={`text-xs text-white-dark ${message?.senderId === userData.id ? 'ltr:text-right rtl:text-left' : ''}`}>{message.time ? message.time : '5h ago'}</div> */}
                               </div>
                             </div>
-                          );
-                        })}
-                      </>
-                    ) : (
-                      ''
-                    )}
-                    {isTyping && <p className="text-white-dark"> {typtingUser?.userName} is typing...</p>}
-                  </div>
-                </PerfectScrollbar>
-                <div className="absolute bottom-0 left-0 w-full p-4">
-                  <div className="w-full items-center space-x-3 rtl:space-x-reverse sm:flex">
-                    <div className="relative flex-1">
-                      <input
-                        className="form-input rounded-full border-0 bg-[#f4f4f4] px-12 py-2 focus:outline-none"
-                        placeholder="Type a message"
-                        value={textMessage}
-                        onChange={(e: any) => setTextMessage(e.target.value)}
-                        onKeyUp={sendMessageHandle}
-                      />
-                      <button type="button" className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:left-4 rtl:right-4">
-                        {allSvgs.chatSmileIcon}
-                      </button>
-                      <button
-                        type="button"
-                        className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:right-4 rtl:left-4"
-                        onClick={(e: any) => {
-                          sendMessage(textMessage);
-                        }}
-                      >
-                        {allSvgs.msgSendIcon}
-                      </button>
-                    </div>
+                          </div>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    ''
+                  )}
+                  {isTyping && <p className="text-white-dark"> {typtingUser?.userName} is typing...</p>}
+                </div>
+              </PerfectScrollbar>
+              <div className="absolute bottom-0 left-0 w-full p-4">
+                <div className="w-full items-center space-x-3 rtl:space-x-reverse sm:flex">
+                  <div className="relative flex-1">
+                    <input
+                      className="form-input rounded-full border-0 bg-[#f4f4f4] px-12 py-2 focus:outline-none"
+                      placeholder="Type a message"
+                      value={textMessage}
+                      onChange={(e: any) => setTextMessage(e.target.value)}
+                      onKeyUp={sendMessageHandle}
+                    />
+                    <button type="button" className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:left-4 rtl:right-4">
+                      {allSvgs.chatSmileIcon}
+                    </button>
+                    <button
+                      type="button"
+                      className="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:right-4 rtl:left-4"
+                      onClick={(e: any) => {
+                        sendMessage(textMessage);
+                      }}
+                    >
+                      {allSvgs.msgSendIcon}
+                    </button>
                   </div>
                 </div>
               </div>
-            ))
+            </div>
+          )
           : ''}
       </div>
 
-      {isSidebarOpen && (
-        <div className={`panel absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
-          <div className="mt-1 flex w-full justify-end gap-3 sm:gap-5">
-            <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleSidebar}>
-              <div className="ml-2 mt-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="#000000" width="26" height="26">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
-                    fill="currentColor"
-                  ></path>
-                </svg>
-              </div>
-            </button>
-          </div>
-          <div className="h-px w-full border-b border-white-light pt-1 dark:border-[#1b2e4b]"></div>
-
-          <div>
-            <ul className="flex flex-wrap border-b border-gray-200 text-center text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
-              <li className="me-2">
-                <button
-                  onClick={() => setActiveTab('1')}
-                  className={`inline-block rounded-t-lg p-4 ${
-                    activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                  }`}
-                >
-                  Participant
-                </button>
-              </li>
-              <li className="me-2">
-                <button
-                  onClick={() => setActiveTab('2')}
-                  className={`inline-block rounded-t-lg p-4 ${
-                    activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                  }`}
-                >
-                  Files
-                </button>
-              </li>
-            </ul>
+      {
+        isSidebarOpen && (
+          <div className={`panel absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+            <div className="mt-1 flex w-full justify-end gap-3 sm:gap-5">
+              <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleSidebar}>
+                <div className="ml-2 mt-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="#000000" width="26" height="26">
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
+                      fill="currentColor"
+                    ></path>
+                  </svg>
+                </div>
+              </button>
+            </div>
+            <div className="h-px w-full border-b border-white-light pt-1 dark:border-[#1b2e4b]"></div>
 
             <div>
-              {activeTab === '1' && (
-                <div className="pt-4">
-                  <div className="mt-1">
-                    <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
-                      <ul className="space-y-2">
-                        <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
-                          <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
+              <ul className="flex flex-wrap border-b border-gray-200 text-center text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                <li className="me-2">
+                  <button
+                    onClick={() => setActiveTab('1')}
+                    className={`inline-block rounded-t-lg p-4 ${activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                      }`}
+                  >
+                    Participant
+                  </button>
+                </li>
+                <li className="me-2">
+                  <button
+                    onClick={() => setActiveTab('2')}
+                    className={`inline-block rounded-t-lg p-4 ${activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                      }`}
+                  >
+                    Files
+                  </button>
+                </li>
+              </ul>
 
-                          {/* <span className="flex  text-black dark:text-white">
+              <div>
+                {activeTab === '1' && (
+                  <div className="pt-4">
+                    <div className="mt-1">
+                      <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
+                        <ul className="space-y-2">
+                          <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
+                            <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
+
+                            {/* <span className="flex  text-black dark:text-white">
                               {selectedChatRoom?.client_id?.name}
                               <span className="ms-5 text-[12px] text-blue-500">{selectedChatRoom?.client_id?.role}</span>
                             </span> */}
 
-                          <div className="flex flex-col justify-start space-y-0 ">
-                            <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
-                            <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
-                          </div>
-                        </li>
+                            <div className="flex flex-col justify-start space-y-0 ">
+                              <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
+                              <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
+                            </div>
+                          </li>
 
-                        {/* {perticipants} */}
+                          {/* {perticipants} */}
 
-                        {[
-                          ...selectedChatRoom?.cp_ids.map((cp) => ({
-                            ...cp,
-                            type: 'cp',
-                          })),
-                          ...selectedChatRoom?.manager_ids.map((manager) => ({
-                            ...manager,
-                            type: 'admin',
-                          })),
-                        ].map(
-                          (item, index) => (
-                            console.log('--Item-->', item),
-                            (
-                              <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
-                                <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
-                                <div className="flex flex-col space-y-0">
-                                  <span className="text-black dark:text-white">{item?.id?.name}</span>
-                                  <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
-                                    {/* {item.type === 'admin' ? (item?.id?.role === 'admin' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp') : 'Cp'} */}
-                                    {item?.id?.role === 'admin' || item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
-                                  </span>
+                          {activeTab === '1' && (
+                            <div className="pt-4">
+                              <div className="mt-1">
+                                <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
+                                  <ul className="space-y-2">
+                                    <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
+                                      <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
+                                      <div className="flex flex-col justify-start space-y-0">
+                                        <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
+                                        <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">
+                                          {selectedChatRoom?.client_id?.role === 'user' && 'Client'}
+                                        </span>
+                                      </div>
+                                    </li>
+
+                                    {[
+                                      ...selectedChatRoom?.cp_ids.map((cp) => ({
+                                        ...cp,
+                                        type: 'cp',
+                                      })),
+                                      ...selectedChatRoom?.manager_ids.map((manager) => ({
+                                        ...manager,
+                                        type: 'admin',
+                                      })),
+                                    ].map((item, index) => (
+                                      <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
+                                        <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
+                                        <div className="flex flex-col space-y-0">
+                                          <span className="text-black dark:text-white">{item?.id?.name}</span>
+                                          <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
+                                            {item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
+                                          </span>
+                                        </div>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </PerfectScrollbar>
+                              </div>
+                            </div>
+                          )}
+
+                          {activeTab === '2' && (
+                            <div className="pt-4">
+                              <h2 className="text-lg font-medium">Image files</h2>
+                              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                                <div className="relative">
+                                  <img src="https://via.placeholder.com/300" alt="Demo 1" className="h-auto w-full rounded-lg shadow-md" />
                                 </div>
-                              </li>
-                            )
-                          )
-                        )}
+                                <div className="relative">
+                                  <img src="https://via.placeholder.com/300" alt="Demo 2" className="h-auto w-full rounded-lg shadow-md" />
+                                </div>
+                                <div className="relative">
+                                  <img src="https://via.placeholder.com/300" alt="Demo 3" className="h-auto w-full rounded-lg shadow-md" />
+                                </div>
 
-                        {/* ends- participants */}
-                      </ul>
-                    </PerfectScrollbar>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === '2' && (
-                <div className="pt-4">
-                  <h2 className="text-lg font-medium">Image files</h2>
-                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-                    <div className="relative">
-                      <img src="https://via.placeholder.com/300" alt="Demo 1" className="h-auto w-full rounded-lg shadow-md" />
+                              </div>
+                            </div>
+                          )}
+                        </ul>
+                      </PerfectScrollbar>
                     </div>
-                    {/* <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 2" className="h-auto w-full rounded-lg shadow-md" />
-                      </div>
-                      <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 3" className="h-auto w-full rounded-lg shadow-md" />
-                      </div>
-
-                      <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 1" className="h-auto w-full rounded-lg shadow-md" />
-                      </div>
-                      <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 2" className="h-auto w-full rounded-lg shadow-md" />
-                      </div>
-                      <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 3" className="h-auto w-full rounded-lg shadow-md" />
-                      </div> */}
                   </div>
-                </div>
-              )}
+                )}
+              </div >
+
             </div>
           </div>
-        </div>
-      )}
+
+        )};
     </div>
   );
-};
-
+}
 export default Chat;

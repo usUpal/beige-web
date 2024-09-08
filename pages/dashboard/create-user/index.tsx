@@ -5,7 +5,8 @@ import 'tippy.js/dist/tippy.css';
 import Map from '@/components/Map';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import TimezoneSelect from 'react-timezone-select';
-import { toast } from 'react-toastify'; // Import toast from react-toastify
+import { toast } from 'react-toastify';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const CreateUser = () => {
     const [geoLocation, setGeoLocation] = useState('');
@@ -186,9 +187,7 @@ const CreateUser = () => {
                         </div>
 
                         <div className="mt-3 sm:col-span-2">
-                            <button type="submit" className="btn btn-primary">
-                                Create User
-                            </button>
+                            <DefaultButton css='font-semibold'>Create User</DefaultButton>
                         </div>
                     </form>
                 </div>
