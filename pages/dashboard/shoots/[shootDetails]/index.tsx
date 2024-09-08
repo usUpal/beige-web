@@ -667,7 +667,7 @@ const ShootDetails = () => {
                         placeholder="Search"
                       />
                     </div>
-                    <div className="grid grid-cols-3 gap-6 2xl:grid-cols-4">
+                    <div className="lg:grid lg:grid-cols-3 md:grid md:grid-cols-2 grid grid-cols-1 gap-6 2xl:grid-cols-4">
                       {allCp?.results?.length > 0 ? (
                         allCp?.results?.map((cp: any) => {
                           const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
