@@ -218,7 +218,18 @@ const Profile = () => {
           <div className="grid grid-cols-1 gap-5">
             <div className="panel">
               <div className="mb-7 font-bold">All Reviews</div>
-              <Swiper spaceBetween={30} slidesPerView={3} navigation={false} pagination={{ clickable: true }} className="mySwiper">
+              <Swiper spaceBetween={30} slidesPerView={3} navigation={false} pagination={{ clickable: true }}
+                breakpoints={{
+                  320: {
+                    slidesPerView: 1,
+                  },
+                  640: {
+                    slidesPerView: 2,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                  },
+                }} className="mySwiper">
                 {isLoading && reviews?.length > 0 ? (
                   reviews?.map((review, index) => (
                     <SwiperSlide key={index}>

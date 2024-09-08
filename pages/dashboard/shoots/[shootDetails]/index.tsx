@@ -663,7 +663,7 @@ const ShootDetails = () => {
                         onChange={(event) => setQuery(event.target.value)}
                         type="search"
                         value={query}
-                        className="w-[20%] rounded-lg border border-solid border-[#ACA686] px-3 py-2"
+                        className=" w-full lg:w-[20%] rounded-lg border border-solid border-[#ACA686] px-3 py-2"
                         placeholder="Search"
                       />
                     </div>
