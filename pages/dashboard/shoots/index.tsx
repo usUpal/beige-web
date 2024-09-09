@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import api from '../../../FileManager/api/storage';
+import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 
 const Shoots = () => {
   const dispatch = useDispatch();
@@ -85,20 +86,33 @@ const Shoots = () => {
                     <td className="min-w-[150px] text-black dark:text-white">
                       <div className="flex items-center">
                         <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
-                        <p className="whitespace-nowrap">
-                          {shoot.order_name}
+                        <p className="">
+                          {/* whitespace-nowrap */}
+                          {/* {shoot.order_name} */}
+                          {truncateLongText(shoot?.order_name, 33)}
                           <span className="block text-xs text-[#888EA8]">{new Date(shoot.shoot_datetimes[0]?.start_date_time).toDateString()}</span>
                         </p>
                       </div>
                     </td>
-                    <td>{shoot.id}</td>
-                    <td>$ {shoot.shoot_cost}</td>
+
+                    <td className='min-w-[140px]'>
+                      <p className='break-all '>
+                        {shoot?.id}
+                      </p>
+                    </td>
+
+                    <td>
+                      <p>
+                        ${shoot.shoot_cost}
+                      </p>
+                    </td>
+
                     {authPermissions?.includes('shoot_download') && (
                       <td className="text-success">
-                        {shoot.file_path?.status ? (
+                        {shoot?.file_path?.status ? (
                           <span
                             onClick={async () => {
-                              await api.downloadFolder(`${shoot.file_path.dir_name}`);
+                              await api.downloadFolder(`${shoot?.file_path.dir_name}`);
                             }}
                             className="badge text-md w-12 bg-success text-center"
                           >

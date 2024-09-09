@@ -173,12 +173,12 @@ const CpUsers = () => {
                             (
                               <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                                 <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                  <div className="flex items-center">
-                                    <p className="whitespace-nowrap">{cpUser?.userId?._id}</p>
+                                  <div className="flex items-center break-all ">
+                                    {cpUser?.userId?._id}
                                   </div>
                                 </td>
                                 <td>{cpUser?.userId?.name}</td>
-                                <td>{cpUser?.userId?.email}</td>
+                                <td className='break-all min-w-[150px]'>{cpUser?.userId?.email}</td>
                                 <td className="font-sans text-success">{cpUser?.userId?.role}</td>
 
                                 <td>

@@ -286,11 +286,11 @@ const Chat = () => {
             </svg>
           </div>
         </div>
-        <div className="mt-1">
-          <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
+        <div className="mt-1 h-[87%]">
+          <PerfectScrollbar className="chat-users relative h-full min-h-full space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
             {data?.results?.map((chat: any) => {
               return (
-                <div key={chat.id}>
+                <div key={chat.id} className='mb-10'>
                   <button
                     type="button"
                     className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
@@ -310,22 +310,22 @@ const Chat = () => {
                     </div>
                     <div className="whitespace-nowrap text-xs font-semibold">
                       <p>00:00</p>
-                    </div>
+                    </div>``
                   </button>
                 </div>
               );
             })}
           </PerfectScrollbar>
 
-          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-            <ResponsivePaginationComponent
-              current={currentPage}
-              total={totalPagesCount}
-              onPageChange={handlePageChange}
-              maxWidth={400}
-            // styles={styles}
-            />
-          </div>
+        </div>
+        <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+          <ResponsivePaginationComponent
+            current={currentPage}
+            total={totalPagesCount}
+            onPageChange={handlePageChange}
+            maxWidth={400}
+          // styles={styles}
+          />
         </div>
       </div>
 
