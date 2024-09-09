@@ -113,13 +113,13 @@ const Meeting = () => {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-5 md:flex items-center justify-between ">
           <h5 className="text-xl font-bold dark:text-white-light">Meeting List</h5>
           <input
             type="text"
             onChange={(event) => setQuery(event.target.value)}
             value={query}
-            className="rounded border border-black px-3 py-1 focus:border-black focus:outline-none"
+            className="rounded border border-black px-3 py-1 mt-3 md:mt-0 focus:border-black focus:outline-none"
             placeholder="Search..."
           />
         </div>

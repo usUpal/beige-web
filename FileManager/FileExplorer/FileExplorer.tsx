@@ -10,6 +10,7 @@ import Menu from '../Menu/Menu';
 import { useAuth } from '../../contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition, Tab } from '@headlessui/react';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
   const { userData } = useAuth();
@@ -263,6 +264,11 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
     };
   }, []);
 
+  const handleCancelRename = () => {
+    setFileToRename({});
+    setRenameInputValue('');
+  }
+
   return (
     <div>
       <div>
@@ -515,18 +521,13 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                     <div className="mt-8 flex items-center justify-end">
                       <button
                         type="button"
-                        className="btn btn-outline-danger text-[16px]"
-                        onClick={() => {
-                          setFileToRename({});
-                          setRenameInputValue('');
-                        }}
+                        className="btn btn-danger text-[16px]"
+                        onClick={handleCancelRename}
                       >
                         Cancel
                       </button>
 
-                      <button type="button" className="btn btn-primary text-[16px] ltr:ml-4 rtl:mr-4" onClick={renameFile}>
-                        Rename
-                      </button>
+                      <DefaultButton onClick={renameFile} css='ltr:ml-4 rtl:mr-4'>Rename</DefaultButton>
                     </div>
                   </div>
                 </Dialog.Panel>
