@@ -198,7 +198,7 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setMeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 w-2/5 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+              <Dialog.Panel as="div" className="panel my-24 w-4/5 md:w-2/5 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                   <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setMeetingModal(false)}>
@@ -220,7 +220,7 @@ const Meeting = () => {
                       </p>
 
                       <p>
-                        <span className="text-[14px]  font-bold capitalize leading-none text-[#000000]">
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
                           Meeting Link :{' '}
                           <a href={meetingInfo?.meetLink || ''} target={0} className="text-[14px] font-normal text-blue-600 underline">
                             {meetingInfo?.meetLink}
@@ -260,7 +260,7 @@ const Meeting = () => {
                               <div className="flex flex-col">
                                 <Flatpickr
                                   id="meeting_time"
-                                  className={`w-60 rounded-md border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
+                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
                                   value={metingDate}
                                   placeholder="Meeting time ..."
                                   options={{
@@ -277,15 +277,19 @@ const Meeting = () => {
                                 {/* <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
                                   Reschedule Request
                                 </button> */}
-                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2' submit={"submit"}> Reschedule Request</DefaultButton>
                               </div>
                             </div>
                           )}
+                          <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2 w-64' type={"submit"}> Reschedule Request</DefaultButton>
                         </>
                       )}
                     </div>
 
                     {/* Resheduling */}
+
+                  </div>
+                  <div className='flex justify-end me-7 pb-7 md:me-5' >
+                    <DefaultButton onClick={() => setMeetingModal(false)}>Cancel</DefaultButton>
                   </div>
                 </div>
               </Dialog.Panel>
