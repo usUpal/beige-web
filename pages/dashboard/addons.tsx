@@ -433,7 +433,7 @@ const Addons = () => {
                   </button>
                 </div>
 
-                <div className="mx-auto ms-5 w-full">
+                <div className="mx-auto px-5 w-full">
                   <p className="my-1 mt-1 flex justify-start text-[12px] ">
                     {showDesignElement.showNewCategoryInput ? (
                       <>
@@ -470,7 +470,7 @@ const Addons = () => {
                     )}
                   </p>
                   {/* add addons form */}
-                  <form className="w-11/12 space-y-2 pb-5 dark:text-white" onSubmit={handleSubmit(handleFormSubmit)}>
+                  <form className="w-full space-y-2 pb-5 dark:text-white" onSubmit={handleSubmit(handleFormSubmit)}>
                     {!showDesignElement.showNewCategoryInput && (
                       <div className="rounded">
                         <label htmlFor="category" className="mb-1 text-[#0E1726]">
@@ -479,7 +479,7 @@ const Addons = () => {
                         <select
                           {...register('category', { required: 'Please Select a Category' })}
                           id="category"
-                          className="md:w80 form-input w-64 ps-3 capitalize placeholder:text-white-dark focus:border-[#E7D4BC]"
+                          className="md:w-80  w-full form-input  ps-3 capitalize placeholder:text-white-dark focus:border-[#E7D4BC]"
                         >
                           <option className=" capitalize text-primary" value="">
                             select form here
@@ -516,7 +516,7 @@ const Addons = () => {
                     </div>
 
                     <div className="flex flex-col items-center justify-between md:flex-row md:gap-3">
-                      <div>
+                      <div className='w-full'>
                         <label htmlFor="title" className="mb-1 text-[#0E1726]">
                           Title
                         </label>
@@ -526,24 +526,24 @@ const Addons = () => {
                             id="title"
                             type="text"
                             placeholder="Enter AddOns Title"
-                            className="md:w80 form-input w-64 ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]"
+                            className="form-input w-full ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]"
                           />
                           <span>{errors.title && <p className="text-[12px] text-red-500">{errors?.title?.message}</p>}</span>
                         </div>
                       </div>
 
-                      <div>
+                      <div className='w-full'>
                         <label htmlFor="Rate" className="mb-[1px] text-[#0E1726]">
                           Rate
                         </label>
                         <div className="relative text-white-dark">
-                          <input {...register('rate')} id="Rate" type="number" placeholder="Enter Rate" className="md:w80 form-input w-64 ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]" />
+                          <input {...register('rate')} id="Rate" type="number" placeholder="Enter Rate" className="form-input w-full ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]" />
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center justify-between md:flex-row">
-                      <div>
+                    <div className="flex flex-col items-center justify-between md:flex-row md:gap-3">
+                      <div className='w-full'>
                         <label htmlFor="ExtendRate" className="mb-1 text-[#0E1726]">
                           Extend Rate
                         </label>
@@ -553,16 +553,16 @@ const Addons = () => {
                             id="ExtendRate"
                             type="number"
                             placeholder="Enter Extend Rate"
-                            className="md:w80 form-input w-64 ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]"
+                            className="form-input w-full ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]"
                           />
                         </div>
                       </div>
 
-                      <div>
+                      <div className='w-full'>
                         <label htmlFor="ExtendRateType" className="mb-1 text-[#0E1726] ">
                           Extend Rate Type
                         </label>
-                        <select {...register('ExtendRateType')} id="ExtendRateType" className="md:w80 form-input w-64 ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]">
+                        <select {...register('ExtendRateType')} id="ExtendRateType" className="form-input w-full ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]">
                           <option value="hourly">Hourly</option>
                           <option value="day">Day</option>
                           <option value="n/a">N/A</option>
@@ -570,8 +570,8 @@ const Addons = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center justify-between md:flex-row">
-                      <div>
+                    <div className="flex flex-col items-center justify-between md:flex-row md:gap-3">
+                      <div className='w-full'>
                         <label htmlFor="info" className="text-[#0E1726]">
                           Info (optional)
                         </label>
@@ -581,16 +581,16 @@ const Addons = () => {
                             id="info"
                             type="text"
                             placeholder="Enter AddOns Info"
-                            className="md:w80 form-input w-64 ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]"
+                            className="form-input w-full ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]"
                           />
                         </div>
                       </div>
 
-                      <div>
+                      <div className='w-full'>
                         <label htmlFor="status" className="mb-1 text-[#0E1726] ">
                           Status
                         </label>
-                        <select {...register('status')} id="status" className="md:w80 form-input  w-64 ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] ">
+                        <select {...register('status')} id="status" className="form-input  w-full ps-3 placeholder:text-white-dark focus:border-[#E7D4BC] ">
                           <option value="1">Active</option>
                           <option value="0">Inactive</option>
                         </select>
