@@ -333,34 +333,34 @@ const Users = () => {
 
                             <div className="basis-[50%]">
                               <div className="mx-6 pb-6">
-                                <div className="flex gap-5 mt-0 mx-auto  space-y-5 md:space-y-0 box-border ">
+                                <div className="md:flex md:flex-row flex-col gap-5 mt-0 mx-auto  space-y-5 md:space-y-0 box-border ">
                                   <div className="left space-y-4 w-full">
                                     <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[9px]">
                                       <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Client Id  </span>
-                                      <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.id}</span>
+                                      <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600   w-full">{clientUserInfo?.id}</span>
                                     </span>
-                                    <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col m-0 mt-[12px]">
+                                    <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col mt-0 md:mt-[12px]">
                                       <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Name  </span>
-                                      <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.name}</span>
+                                      <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600   w-full">{clientUserInfo?.name}</span>
                                     </span>
                                   </div>
 
-                                  <div className="right space-y-4 w-full">
+                                  <div className="right space-y-0 md:space-y-4 w-full">
                                     <span className="text-[16px] font-bold capitalize leading-none text-[#000000] flex flex-col gap-1 m-0 mt-1">
                                       <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Role </span>
-                                      <span className=" text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.role}</span>
+                                      <span className=" text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600   w-full">{clientUserInfo?.role}</span>
                                     </span>
 
                                     <span className="text-[16px] font-bold leading-none text-[#000000] flex flex-col gap-1 m-0 mt-1">
 
                                       <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Address </span>
-                                      <span className=" text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.location}</span>
+                                      <span className=" text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600   w-full">{clientUserInfo?.location}</span>
                                     </span>
                                   </div>
                                 </div>
                                 <span className="text-[16px] font-bold leading-none text-[#000000] flex flex-col gap-1">
                                   <span className='ps-1 text-[16px] font-bold leading-[28px] text-[#000000]'> Email  </span>
-                                  <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600 ms-12 md:ms-0  w-full">{clientUserInfo?.email}</span>
+                                  <span className="text-[16px] font-semibold leading-[28px]  border rounded p-3 text-gray-600   w-full">{clientUserInfo?.email}</span>
                                 </span>
                                 <div className="btn-group flex justify-end">
                                   <DefaultButton onClick={() => setUserModalClient(false)} css='font-semibold mt-10'>Close</DefaultButton>
