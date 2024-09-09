@@ -14,6 +14,7 @@ import ResponsivePagination from 'react-responsive-pagination';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import { useGetAllTransactionQuery, useUpdateTransactionStatusMutation } from '@/Redux/features/transaction/transactionApi';
 import { toast } from 'react-toastify';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const Transactions = () => {
   const dispatch = useDispatch();
@@ -43,7 +44,9 @@ const Transactions = () => {
     [currentPage, query, userData]
   );
 
-  const { data: allPayments, isLoading: isAllPaymentLoading } = useGetAllTransactionQuery(queryParams)
+  const { data: allPayments, isLoading: isAllPaymentLoading, refetch } = useGetAllTransactionQuery(queryParams, {
+    refetchOnMountOrArgChange: true,
+  })
   const [updateTransactionStatus, { isLoading: updateTransactionStatusLoading, isError: updateTransactionStatusError }] = useUpdateTransactionStatusMutation();
 
   const handlePageChange = (page: number) => {
@@ -66,8 +69,10 @@ const Transactions = () => {
   const handleUpdateTestSubmit = async (id: string) => {
     try {
       const selectedStatus = statusRef.current?.value;
-      const result = updateTransactionStatus({ id, status: selectedStatus })
+      const result = updateTransactionStatus({ id, status: selectedStatus });
+
       setPayoutModal(false);
+      refetch();
       toast.success('Payment status update successfully');
     } catch (error) {
       toast.error('Something want wrong...!');
@@ -121,7 +126,7 @@ const Transactions = () => {
                           {userRole === 'admin' && authPermissions?.includes('edit_transactions') && (
                             <td className="text-center">
                               <button type="button" onClick={() => getSoloPayoutDetails(data?.id)}>
-                                {allSvgs.pencilIconForEdit}
+                                {allSvgs.editPen}
                               </button>
                             </td>
                           )}
@@ -137,7 +142,6 @@ const Transactions = () => {
                     </tr>
                   )}
 
-
                 </>
               )}
 
@@ -151,7 +155,6 @@ const Transactions = () => {
               total={allPayments?.totalPages || 1}
               onPageChange={handlePageChange}
               maxWidth={400}
-            // styles={styles}
             />
           </div>
 
@@ -165,7 +168,7 @@ const Transactions = () => {
           <div className="fixed inset-0" />
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center px-4">
-              <Dialog.Panel as="div" className="panel my-24 w-3/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark md:w-3/6 2xl:w-3/6">
+              <Dialog.Panel as="div" className="panel my-24 w-4/6 md:w-3/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark 2xl:w-3/6">
                 <div className="flex items-center justify-between bg-[#fbfbfb] py-4 dark:bg-[#121c2c]">
                   <h2 className="ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Payout Details</h2>
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setPayoutModal(false)}>
@@ -176,13 +179,13 @@ const Transactions = () => {
                 {/* show content */}
                 <div className="basis-[49%]">
                   <div className={`w-12/12 me-6 justify-between `}>
-                    <div className="w-12/12 mx-6 space-y-2 pb-5 dark:text-white">
+                    <div className="w-12/12 mx-6 space-y-2 dark:text-white">
                       <div className="mt-3 flex flex-col md:flex md:flex-row md:justify-between">
                         <div className="flex flex-col">
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Holder</span>
                           <input
                             value={selectedPayoutInfo?.accountHolder}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
                         </div>
@@ -194,7 +197,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Number</span>
                             <input
                               value={selectedPayoutInfo?.accountNumber}
-                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
                             />
                           </div>
@@ -203,7 +206,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">card Number</span>
                             <input
                               value={selectedPayoutInfo?.cardNumber}
-                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
                             />
                           </div>
@@ -213,7 +216,7 @@ const Transactions = () => {
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Type </span>
                           <input
                             value={selectedPayoutInfo?.accountType == 'debitCard' ? 'Card' : 'Bank'}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
                         </div>
@@ -225,7 +228,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Bank Name</span>
                             <input
                               value={selectedPayoutInfo?.bankName}
-                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
                             />
                           </div>
@@ -236,7 +239,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Branch Name </span>
                             <input
                               value={selectedPayoutInfo?.branchName}
-                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
                             />
                           </div>
@@ -248,7 +251,7 @@ const Transactions = () => {
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Withdraw Amount</span>
                           <input
                             value={selectedPayoutInfo?.withdrawAmount}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
                         </div>
@@ -257,7 +260,7 @@ const Transactions = () => {
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Status</span>
                           <select
                             ref={statusRef}
-                            className=" h-9 w-72 rounded border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
+                            className=" h-9 w-48 rounded border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
                             name="status"
                             defaultValue={selectedPayoutInfo?.status}
                           >
@@ -274,7 +277,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Phone Number</span>
                             <input
                               value={selectedPayoutInfo?.phoneNumber}
-                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
                             />
                           </div>
@@ -285,32 +288,12 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">CVC</span>
                             <input
                               value={selectedPayoutInfo?.cvc}
-                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
                             />
                           </div>
                         )}
                       </div>
-
-                      {/* <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
-                        <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">user Id</span>
-                          <input
-                            value={selectedPayoutInfo?.userId}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                            disabled
-                          />
-                        </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">id</span>
-                          <input
-                            value={selectedPayoutInfo?.id}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                            disabled
-                          />
-                        </div>
-                      </div> */}
 
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
                         <div className="flex flex-col">
@@ -318,21 +301,10 @@ const Transactions = () => {
                           <input
                             // value={selectedPayoutInfo?.date}
                             value={payoutDate?.date}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                             disabled
                           />
                         </div>
-
-                        {/* <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">created date</span>
-                          <input
-                            // value={selectedPayoutInfo?.createdAt}
-                            value={createdAtDate?.date}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                            disabled
-                          />
-                        </div> */}
-
                       </div>
                       {/*  */}
                       <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row">
@@ -341,32 +313,15 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">expireDate</span>
                             <input
                               value={selectedPayoutInfo?.expireDate}
-                              className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-48 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                               disabled
                             />
                           </div>
                         )}
-
-                        {/* <div className="flex flex-col">
-                          <span className="text-[14px] font-light capitalize leading-none text-[#000000]">updatedAt</span>
-                          <input
-                            // value={selectedPayoutInfo?.updatedAt}
-                            value={updatedDate?.date}
-                            className=" h-9 w-64 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                            disabled
-                          />
-                        </div> */}
-
                       </div>
 
-                      <div className="mt-8 flex justify-end md:mt-0">
-                        <button
-                          type="submit"
-                          className="btn flex items-center justify-center rounded-lg bg-black text-[13px] font-bold capitalize text-white"
-                          onClick={() => handleUpdateTestSubmit(selectedPayoutInfo?.id)}
-                        >
-                          Update
-                        </button>
+                      <div className="mt-8 flex justify-center md:justify-end md:mt-0">
+                        <DefaultButton onClick={() => handleUpdateTestSubmit(selectedPayoutInfo?.id)} type="submit">Update</DefaultButton>
                       </div>
                     </div>
                   </div>

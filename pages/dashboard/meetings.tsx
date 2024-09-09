@@ -13,6 +13,7 @@ import Flatpickr from 'react-flatpickr';
 import { toast } from 'react-toastify';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -112,13 +113,13 @@ const Meeting = () => {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-5 md:flex items-center justify-between ">
           <h5 className="text-xl font-bold dark:text-white-light">Meeting List</h5>
           <input
             type="text"
             onChange={(event) => setQuery(event.target.value)}
             value={query}
-            className="rounded border border-black px-3 py-1 focus:border-black focus:outline-none"
+            className="rounded border border-black px-3 py-1 mt-3 md:mt-0 focus:border-black focus:outline-none"
             placeholder="Search..."
           />
         </div>
@@ -197,7 +198,7 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setMeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 w-2/5 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+              <Dialog.Panel as="div" className="panel my-24 w-4/5 md:w-2/5 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                   <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setMeetingModal(false)}>
@@ -219,7 +220,7 @@ const Meeting = () => {
                       </p>
 
                       <p>
-                        <span className="text-[14px]  font-bold capitalize leading-none text-[#000000]">
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
                           Meeting Link :{' '}
                           <a href={meetingInfo?.meetLink || ''} target={0} className="text-[14px] font-normal text-blue-600 underline">
                             {meetingInfo?.meetLink}
@@ -259,7 +260,7 @@ const Meeting = () => {
                               <div className="flex flex-col">
                                 <Flatpickr
                                   id="meeting_time"
-                                  className={`w-60 rounded-md border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
+                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
                                   value={metingDate}
                                   placeholder="Meeting time ..."
                                   options={{
@@ -273,9 +274,10 @@ const Meeting = () => {
                                   onChange={(date) => setMetingDate(date[0])}
                                 />
 
-                                <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
+                                {/* <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
                                   Reschedule Request
-                                </button>
+                                </button> */}
+                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2 w-64' type={"submit"}> Reschedule Request</DefaultButton>
                               </div>
                             </div>
                           )}
@@ -284,6 +286,10 @@ const Meeting = () => {
                     </div>
 
                     {/* Resheduling */}
+
+                  </div>
+                  <div className='flex justify-end me-7 pb-7 md:me-5' >
+                    <DefaultButton onClick={() => setMeetingModal(false)}>Cancel</DefaultButton>
                   </div>
                 </div>
               </Dialog.Panel>

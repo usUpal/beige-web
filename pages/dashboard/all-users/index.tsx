@@ -12,6 +12,8 @@ import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import ResponsivePagination from 'react-responsive-pagination';
 import { useAuth } from '@/contexts/authContext';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { toast } from 'react-toastify';
 
 const Users = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -107,6 +109,10 @@ const Users = () => {
     }
   };
 
+  const handleCreateNewCp = () => {
+    toast.warning("This page is under Development.")
+  }
+
   return (
     <>
       <div>
@@ -124,12 +130,12 @@ const Users = () => {
         <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">
-              <h5 className="text-lg font-semibold dark:text-white-light">All Users</h5>
+              <h5 className="text-lg font-semibold dark:text-white-light ">All Users</h5>
               <div className="flex gap-2">
                 <Link href="/dashboard/create-user">
-                  <button className="rounded-md border-2 border-[#b7aa85] px-4 py-1 text-[#b7aa85]">Create New User</button>
+                  <DefaultButton css='text-[12px] box-border pb-10 md:pb-1'>Create New User</DefaultButton>
                 </Link>
-                <button className=" rounded-md border-2 border-[#b7aa85] px-4 py-1 text-[#b7aa85]"> Create New Cp</button>
+                <DefaultButton onClick={handleCreateNewCp} css='text-[12px] box-border pb-10 md:pb-1'>Create New Cp</DefaultButton>
               </div>
             </div>
             <div className="mb-5">
@@ -139,13 +145,13 @@ const Users = () => {
                     <table>
                       <thead>
                         <tr>
-                          <th className="font-mono hidden md:block">User ID</th>
-                          <th className="font-mono ltr:rounded-l-md rtl:rounded-r-md">Name</th>
-                          <th className="font-mono">Email</th>
-                          <th className="font-mono">Role</th>
-                          <th className="font-mono ltr:rounded-r-md rtl:rounded-l-md hidden md:block">Status</th>
+                          <th className=" hidden md:block">User ID</th>
+                          <th className=" ltr:rounded-l-md rtl:rounded-r-md">Name</th>
+                          <th className="">Email</th>
+                          <th className="">Role</th>
+                          <th className=" ltr:rounded-r-md rtl:rounded-l-md hidden md:block">Status</th>
                           {authPermissions?.includes('edit_all_users') && (
-                            <th className="font-mono">Edit</th>
+                            <th className="">Edit</th>
                           )}
                         </tr>
                       </thead>
@@ -172,7 +178,7 @@ const Users = () => {
                               {authPermissions?.includes('edit_all_users') && (
                                 <td>
                                   <button onClick={() => getUserDetails(user.id)} type="button" className="p-0">
-                                    {allSvgs.pencilIconForEdit}
+                                    {allSvgs.editPen}
                                   </button>
                                 </td>
                               )}
@@ -247,16 +253,15 @@ const Users = () => {
                                       >
                                         Email Verified
                                       </label>
-                                      <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
+                                      <p className='border rounded p-3 text-gray-600  mt-1 w-full'>
                                         {userInfo?.isEmailVerified === "true" ? "Yes" : "No"}
                                       </p>
                                     </div>
                                     <div className="w-full">
-                                      <label htmlFor="role" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize"
-                                      >
+                                      <label htmlFor="role" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                                         role
                                       </label>
-                                      <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
+                                      <p className='border rounded p-3 text-gray-600  mt-1 w-full'>
                                         {userInfo?.role}
                                       </p>
 
@@ -274,9 +279,10 @@ const Users = () => {
                                   </div>
                                 </div>
                                 <div className="flex justify-end">
-                                  <button type="submit" className="btn bg-black font-sans text-white  capitalize md:block ">
+                                  {/* <button type="submit" className="btn bg-black font-sans text-white  capitalize md:block ">
                                     Save
-                                  </button>
+                                  </button> */}
+                                  <DefaultButton css='font-semibold'>Save</DefaultButton>
                                 </div>
                               </form>
 

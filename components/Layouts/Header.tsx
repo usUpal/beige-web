@@ -12,16 +12,18 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
 const Header = () => {
   const router = useRouter();
-  const { userData, setUserData, setAccessToken, setRefreshToken } = useAuth();
+  const { userData, setUserData, setAccessToken, setRefreshToken ,setAuthPermissions} = useAuth();
 
   const handleLogout = async () => {
     //Remove cookies
     Cookies.remove('userData');
+    Cookies.remove('authPermissions');
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
 
     //Reset context states
     setUserData(null);
+    setAuthPermissions(null);
     setAccessToken(null);
     setRefreshToken(null);
   };

@@ -5,6 +5,7 @@ import api from '../api/storage';
 import axios from 'axios';
 import { Dialog, Transition } from '@headlessui/react';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 let uploadCancelFunc = () => { };
 
@@ -73,7 +74,6 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
   const fileInput = createRef();
 
   const [state, dispatch] = useReducer(uploadStateReducer, initialUploadState);
-  console.log('🚀 ~ FileUploadModal ~ state:', state);
 
   const startUpload = async () => {
     const shouldBePublic = (await api.getSettings()).defaultPublicFiles;
@@ -147,19 +147,16 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
       let folderPaths: any = [];
       for (const file of fileArray) {
         const fileParentFolder = file.name.split('/').slice(0, -1).join('/') + '/';
-        console.log(fileParentFolder);
         if (!folderPaths.includes(fileParentFolder)) folderPaths.push(fileParentFolder);
       }
       folderPaths = folderPaths.map((folderName: any) => new File([''], folderName));
       fileArray = fileArray.concat(folderPaths);
-      console.log(fileArray);
     }
     dispatch({ type: 'setFiles', files: fileArray });
   };
 
   const fileList = state.files.map(
     (file: any) => (
-      console.log('🚀 ~ FileUploadModal ~ file:', file),
       (
         <li key={file.name}>
           <span>{file.name}</span> - {formatBytes(file.size)}
@@ -189,7 +186,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Dialog.Panel as="div" className="panel my-24 w-3/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark">
+                    <Dialog.Panel as="div" className="panel my-24 w-5/6 md:w-3/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark">
                       <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                         <div className="text-lg font-bold capitalize text-red-600">Upload {state.folderUpload ? 'a Folder' : 'Files'}</div>
                         <button
@@ -235,7 +232,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                         </p>
 
                         {/* <div className={styles.fileInputContainer}> */}
-                        <div>
+                        <div className='w-full'>
                           <input
                             style={{ display: 'none' }}
                             multiple
@@ -249,15 +246,20 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             onChange={onFilesChange}
                           />
 
-                          <button
-                            type="button"
-                            className="btn btn-dark text-[18px]"
-                            style={{ display: 'block', margin: '15px auto' }}
-                            onClick={() => fileInput.current.click()}
-                            disabled={state.uploading}
-                          >
-                            Select {state.folderUpload ? 'a Folder' : 'Files'}
-                          </button>
+                          <div className='flex justify-center my-5'>
+                            <button
+                              type="button"
+                              className="btn btn-dark text-[18px]"
+                              // style={{ display: 'block', margin: '15px auto' }}
+                              onClick={() => fileInput.current.click()}
+                              disabled={state.uploading}
+                            >
+                              Select {state.folderUpload ? 'a Folder' : 'Files'}
+                            </button>
+
+                            {/* <DefaultButton onClick={() => fileInput.current.click()} css='mx-auto' disabled={state.uploading}> Select {state.folderUpload ? 'a Folder' : 'Files'}</DefaultButton> */}
+                          </div>
+
                         </div>
 
                         {/* <div className={styles.fileList}> */}
@@ -287,7 +289,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
 
                         <div className="mt-8 flex items-center justify-end">
                           <button
-                            className="btn btn-outline-dark mr-3 text-[16px] text-black"
+                            className="btn btn-danger mr-3 text-[16px] text-white"
                             color="black"
                             onClick={() => {
                               dispatch({ type: 'reset' });
@@ -297,10 +299,17 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             Cancel
                           </button>
 
-                          <button className=" btn btn-outline-secondary relative flex items-center text-[16px]" onClick={startUpload} disabled={!state.files.length || state.uploading}>
+                          <DefaultButton onClick={startUpload} disabled={!state.files.length || state.uploading}>
+                            <span className="flex items-center justify-center duration-300 gap-1">
+                              {allSvgs.uploadIcon}
+                              {state.uploading ? 'Uploading...' : 'Start Upload'}
+                            </span>
+                          </DefaultButton>
+                          {/* <button className=" btn btn-outline-secondary relative flex items-center text-[16px]" onClick={startUpload} disabled={!state.files.length || state.uploading}>
                             <span className="flex items-center justify-center duration-300">{allSvgs.uploadIcon}</span>
                             {state.uploading ? 'Uploading...' : 'Start Upload'}
-                          </button>
+                          </button> */}
+
                         </div>
                       </div>
                     </Dialog.Panel>

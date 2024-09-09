@@ -6,9 +6,9 @@ const PermissionDocs = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  // const { data: data } = useGetErrorStatusQuery(undefined, {
-  //   refetchOnMountOrArgChange: true,
-  // });
+  const { data: data } = useGetErrorStatusQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const permissionEndpoint = (permission: any) => {
     switch (permission) {

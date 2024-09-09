@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import Link from 'next/link';
 import Dropdown from '@/components/Dropdown';
 import { API_ENDPOINT } from '@/config';
@@ -11,10 +11,10 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
 });
 
-const Dashboard = (props : any) => {
-  const {userData} = useAuth();
+const Dashboard = (props: any) => {
+  const { userData } = useAuth();
   const { isDark, isRtl, isMounted } = props;
-  const {authPermissions} = useAuth();
+  const { authPermissions } = useAuth();
 
   //Revenue Chart
   const revenueChart: any = {
@@ -294,26 +294,25 @@ const Dashboard = (props : any) => {
     },
   };
 
-  // Shoots
-  const [myShoots, setMyShoots] = useState<any>([]);
+  // // Shoots
+  // const [myShoots, setMyShoots] = useState<any>([]);
 
-  useEffect(() => {
-    getAllMyShoots();
-  }, []);
+  // useEffect(() => {
+  //   getAllMyShoots();
+  // }, []);
 
   const getAllMyShoots = async () => {
     try {
       const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=5`);
       const allShots = await response.json();
       setMyShoots((prevShoots: any) => {
-        const newShoots = allShots.results.filter((shoot: any) => !prevShoots.some((prevShoot: any) => prevShoot.id === shoot.id));
+        const newShoots = allShots.results?.filter((shoot: any) => !prevShoots.some((prevShoot: any) => prevShoot.id === shoot.id));
         return [...prevShoots, ...newShoots];
       });
     } catch (error) {
       console.error(error);
     }
   };
-
 
   return (
     <div>
@@ -324,7 +323,7 @@ const Dashboard = (props : any) => {
           </Link>
         </li>
         <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span className='capitalize'>{userData?.role}</span>
+          <span className="capitalize">{userData?.role}</span>
         </li>
       </ul>
 
@@ -410,6 +409,6 @@ const Dashboard = (props : any) => {
       </div>
     </div>
   );
-}
+};
 
-export default Dashboard
+export default Dashboard;

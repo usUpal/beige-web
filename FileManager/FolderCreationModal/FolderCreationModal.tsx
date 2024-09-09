@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import api from '../api/storage';
 import { Dialog, Transition } from '@headlessui/react';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
   const [folderPath, setFolderPath] = useState('');
@@ -91,16 +92,17 @@ const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
                               {error && <p style={{ color: 'red', margin: '10px 0' }}>Something went wrong and we couldn't create that folder.</p>}
                             </div>
                           </div>
-                          
+
                         </p>
 
                         <div className="flex justify-end items-center mt-8">
-                          <button type="button" className="btn btn-outline-danger text-[16px]" onClick={close}>
+                          <button type="button" className="btn btn-danger text-[16px] mr-2" onClick={close}>
                             Discard
                           </button>
-                          <button type="button" className="btn btn-outline-warning ltr:ml-4 rtl:mr-4 text-[16px]" onClick={createFolder}>
+
+                          <DefaultButton onClick={createFolder} type='button'>
                             {saving ? 'Adding...' : 'Add Folder'}
-                          </button>
+                          </DefaultButton>
                         </div>
 
                       </div>

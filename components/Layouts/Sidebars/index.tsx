@@ -28,7 +28,7 @@ const SidebarManager = (props: any) => {
           <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
             <ul className="sub-menu text-gray-500">
               <li>
-                <Link href="/">Manager Dashboard</Link>
+                <Link href="/">Overview</Link>
               </li>
             </ul>
           </AnimateHeight>
@@ -145,12 +145,12 @@ const SidebarManager = (props: any) => {
                 <ul className="sub-menu flex flex-col text-gray-500 ">
                   {authPermissions?.includes('searching_params') && (
                     <li>
-                      <Link href="/dashboard/searchingParams">Set Searching Params</Link>
+                      <Link href="/dashboard/searching-params">Set Searching Params</Link>
                     </li>
                   )}
                   {authPermissions?.includes('pricing_params') && (
                     <li>
-                      <Link href="/dashboard/pricingParams">Set Pricing Params</Link>
+                      <Link href="/dashboard/pricing-params">Set Pricing Params</Link>
                     </li>
                   )}
                 </ul>

@@ -7,9 +7,12 @@ import Loader from '@/components/SharedComponent/Loader';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 const AddRole = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { data: allPermissions, isLoading: isGetPermissionLoading,isSuccess:isPostPermissionSuccess } = useGetAllPermissionsQuery(undefined, {
+  const [checkedPermissions, setCheckedPermissions] = useState<string[]>([
+    'dashboard_page',
+  ]);
+
+  const { data: allPermissions, isLoading: isGetPermissionLoading, isSuccess: isPostPermissionSuccess } = useGetAllPermissionsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -17,8 +20,7 @@ const AddRole = () => {
   const router = useRouter();
 
   const onSubmit = async (data: any) => {
-
-    if(! data?.permissions?.length){
+    if (!checkedPermissions?.length) {
       toast.error("Please select a permission...!");
       return;
     }
@@ -27,15 +29,27 @@ const AddRole = () => {
       name: data?.name,
       role: createSlug(data?.name),
       details: data?.details,
-      permissions: data?.permissions
+      permissions: checkedPermissions
     }
+
     await postRole(formData);
-    if(isPostPermissionSuccess){
+    if (isPostPermissionSuccess) {
       router.push('/dashboard/role')
       toast.success("New role create success...")
     }
   }
 
+  const handleCheckboxChange = (key: string) => {
+    setCheckedPermissions((prev) => {
+      if (prev.includes(key)) {
+        return prev.filter((permission) => permission !== key);
+      } else {
+        return [...prev, key];
+      }
+    });
+  };
+
+  console.log('errors',errors)
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
@@ -46,8 +60,8 @@ const AddRole = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="">
             <div className="grid grid-cols-3 gap-3">
-              <input type="text" {...register('name')} placeholder='write a role name' className='border border-black rounded px-3 py-1' />
-              <input type="text" {...register('details')} placeholder='write role details' className='border border-black rounded px-3 py-1 col-span-2' />
+              <input type="text" {...register('name')} required={true} placeholder='write a role name' className={`border border-black rounded px-3 py-1 `} />
+              <input type="text" {...register('details')} required = {true} placeholder='write role details' className='border border-black rounded px-3 py-1 col-span-2' />
             </div>
 
 
@@ -74,15 +88,27 @@ const AddRole = () => {
                     </div> */}
                   </div>
                   <div className="mt-4">
-                    {module?.permissions?.length && module?.permissions?.map((permission: object, index: number) => (
-                      <div className="flex justify-between items-center mb-1" key={index}>
-                        <label htmlFor={permission?.key} className='cursor-pointer'>{permission?.name}</label>
-                        <div className="w-12 h-6 relative">
-                          <input type="checkbox" {...register('permissions')} defaultValue={permission?.key} className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id={permission?.key} />
-                          <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                    {module?.permissions?.length && module?.permissions?.map((permission: any, index: number) => {
+                      const isDefaultChecked = permission?.key === 'dashboard_page';
+                      const isChecked = isDefaultChecked || checkedPermissions.includes(permission?.key);
+
+                      return (
+                        <div className="flex justify-between items-center mb-1" key={index}>
+                          <label htmlFor={permission?.key} className='cursor-pointer'>{permission?.name}</label>
+                          <div className="w-12 h-6 relative">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => handleCheckboxChange(permission?.key)}
+                              disabled={isDefaultChecked}
+                              className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                              id={permission?.key}
+                            />
+                            <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}

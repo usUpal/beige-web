@@ -7,6 +7,7 @@ import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
 import Swal from 'sweetalert2';
 import { API_ENDPOINT } from '@/config';
 import { useUpdatePriceMutation } from '@/Redux/features/algo/pricesApi';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
 const PricingCalculation = () => {
   const dispatch = useDispatch();
@@ -102,7 +103,10 @@ const PricingCalculation = () => {
                           <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
                         </td>
                         <td onClick={() => handleRateEdit(price)}>
-                          <span className={`badge text-md w-12 bg-[#48cae4] text-center`}>Edit</span>
+                          {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>Edit</span> */}
+                          <button type="button">
+                            {allSvgs.editPen}
+                          </button>
                         </td>
                       </tr>
                     );
@@ -134,7 +138,11 @@ const PricingCalculation = () => {
                           <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
                         </td>
                         <td onClick={() => handleRateEdit(price)}>
-                          <span className={`badge text-md w-12 bg-[#48cae4] text-center`}>Edit</span>
+                          {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>{allSvgs.editPen} </span>
+                           */}
+                          <button type="button">
+                            {allSvgs.editPen}
+                          </button>
                         </td>
                       </tr>
                     );

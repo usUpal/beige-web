@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import Swal from 'sweetalert2';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const Role = () => {
   const { data: allRoles, isLoading: isAllRolesLoading, isError: isAllRoleError, status: allRoleStatus, error: allRolesError, refetch } = useGetAllRolesQuery(undefined, {
@@ -64,13 +65,12 @@ const Role = () => {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       <div className="panel h-full w-full">
+
         <div className="mb-5 flex items-center justify-between">
-          <h5 className="text-xl font-bold dark:text-white-light">All Roles</h5>
-          <div className="space-x-2">
-            {authPermissions?.includes('add_role') && (
-              <Link href={'/dashboard/role/add-role'} className='px-3 py-1 rounded border border-black focus:border-black focus:outline-none'>Add New Role & Permission</Link>
-            )}
-          </div>
+            <h5 className="text-xl font-bold dark:text-white-light">Role Management</h5>
+            <Link href={'/dashboard/role/add-role'}>
+              <DefaultButton>Add New Role & Permission</DefaultButton>
+            </Link>
         </div>
 
         <div className="table-responsive">
