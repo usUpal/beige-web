@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import api from '../api/storage';
 import { Dialog, Transition } from '@headlessui/react';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const SettingsModal = ({ open, closeModal }) => {
   // const [saving, setSaving] = useState(false)
@@ -148,9 +149,10 @@ const SettingsModal = ({ open, closeModal }) => {
                       </div>
 
                       <div className="mt-8 flex items-center justify-end">
-                        <button className="btn btn-outline-darkness relative flex items-center text-[16px] text-black hover:text-white" onClick={close}>
+                        {/* <button className="btn btn-outline-darkness relative flex items-center text-[16px] text-black hover:text-white" onClick={close}>
                           Save
-                        </button>
+                        </button> */}
+                        <DefaultButton onClick={close}>Save</DefaultButton>
                       </div>
                     </div>
                   </Dialog.Panel>

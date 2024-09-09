@@ -50,7 +50,7 @@ interface FormData {
 const BookNow = () => {
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
-  const { userData } = useAuth();
+  const { userData ,authPermissions} = useAuth();
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
@@ -101,6 +101,9 @@ const BookNow = () => {
   useEffect(() => {
     dispatch(setPageTitle('Manager Dashboard'));
     localStorage.removeItem('location');
+    if(!(authPermissions?.includes('booking_page'))){
+      router.push('/errors/access-denied')
+    }
   }, []);
 
   useEffect(() => {
@@ -911,13 +914,15 @@ const BookNow = () => {
                               >
                                 Add
                               </p> */}
-                              <span
-                                css="h-9 ml-2 mt-4"
-                                className=" ml-2 mt-4 h-9 cursor-pointer rounded-md bg-black px-4 py-1 font-sans text-[14px] capitalize leading-[28px] text-white"
-                                onClick={addDateTime}
-                              >
-                                Add
-                              </span>
+                              <div className='flex justify-end'>
+                                <span
+                                  // css="h-9 ml-2 mt-4"
+                                  className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 font-sans text-[14px] text-center capitalize leading-[28px] text-white"
+                                  onClick={addDateTime}
+                                >
+                                  Add
+                                </span>
+                              </div>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
                           </div>
@@ -1087,7 +1092,7 @@ const BookNow = () => {
                             const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
                               <div key={cp?.userId?._id} className="single-match  basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
-                                <div className="grid grid-cols-3">
+                                <div className="grid grid-cols-3 md:h-32">
                                   <div className="media relative h-14 w-14">
                                     <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} style={{ width: '100%', height: '100%' }} className="mr-3 rounded-full" alt="img" />
                                     <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
@@ -1107,17 +1112,16 @@ const BookNow = () => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="mt-[30px] flex gap-3">
+                                <div className="mt-[30px] flex justify-center gap-3">
                                   <Link href={`cp/${cp?.userId?._id}`}>
-                                    <p className="single-match-btn  inline-block cursor-pointer rounded-[10px] bg-black px-[20px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                    <p className=" inline-block cursor-pointer rounded-[10px] bg-black px-[12px] md:px-[20px] py-[8px] md:py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
                                       view profile
                                     </p>
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={`single-match-btn inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[30px] py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[12px] md:px-[20px] py-[8px] md:py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1181,7 +1185,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
