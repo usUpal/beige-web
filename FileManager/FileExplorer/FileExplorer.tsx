@@ -248,13 +248,28 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
       setSelecFileIds([id]);
     }
   };
+
+  const [showMenus, setShowMenus] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768); // Example breakpoint for mobile
+
+  useEffect(() => {
+    // Update the isMobile state on window resize
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <div>
       <div>
         <p className="my-8 text-2xl">Files</p>
       </div>
 
-      <div className="flex items-center justify-start gap-4">
+      <div className="flex items-center  justify-between lg:justify-start gap-4">
         {/* <label className="flex cursor-pointer items-center">
           <input
             type="checkbox"
@@ -265,12 +280,24 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           <span className="ml-2 text-lg font-normal text-gray-900">Ignore Folder Structure</span>
         </label> */}
 
-        <p className="mb-0 flex cursor-pointer items-center gap-2	 px-4 text-lg" onClick={getFiles}>
+        <div className="mb-0 flex cursor-pointer items-center gap-2 px-4 text-lg" onClick={getFiles}>
           <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
           Refresh
-        </p>
+          <div className={`hidden md:block`}>
+            <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
+          </div>
+        </div>
 
-        <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
+        {/* Menu for mobile devices */}
+        <div className='block lg:hidden'>
+          <span className={`block md:hidden`} onClick={() => setShowMenus(!showMenus)}>{allSvgs.threeDotMenuIcon}</span>
+        </div>
+      </div>
+
+      <div className={`md:hidden flex`}>
+        {showMenus &&
+          <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
+        }
       </div>
 
       {/* Folder breadcrumbs */}

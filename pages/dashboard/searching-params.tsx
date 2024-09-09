@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import 'tippy.js/dist/tippy.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { API_ENDPOINT } from '@/config';
-import { cl } from '@fullcalendar/core/internal-common';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
+
 interface FormData {
   content_type: number;
   content_vertical: number;
@@ -79,7 +78,6 @@ const SearchingParams = () => {
     fetch(`${API_ENDPOINT}settings/algo/search`)
       .then((res) => res.json())
       .then((data) => {
-        //console.log('🚀 ~ file: searchingParams.tsx:63 ~ .then ~ data:', data);
         setParams(data);
         setTableData(data);
       })
@@ -108,7 +106,6 @@ const SearchingParams = () => {
             console.log('Error:', data);
             return;
           } else {
-            //console.log('🚀 ~ file: searchingParams.tsx:43 ~ .then ~ data:', data);
             toast.success('Params Set Successfully.', {
               position: toast.POSITION.TOP_CENTER,
             });
@@ -116,7 +113,7 @@ const SearchingParams = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
         // setIsLoading(false);
       });
   };
@@ -534,10 +531,11 @@ const SearchingParams = () => {
                 </tr>
               </tbody>
             </table>
-            <div className="flex w-full justify-end">
-              <button className="custom-button" type="submit">
+            <div className="flex w-full md:justify-end justify-center">
+              <DefaultButton css='mt-5 md:me-4 ' type='submit'>Save</DefaultButton>
+              {/* <button className="custom-button" type="submit">
                 Save
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

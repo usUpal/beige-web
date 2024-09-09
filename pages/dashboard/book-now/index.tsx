@@ -24,12 +24,12 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 import { API_ENDPOINT } from '@/config';
-import { usePostOrderMutation } from '@/Redux/features/shoot/shootApi';
+import { useLazyGetAlgoCpQuery, usePostOrderMutation, useUpdateOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
-import Button from '@/components/Button';
-import DefaultButton, { DefaultSubmitButton } from '@/components/SharedComponent/DefaultButton';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { useRouter } from 'next/router';
 
 interface FormData {
   content_type: string;
@@ -73,6 +73,7 @@ const BookNow = () => {
   const [cp_ids, setCp_ids] = useState([]);
   const [search, setSearch] = useState(false);
   const [clients, setClients] = useState([]);
+  const [orderId, setOrderId] = useState(null);
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const [isClientLoading, setIsClientLoading] = useState(false);
@@ -80,6 +81,11 @@ const BookNow = () => {
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
   const { data: pricingData } = useGetAllPricingQuery({});
+
+  const [getAlgoCp, { data: allAlgoCp, isLoading: isGetAlgoCpLoading, error: getAlgoCpError }] = useLazyGetAlgoCpQuery();
+  const [updateOrder, { isLoading: isUpdateOrderLoading }] = useUpdateOrderMutation();
+
+  const router = useRouter();
 
   const {
     register,
@@ -516,7 +522,7 @@ const BookNow = () => {
       };
       const result = await newMeeting(requestBody);
       if (result?.data) {
-        toast.success('Meeting create success.');
+        //toast.success('Meeting create success.');
         return true;
       } else {
         console.log("Don't create the meeting");
@@ -567,42 +573,55 @@ const BookNow = () => {
         };
 
         if (Object.keys(formattedData).length > 0) {
+          setIsLoading(true);
           setFormDataPageOne(formattedData);
-          setActiveTab(activeTab === 1 ? 2 : 3);
+          const result = await postOrder(formattedData);
+          const res = await getAlgoCp(result?.data?.id);
+          if (res?.isSuccess) {
+            setActiveTab(activeTab === 1 ? 2 : 3);
+            setOrderId(result?.data?.id);
+            setIsLoading(false);
+          }
         } else {
           return false;
         }
+        if (activeTab === 2) {
+          setIsLoading(true);
+          setActiveTab(activeTab === 2 ? 3 : 1);
+          setIsLoading(false);
+        }
         if (activeTab === 3) {
-          const result = await postOrder(formattedData);
-          if (result?.data) {
+          setIsLoading(true);
+          const formattedCpIds = cp_ids.map((cp) => ({
+            id: cp.id,
+            decision: userData?.role === 'admin' ? 'accepted' : null,
+          }));
+
+          const formattedData = {
+            addOns: selectedFilteredAddons,
+            cp_ids: formattedCpIds,
+            addOns_cost: allAddonRates,
+            shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
+          };
+
+          const updateRes = await updateOrder({
+            requestBody: formattedData,
+            id: orderId,
+          });
+          console.log('🚀 ~ onSubmit ~ updateRes:', updateRes);
+
+          if (updateRes?.data) {
             toast.success('Shoot has been created successfully');
             if (data.meeting_time) {
               const meeting_time = convertToISO(data.meeting_time);
-              const meetingInfo = await getMeetingLink(result?.data, meeting_time);
+              const meetingInfo = await getMeetingLink(updateRes?.data, meeting_time);
               if (meetingInfo) {
                 toast.success('Meeting has been created successfully!');
               }
             }
-            router.push('/dashboard/shoots');
             setIsLoading(false);
+            router.push('/dashboard/shoots');
           }
-
-          //const response = await OrderApi.handleOrderMake(formattedData);
-          // if (response.status === 201) {
-          //   swalToast('success', 'Shoot has been created successfully!');
-          //   if (data.meeting_time) {
-          //     const meeting_time = convertToISO(data.meeting_time);
-          //     const meetingInfo = await getMeetingLink(response?.data, meeting_time);
-          //     if (meetingInfo) {
-          //       swalToast('success', 'Meeting has been created successfully!');
-          //     }
-          //   }
-          //   router.push('/dashboard/shoots');
-          //   setIsLoading(false);
-          // } else {
-          //   swalToast('danger', 'Please check your shoot details!');
-          //   setIsLoading(false);
-          // }
         }
       } catch (error) {
         swalToast('danger', 'error');
@@ -643,7 +662,7 @@ const BookNow = () => {
     setClientName(client?.name);
     setShowClientDropdown(false);
   };
-  //
+
   const orderName = () => {
     const contentType: any = getValues('content_type') || [];
     let contentVertical = getValues('content_vertical');
@@ -892,7 +911,11 @@ const BookNow = () => {
                               >
                                 Add
                               </p> */}
-                              <span css="h-9 ml-2 mt-4" className="ml-2 mt-4 h-9 rounded-md bg-black px-4 py-1 font-sans text-[14px] capitalize leading-[28px] text-white" onClick={addDateTime}>
+                              <span
+                                css="h-9 ml-2 mt-4"
+                                className=" ml-2 mt-4 h-9 cursor-pointer rounded-md bg-black px-4 py-1 font-sans text-[14px] capitalize leading-[28px] text-white"
+                                onClick={addDateTime}
+                              >
                                 Add
                               </span>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
@@ -1028,7 +1051,9 @@ const BookNow = () => {
                         </div>
                       )}
                       <div className="mt-5 flex items-center justify-end ltr:ml-auto rtl:mr-auto">
-                        <DefaultButton css="font-semibold text-[16px] h-9">Next</DefaultButton>
+                        <DefaultButton css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`} disabled={isLoading}>
+                          {isLoading === true ? <Loader /> : 'Next'}
+                        </DefaultButton>
                       </div>
                     </>
                   )}
@@ -1057,8 +1082,8 @@ const BookNow = () => {
                       </div>
                       {/* Showing all cps */}
                       <div className="grid grid-cols-1 gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                        {allCpUsers?.length > 0 ? (
-                          allCpUsers?.map((cp) => {
+                        {allAlgoCp?.results?.length > 0 ? (
+                          allAlgoCp?.results?.map((cp) => {
                             const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
                               <div key={cp?.userId?._id} className="single-match  basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
@@ -1111,7 +1136,7 @@ const BookNow = () => {
 
                       {/* pagination */}
                       <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                        <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
+                        <ResponsivePagination current={currentPage} total={allAlgoCp?.results?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
                       </div>
                     </div>
                   )}
@@ -1264,7 +1289,7 @@ const BookNow = () => {
                 <div className="flex justify-between">
                   <button
                     type="button"
-                    className={`btn flex flex-col items-center justify-center rounded-lg 
+                    className={`btn flex flex-col items-center justify-center rounded-lg
                     bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
                     onClick={() => handleBack()}
                   >
@@ -1278,32 +1303,15 @@ const BookNow = () => {
                     Backk
                   </DefaultButton> */}
 
-                  {activeTab === 2 && <DefaultButton css="font-semibold text-[16px] h-9">Next</DefaultButton>}
+                  {activeTab === 2 && (
+                    <DefaultButton css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`} disabled={isLoading}>
+                      {isLoading === true ? <Loader /> : 'Next'}
+                    </DefaultButton>
+                  )}
 
                   {activeTab === 3 && (
-                    // <button
-                    //   type="submit"
-                    //   onClick={() => setIsLoading(true)}
-                    //   className="btn flex flex-col items-center justify-center rounded-lg bg-black text-[14px] font-bold capitalize text-white outline-none"
-                    // >
-                    //   {isLoading ? (
-                    //     <span>
-                    //       <Loader />
-                    //     </span>
-                    //   ) : (
-                    //     'Confirm Shoot'
-                    //   )}
-                    // </button>
-
-                    <DefaultButton onClick={() => setIsLoading(true)} css="font-semibold text-[16px] h-9">
-                      {' '}
-                      {isLoading ? (
-                        <span>
-                          <Loader />
-                        </span>
-                      ) : (
-                        'Confirm Shoot'
-                      )}{' '}
+                    <DefaultButton css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`} disabled={isLoading}>
+                      {isLoading ? <Loader /> : 'Confirm Shoot'}
                     </DefaultButton>
                   )}
                 </div>

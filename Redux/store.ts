@@ -31,11 +31,10 @@ const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer, // Add the RTK Query API reducer
 });
 
-
 const errorHandlerMiddleware = ({ dispatch }) => (next) => (action) => {
-  // Check if the action contains an API response
   if (action.payload && action.payload.status === 403) {
     window.location.href = '/errors/access-denied';
+    return;
   }
   return next(action);
 };

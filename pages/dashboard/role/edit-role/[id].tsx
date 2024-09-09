@@ -78,7 +78,7 @@ const EditRole = () => {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
-          <h5 className="text-xl font-bold dark:text-white-light">Create Role</h5>
+          <h5 className="text-xl font-bold dark:text-white-light">Update Role</h5>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="">

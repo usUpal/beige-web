@@ -15,6 +15,7 @@ import { API_ENDPOINT } from '@/config';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
 import Swal from 'sweetalert2';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { toast } from 'react-toastify';
 
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 
@@ -158,10 +159,12 @@ const Profile = () => {
 
   const handleImageClick = () => {
     setShowImage(true);
+    // toast.warning("This page is under Development.");
   };
 
   const handleVideoClick = () => {
     setShowImage(false);
+    // toast.warning("This page is under Development.");
   };
 
   const [profilePicture, setProfilePicture] = useState(userData?.profile_picture || '');
@@ -215,14 +218,25 @@ const Profile = () => {
           <div className="grid grid-cols-1 gap-5">
             <div className="panel">
               <div className="mb-7 font-bold">All Reviews</div>
-              <Swiper spaceBetween={30} slidesPerView={3} navigation={false} pagination={{ clickable: true }} className="mySwiper">
+              <Swiper spaceBetween={30} slidesPerView={3} navigation={false} pagination={{ clickable: true }}
+                breakpoints={{
+                  320: {
+                    slidesPerView: 1,
+                  },
+                  640: {
+                    slidesPerView: 2,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                  },
+                }} className="mySwiper">
                 {isLoading && reviews?.length > 0 ? (
-                  reviews?.map((review, index) => (
+                  reviews?.map((review, index) => ((console.log(review)),
                     <SwiperSlide key={index}>
                       <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
                         <div className="flex gap-4">
                           {!review?.client_id?.profile_picture ? (
-                            <MakeProfileImage>{review?.client_id?.name}</MakeProfileImage>
+                            <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : ""}</MakeProfileImage>
                           ) : (
                             <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="User profile picture" />
                           )}
