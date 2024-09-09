@@ -240,8 +240,6 @@ const Chat = () => {
 
   // handleClientChange
   const handleClientChange = (client: any) => {
-    // console.log("client", client);
-
     setNewParticipantInfo(client);
     setShowClientDropdown(false);
     setIsAddParticipant(false);
@@ -265,6 +263,16 @@ const Chat = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [dropdownRef]);
+
+
+  // 
+  const handleAddPerticipant = () => {
+    toast.warning("This page is under development");
+    // setIsAddParticipant(true);
+    return
+  }
+
+
 
   return (
     <div className={`relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)] sm:min-h-0 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
@@ -485,11 +493,7 @@ const Chat = () => {
                         <>
                           {(!isAddParticipant && (userRole === "manager" || userRole === "admin")) &&
                             <>
-                              {/* <button className="capitalize bg-black  px-2 rounded text-white text-[14px]" onClick={() => setIsAddParticipant(true)}>add participants</button> */}
-                              {/* <DefaultButton onClick={() => setIsAddParticipant(true)}>
-                                Add Participant
-                              </DefaultButton> */}
-                              <DefaultButton onClick={() => setIsAddParticipant(true)} css={"px-3 py-0 text-[14px]"}>Add Participant</DefaultButton>
+                              <DefaultButton onClick={handleAddPerticipant} css={"px-3 py-0 text-[14px]"}>Add Participant</DefaultButton>
                             </>
                           }
 

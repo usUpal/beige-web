@@ -130,12 +130,12 @@ const Users = () => {
         <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">
-              <h5 className="text-lg font-semibold dark:text-white-light">All Users</h5>
+              <h5 className="text-lg font-semibold dark:text-white-light ">All Users</h5>
               <div className="flex gap-2">
                 <Link href="/dashboard/create-user">
-                  <DefaultButton css=''>Create New User</DefaultButton>
+                  <DefaultButton css='text-[12px] box-border pb-10 md:pb-1'>Create New User</DefaultButton>
                 </Link>
-                <DefaultButton onClick={handleCreateNewCp} css=''>Create New Cp</DefaultButton>
+                <DefaultButton onClick={handleCreateNewCp} css='text-[12px] box-border pb-10 md:pb-1'>Create New Cp</DefaultButton>
               </div>
             </div>
             <div className="mb-5">
@@ -253,16 +253,15 @@ const Users = () => {
                                       >
                                         Email Verified
                                       </label>
-                                      <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
+                                      <p className='border rounded p-3 text-gray-600  mt-1 w-full'>
                                         {userInfo?.isEmailVerified === "true" ? "Yes" : "No"}
                                       </p>
                                     </div>
                                     <div className="w-full">
-                                      <label htmlFor="role" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize"
-                                      >
+                                      <label htmlFor="role" className=" mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 capitalize">
                                         role
                                       </label>
-                                      <p className='border rounded p-3 text-gray-600 ms-12 md:ms-0 mt-1 w-full'>
+                                      <p className='border rounded p-3 text-gray-600  mt-1 w-full'>
                                         {userInfo?.role}
                                       </p>
 
