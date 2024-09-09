@@ -277,10 +277,10 @@ const Meeting = () => {
                                 {/* <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
                                   Reschedule Request
                                 </button> */}
+                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2 w-64' type={"submit"}> Reschedule Request</DefaultButton>
                               </div>
                             </div>
                           )}
-                          <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2 w-64' type={"submit"}> Reschedule Request</DefaultButton>
                         </>
                       )}
                     </div>
