@@ -60,7 +60,7 @@ const SettingsModal = ({ open, closeModal }) => {
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <Dialog.Panel as="div" className="panel my-24 w-2/5 overflow-hidden rounded-lg border-0 p-0 pb-2 text-black dark:text-white-dark md:w-3/5">
+                  <Dialog.Panel as="div" className="panel my-24 w-5/6 overflow-hidden rounded-lg border-0 p-0 pb-2 text-black dark:text-white-dark md:w-3/5">
                     <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                       <div className="text-lg font-bold capitalize">Options & Settings</div>
                       <button
@@ -82,7 +82,6 @@ const SettingsModal = ({ open, closeModal }) => {
                         <p className="flex items-center">
                           <label
                             className="relative h-6 w-12"
-                            // onClick={() => dispatch({ type: 'switchFolderUpload' })} checked={settings.defaultPublicFiles}
                             onClick={() => setSettings({ ...settings, defaultPublicFiles: !settings.defaultPublicFiles })}
                           >
                             <input
@@ -131,10 +130,8 @@ const SettingsModal = ({ open, closeModal }) => {
                           style={{
                             textAlign: 'right',
                             marginRight: '30px',
-                            // color: error ? 'red' : 'black',
                           }}
                         >
-                          {/* <strong>{state.status}</strong> */}
                         </p>
 
                         <div className="">
@@ -149,9 +146,6 @@ const SettingsModal = ({ open, closeModal }) => {
                       </div>
 
                       <div className="mt-8 flex items-center justify-end">
-                        {/* <button className="btn btn-outline-darkness relative flex items-center text-[16px] text-black hover:text-white" onClick={close}>
-                          Save
-                        </button> */}
                         <DefaultButton onClick={close}>Save</DefaultButton>
                       </div>
                     </div>
