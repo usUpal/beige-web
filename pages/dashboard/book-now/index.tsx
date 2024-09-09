@@ -50,7 +50,7 @@ interface FormData {
 const BookNow = () => {
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
-  const { userData } = useAuth();
+  const { userData ,authPermissions} = useAuth();
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
@@ -101,6 +101,9 @@ const BookNow = () => {
   useEffect(() => {
     dispatch(setPageTitle('Manager Dashboard'));
     localStorage.removeItem('location');
+    if(!(authPermissions?.includes('booking_page'))){
+      router.push('/errors/access-denied')
+    }
   }, []);
 
   useEffect(() => {

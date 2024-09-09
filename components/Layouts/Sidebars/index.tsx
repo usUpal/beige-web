@@ -28,7 +28,7 @@ const SidebarManager = (props: any) => {
           <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
             <ul className="sub-menu text-gray-500">
               <li>
-                <Link href="/">Manager Dashboard</Link>
+                <Link href="/">Overview</Link>
               </li>
             </ul>
           </AnimateHeight>
