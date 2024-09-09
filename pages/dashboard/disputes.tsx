@@ -99,14 +99,12 @@ const Disputes = () => {
             </thead>
             <tbody>
 
-
               {isLoading ? (
                 <>
                   <PreLoader></PreLoader>
                 </>
               ) : (
                 <>
-
                   {desputes && desputes.length > 0 ? (
 
                     desputes?.map((dispute) => (
@@ -121,8 +119,6 @@ const Disputes = () => {
                           {new Date(dispute?.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}{' '} ,
                           Time: {new Date(dispute?.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
                         </td>
-
-
 
                         <td className="">
                           <StatusBg>{dispute?.status}</StatusBg>
@@ -149,11 +145,8 @@ const Disputes = () => {
                     </tr>
                   )}
 
-
                 </>
               )}
-
-
 
             </tbody>
           </table>
@@ -171,7 +164,7 @@ const Disputes = () => {
 
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center px-4">
-              <Dialog.Panel as="div" className="panel my-24 w-3/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark md:w-3/6 2xl:w-2/6">
+              <Dialog.Panel as="div" className="panel my-24 w-4/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark md:w-3/6 2xl:w-2/6">
                 <div className="flex items-center justify-between bg-[#fbfbfb] py-4 dark:bg-[#121c2c]">
                   <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
 

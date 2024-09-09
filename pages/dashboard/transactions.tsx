@@ -320,7 +320,7 @@ const Transactions = () => {
                         )}
                       </div>
 
-                      <div className="mt-8 flex justify-center md:mt-0">
+                      <div className="mt-8 flex justify-center md:justify-end md:mt-0">
                         <DefaultButton onClick={() => handleUpdateTestSubmit(selectedPayoutInfo?.id)} type="submit">Update</DefaultButton>
                       </div>
                     </div>
