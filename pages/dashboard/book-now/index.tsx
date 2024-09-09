@@ -544,10 +544,6 @@ const BookNow = () => {
       toast.error('Please select shoot location...!');
       return;
     }
-    if (activeTab == 2 && cp_ids?.length === 0) {
-      toast.error('Please select cp...!');
-      return;
-    }
     if (data.content_type == false) {
       toast.error('Please select a content type...!');
       return;
