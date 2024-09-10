@@ -159,13 +159,13 @@ const Users = () => {
                         {allUsers
                           ?.map((user) => (
                             <tr key={user.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                              <td className="min-w-[150px] font-sans text-black dark:text-white hidden md:block">
-                                <div className="flex items-center">
-                                  <p className="whitespace-nowrap">{user?.id}</p>
-                                </div>
+                              <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                <p className="flex items-center break-all">
+                                  {user?.id}
+                                </p>
                               </td>
                               <td>{user?.name}</td>
-                              <td>{user?.email}</td>
+                              <td className='min-w-[150px] break-all'>{user?.email}</td>
                               <td className="font-sans text-success">{user?.role}</td>
                               <td className='hidden md:block'>
                                 <div className="font-sans ">
