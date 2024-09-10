@@ -658,7 +658,7 @@ const ShootDetails = () => {
           <Dialog as="div" open={cpModal} onClose={() => setCpModal(false)}>
             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
               <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                <Dialog.Panel as="div" className="panel my-24 w-4/6 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                <Dialog.Panel as="div" className="panel my-24 w-5/6 space-x-0 md:space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                     <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Assign CP's </div>
                     <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setCpModal(false)}>
@@ -681,7 +681,7 @@ const ShootDetails = () => {
                           const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                           return (
                             <div key={cp?.userId?._id} className="rounded-lg border border-solid border-[#ACA686] p-3 shadow">
-                              <div className="grid grid-cols-3 items-start justify-start">
+                              <div className="grid grid-cols-3 items-start justify-start md:h-[140px] h-[150px]">
                                 <div className="media relative h-14 w-14 rounded-full">
                                   <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="mr-3 h-full w-full rounded-full object-cover" alt="img" />
                                   <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
@@ -721,15 +721,12 @@ const ShootDetails = () => {
                       )}
                     </div>
 
-                    <div className="flex justify-between">
-                      <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                        <ResponsivePagination current={currentPage} total={allCp?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-                      </div>
 
+                    <div className="flex justify-center">
                       <DefaultButton onClick={updateCps} disabled={false} css='my-5' >Submit</DefaultButton>
-                      {/* <button disabled={false} onClick={updateCps} className="mt-5 rounded-sm bg-black px-3 py-1 text-white">
-                        Submit
-                      </button> */}
+                    </div>
+                    <div className="my-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                      <ResponsivePagination current={currentPage} total={allCp?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
                     </div>
                   </div>
                 </Dialog.Panel>
