@@ -317,46 +317,54 @@ const ShootDetails = () => {
               {/* Shoot Cost */}
               <div className="mb-4 basis-[45%] md:mb-2 md:flex">
                 <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Cost</label>
-                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="font-sans capitalize text-black">${data?.shoot_cost ?? ''}</span>
+                <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
+                  <span className="font-sans capitalize ml-5 md:ml-3 text-black">${data?.shoot_cost ?? ''}</span>
                 </div>
               </div>
               {/* Shoot Duration */}
               <div className="mb-4 basis-[45%] md:mb-2 md:flex">
                 <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Duration</label>
-                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="font-sans capitalize text-black">{data?.shoot_duration ?? ''} Hours</span>
+                <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
+                  <span className="font-sans capitalize text-black ml-5 md:ml-3">{data?.shoot_duration ?? ''} Hours</span>
                 </div>
               </div>
             </div>
 
             <div className="items-center justify-between md:mb-4 md:flex">
               {/* Payment Status */}
-              <div className="basis-[45%] space-y-4">
+              <div className="basis-[45%] space-y-4 mb-3">
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Payment Status</label>
+                  <label className="mb-3 md:mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Payment Status</label>
                   {data?.payment?.payment_status && (
-                    <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                    <div className="ml-12 md:ml-3 mt-1 flex-1 md:mt-0">
                       <StatusBg>{data?.payment?.payment_status}</StatusBg>
                     </div>
                   )}
                 </div>
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Current Shoot Status</label>
+                  <label className="mb-3 md:mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Current Shoot Status</label>
                   {data?.order_status && (
                     <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
                       <StatusBg>{data?.order_status}</StatusBg>
                     </div>
                   )}
                 </div>
+
+                {/*  */}
+                <div className="mb-4 md:mb-2 md:flex">
+                  <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Description</label>
+                  <div className="ml-5 mt-1 flex-1 md:ml-4 md:mt-0">
+                    <span className="font-sans capitalize text-black">{data?.description ?? ''}</span>
+                  </div>
+                </div>
               </div>
               {/* Description */}
-              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
+              {/* <div className="mb-4 basis-[45%] md:mb-2 md:flex">
                 <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Description</label>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
                   <span className="font-sans capitalize text-black">{data?.description ?? ''}</span>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="items-center justify-between md:mb-4 md:flex">
@@ -575,7 +583,7 @@ const ShootDetails = () => {
                     )}
 
                     <div className="ml-6 lg:ml-0 lg:mt-10">
-                      <h3 className="text-xl font-bold text-gray-900 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500">{status}</h3>
+                      <h3 className="text-xl font-bold text-gray-900 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500 b break-all"> {status}</h3>
 
                       <h4 className="mt-2 text-base text-gray-700">{shootStatusMessage(status)}</h4>
                     </div>

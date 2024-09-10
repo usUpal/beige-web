@@ -58,10 +58,15 @@ const Chat = () => {
   const [isClientLoading, setIsClientLoading] = useState(false);
   const dropdownRef = useRef(null);
   const [newParticipantInfo, setNewParticipantInfo] = useState({});
+  const [threeDotSidebar, setThreeDotSidebar] = useState(false);
+
 
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+  const toggleThreeDotSidebar = () => {
+    setThreeDotSidebar(!threeDotSidebar);
   };
 
   const handlePageChange = (page: number) => {
@@ -286,6 +291,14 @@ const Chat = () => {
             </svg>
           </div>
         </div>
+        {/* add participant button for sm devices */}
+        <div className='md:hidden block text-center'>
+          {(!isAddParticipant && (userRole === "manager" || userRole === "admin")) &&
+            <>
+              <DefaultButton onClick={handleAddPerticipant} css={"px-3 py-0 text-[14px]"}>Add Participant</DefaultButton>
+            </>
+          }
+        </div>
         <div className="mt-1 h-[87%]">
           <PerfectScrollbar className="chat-users relative h-full min-h-full space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
             {data?.results?.map((chat: any) => {
@@ -318,7 +331,7 @@ const Chat = () => {
           </PerfectScrollbar>
 
         </div>
-        <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+        <div className="mt-4 flex justify-center ">
           <ResponsivePaginationComponent
             current={currentPage}
             total={totalPagesCount}
@@ -491,11 +504,13 @@ const Chat = () => {
                     <>
                       <div className="flex gap-3 sm:gap-5">
                         <>
-                          {(!isAddParticipant && (userRole === "manager" || userRole === "admin")) &&
-                            <>
-                              <DefaultButton onClick={handleAddPerticipant} css={"px-3 py-0 text-[14px]"}>Add Participant</DefaultButton>
-                            </>
-                          }
+                          <div className='hidden md:block'>
+                            {(!isAddParticipant && (userRole === "manager" || userRole === "admin")) &&
+                              <>
+                                <DefaultButton onClick={handleAddPerticipant} css={"px-3 py-0 text-[14px]"}>Add Participant</DefaultButton>
+                              </>
+                            }
+                          </div>
 
                           {isAddParticipant &&
 
@@ -515,6 +530,8 @@ const Chat = () => {
                                       placeholder="SearchParticipant..."
                                       required={!clientName}
                                     />
+
+
 
                                     {clients.length <= 0 &&
                                       <div className="absolute top-1/2 -translate-y-1/2  ltr:right-2 rtl:left-2 cursor-pointer"
@@ -575,12 +592,12 @@ const Chat = () => {
 
                         </>
 
-                        <div className="dropdown">
+                        <div className={`dropdown toggle_threeDot ${threeDotSidebar && 'hidden'}`}>
                           <Dropdown
                             placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
                             btnClassName="bg-[#f4f4f4] dark:bg-[#1b2e4b] hover:bg-primary-light w-8 h-8 rounded-full !flex justify-center items-center mt-1"
                             button={
-                              <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="#000000" className="bi bi-three-dots-vertical ml-2 mt-1" onClick={toggleSidebar}>
+                              <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="#000000" className="bi bi-three-dots-vertical ml-2 mt-1" onClick={toggleThreeDotSidebar}>
                                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                                 <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                                 <g id="SVGRepo_iconCarrier">
@@ -685,10 +702,10 @@ const Chat = () => {
       </div>
 
       {
-        isSidebarOpen && (
-          <div className={`panel absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+        threeDotSidebar && (
+          <div className={`panel absolute z-10  w-full max-w-xs flex-none my-24 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
             <div className="mt-1 flex w-full justify-end gap-3 sm:gap-5">
-              <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleSidebar}>
+              <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
                 <div className="ml-2 mt-1">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="#000000" width="26" height="26">
                     <path
@@ -727,7 +744,7 @@ const Chat = () => {
 
               <div>
                 {activeTab === '1' && (
-                  <div className="pt-4">
+                  <div className="">
                     <div className="mt-1">
                       <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
                         <ul className="space-y-2">
@@ -748,7 +765,7 @@ const Chat = () => {
                           {/* {perticipants} */}
 
                           {activeTab === '1' && (
-                            <div className="pt-4">
+                            <div className="">
                               <div className="mt-1">
                                 <PerfectScrollbar className="chat-users relative h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
                                   <ul className="space-y-2">
@@ -789,7 +806,7 @@ const Chat = () => {
                           )}
 
                           {activeTab === '2' && (
-                            <div className="pt-4">
+                            <div className="">
                               <h2 className="text-lg font-medium">Image files</h2>
                               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                                 <div className="relative">

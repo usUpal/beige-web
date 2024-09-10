@@ -54,7 +54,7 @@ const Shoots = () => {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-5 md:flex items-center justify-between my-5 md:my-0 md:mb-4">
           <h5 className="text-xl font-bold dark:text-white-light">Recent Shoots</h5>
           <input
             type="text"
