@@ -8,7 +8,6 @@ import Auth from '@/components/Auth';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-
   const [userData, setUserData] = useState<UserData | null>(null);
   const [authPermissions, setAuthPermissions] = useState<any>(null);
   const [accessToken, setAccessToken] = useState<Token | null>(null);
@@ -16,7 +15,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [ready, setReady] = useState<boolean>(false);
 
   useEffect(() => {
-
     const userDataCookie = Cookies.get('userData');
     const authPermissionsCookie = Cookies.get('authPermissions');
     const accessTokenCookie = Cookies.get('accessToken');
@@ -39,21 +37,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
 
     setReady(true);
-
   }, []);
 
   const providerData = {
-    userData, setUserData,
-    authPermissions, setAuthPermissions,
-    accessToken, setAccessToken,
-    refreshToken, setRefreshToken
+    userData,
+    setUserData,
+    authPermissions,
+    setAuthPermissions,
+    accessToken,
+    setAccessToken,
+    refreshToken,
+    setRefreshToken,
   };
 
   return (
     <AuthContext.Provider value={providerData}>
       {ready && (
         <Fragment>
-          {(accessToken && refreshToken) ? (
+          {refreshToken ? (
             <Fragment>{children}</Fragment>
           ) : (
             <Provider store={store}>
@@ -64,8 +65,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       )}
     </AuthContext.Provider>
   );
-
-
 };
 
 export const useAuth = () => {
