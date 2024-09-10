@@ -20,24 +20,42 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const accessTokenCookie = Cookies.get('accessToken');
     const refreshTokenCookie = Cookies.get('refreshToken');
 
-    if (!userData && userDataCookie) {
-      setUserData(JSON.parse(userDataCookie));
+    try {
+      if (!userData && userDataCookie) {
+        setUserData(JSON.parse(userDataCookie));
+      }
+    } catch (error) {
+      console.error('Error parsing userDataCookie:', error);
     }
 
-    if (!authPermissions && authPermissionsCookie) {
-      setAuthPermissions(JSON.parse(authPermissionsCookie));
+    try {
+      if (!authPermissions && authPermissionsCookie) {
+        setAuthPermissions(JSON.parse(authPermissionsCookie));
+      }
+    } catch (error) {
+      console.error('Error parsing authPermissionsCookie:', error);
     }
 
-    if (!accessToken && accessTokenCookie) {
-      setAccessToken(JSON.parse(accessTokenCookie)?.token);
+    try {
+      if (!accessToken && accessTokenCookie) {
+        const parsedAccessToken = JSON.parse(accessTokenCookie);
+        setAccessToken(parsedAccessToken?.token || null);
+      }
+    } catch (error) {
+      console.error('Error parsing accessTokenCookie:', error);
     }
 
-    if (!refreshToken && refreshTokenCookie) {
-      setRefreshToken(JSON.parse(refreshTokenCookie)?.token);
+    try {
+      if (!refreshToken && refreshTokenCookie) {
+        const parsedRefreshToken = JSON.parse(refreshTokenCookie);
+        setRefreshToken(parsedRefreshToken?.token || null);
+      }
+    } catch (error) {
+      console.error('Error parsing refreshTokenCookie:', error);
     }
 
     setReady(true);
-  }, []);
+  }, [userData, authPermissions, accessToken, refreshToken]);
 
   const providerData = {
     userData,
