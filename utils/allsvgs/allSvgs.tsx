@@ -1505,6 +1505,10 @@ const trash = (
 
 );
 
+const details = (
+  <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+)
+
 
 export const allSvgs = {
   chatCrossIcon,
@@ -1612,4 +1616,5 @@ export const allSvgs = {
   coffeeCupIcon,
   trash,
   editPen,
+  details,
 };
