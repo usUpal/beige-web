@@ -424,7 +424,7 @@ const Addons = () => {
 
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center px-4">
-              <Dialog.Panel as="div" className="panel my-24 w-full overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-6/12 2xl:w-5/12">
+              <Dialog.Panel as="div" className="panel my-24 w-full overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-8/12 2xl:w-5/12">
                 <div className="my-2 box-border flex items-center justify-between bg-[#fbfbfb] px-6 py-3 dark:bg-[#121c2c]">
                   <h2 className="text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Add Addons </h2>
 

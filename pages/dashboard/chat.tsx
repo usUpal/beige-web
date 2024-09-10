@@ -694,7 +694,7 @@ const Chat = () => {
         )}
       </div>
       {threeDotSidebar && (
-        <div className={`panel absolute z-10  my-24 md:my-0 md:space-y-4 w-full max-w-xs flex-none overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+        <div className={`panel absolute z-10 my-24 md:my-0 md:space-y-4 w-full max-w-xs flex-none overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
           <div className="mt-1 flex w-full justify-end gap-3 sm:gap-5">
             <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
               <div className="ml-2 mt-1">
