@@ -40,7 +40,7 @@ const Chat = () => {
   const [msgPage, setMsgPage] = useState(1);
   const [totalMsgPage, setTotalMsgPage] = useState(0);
 
-  const { userData } = useAuth() as any;
+  const { userData ,authPermissions} = useAuth() as any;
   const socket = useRef<any | null>(null);
 
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
@@ -240,6 +240,7 @@ const Chat = () => {
 
   // handleClientChange
   const handleClientChange = (client: any) => {
+    console.log("🚀 ~ handleClientChange ~ client:", client)
     setNewParticipantInfo(client);
     setShowClientDropdown(false);
     setIsAddParticipant(false);
@@ -265,10 +266,9 @@ const Chat = () => {
   }, [dropdownRef]);
 
 
-  // 
   const handleAddPerticipant = () => {
-    toast.warning("This page is under development");
-    // setIsAddParticipant(true);
+    // toast.warning("This page is under development");
+    setIsAddParticipant(true);
     return
   }
 
@@ -310,7 +310,7 @@ const Chat = () => {
                     </div>
                     <div className="whitespace-nowrap text-xs font-semibold">
                       <p>00:00</p>
-                    </div>``
+                    </div>
                   </button>
                 </div>
               );
@@ -491,14 +491,15 @@ const Chat = () => {
                     <>
                       <div className="flex gap-3 sm:gap-5">
                         <>
-                          {(!isAddParticipant && (userRole === "manager" || userRole === "admin")) &&
+                          {(!isAddParticipant && (userRole === "admin" || userRole === "admin")) &&
                             <>
+                            {/* {authPermissions?.includes('chat_add_participant') && ( */}
                               <DefaultButton onClick={handleAddPerticipant} css={"px-3 py-0 text-[14px]"}>Add Participant</DefaultButton>
+                            {/* )} */}
                             </>
                           }
 
                           {isAddParticipant &&
-
                             <>
                               {/* test start */}
                               <div className="flex items-center justify-end relative">
@@ -618,12 +619,12 @@ const Chat = () => {
                           <div key={index}>
                             <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
                               <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
-                                {message?.senderId === userData.id ? (userRole == 'manager' ? createImageByName('MA') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
+                                {message?.senderId === userData.id ? (userRole == 'admin' ? createImageByName('A') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
                                 {message?.senderId !== userData.id
                                   ? message?.senderName == 'Admin User'
                                     ? createImageByName('MA')
                                     : message?.senderName == 'User'
-                                      ? createImageByName('User')
+                                      ? createImageByName('A')
                                       : createImageByName('CP')
                                   : ''}
                               </div>
