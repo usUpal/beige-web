@@ -135,7 +135,10 @@ const Users = () => {
                 <Link href="/dashboard/create-user">
                   <DefaultButton css='text-[12px] box-border pb-10 md:pb-1'>Create New User</DefaultButton>
                 </Link>
-                <DefaultButton onClick={handleCreateNewCp} css='text-[12px] box-border pb-10 md:pb-1'>Create New Cp</DefaultButton>
+                <Link href="/dashboard/CreateCp">
+                  <DefaultButton onClick={handleCreateNewCp} css='text-[12px] box-border pb-10 md:pb-1'>Create New Cp</DefaultButton>
+                </Link>
+
               </div>
             </div>
             <div className="mb-5">
