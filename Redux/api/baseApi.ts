@@ -14,10 +14,15 @@ const baseQuery = fetchBaseQuery({
   credentials: 'omit',
   prepareHeaders: (headers, { getState }) => {
     headers.set('Content-Type', 'application/json');
-    const token: any = JSON.parse(Cookies.get('accessToken'));
-    if (token?.token) {
-      headers.set('authorization', `Bearer ${token?.token}`);
+    // Try to get accessToken from cookies
+    const token = Cookies.get('accessToken');
+    if (token) {
+      const parsedToken = JSON.parse(token);
+      headers.set('authorization', `Bearer ${parsedToken}`);
+    } else {
+      console.log("🚀 ~ No access token found, trying refresh token...");
     }
+
     return headers;
   },
 });
@@ -27,24 +32,52 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   BaseQueryApi,
   DefinitionType
 > = async (args, api, extraOptions): Promise<any> => {
+  // Make the initial request
   let result = await baseQuery(args, api, extraOptions);
-  if (result?.error?.data?.code === 401 || result?.code === 403) {
-    //* Send Refresh
-    const tokens: any = JSON.parse(Cookies.get('refreshToken'));
-    const res = await fetch(`${API_ENDPOINT}auth/refresh-tokens`, {
+  // If we get a 403 (accessToken expired or unauthorized), attempt to refresh
+  if (result?.error?.status === 403) {
+    // Try to get the refreshToken from cookies
+    let refreshToken;
+    try {
+      const refreshTokenString = Cookies.get('refreshToken');
+      if (refreshTokenString) {
+        refreshToken = JSON.parse(refreshTokenString);
+      } else {
+        refreshToken = null;
+      }
+    } catch (error) {
+      refreshToken = null;
+    }
+
+    // If the refreshToken is not available, log out the user
+    if (!refreshToken?.token) {
+      Cookies.remove('userData');
+      Cookies.remove('accessToken');
+      Cookies.remove('refreshToken');
+      return { error: { status: 403, message: 'Logged out due to missing refresh token' } };
+    }
+
+    // If refreshToken is available, request a new accessToken
+    const refreshResponse = await fetch(`${API_ENDPOINT}auth/refresh-tokens`, {
       method: 'POST',
-      body: JSON.stringify({ refreshToken: tokens?.token }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refreshToken: refreshToken.token }),
     });
 
-    const data = await res.json();
+    const refreshData = await refreshResponse.json();
+    if (refreshData?.access?.token) {
+      // Store the new access token in cookies
+      Cookies.set('accessToken', JSON.stringify(refreshData.access.token));
 
-    if (data) {
-      Cookies.set('accessToken', JSON.stringify(data?.tokens?.access?.token));
-      Cookies.set('refreshToken', JSON.stringify(data?.tokens?.refresh?.token));
-      // Retry the original request
+      // Retry the original request with the new access token
       result = await baseQuery(args, api, extraOptions);
     } else {
-      console.log('Here is need to logout')
+      Cookies.remove('userData');
+      Cookies.remove('accessToken');
+      Cookies.remove('refreshToken');
+      return { error: { status: 403, message: 'Failed to refresh token, logged out' } };
     }
   }
 
@@ -54,6 +87,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: 'baseApi',
   baseQuery: baseQueryWithRefreshToken,
-  tagTypes: ['shoot', 'metting', 'chat'],
+  tagTypes: ['shoot', 'meeting', 'chat'],
   endpoints: () => ({}),
 });

@@ -50,7 +50,7 @@ interface FormData {
 const BookNow = () => {
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
-  const { userData ,authPermissions} = useAuth();
+  const { userData, authPermissions } = useAuth();
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
@@ -101,7 +101,7 @@ const BookNow = () => {
   useEffect(() => {
     dispatch(setPageTitle('Manager Dashboard'));
     localStorage.removeItem('location');
-    if(!(authPermissions?.includes('booking_page'))){
+    if (!(authPermissions?.includes('booking_page'))) {
       router.push('/errors/access-denied')
     }
   }, []);
@@ -191,47 +191,6 @@ const BookNow = () => {
       }
     }, 0);
   };
-
-  // const handleBack = () => {
-  //   setActiveTab(prev => {
-  //     const newTab = prev === 3 ? 2 : 1;
-  //     // console.log('Updating tab to:', newTab);
-
-  //     setTimeout(() => {
-  //       if (startDateTimeRef.current) {
-  //         flatpickr(startDateTimeRef.current, {
-  //           altInput: true,
-  //           altFormat: 'F j, Y h:i K',
-  //           dateFormat: 'Y-m-d H:i',
-  //           enableTime: true,
-  //           time_24hr: false,
-  //           minDate: 'today',
-  //           onChange: (selectedDates, dateStr) => {
-  //             // Handle date change
-  //             handleChangeStartDateTime(dateStr);
-  //           },
-  //         });
-  //       }
-
-  //       if (endDateTimeRef.current) {
-  //         flatpickr(endDateTimeRef.current, {
-  //           altInput: true,
-  //           altFormat: 'F j, Y h:i K',
-  //           dateFormat: 'Y-m-d H:i',
-  //           enableTime: true,
-  //           time_24hr: false,
-  //           minDate: 'today',
-  //           onChange: (selectedDates, dateStr) => {
-  //             // Handle date change
-  //             handleChangeEndDateTime(dateStr);
-  //           },
-  //         });
-  //       }
-  //     }, 0);
-
-  //     return newTab;
-  //   });
-  // };
 
   useEffect(() => {
     if (startDateTimeRef.current) {
@@ -607,7 +566,6 @@ const BookNow = () => {
             requestBody: formattedData,
             id: orderId,
           });
-          console.log('🚀 ~ onSubmit ~ updateRes:', updateRes);
 
           if (updateRes?.data) {
             toast.success('Shoot has been created successfully');
@@ -1108,16 +1066,21 @@ const BookNow = () => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="mt-[30px] flex justify-center gap-3">
+                                <div className="mt-[30px] flex justify-center  gap-3">
                                   <Link href={`cp/${cp?.userId?._id}`}>
-                                    <p className=" inline-block cursor-pointer rounded-[10px] bg-black px-[12px] md:px-[20px] py-[8px] md:py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                    {/* class="w-32 h-9  cursor-pointer rounded-[8px] bg-black text-center  font-sans text-[14px] md:text-[16px] font-medium capitalize  text-white" */}
+                                    {/* <p className="w-32 h-9 inline-block cursor-pointer rounded-[8px] bg-black px-[10px] text-center md:px-[14px] font-sans text-[14px] md:text-[16px] font-medium capitalize leading-none text-white"> */}
+
+                                    <p className="w-32 h-9 flex items-center justify-center cursor-pointer rounded-[8px] bg-black text-center  font-sans text-[14px] md:text-[16px] font-medium capitalize  text-white">
                                       view profile
                                     </p>
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                      } px-[12px] md:px-[20px] py-[8px] md:py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    // className={`w-32 h-9 text-center  cursor-pointer rounded-[8px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                    //   } px-[10px] md:px-[14px] font-sans text-[14px] md:text-[16ox] font-medium capitalize leading-none`}
+                                    className={`w-32 h-9 text-center cursor-pointer rounded-[8px]  border border-solid  ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } font-sans text-[14px] md:text-[16ox] font-medium capitalize flex justify-center items-center`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1319,8 +1282,8 @@ const BookNow = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 
