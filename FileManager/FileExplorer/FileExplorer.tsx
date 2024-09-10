@@ -286,12 +286,15 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           <span className="ml-2 text-lg font-normal text-gray-900">Ignore Folder Structure</span>
         </label> */}
 
-        <div className="mb-0 flex cursor-pointer items-center gap-2 px-4 text-lg" onClick={getFiles}>
-          <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
-          Refresh
+        <div className="mb-0 flex cursor-pointer items-center gap-3 px-4 text-lg" onClick={getFiles}>
+
           <div className={`hidden md:block`}>
             <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
           </div>
+          <span className='flex gap-2 items-center border border-[#ddd] bg-[#000] px-6 py-1 rounded-md'>
+            <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
+            Refresh
+          </span>
         </div>
 
         {/* Menu for mobile devices */}

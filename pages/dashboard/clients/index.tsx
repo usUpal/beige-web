@@ -289,12 +289,13 @@ const Users = () => {
                             <tr key={userClient.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                               <td className="min-w-[150px] font-sans text-black dark:text-white">
                                 <div className="flex items-center">
-                                  <p className="whitespace-nowrap">{userClient?.id}</p>
+                                  {/* whitespace-nowrap */}
+                                  <p className="break-all">{userClient?.id}</p>
                                 </div>
                               </td>
 
                               <td>{userClient?.name}</td>
-                              <td>{userClient?.email}</td>
+                              <td className='break-all min-w-[150px]'>{userClient?.email}</td>
 
                               <td className="font-sans text-success">{userClient?.role}</td>
 

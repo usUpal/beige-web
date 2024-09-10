@@ -8,7 +8,7 @@ const Menu = ({ setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen, path }
 
   return (
     <div className="flex items-start justify-between">
-      <div className="mr-48 flex items-center justify-between gap-6">
+      <div className="mr-48 flex items-center justify-between gap-3">
         {path.length > 0 && (userData?.role !== 'admin' || userData?.role !== 'post_production_manager' || userData?.role !== 'user') && (
           <>
             <h6 className="text-md flex items-center gap-2 rounded-md px-2 py-1" style={{ backgroundColor: '#93c5fd' }} onClick={() => setFileUploadOpen(true)}>
