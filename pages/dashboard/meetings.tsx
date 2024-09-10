@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -147,19 +148,28 @@ const Meeting = () => {
                       <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                         <td className=" min-w-[150px] text-black dark:text-white">
                           <div className="flex items-center">
-                            <p className="whitespace-nowrap break-words">{(meeting?.order?.name).length > 10 ? meeting?.order?.name : 'less than 10 character'}</p>
+                            <p className="">
+                              {
+                                truncateLongText(meeting?.order?.name, 30)
+                              }
+                            </p>
+
                           </div>
                         </td>
 
                         <td>
-                          <span className="ps-2">{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
-                          <span className="ps-2"> {makeDateFormat(meeting?.meeting_date_time)?.time}</span>
+                          <span className="">{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
+                          <span className=""> {makeDateFormat(meeting?.meeting_date_time)?.time}</span>
                         </td>
 
                         <td>
-                          <p className="whitespace-nowrap">
+                          <p className="">
                             {meeting?.client?.name} with
-                            <span className="ps-1">{meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}</span>
+                            <span className="ps-1"> {
+                              truncateLongText((meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name), 40)
+                            }
+                              {/* {meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}12345678901234567890 */}
+                            </span>
                           </p>
                         </td>
 
@@ -198,7 +208,7 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setMeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24 w-4/5 md:w-2/5 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+              <Dialog.Panel as="div" className="panel my-32 w-4/5 md:w-4/5 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                   <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setMeetingModal(false)}>
@@ -207,9 +217,6 @@ const Meeting = () => {
                 </div>
 
                 <div className="basis-[100%]">
-                  {/* <h2 className=" text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">
-                    Meeting with <span className="capitalize text-[#ACA686]">{meetingInfo?.client?.name}</span>
-                  </h2> */}
 
                   <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  w-full justify-between space-y-6 pb-6 `}>
                     <div className="leftdata">
@@ -260,7 +267,7 @@ const Meeting = () => {
                               <div className="flex flex-col">
                                 <Flatpickr
                                   id="meeting_time"
-                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white px-[15px] py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
+                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white  py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
                                   value={metingDate}
                                   placeholder="Meeting time ..."
                                   options={{
