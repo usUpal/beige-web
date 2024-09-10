@@ -31,11 +31,23 @@ const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer, // Add the RTK Query API reducer
 });
 
-const errorHandlerMiddleware = ({ dispatch }) => (next) => (action) => {
-  if (action.payload && action.payload.status === 403) {
-    window.location.href = '/errors/access-denied';
-    return;
+// const errorHandlerMiddleware = ({ dispatch }) => (next) => (action) => {
+//   if (action.payload && action.payload.status === 401) {
+//     window.location.href = '/errors/access-denied';
+//     return;
+//   }
+//   return next(action);
+// };
+
+export const redirectMiddleware = (storeAPI) => (next) => (action) => {
+  if (action.type.endsWith('/rejected')) {
+    const { error } = action.payload || {};
+    if (error?.status === 401) {
+      // Assuming we are using window.location for redirection
+      window.location.href = '/access-denied';
+    }
   }
+
   return next(action);
 };
 
@@ -50,7 +62,7 @@ export const store = configureStore({
       },
     })
       .concat(baseApi.middleware) // Add RTK Query middleware
-      .concat(errorHandlerMiddleware), // Add your custom middleware at the end
+      .concat(redirectMiddleware), // Add your custom middleware at the end
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

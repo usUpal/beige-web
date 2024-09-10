@@ -192,47 +192,6 @@ const BookNow = () => {
     }, 0);
   };
 
-  // const handleBack = () => {
-  //   setActiveTab(prev => {
-  //     const newTab = prev === 3 ? 2 : 1;
-  //     // console.log('Updating tab to:', newTab);
-
-  //     setTimeout(() => {
-  //       if (startDateTimeRef.current) {
-  //         flatpickr(startDateTimeRef.current, {
-  //           altInput: true,
-  //           altFormat: 'F j, Y h:i K',
-  //           dateFormat: 'Y-m-d H:i',
-  //           enableTime: true,
-  //           time_24hr: false,
-  //           minDate: 'today',
-  //           onChange: (selectedDates, dateStr) => {
-  //             // Handle date change
-  //             handleChangeStartDateTime(dateStr);
-  //           },
-  //         });
-  //       }
-
-  //       if (endDateTimeRef.current) {
-  //         flatpickr(endDateTimeRef.current, {
-  //           altInput: true,
-  //           altFormat: 'F j, Y h:i K',
-  //           dateFormat: 'Y-m-d H:i',
-  //           enableTime: true,
-  //           time_24hr: false,
-  //           minDate: 'today',
-  //           onChange: (selectedDates, dateStr) => {
-  //             // Handle date change
-  //             handleChangeEndDateTime(dateStr);
-  //           },
-  //         });
-  //       }
-  //     }, 0);
-
-  //     return newTab;
-  //   });
-  // };
-
   useEffect(() => {
     if (startDateTimeRef.current) {
       flatpickr(startDateTimeRef.current, {
@@ -607,7 +566,6 @@ const BookNow = () => {
             requestBody: formattedData,
             id: orderId,
           });
-          console.log('🚀 ~ onSubmit ~ updateRes:', updateRes);
 
           if (updateRes?.data) {
             toast.success('Shoot has been created successfully');

@@ -66,10 +66,9 @@ const Auth = () => {
           expires: 7,
         });
 
-
         //Store access token to the cookie storage
         Cookies.set('accessToken', JSON.stringify(accessToken), {
-          expires: 7,
+          expires: new Date(accessToken?.expires),
         });
 
         //Store refresh token to the cookie storage
