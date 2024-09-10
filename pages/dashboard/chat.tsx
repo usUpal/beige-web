@@ -207,9 +207,9 @@ const Chat = () => {
   const allChatParticipants = [
     selectedChatRoom?.client_id
       ? {
-          ...selectedChatRoom.client_id,
-          type: 'client',
-        }
+        ...selectedChatRoom.client_id,
+        type: 'client',
+      }
       : null,
 
     ...(selectedChatRoom?.cp_ids || []).map((cp) => ({
@@ -284,13 +284,15 @@ const Chat = () => {
             </svg>
           </div>
         </div>
-        {/* add participant button for sm devices */}
+        {/* add- participant button for sm devices */}
         <div className="block text-center md:hidden">
           {!isAddParticipant && (userRole === 'manager' || userRole === 'admin') && (
             <>
-              <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px]'}>
-                Add Participant
-              </DefaultButton>
+              <div className='block md:hidden'>
+                <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px]'}>
+                  Add Participant
+                </DefaultButton>
+              </div>
             </>
           )}
         </div>
@@ -298,12 +300,11 @@ const Chat = () => {
           <PerfectScrollbar className="chat-users relative h-full min-h-full space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
             {data?.results?.map((chat: any) => {
               return (
-                <div key={chat.id} className="mb-10">
+                <div key={chat.id} className="">
                   <button
                     type="button"
-                    className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${
-                      selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
-                    }`}
+                    className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
+                      }`}
                     onClick={() => selectUser(chat)}
                   >
                     <div className="flex-1">
@@ -332,7 +333,7 @@ const Chat = () => {
             total={totalPagesCount}
             onPageChange={handlePageChange}
             maxWidth={400}
-            // styles={styles}
+          // styles={styles}
           />
         </div>
       </div>
@@ -497,9 +498,11 @@ const Chat = () => {
                         {!isAddParticipant && (userRole === 'admin' || userRole === 'admin') && (
                           <>
                             {/* {authPermissions?.includes('chat_add_participant') && ( */}
-                            <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px]'}>
-                              Add Participant
-                            </DefaultButton>
+                            <div className='hidden md:block'>
+                              <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px]'}>
+                                Add Participant
+                              </DefaultButton>
+                            </div>
                             {/* )} */}
                           </>
                         )}
@@ -525,7 +528,7 @@ const Chat = () => {
                                   {clients.length <= 0 && (
                                     <div
                                       className="absolute top-1/2 -translate-y-1/2  cursor-pointer ltr:right-2 rtl:left-2"
-                                      // onClick={handleSearchParticipants}
+                                    // onClick={handleSearchParticipants}
                                     >
                                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5"></circle>
@@ -629,16 +632,15 @@ const Chat = () => {
                                 ? message?.senderName == 'Admin User'
                                   ? createImageByName('MA')
                                   : message?.senderName == 'User'
-                                  ? createImageByName('A')
-                                  : createImageByName('CP')
+                                    ? createImageByName('A')
+                                    : createImageByName('CP')
                                 : ''}
                             </div>
                             <div className="">
                               <div className="flex items-center gap-3">
                                 <div
-                                  className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${
-                                    message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
-                                  }`}
+                                  className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
+                                    }`}
                                 >
                                   {message?.message}
                                 </div>
@@ -692,7 +694,7 @@ const Chat = () => {
         )}
       </div>
       {threeDotSidebar && (
-        <div className={`panel absolute z-10  my-24 w-full max-w-xs flex-none overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+        <div className={`panel absolute z-10  my-24 md:my-0 md:space-y-4 w-full max-w-xs flex-none overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
           <div className="mt-1 flex w-full justify-end gap-3 sm:gap-5">
             <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
               <div className="ml-2 mt-1">
@@ -714,9 +716,8 @@ const Chat = () => {
               <li className="me-2">
                 <button
                   onClick={() => setActiveTab('1')}
-                  className={`inline-block rounded-t-lg p-4 ${
-                    activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                  }`}
+                  className={`inline-block rounded-t-lg p-4 ${activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                 >
                   Participant
                 </button>
@@ -724,9 +725,8 @@ const Chat = () => {
               <li className="me-2">
                 <button
                   onClick={() => setActiveTab('2')}
-                  className={`inline-block rounded-t-lg p-4 ${
-                    activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                  }`}
+                  className={`inline-block rounded-t-lg p-4 ${activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                 >
                   Files
                 </button>
