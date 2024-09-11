@@ -12,13 +12,15 @@ const userApi = baseApi.injectEndpoints({
     getAllUser: builder.query({
       query: (args) => {
         const roleParam = args?.role ? `&role=${args.role}` : '';
-        const url = `users?limit=10&page=${args?.page}${roleParam}`;
+        const searchParam = args?.search ? `&search=${encodeURIComponent(args.search)}` : '';
+        const url = `users?limit=10&page=${args?.page || 1}${roleParam}${searchParam}`;
         return {
           url,
-          method: "GET",
+          method: 'GET',
         };
-      }
+      },
     }),
+
 
     getUserDetails: builder.query({
       query: (data) => {
@@ -48,4 +50,4 @@ const userApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetAllCpQuery, useGetAllCpsQuery, useGetAllUserQuery, useLazyGetUserDetailsQuery, useLazyGetCpDetailsQuery, useUpdateCpByIdMutation } = userApi;
+export const { useGetAllCpQuery, useGetAllUserQuery, useLazyGetUserDetailsQuery, useLazyGetCpDetailsQuery, useUpdateCpByIdMutation } = userApi;

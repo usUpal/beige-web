@@ -3,7 +3,6 @@
 import OrderApi from '@/Api/OrderApi';
 import Map from '@/components/Map';
 import Loader from '@/components/SharedComponent/Loader';
-import useAddons from '@/hooks/useAddons';
 import useAllCp from '@/hooks/useAllCp';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation';
@@ -30,6 +29,8 @@ import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/
 import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { useRouter } from 'next/router';
+import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
+import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 
 interface FormData {
   content_type: string;
@@ -48,12 +49,15 @@ interface FormData {
   vst: string;
 }
 const BookNow = () => {
-  const [addonsData] = useAddons();
-  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
+  const { data: addonsData } = useGetAllAddonsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [query, setQuery] = useAllCp();
   const { userData, authPermissions } = useAuth();
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
+  const [currentPage, setCurrentPage] = useState<any>(1);
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
   const [dateTimes, setDateTimes] = useState<FormData[]>([]);
@@ -533,12 +537,14 @@ const BookNow = () => {
         if (Object.keys(formattedData).length > 0) {
           setIsLoading(true);
           setFormDataPageOne(formattedData);
-          const result = await postOrder(formattedData);
-          const res = await getAlgoCp(result?.data?.id);
-          if (res?.isSuccess) {
-            setActiveTab(activeTab === 1 ? 2 : 3);
-            setOrderId(result?.data?.id);
-            setIsLoading(false);
+          if (activeTab === 1) {
+            const result = await postOrder(formattedData);
+            const res = await getAlgoCp(result?.data?.id);
+            if (res?.isSuccess) {
+              setActiveTab(activeTab === 1 ? 2 : 3);
+              setOrderId(result?.data?.id);
+              setIsLoading(false);
+            }
           }
         } else {
           return false;
@@ -588,30 +594,21 @@ const BookNow = () => {
   };
   const contentTypes = watch('content_type', []);
   const contentVertical = watch('content_vertical');
-  //
-  // const handleClientChange = (event) => {
-  //   const selectedOption = event.target.options[event.target.selectedIndex];
-  //   setClient_id(selectedOption.value);
-  //   setClientName(selectedOption.getAttribute('data-name'));
-  // };
+
+  const searchQuer = {
+    role: 'user',
+    search: clientName,
+  };
+
+  const { data } = useGetAllUserQuery(searchQuer, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const getAllClients = async () => {
     setIsClientLoading(true);
-    try {
-      let res;
-      if (clientName) {
-        res = await fetch(`${API_ENDPOINT}users?role=user&search=${clientName}`);
-      } else {
-        res = await fetch(`${API_ENDPOINT}users?role=user`);
-      }
-      const users = await res.json();
-      setClients(users?.results || []);
-      setShowClientDropdown(true);
-      setIsClientLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsClientLoading(false);
-    }
+    setClients(data?.results || []);
+    setShowClientDropdown(true);
+    setIsClientLoading(false);
   };
 
   const handleClientChange = (client) => {
