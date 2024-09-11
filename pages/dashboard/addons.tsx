@@ -3,42 +3,17 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import Link from 'next/link';
 import { Dialog, Tab, Transition } from '@headlessui/react';
-import { API_ENDPOINT } from '@/config';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useForm } from 'react-hook-form';
-import useAddons from '@/hooks/useAddons';
 import { useAuth } from '@/contexts/authContext';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useGetAllAddonsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation } from '@/Redux/features/addons/addonsApi';
+import { useAddNewAddOnMutation, useGetAllAddonsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation } from '@/Redux/features/addons/addonsApi';
+import { toast } from 'react-toastify';
 
 const Addons = () => {
   const { authPermissions } = useAuth();
   const [addonsCategories, setAddonsCategories] = useState([]);
-
-  const { data: addonsData, refetch } = useGetAllAddonsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
-
-  const [getAddonsDetails, { data: addonsDetails, isLoading: getAddonsDetailsLoading }] = useLazyGetAddonsDetailsQuery();
-  console.log("🚀 ~ Addons ~ addonsDetails:", addonsDetails)
-
-
-  const [updateAddon, { isLoading: useUpdateAddonLoading }] = useUpdateAddonMutation();
-
-  useEffect(() => {
-    if (addonsData) {
-      const uniqueCategories = addonsData
-        ?.map((addon: any) => addon.category)
-        ?.filter(
-          (category: string, index: any, array: any) =>
-            array.indexOf(category) === index
-        );
-      setAddonsCategories(uniqueCategories);
-    }
-  }, [addonsData]);
-
   const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
   const [addonsModal, setAddonsModal] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -58,6 +33,22 @@ const Addons = () => {
   // setAddonsAddBtnModal
   const [addonsAddBtnModal, setAddonsAddBtnModal] = useState(false);
 
+  const { data: addonsData, refetch } = useGetAllAddonsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const [getAddonsDetails, { data: addonsDetails, isLoading: getAddonsDetailsLoading }] = useLazyGetAddonsDetailsQuery();
+
+  const [updateAddon, { isLoading: useUpdateAddonLoading, isSuccess: isSuccessUpdateAddOn }] = useUpdateAddonMutation();
+  const [addNewAddOn, { isLoading: useAddNewAddOnLoading, isSuccess: isSuccessAddNewAddOn }] = useAddNewAddOnMutation();
+
+  useEffect(() => {
+    if (addonsData) {
+      const uniqueCategories = addonsData?.map((addon: any) => addon.category)?.filter((category: string, index: any, array: any) => array.indexOf(category) === index);
+      setAddonsCategories(uniqueCategories);
+    }
+  }, [addonsData]);
+
   // add category to the allcategory
   const handleAddCategory = () => {
     if (newCategory.trim() !== '') {
@@ -67,30 +58,13 @@ const Addons = () => {
     showDesignElement.showNewCategoryInput = false;
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await fetch(`${API_ENDPOINT}addOns`);
-  //       if (!res.ok) {
-  //         throw new Error(`Error: ${res.status}`);
-  //       }
-  //       const jsonData = await res.json();
-  //       setAddonsData(jsonData);
-  //     } catch (error) {
-  //       console.error(`Error fetching data`);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
   // theme functionality
   useEffect(() => {
-    dispatch(setPageTitle('Pricing Calculator - Client Web App - Beige'));
+    dispatch(setPageTitle('AddOn - Beige'));
   });
 
   const getDetails = async (addon: any) => {
-    const data = await getAddonsDetails(addon?._id)
+    const data = await getAddonsDetails(addon?._id);
     setAddonsModal(!addonsModal);
     setAddonsInfo(data?.data);
   };
@@ -102,8 +76,7 @@ const Addons = () => {
     });
   };
 
-
-  const handleUpdateTestSubmit = async (data: any) => {
+  const handleUpdateAddOns = async (data: any) => {
     const updatedAddonDetails = {
       title: addonsInfo?.title || data?.title,
       rate: addonsInfo?.rate || data?.rate,
@@ -115,58 +88,24 @@ const Addons = () => {
     const requestBody: any = {
       formData: updatedAddonDetails,
       id: addonsInfo?._id,
-    }
+    };
     const res = await updateAddon(requestBody);
-    refetch();
-    setAddonsModal(false);
-
-    // try {
-
-
-    //   const patchResponse = await fetch(`${API_ENDPOINT}addons/${addonsInfo?._id}`, {
-    //     method: 'PATCH',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(updatedAddonDetails),
-    //   });
-
-    //   if (!patchResponse.ok) {
-    //     throw new Error('Failed to update addon');
-    //   }
-
-    //   const updatedAddon = await patchResponse.json();
-
-    //   const updatedAddonsData = addonsData.map((addon: any) =>
-    //     addon._id === addonsInfo?._id ? updatedAddon : addon
-    //   );
-    //   // setAddonsData(updatedAddonsData);
-
-
-    //   setAddonsModal(false);
-    //   toast.success('Addon updated successfully!', {
-    //     position: "top-right",
-    //     autoClose: 3000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //   });
-    // } catch (error) {
-    //   console.error('Update error:', error);
-    //   toast.error('Failed to update addon. Please try again.', {
-    //     position: "top-right",
-    //     autoClose: 3000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //   });
-    // }
+    if (isSuccessUpdateAddOn) {
+      refetch();
+      setAddonsModal(false);
+      toast.success('Addon updated successfully!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   // add- new addons
-  const handleFormSubmit = async (data: any) => {
+  const handlePostAddOn = async (data: any) => {
     const newAddonsData = {
       title: data?.title,
       category: data?.category,
@@ -176,34 +115,39 @@ const Addons = () => {
       status: data?.status || false,
     };
     try {
-      setLoading(true);
-      const response = await fetch(`${API_ENDPOINT}addons`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newAddonsData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Response: Failed to add new addon.');
+      // Wait for the mutation to complete
+      const response = await addNewAddOn(newAddonsData);
+      // Check if the mutation was successful
+      if (isSuccessAddNewAddOn) {
+        refetch(); // Trigger refetch if required
+        setAddonsAddBtnModal(false);
+        toast.success('Addon added successfully!', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        reset(); // Reset form if necessary
+      } else {
+        toast.error('Failed to add addon!', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
-      const responseData = await response.json();
-
-      addonsData.push(newAddonsData);
     } catch (error) {
-      setLoading(false);
-      console.error('Error submitting form:', error);
-    } finally {
-      setLoading(false);
-      setAddonsAddBtnModal(false);
-      reset();
+      toast.error('Failed to add addon!');
     }
   };
 
   return (
     <div>
-      <div className='flex justify-between items-center'>
+      <div className="flex items-center justify-between">
         <ul className="flex space-x-2 rtl:space-x-reverse">
           <li>
             <Link href="/" className="text-warning hover:underline">
@@ -216,10 +160,11 @@ const Addons = () => {
         </ul>
         <div>
           {/* <button className='custom-button' onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}>Add New</button> */}
-          <DefaultButton onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)} css=''>Add New</DefaultButton>
+          <DefaultButton onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)} css="">
+            Add New
+          </DefaultButton>
         </div>
       </div>
-
 
       <div className="mb-5 ">
         {authPermissions?.includes('new_add_ons') && (
@@ -236,13 +181,14 @@ const Addons = () => {
           <div className="my-5 flex flex-col sm:flex-row">
             <Tab.Group>
               <div className="mx-3 mb-5 sm:mb-0">
-                <Tab.List className="mb-5 flex-row flex overflow-hidden overflow-x-auto  sm:flex-col sm:flex gap-2">
+                <Tab.List className="mb-5 flex flex-row gap-2 overflow-hidden  overflow-x-auto sm:flex sm:flex-col">
                   {addonsCategories.map((category: any, index: any) => (
                     <Tab key={index}>
                       {({ selected }) => (
                         <button
-                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${selected ? 'bg-success text-white outline-none' : ''
-                            }`}
+                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${
+                            selected ? 'bg-success text-white outline-none' : ''
+                          }`}
                           title={category}
                         >
                           {category}
@@ -267,9 +213,7 @@ const Addons = () => {
                                 <th className="">Extend Rate Type</th>
                                 <th className="">Extend Rate</th>
                                 <th className="">Status</th>
-                                {authPermissions?.includes('add_ons_edit') && (
-                                  <th className="">Edit</th>
-                                )}
+                                {authPermissions?.includes('add_ons_edit') && <th className="">Edit</th>}
                               </tr>
                             </thead>
 
@@ -332,7 +276,7 @@ const Addons = () => {
         <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-24   overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 w-[80%] md:px-0">
+              <Dialog.Panel as="div" className="panel my-24   w-[80%] overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 md:px-0">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
                   <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
 
@@ -341,22 +285,22 @@ const Addons = () => {
                   </button>
                 </div>
 
-                <div className="w-full ml-0 px-7 pt-2 pb-4">
+                <div className="ml-0 w-full px-7 pb-4 pt-2">
                   <div className={`w-full justify-between `}>
-                    <div className=" dark:text-white  w-full">
-                      <div className="flex flex-col md:flex md:flex-row md:justify-between w-full gap-3">
-                        <p className="flex flex-col w-full">
-                          <span className="text-[14px]  capitalize leading-none text-[#000000] mb-2 font-bold">Title</span>
+                    <div className=" w-full  dark:text-white">
+                      <div className="flex w-full flex-col gap-3 md:flex md:flex-row md:justify-between">
+                        <p className="flex w-full flex-col">
+                          <span className="mb-2  text-[14px] font-bold capitalize leading-none text-[#000000]">Title</span>
                           <input
                             {...register('title')}
                             onChange={(e) => handleInputChange('title', e.target.value)}
                             value={addonsInfo?.title || ''}
-                            className=" h-9  rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0  w-full"
+                            className=" h-9  w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none  md:ms-0"
                           />
                         </p>
 
                         <div className="mt-3 flex w-full flex-col md:mt-0">
-                          <span className="text-[14px]  capitalize leading-none text-[#000000] mb-2 font-bold">Status</span>
+                          <span className="mb-2  text-[14px] font-bold capitalize leading-none text-[#000000]">Status</span>
                           <select
                             {...register('status')}
                             className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
@@ -369,10 +313,10 @@ const Addons = () => {
                         </div>
                       </div>
 
-                      <div className="flex flex-col justify-between md:mt-3 md:flex md:flex-row w-full gap-4" >
+                      <div className="flex w-full flex-col justify-between gap-4 md:mt-3 md:flex md:flex-row">
                         {addonsInfo?.ExtendRate && (
-                          <div className="mt-3 flex flex-col md:mt-0 w-full">
-                            <span className="text-[14px] font-bold pb-2 capitalize leading-none text-[#000000]">Extend Rate</span>
+                          <div className="mt-3 flex w-full flex-col md:mt-0">
+                            <span className="pb-2 text-[14px] font-bold capitalize leading-none text-[#000000]">Extend Rate</span>
                             <input
                               {...register('ExtendRate')}
                               onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
@@ -383,8 +327,8 @@ const Addons = () => {
                         )}
 
                         {addonsInfo?.ExtendRateType && (
-                          <p className="mt-3 flex flex-col md:mt-0 w-full">
-                            <span className="text-[14px] font-bold pb-2 capitalize leading-none text-[#000000]">Extend Rate Type</span>
+                          <p className="mt-3 flex w-full flex-col md:mt-0">
+                            <span className="pb-2 text-[14px] font-bold capitalize leading-none text-[#000000]">Extend Rate Type</span>
                             <select
                               {...register('ExtendRateType')}
                               className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
@@ -406,8 +350,8 @@ const Addons = () => {
                       </div>
 
                       <div className="mt-3 flex flex-col justify-between md:flex md:flex-row">
-                        <div className="mt-3 flex flex-col md:mt-0 w-full">
-                          <span className="text-[14px] font-bold capitalize leading-none text-[#000000] mb-2">Rate</span>
+                        <div className="mt-3 flex w-full flex-col md:mt-0">
+                          <span className="mb-2 text-[14px] font-bold capitalize leading-none text-[#000000]">Rate</span>
                           <input
                             {...register('rate')}
                             onChange={(e) => handleInputChange('rate', e.target.value)}
@@ -421,7 +365,9 @@ const Addons = () => {
                         <DefaultButton css='' onClick={handleUpdateTestSubmit}>Update</DefaultButton>
                       </div> */}
                       <div className="mt-8 flex justify-end md:mt-8">
-                        <DefaultButton onClick={handleUpdateTestSubmit} type='submit'>Update</DefaultButton>
+                        <DefaultButton onClick={handleUpdateAddOns} type="submit">
+                          {useUpdateAddonLoading ? 'Updating...' : 'Update'}
+                        </DefaultButton>
                       </div>
                     </div>
                   </div>
@@ -448,7 +394,7 @@ const Addons = () => {
                   </button>
                 </div>
 
-                <div className="mx-auto px-5 w-full">
+                <div className="mx-auto w-full px-5">
                   <p className="my-1 mt-1 flex justify-start text-[12px] ">
                     {showDesignElement.showNewCategoryInput ? (
                       <>
@@ -485,7 +431,7 @@ const Addons = () => {
                     )}
                   </p>
                   {/* add addons form */}
-                  <form className="w-full space-y-2 pb-5 dark:text-white" onSubmit={handleSubmit(handleFormSubmit)}>
+                  <form className="w-full space-y-2 pb-5 dark:text-white" onSubmit={handleSubmit(handlePostAddOn)}>
                     {!showDesignElement.showNewCategoryInput && (
                       <div className="rounded">
                         <label htmlFor="category" className="mb-1 text-[#0E1726]">
@@ -494,7 +440,7 @@ const Addons = () => {
                         <select
                           {...register('category', { required: 'Please Select a Category' })}
                           id="category"
-                          className="md:w-80  w-full form-input  ps-3 capitalize placeholder:text-white-dark focus:border-[#E7D4BC]"
+                          className="form-input  w-full ps-3  capitalize placeholder:text-white-dark focus:border-[#E7D4BC] md:w-80"
                         >
                           <option className=" capitalize text-primary" value="">
                             select form here
@@ -531,7 +477,7 @@ const Addons = () => {
                     </div>
 
                     <div className="flex flex-col items-center justify-between md:flex-row md:gap-3">
-                      <div className='w-full'>
+                      <div className="w-full">
                         <label htmlFor="title" className="mb-1 text-[#0E1726]">
                           Title
                         </label>
@@ -547,7 +493,7 @@ const Addons = () => {
                         </div>
                       </div>
 
-                      <div className='w-full'>
+                      <div className="w-full">
                         <label htmlFor="Rate" className="mb-[1px] text-[#0E1726]">
                           Rate
                         </label>
@@ -558,7 +504,7 @@ const Addons = () => {
                     </div>
 
                     <div className="flex flex-col items-center justify-between md:flex-row md:gap-3">
-                      <div className='w-full'>
+                      <div className="w-full">
                         <label htmlFor="ExtendRate" className="mb-1 text-[#0E1726]">
                           Extend Rate
                         </label>
@@ -573,7 +519,7 @@ const Addons = () => {
                         </div>
                       </div>
 
-                      <div className='w-full'>
+                      <div className="w-full">
                         <label htmlFor="ExtendRateType" className="mb-1 text-[#0E1726] ">
                           Extend Rate Type
                         </label>
@@ -586,22 +532,16 @@ const Addons = () => {
                     </div>
 
                     <div className="flex flex-col items-center justify-between md:flex-row md:gap-3">
-                      <div className='w-full'>
+                      <div className="w-full">
                         <label htmlFor="info" className="text-[#0E1726]">
                           Info (optional)
                         </label>
                         <div className="relative text-white-dark">
-                          <input
-                            {...register('info')}
-                            id="info"
-                            type="text"
-                            placeholder="Enter AddOns Info"
-                            className="form-input w-full ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]"
-                          />
+                          <input {...register('info')} id="info" type="text" placeholder="Enter AddOns Info" className="form-input w-full ps-3 placeholder:text-white-dark focus:border-[#E7D4BC]" />
                         </div>
                       </div>
 
-                      <div className='w-full'>
+                      <div className="w-full">
                         <label htmlFor="status" className="mb-1 text-[#0E1726] ">
                           Status
                         </label>
@@ -626,15 +566,7 @@ const Addons = () => {
                           'Add Addons'
                         )}
                       </button> */}
-                      <DefaultButton css='font-semibold mt-3'>
-                        {isLoading ? (
-                          <span role="status" className="flex h-5 items-center space-x-2">
-                            Loading...
-                          </span>
-                        ) : (
-                          'Add Addons'
-                        )}
-                      </DefaultButton>
+                      <DefaultButton css="font-semibold mt-3">{useAddNewAddOnLoading ? 'Adding...' : 'Add Addons'}</DefaultButton>
                     </div>
                   </form>
                 </div>
