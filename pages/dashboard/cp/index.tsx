@@ -1,134 +1,33 @@
-import { API_ENDPOINT } from '@/config';
+import { useAuth } from '@/contexts/authContext';
+import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import Swal from 'sweetalert2';
+import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import StatusBg from '@/components/Status/StatusBg';
-import { useRouter } from 'next/router';
-import ResponsivePagination from 'react-responsive-pagination';
-import { useAuth } from '@/contexts/authContext';
 
 const CpUsers = () => {
-  const [isMounted, setIsMounted] = useState(false);
-  const [userModal, setUserModal] = useState(false);
-  const [allCpUsers, setAllCpUsers] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
-  const [isLoading, setLoading] = useState<boolean>(true);
-  const [showError, setShowError] = useState<boolean>(false);
-  const [userInfo, setUserInfo] = useState<any | null>(null);
-  const [formData, setFormData] = useState<any>({});
   const { authPermissions } = useAuth();
-  useEffect(() => {
-    getAllCpUsers();
-  }, [currentPage]);
 
-  // useEffect(() => {
-  //     dispatch(setPageTitle('Meetings'));
-  //   }, []);
-
-  // All Users
-  const getAllCpUsers = async () => {
-    try {
-      const response = await fetch(`${API_ENDPOINT}cp?limit=10&page=${currentPage}`);
-      const users = await response.json();
-      setAllCpUsers(users.results);
-      setTotalPagesCount(users?.totalPages);
-    } catch (error) {
-      console.error(error);
-    }
+  const query = {
+    page: currentPage,
+    role: 'cp',
   };
-
+  const { data: allCpUsers } = useGetAllUserQuery(query, {
+    refetchOnMountOrArgChange: true,
+  });
   // routing
-  const router = useRouter();
-
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setPageTitle('Client Dashboard'));
+    dispatch(setPageTitle('User Management'));
   });
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   // for pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-  };
-
-  // Fixing handleChange Function version --1
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-
-    setFormData((prevFormData: any) => {
-      // Checking For Duplicate Value
-      if (Array.isArray(prevFormData[name]) && prevFormData[name].includes(value)) {
-        // Deleting Duplicate Value
-        const updatedArray = prevFormData[name].filter((item: any) => item !== value);
-        return {
-          ...prevFormData,
-          [name]: updatedArray,
-        };
-      } else {
-        return {
-          ...prevFormData,
-          [name]: Array.isArray(prevFormData[name]) ? [...prevFormData[name], value] : value,
-        };
-      }
-    });
-  };
-
-  {
-    userInfo?.content_verticals &&
-      userInfo.content_verticals.map((content_vertical: string) => (
-        <div className="mb-2" key={content_vertical}>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              className="form-checkbox"
-              value={content_vertical}
-              id={`checkbox_${content_vertical}`}
-              name={`checkbox_${content_vertical}`}
-              onChange={(e) => handleChange('content_verticals')}
-            />
-            <span className="font-sans capitalize text-white-dark">{content_vertical}</span>
-          </label>
-        </div>
-      ));
-  }
-
-  // Success Toast
-  const coloredToast = (color: any) => {
-    const toast = Swal.mixin({
-      toast: true,
-      position: 'top-start',
-      showConfirmButton: false,
-      timer: 3000,
-      showCloseButton: true,
-      customClass: {
-        popup: `color-${color}`,
-      },
-    });
-    toast.fire({
-      title: 'User updated successfully!',
-    });
-  };
-
-  // Insert Footage
-  const [newData, insertNewData] = useState<any>({});
-
-  const addHandler = (e: any) => {
-    let inputName = e.target.name;
-    let val = e.target.value;
-
-    insertNewData((prevData: any) => ({
-      ...prevData,
-      [inputName]: [val],
-    }));
-    return newData;
   };
 
   return (
@@ -162,47 +61,41 @@ const CpUsers = () => {
                           <th className="">Email</th>
                           <th className="">Role</th>
                           <th className=" ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                          {authPermissions?.includes('edit_content_provider') && (
-                            <th className="">Edit</th>
-                          )}
+                          {authPermissions?.includes('edit_content_provider') && <th className="">Edit</th>}
                         </tr>
                       </thead>
                       <tbody>
-                        {allCpUsers?.map(
-                          (cpUser) => (
-                            (
-                              <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                  <div className="flex items-center break-all ">
-                                    {cpUser?.userId?._id}
-                                  </div>
-                                </td>
-                                <td>{cpUser?.userId?.name}</td>
-                                <td className='break-all min-w-[150px]'>{cpUser?.userId?.email}</td>
-                                <td className="font-sans text-success">{cpUser?.userId?.role}</td>
+                        {allCpUsers?.results?.map((cpUser) => (
+                          <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                            <td className="min-w-[150px] font-sans text-black dark:text-white">
+                              <div className="flex items-center break-all ">{cpUser?.id}</div>
+                            </td>
+                            <td>{cpUser?.name}</td>
+                            <td className="min-w-[150px] break-all">{cpUser?.email}</td>
+                            <td className="font-sans text-success">{cpUser?.role}</td>
 
-                                <td>
-                                  <span className={`badge text-md w-12 ${!cpUser?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
-                                    {cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}
-                                  </span>
-                                </td>
+                            <td>
+                              <span className={`badge text-md w-12 ${!cpUser?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
+                                {cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}
+                              </span>
+                            </td>
 
-                                {authPermissions?.includes('edit_content_provider') && (
-                                  <td>
-                                    <Link href={`cp/${cpUser?.userId?._id}`}>
-                                      <button type="button" className="p-0">
-                                        {allSvgs.editPen}
-                                      </button>
-                                    </Link>
-                                  </td>
-                                )}
-                              </tr>
-                            )))}
+                            {authPermissions?.includes('edit_content_provider') && (
+                              <td>
+                                <Link href={`cp/${cpUser?.id}`}>
+                                  <button type="button" className="p-0">
+                                    {allSvgs.editPen}
+                                  </button>
+                                </Link>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
 
                     <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                      <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
+                      <ResponsivePagination current={currentPage} total={allCpUsers?.totalPages} onPageChange={handlePageChange} maxWidth={400} />
                     </div>
                   </div>
                 </div>

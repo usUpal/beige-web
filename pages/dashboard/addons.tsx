@@ -553,19 +553,6 @@ const Addons = () => {
                     </div>
 
                     <div className="flex justify-end">
-                      {/* <button
-                        type="submit"
-                        // btn md:mt-24 mt-8 bg-black font-sans text-white mx-auto md:me-0
-                        className="btn btn-black mt-8 flex flex-col items-center justify-center rounded-lg bg-black text-[13px] font-bold capitalize text-white"
-                      >
-                        {isLoading ? (
-                          <span role="status" className="flex h-5 items-center space-x-2">
-                            Loading...
-                          </span>
-                        ) : (
-                          'Add Addons'
-                        )}
-                      </button> */}
                       <DefaultButton css="font-semibold mt-3">{useAddNewAddOnLoading ? 'Adding...' : 'Add Addons'}</DefaultButton>
                     </div>
                   </form>
