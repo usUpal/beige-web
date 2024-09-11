@@ -1,9 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-import OrderApi from '@/Api/OrderApi';
 import Map from '@/components/Map';
 import Loader from '@/components/SharedComponent/Loader';
-import useAllCp from '@/hooks/useAllCp';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation';
 import { swalToast } from '@/utils/Toast/SwalToast';
@@ -52,7 +50,6 @@ const BookNow = () => {
   const { data: addonsData } = useGetAllAddonsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
-  const [query, setQuery] = useAllCp();
   const { userData, authPermissions } = useAuth();
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -612,7 +609,7 @@ const BookNow = () => {
   };
 
   const handleClientChange = (client) => {
-    setClient_id(client?.id);
+    setClient_id(client?._id);
     setClientName(client?.name);
     setShowClientDropdown(false);
   };
@@ -1026,13 +1023,13 @@ const BookNow = () => {
                           </div>
                         </div>
                         <div className="mb-5 md:mb-0">
-                          <input
+                          {/* <input
                             type="text"
                             className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
                             placeholder="Search..."
                             onChange={(event) => setQuery(event.target.value)}
                             value={query}
-                          />
+                          /> */}
                         </div>
                         {/* search ends */}
                       </div>
