@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import Link from 'next/link';
 import { useState, useRef } from 'react';
 import 'tippy.js/dist/tippy.css';
@@ -14,8 +14,8 @@ const CreateCp = () => {
     const [geoLocation, setGeoLocation] = useState('');
     const [location, setLocation] = useState('');
     const [timezone, setTimezone] = useState(null);
-    const [formFlipped, setFormFlipped] = useState(false); // To track if form should flip
-    const { register, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm();
+    const [formFlipped, setFormFlipped] = useState(false);
+    const { register, control, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm();
     const fileInputRef = useRef(null);
     const [showRoleInput, setShowRoleInput] = useState(false);
     const [roleOptions, setRoleOptions] = useState([
@@ -23,34 +23,32 @@ const CreateCp = () => {
         "Post Production Manager", "Sales Representative",
         "User Success"
     ]);
-
-
+    const [step, setStep] = useState(1); // Manage form steps
     const [selectedPositions, setselectedPositions] = useState([]);
     const [selectedPositionsRole, setselectedPositionsRole] = useState([]);
     const [selectedBackFootage, setselectedBackFootage] = useState([]);
     const [selectedAvailibility, setselectedAvailibility] = useState([]);
     const [selectedNotification, setselectedNotification] = useState([]);
-
     const [selectedVideography, setselectedVideography] = useState([]);
     const [selectedPhotography, setselectedPhotography] = useState([]);
     const [selectedLenses, setselectedLenses] = useState([]);
     const [selectedLighting, setselectedLighting] = useState([]);
     const [selectedSound, setselectedSound] = useState([]);
     const [selectedStabilizer, setselectedStabilizer] = useState([]);
+    const [selectedContentExperience, setselectedContentExperience] = useState([]);
 
-    // Handlers for each select menu
-    const handlePositionChange = (selected: any) => setselectedPositions(selected);
-    const handleRoleChange = (selected: any) => setselectedPositionsRole(selected);
-    const handleBackFootageChange = (selected: any) => setselectedBackFootage(selected);
-    const handleAvailibilityChange = (selected: any) => setselectedAvailibility(selected);
-    const handleNotificationChange = (selected: any) => setselectedNotification(selected);
-
-    const handleVideographyonChange = (selected: any) => setselectedVideography(selected);
-    const handlePhotographyonChange = (selected: any) => setselectedPhotography(selected);
-    const handleLensesonChange = (selected: any) => setselectedLenses(selected);
-    const handleLightingonChange = (selected: any) => setselectedLighting(selected);
-    const handleSoundonChange = (selected: any) => setselectedSound(selected);
-    const handleStabilizeronChange = (selected: any) => setselectedStabilizer(selected);
+    const handlePositionChange = (selected) => setselectedPositions(selected);
+    const handleRoleChange = (selected) => setselectedPositionsRole(selected);
+    const handleBackFootageChange = (selected) => setselectedBackFootage(selected);
+    const handleAvailibilityChange = (selected) => setselectedAvailibility(selected);
+    const handleNotificationChange = (selected) => setselectedNotification(selected);
+    const handleVideographyonChange = (selected) => setselectedVideography(selected);
+    const handlePhotographyonChange = (selected) => setselectedPhotography(selected);
+    const handleLensesonChange = (selected) => setselectedLenses(selected);
+    const handleLightingonChange = (selected) => setselectedLighting(selected);
+    const handleSoundonChange = (selected) => setselectedSound(selected);
+    const handleStabilizeronChange = (selected) => setselectedStabilizer(selected);
+    const handleContentExperienceonChange = (selected) => setselectedContentExperience(selected);
 
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
     const PasswordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
@@ -58,10 +56,8 @@ const CreateCp = () => {
     const handleSetNewItem = (fieldName) => {
         const value = getValues(fieldName);
         if (!value) return;
-
         setRoleOptions((prevOptions) => [...prevOptions, value]);
         console.log("New role added:", value);
-
         reset({ [fieldName]: '' });
     };
 
@@ -83,15 +79,21 @@ const CreateCp = () => {
             return;
         }
 
-        // Show the next form (flip the form)
         setFormFlipped(true);
 
         const filteredData = Object.fromEntries(
             Object.entries({ ...data, timezone: timezone?.value, location: location }).filter(([key, value]) => value !== '')
         );
-        console.log("Data:", filteredData);
-    };
 
+        // console.log("Form Data:", data);
+
+        console.log("Data:", filteredData);
+
+        const onSubmit = (data) => {
+            console.log('Form Data:', data);
+        };
+
+    };
 
     const PositionsOptions = [
         { value: 'Producer', label: 'Producer' },
@@ -148,17 +150,7 @@ const CreateCp = () => {
         { value: 'Sony FX9', label: 'Sony FX9' },
         { value: 'Others', label: 'Others' },
     ];
-
-    const videography = [
-        { value: 'BMPCC 4K', label: 'BMPCC 4K' },
-        { value: 'BMPCC 6k G2', label: 'BMPCC 6k G2' },
-        { value: 'BMPCC 6k Pro', label: 'BMPCC 6k Pro' },
-        { value: 'BMD Ursa Mini 4.6k', label: 'BMD Ursa Mini 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k', label: 'BMD Ursa Mini Pro 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k G2', label: 'BMD Ursa Mini Pro 4.6k G2' },
-        { value: 'EOS R', label: 'EOS R' },
-        { value: 'EOS R5', label: 'EOS R5' },
-        { value: 'C100', label: 'C100' },
+    const ContentExperience = [
         { value: 'C200', label: 'C200' },
         { value: 'C300 mark 2', label: 'C300 mark 2' },
         { value: 'C300 mark 3', label: 'C300 mark 3' },
@@ -173,129 +165,11 @@ const CreateCp = () => {
         { value: 'Others', label: 'Others' },
     ];
 
-    const Photography = [
-        { value: 'BMPCC 4K', label: 'BMPCC 4K' },
-        { value: 'BMPCC 6k G2', label: 'BMPCC 6k G2' },
-        { value: 'BMPCC 6k Pro', label: 'BMPCC 6k Pro' },
-        { value: 'BMD Ursa Mini 4.6k', label: 'BMD Ursa Mini 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k', label: 'BMD Ursa Mini Pro 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k G2', label: 'BMD Ursa Mini Pro 4.6k G2' },
-        { value: 'EOS R', label: 'EOS R' },
-        { value: 'EOS R5', label: 'EOS R5' },
-        { value: 'C100', label: 'C100' },
-        { value: 'C200', label: 'C200' },
-        { value: 'C300 mark 2', label: 'C300 mark 2' },
-        { value: 'C300 mark 3', label: 'C300 mark 3' },
-        { value: 'C300 mark 4', label: 'C300 mark 4' },
-        { value: 'GH5', label: 'GH5' },
-        { value: 'GH511', label: 'GH511' },
-        { value: 'Sony A7S3', label: 'Sony A7S3' },
-        { value: 'Sony A1', label: 'Sony A1' },
-        { value: 'Sony FX3', label: 'Sony FX3' },
-        { value: 'Sony FX6', label: 'Sony FX6' },
-        { value: 'Sony FX9', label: 'Sony FX9' },
-        { value: 'Others', label: 'Others' },
-    ];
-
-    const Lenses = [
-        { value: 'BMPCC 4K', label: 'BMPCC 4K' },
-        { value: 'BMPCC 6k G2', label: 'BMPCC 6k G2' },
-        { value: 'BMPCC 6k Pro', label: 'BMPCC 6k Pro' },
-        { value: 'BMD Ursa Mini 4.6k', label: 'BMD Ursa Mini 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k', label: 'BMD Ursa Mini Pro 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k G2', label: 'BMD Ursa Mini Pro 4.6k G2' },
-        { value: 'EOS R', label: 'EOS R' },
-        { value: 'EOS R5', label: 'EOS R5' },
-        { value: 'C100', label: 'C100' },
-        { value: 'C200', label: 'C200' },
-        { value: 'C300 mark 2', label: 'C300 mark 2' },
-        { value: 'C300 mark 3', label: 'C300 mark 3' },
-        { value: 'C300 mark 4', label: 'C300 mark 4' },
-        { value: 'GH5', label: 'GH5' },
-        { value: 'GH511', label: 'GH511' },
-        { value: 'Sony A7S3', label: 'Sony A7S3' },
-        { value: 'Sony A1', label: 'Sony A1' },
-        { value: 'Sony FX3', label: 'Sony FX3' },
-        { value: 'Sony FX6', label: 'Sony FX6' },
-        { value: 'Sony FX9', label: 'Sony FX9' },
-        { value: 'Others', label: 'Others' },
-    ];
-
-    const Lighting = [
-        { value: 'BMPCC 4K', label: 'BMPCC 4K' },
-        { value: 'BMPCC 6k G2', label: 'BMPCC 6k G2' },
-        { value: 'BMPCC 6k Pro', label: 'BMPCC 6k Pro' },
-        { value: 'BMD Ursa Mini 4.6k', label: 'BMD Ursa Mini 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k', label: 'BMD Ursa Mini Pro 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k G2', label: 'BMD Ursa Mini Pro 4.6k G2' },
-        { value: 'EOS R', label: 'EOS R' },
-        { value: 'EOS R5', label: 'EOS R5' },
-        { value: 'C100', label: 'C100' },
-        { value: 'C200', label: 'C200' },
-        { value: 'C300 mark 2', label: 'C300 mark 2' },
-        { value: 'C300 mark 3', label: 'C300 mark 3' },
-        { value: 'C300 mark 4', label: 'C300 mark 4' },
-        { value: 'GH5', label: 'GH5' },
-        { value: 'GH511', label: 'GH511' },
-        { value: 'Sony A7S3', label: 'Sony A7S3' },
-        { value: 'Sony A1', label: 'Sony A1' },
-        { value: 'Sony FX3', label: 'Sony FX3' },
-        { value: 'Sony FX6', label: 'Sony FX6' },
-        { value: 'Sony FX9', label: 'Sony FX9' },
-        { value: 'Others', label: 'Others' },
-    ];
-
-    const Sound = [
-        { value: 'BMPCC 4K', label: 'BMPCC 4K' },
-        { value: 'BMPCC 6k G2', label: 'BMPCC 6k G2' },
-        { value: 'BMPCC 6k Pro', label: 'BMPCC 6k Pro' },
-        { value: 'BMD Ursa Mini 4.6k', label: 'BMD Ursa Mini 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k', label: 'BMD Ursa Mini Pro 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k G2', label: 'BMD Ursa Mini Pro 4.6k G2' },
-        { value: 'EOS R', label: 'EOS R' },
-        { value: 'EOS R5', label: 'EOS R5' },
-        { value: 'C100', label: 'C100' },
-        { value: 'C200', label: 'C200' },
-        { value: 'C300 mark 2', label: 'C300 mark 2' },
-        { value: 'C300 mark 3', label: 'C300 mark 3' },
-        { value: 'C300 mark 4', label: 'C300 mark 4' },
-        { value: 'GH5', label: 'GH5' },
-        { value: 'GH511', label: 'GH511' },
-        { value: 'Sony A7S3', label: 'Sony A7S3' },
-        { value: 'Sony A1', label: 'Sony A1' },
-        { value: 'Sony FX3', label: 'Sony FX3' },
-        { value: 'Sony FX6', label: 'Sony FX6' },
-        { value: 'Sony FX9', label: 'Sony FX9' },
-        { value: 'Others', label: 'Others' },
-    ];
-
-    const Stabilizer = [
-        { value: 'BMPCC 4K', label: 'BMPCC 4K' },
-        { value: 'BMPCC 6k G2', label: 'BMPCC 6k G2' },
-        { value: 'BMPCC 6k Pro', label: 'BMPCC 6k Pro' },
-        { value: 'BMD Ursa Mini 4.6k', label: 'BMD Ursa Mini 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k', label: 'BMD Ursa Mini Pro 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k G2', label: 'BMD Ursa Mini Pro 4.6k G2' },
-        { value: 'EOS R', label: 'EOS R' },
-        { value: 'EOS R5', label: 'EOS R5' },
-        { value: 'C100', label: 'C100' },
-        { value: 'C200', label: 'C200' },
-        { value: 'C300 mark 2', label: 'C300 mark 2' },
-        { value: 'C300 mark 3', label: 'C300 mark 3' },
-        { value: 'C300 mark 4', label: 'C300 mark 4' },
-        { value: 'GH5', label: 'GH5' },
-        { value: 'GH511', label: 'GH511' },
-        { value: 'Sony A7S3', label: 'Sony A7S3' },
-        { value: 'Sony A1', label: 'Sony A1' },
-        { value: 'Sony FX3', label: 'Sony FX3' },
-        { value: 'Sony FX6', label: 'Sony FX6' },
-        { value: 'Sony FX9', label: 'Sony FX9' },
-        { value: 'Others', label: 'Others' },
-    ];
-
-    const handleChange = (selected: any) => {
-        setSelectedOptions(selected);
-    };
+    const Photography = [...videographyCamera];
+    const Lenses = [...videographyCamera];
+    const Lighting = [...videographyCamera];
+    const Sound = [...videographyCamera];
+    const Stabilizer = [...videographyCamera];
 
 
 
@@ -315,7 +189,7 @@ const CreateCp = () => {
             </div>
             <div className='panel mt-5'>
                 <div>
-                    {!formFlipped ? ( // Conditionally render based on formFlipped
+                    {!formFlipped ? (
                         <form onSubmit={handleSubmit(onSubmit)} className="mb-5 rounded-md bg-white p-4 dark:border-[#191e3a] dark:bg-black">
                             <div className="flex flex-col sm:flex-row">
                                 <div className="grid flex-1 grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
@@ -402,25 +276,51 @@ const CreateCp = () => {
 
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Positions </h2>
-                                        <Select {...register("parmition")}
+                                        {/* <Select {...register("parmition")}
                                             isMulti
                                             value={selectedPositions}
                                             onChange={handlePositionChange}
                                             options={PositionsOptions}
                                             placeholder="Choose flavors..."
+                                        /> */}
+                                        <Controller
+                                            name="PositionsOptions"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={PositionsOptions}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
 
                                     </div>
+
                                     <div>
                                         <h2 className="font-semibold mb-2">Positions & Roles</h2>
-                                        <Select {...register("positionRole")}
+                                        {/* <Select {...register("positionRole")}
                                             isMulti
                                             value={selectedPositionsRole}
                                             onChange={handleRoleChange}
                                             options={backupFootage}
                                             placeholder="Choose fruits..."
+                                        /> */}
+                                        <Controller
+                                            name="PositionsOptionsRole"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={PositionsOptions}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
                                     </div>
+
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Portfolio</h2>
                                         <input {...register("answer")}
@@ -432,24 +332,50 @@ const CreateCp = () => {
 
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Backup Footage</h2>
-                                        <Select {...register("backFootage")}
+                                        {/* <Select {...register("backFootage")}
                                             isMulti
                                             value={selectedBackFootage}
                                             onChange={handleBackFootageChange}
                                             options={Availibility}
                                             placeholder="Choose colors..."
+                                        /> */}
+
+                                        <Controller
+                                            name="backupFootage"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={backupFootage}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
 
                                     </div>
 
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Availability</h2>
-                                        <Select {...register("Availability")}
+                                        {/* <Select {...register("Availability")}
                                             isMulti
                                             value={selectedAvailibility}
                                             onChange={handleAvailibilityChange}
                                             options={Notification}
                                             placeholder="Choose cars..."
+                                        /> */}
+
+                                        <Controller
+                                            name="Availibility"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={Availibility}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
 
                                     </div>
@@ -457,78 +383,162 @@ const CreateCp = () => {
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Notification</h2>
 
-                                        <Select {...register("Notification")}
+                                        {/* <Select {...register("Notification")}
                                             isMulti
                                             value={selectedNotification}
                                             onChange={handleNotificationChange}
                                             options={videographyCamera}
                                             placeholder="Choose countries..."
+                                        /> */}
+                                        <Controller
+                                            name="Notification"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={Notification}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
                                     </div>
 
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Videography Camera</h2>
-                                        <Select {...register("videography")}
+                                        {/* <Select {...register("videography")}
                                             isMulti
                                             value={selectedVideography}
                                             onChange={handleVideographyonChange}
                                             options={videography}
                                             placeholder="Choose countries..."
+                                        /> */}
+                                        <Controller
+                                            name="videographyCamera"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={videographyCamera}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
                                     </div>
 
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Photography Camera</h2>
-                                        <Select {...register("photography")}
+                                        {/* <Select {...register("photography")}
                                             isMulti
                                             value={selectedPhotography}
                                             onChange={handlePhotographyonChange}
                                             options={Photography}
                                             placeholder="Choose countries..."
+                                        /> */}
+                                        <Controller
+                                            name="Photography"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={Photography}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
                                     </div>
 
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Lenses</h2>
-                                        <Select {...register("lenses")}
+                                        {/* <Select {...register("lenses")}
                                             isMulti
                                             value={selectedLenses}
                                             onChange={handleLensesonChange}
                                             options={Lenses}
                                             placeholder="Choose countries..."
+                                        /> */}
+                                        <Controller
+                                            name="Lenses"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={Lenses}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
                                     </div>
 
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Lighting</h2>
-                                        <Select {...register("lighiting")}
+                                        {/* <Select {...register("lighiting")}
                                             isMulti
                                             value={selectedLighting}
                                             onChange={handleLightingonChange}
                                             options={Lighting}
                                             placeholder="Choose countries..."
+                                        /> */}
+                                        <Controller
+                                            name="Lighting"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={Lighting}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
                                     </div>
 
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Sound</h2>
-                                        <Select {...register("sound")}
+                                        {/* <Select {...register("sound")}
                                             isMulti
                                             value={selectedSound}
                                             onChange={handleSoundonChange}
                                             options={Sound}
                                             placeholder="Choose countries..."
+                                        /> */}
+                                        <Controller
+                                            name="Sound"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={Sound}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
                                     </div>
 
                                     <div>
                                         <h2 className="text-sm font-bold mb-2">Stabilizer</h2>
-                                        <Select {...register("Stabilizer")}
+                                        {/* <Select {...register("Stabilizer")}
                                             isMulti
                                             value={selectedStabilizer}
                                             onChange={handleStabilizeronChange}
                                             options={Stabilizer}
                                             placeholder="Choose countries..."
+                                        /> */}
+                                        <Controller
+                                            name="Stabilizer"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={Stabilizer}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
                                         />
                                     </div>
 
@@ -542,12 +552,223 @@ const CreateCp = () => {
                         </form>
                     ) : (
                         // Second form (or additional content) when formFlipped is true
-                        <div className="md:grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
+                        <form >
+                            <div>
+                                <div className="md:grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">Additional Equipment</h2>
+                                        <textarea placeholder="Your answer" rows="1"  {...register("Additionalanswer")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
 
-                            <h1>helllo</h1>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">Content Speciality Experience</h2>
+                                        <Controller
+                                            name="ContentExperience"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    isMulti
+                                                    options={ContentExperience}
+                                                    placeholder="Choose cameras..."
+                                                />
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">Rates($)</h2>
+
+                                        <textarea placeholder="Your Rates($)" rows="1"  {...register("Rates($)")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+
+                                    </div>
 
 
-                        </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">Experience/Post Production</h2>
+                                        <textarea placeholder="Your Experience" rows="1"  {...register("Experience")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">Creative empowerment &
+                                            Initiative</h2>
+                                        <textarea placeholder="Your Creative" rows="1"  {...register("Creative")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">Describe a situation when you had to handle a
+                                            high-pressure task. How did you manage it
+                                            and what was the outcome?</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Creative")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">What motivates you in your work? Is it
+                                            achieving goals, helping others, or something
+                                            else?</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("motivates")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">How do you handle conflicts or disagreements
+                                            with coworkers or superiors?*</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("disagreements")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">Describe a time when you had to work on a
+                                            team project. What was your role, and how did
+                                            you contribute to the team's success?</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("project")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">What do you consider your greatest
+                                            professional strength, and how does it benefit
+                                            your work?</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("greatest")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">What are your long-term career goals, and how
+                                            does this position align with them?</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("long-term")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">Describe a situation when you faced failure or
+                                            made a mistake at work. How did you handle it,
+                                            and what did you learn from the experience?</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("situation")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-sm font-bold mb-2">Describe a situation when you faced failure or
+                                            made a mistake at work. How did you handle it,
+                                            and what did you learn from the experience?</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Describe")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-xl font-bold mb-2">Additional Information</h2>
+                                        <h2 className="text-sm font-bold mb-2">Is there anything that you'd like us to know or
+                                            take in consideration when working together?</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Additional")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <h2 className="text-xl font-bold mb-2"> Networking</h2>
+                                        <h2 className="text-sm font-bold mb-2 w-full">This will not have any impact whatsoever on
+                                            our decision to hire you. We are expanding and
+                                            we are looking to onboard as many talented
+                                            creatives in the many cities we are involved in.
+                                            Great way to provide value to your friends.
+                                            Please provide their name and contact
+                                            information (phone number and email) below.</h2>
+                                        <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Networking")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <h2 className="text-sm font-bold mb-2">Rate Flexibility</h2>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="yes"
+                                                name="flexibility"
+                                                value="yes"
+                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                            />
+                                            <label htmlFor="yes" className="ml-2 block text-sm text-gray-900">
+                                                Yes
+                                            </label>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="no"
+                                                name="flexibility"
+                                                value="no"
+                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                            />
+                                            <label htmlFor="no" className="ml-2 block text-sm text-gray-900">
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <h2 className="text-sm font-bold mb-2">Are you a team player?</h2>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="yes"
+                                                name="flexibility"
+                                                value="yes"
+                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                            />
+                                            <label htmlFor="yes" className="ml-2 block text-sm text-gray-900">
+                                                Yes
+                                            </label>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="no"
+                                                name="flexibility"
+                                                value="no"
+                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                            />
+                                            <label htmlFor="no" className="ml-2 block text-sm text-gray-900">
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+
+
+                                    <div className="space-y-2">
+                                        <h2 className="text-sm font-bold mb-2">Travel</h2>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="yes"
+                                                name="flexibility"
+                                                value="yes"
+                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                            />
+                                            <label htmlFor="yes" className="ml-2 block text-sm text-gray-900">
+                                                Yes
+                                            </label>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="no"
+                                                name="flexibility"
+                                                value="no"
+                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                            />
+                                            <label htmlFor="no" className="ml-2 block text-sm text-gray-900">
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div className='flex items-center justify-end gap-2'>
+                                <div className="mt-8 flex items-center">
+                                    <DefaultButton css='font-semibold' type="button" >Back</DefaultButton>
+                                </div>
+                                <div className="mt-8 flex items-center">
+                                    <DefaultButton css='font-semibold' type="button">Next
+                                    </DefaultButton>
+                                </div>
+                            </div>
+                        </form>
                     )}
                 </div>
             </div >
