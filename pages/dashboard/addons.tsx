@@ -11,13 +11,33 @@ import { useAuth } from '@/contexts/authContext';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useGetAllAddonsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation } from '@/Redux/features/addons/addonsApi';
 
 const Addons = () => {
   const { authPermissions } = useAuth();
+  const [addonsCategories, setAddonsCategories] = useState([]);
 
-  const [addonsData, setAddonsData, addonsCategories] = useAddons();
-  // const [addonsData, setAddonsData] = useState<addonTypes[]>([]);
-  // const [allCategory, setAllCategory] = useState([]);
+  const { data: addonsData, refetch } = useGetAllAddonsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const [getAddonsDetails, { data: addonsDetails, isLoading: getAddonsDetailsLoading }] = useLazyGetAddonsDetailsQuery();
+  console.log("🚀 ~ Addons ~ addonsDetails:", addonsDetails)
+
+
+  const [updateAddon, { isLoading: useUpdateAddonLoading }] = useUpdateAddonMutation();
+
+  useEffect(() => {
+    if (addonsData) {
+      const uniqueCategories = addonsData
+        ?.map((addon: any) => addon.category)
+        ?.filter(
+          (category: string, index: any, array: any) =>
+            array.indexOf(category) === index
+        );
+      setAddonsCategories(uniqueCategories);
+    }
+  }, [addonsData]);
 
   const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
   const [addonsModal, setAddonsModal] = useState(false);
@@ -47,45 +67,32 @@ const Addons = () => {
     showDesignElement.showNewCategoryInput = false;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${API_ENDPOINT}addOns`);
-        if (!res.ok) {
-          throw new Error(`Error: ${res.status}`);
-        }
-        const jsonData = await res.json();
-        setAddonsData(jsonData);
-      } catch (error) {
-        console.error(`Error fetching data`);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await fetch(`${API_ENDPOINT}addOns`);
+  //       if (!res.ok) {
+  //         throw new Error(`Error: ${res.status}`);
+  //       }
+  //       const jsonData = await res.json();
+  //       setAddonsData(jsonData);
+  //     } catch (error) {
+  //       console.error(`Error fetching data`);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   // theme functionality
   useEffect(() => {
     dispatch(setPageTitle('Pricing Calculator - Client Web App - Beige'));
   });
 
-  const getAddonsDetails = async (addon: any) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_ENDPOINT}addons/${addon?._id}`);
-      const addonsDetailsRes = await response.json();
-
-      if (!addonsDetailsRes) {
-        setLoading(false);
-      } else {
-        setAddonsModal(!addonsModal);
-        setAddonsInfo(addonsDetailsRes);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-    }
+  const getDetails = async (addon: any) => {
+    const data = await getAddonsDetails(addon?._id)
+    setAddonsModal(!addonsModal);
+    setAddonsInfo(data?.data);
   };
 
   const handleInputChange = (key: any, value: any) => {
@@ -96,7 +103,7 @@ const Addons = () => {
   };
 
 
-  const handleUpdateTestSubmit = async (data) => {
+  const handleUpdateTestSubmit = async (data: any) => {
     const updatedAddonDetails = {
       title: addonsInfo?.title || data?.title,
       rate: addonsInfo?.rate || data?.rate,
@@ -105,46 +112,57 @@ const Addons = () => {
       status: addonsInfo?.status || data?.status || false,
     };
 
-    try {
-      const patchResponse = await fetch(`${API_ENDPOINT}addons/${addonsInfo?._id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedAddonDetails),
-      });
-
-      if (!patchResponse.ok) {
-        throw new Error('Failed to update addon');
-      }
-
-      const updatedAddon = await patchResponse.json();
-
-      const updatedAddonsData = addonsData.map((addon) =>
-        addon._id === addonsInfo?._id ? updatedAddon : addon
-      );
-      setAddonsData(updatedAddonsData);
-
-      setAddonsModal(false);
-      toast.success('Addon updated successfully!', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-    } catch (error) {
-      console.error('Update error:', error);
-      toast.error('Failed to update addon. Please try again.', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+    const requestBody: any = {
+      formData: updatedAddonDetails,
+      id: addonsInfo?._id,
     }
+    const res = await updateAddon(requestBody);
+    refetch();
+    setAddonsModal(false);
+
+    // try {
+
+
+    //   const patchResponse = await fetch(`${API_ENDPOINT}addons/${addonsInfo?._id}`, {
+    //     method: 'PATCH',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(updatedAddonDetails),
+    //   });
+
+    //   if (!patchResponse.ok) {
+    //     throw new Error('Failed to update addon');
+    //   }
+
+    //   const updatedAddon = await patchResponse.json();
+
+    //   const updatedAddonsData = addonsData.map((addon: any) =>
+    //     addon._id === addonsInfo?._id ? updatedAddon : addon
+    //   );
+    //   // setAddonsData(updatedAddonsData);
+
+
+    //   setAddonsModal(false);
+    //   toast.success('Addon updated successfully!', {
+    //     position: "top-right",
+    //     autoClose: 3000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //   });
+    // } catch (error) {
+    //   console.error('Update error:', error);
+    //   toast.error('Failed to update addon. Please try again.', {
+    //     position: "top-right",
+    //     autoClose: 3000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //   });
+    // }
   };
 
   // add- new addons
@@ -215,9 +233,6 @@ const Addons = () => {
           </div>
         )}
         <div className="panel mt-6" id="pills_with_icon">
-          {/* tab starts*/}
-
-
           <div className="my-5 flex flex-col sm:flex-row">
             <Tab.Group>
               <div className="mx-3 mb-5 sm:mb-0">
@@ -289,7 +304,7 @@ const Addons = () => {
                                       <td>
                                         <button
                                           onClick={() => {
-                                            getAddonsDetails(addon);
+                                            getDetails(addon);
                                             setAddonsModal(true);
                                           }}
                                         >
