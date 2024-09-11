@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { API_ENDPOINT, SOCKET_URL } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import transformMessages from '@/utils/transformMessage';
@@ -18,6 +19,7 @@ import ResponsivePaginationComponent from 'react-responsive-pagination';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
+import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 // types
 
 const Chat = () => {
@@ -34,8 +36,6 @@ const Chat = () => {
   const [isShowUserChat, setIsShowUserChat] = useState(false);
   const [selectedChatRoom, setSelectedChatRoom] = useState<any>(null);
   const [textMessage, setTextMessage] = useState('');
-
-
 
   const [newMessages, setNewMessages] = useState<any>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -157,7 +157,7 @@ const Chat = () => {
   };
 
   const selectUser = (chat: any) => {
-    console.log("Chat", chat);
+    console.log('Chat', chat);
 
     setSelectedChatRoom(chat);
     scrollToBottom();
@@ -212,9 +212,9 @@ const Chat = () => {
   const allChatParticipants = [
     selectedChatRoom?.client_id
       ? {
-        ...selectedChatRoom.client_id,
-        type: 'client',
-      }
+          ...selectedChatRoom.client_id,
+          type: 'client',
+        }
       : null,
 
     ...(selectedChatRoom?.cp_ids || []).map((cp) => ({
@@ -226,28 +226,22 @@ const Chat = () => {
       type: 'manager',
     })),
   ];
-
-  const getAllClients = async () => {
-    setIsClientLoading(true);
-    try {
-      let res;
-      if (clientName) {
-        res = await fetch(`${API_ENDPOINT}users?role=user&search=${clientName}`);
-      } else {
-        res = await fetch(`${API_ENDPOINT}users?role=user`);
-      }
-      const users = await res.json();
-      setClients(users?.results || []);
-      setShowClientDropdown(true);
-      setIsClientLoading(false);
-    } catch (error) {
-      setIsClientLoading(false);
-    }
+  const searchQuer = {
+    role: 'user',
+    search: clientName,
   };
 
+  const { data: clientsData } = useGetAllUserQuery(searchQuer, {
+    refetchOnMountOrArgChange: true,
+  });
+  const getAllClients = async () => {
+    setIsClientLoading(true);
+    setClients(clientsData?.results || []);
+    setShowClientDropdown(true);
+    setIsClientLoading(false);
+  };
   // handleClientChange
   const handleClientChange = (client: any) => {
-
     setNewParticipantInfo(client);
     setShowClientDropdown(false);
     setIsAddParticipant(false);
@@ -292,7 +286,7 @@ const Chat = () => {
         <div className="block text-center md:hidden">
           {!isAddParticipant && (userRole === 'manager' || userRole === 'admin') && (
             <>
-              <div className='block md:hidden'>
+              <div className="block md:hidden">
                 <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px]'}>
                   Add Participant
                 </DefaultButton>
@@ -307,8 +301,9 @@ const Chat = () => {
                 <div key={chat?.id} className="">
                   <button
                     type="button"
-                    className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
-                      }`}
+                    className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${
+                      selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
+                    }`}
                     onClick={() => selectUser(chat)}
                   >
                     <div className="flex-1">
@@ -317,9 +312,7 @@ const Chat = () => {
                           <MakeProfileImage>{chat.order_id?.order_name}</MakeProfileImage>
                         </div>
                         <div className="mx-3 ltr:text-left rtl:text-right">
-                          <p className="mb-1 font-semibold">
-                            {truncateLongText(chat?.order_id?.order_name, 20)}
-                          </p>
+                          <p className="mb-1 font-semibold">{truncateLongText(chat?.order_id?.order_name, 20)}</p>
                           <p className="max-w-[185px] truncate text-xs text-white-dark">{chat.last_message ? chat.last_message?.message : ''}</p>
                         </div>
                       </div>
@@ -336,15 +329,15 @@ const Chat = () => {
         <div className="mt-4 flex justify-center ">
           <ResponsivePaginationComponent
             current={currentPage}
-            total={totalPagesCount}
+            total={data?.totalPages}
             onPageChange={handlePageChange}
             maxWidth={400}
-          // styles={styles}
+            // styles={styles}
           />
         </div>
       </div>
       <div className={`absolute z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
-      <div className={`panel flex-1 p-0 ${threeDotSidebar && "hidden lg:block"}`} >
+      <div className={`panel flex-1 p-0 ${threeDotSidebar && 'hidden lg:block'}`}>
         {!isShowUserChat && (
           <div className={`relative flex h-full items-center justify-center p-4  `}>
             <button type="button" onClick={() => setIsShowChatMenu(!isShowChatMenu)} className="absolute top-4 hover:text-primary ltr:left-4 rtl:right-4 xl:hidden">
@@ -503,7 +496,7 @@ const Chat = () => {
                       <>
                         {!isAddParticipant && (userRole === 'admin' || userRole === 'admin') && (
                           <>
-                            <div className='hidden md:block'>
+                            <div className="hidden md:block">
                               <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px]'}>
                                 Add Participant
                               </DefaultButton>
@@ -532,7 +525,7 @@ const Chat = () => {
                                   {clients.length <= 0 && (
                                     <div
                                       className="absolute top-1/2 -translate-y-1/2  cursor-pointer ltr:right-2 rtl:left-2"
-                                    // onClick={handleSearchParticipants}
+                                      // onClick={handleSearchParticipants}
                                     >
                                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5"></circle>
@@ -636,15 +629,16 @@ const Chat = () => {
                                 ? message?.senderName == 'Admin User'
                                   ? createImageByName('MA')
                                   : message?.senderName == 'User'
-                                    ? createImageByName('A')
-                                    : createImageByName('CP')
+                                  ? createImageByName('A')
+                                  : createImageByName('CP')
                                 : ''}
                             </div>
                             <div className="">
                               <div className="flex items-center gap-3">
                                 <div
-                                  className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
-                                    }`}
+                                  className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${
+                                    message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
+                                  }`}
                                 >
                                   {message?.message}
                                 </div>
@@ -701,13 +695,11 @@ const Chat = () => {
       {/* starts details menu */}
 
       {threeDotSidebar && (
-        <div className={`panel flex-1 p-0 block lg:hidden`} >
+        <div className={`panel block flex-1 p-0 lg:hidden`}>
           <div className="relative h-full">
             <div className="mt-1 flex w-full justify-between gap-3 sm:gap-5">
-              <div className='my-4 ms-4 text-[20px] font-semibold'>
-                Details
-              </div>
-              <button className="flex h-8 w-8 my-4 me-4 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
+              <div className="my-4 ms-4 text-[20px] font-semibold">Details</div>
+              <button className="my-4 me-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
                 <div className="ml-2 mt-1">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="#000000" width="26" height="26">
                     <path
@@ -727,8 +719,9 @@ const Chat = () => {
                 <li className="me-2">
                   <button
                     onClick={() => setActiveTab('1')}
-                    className={`inline-block rounded-t-lg p-4 ${activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                      }`}
+                    className={`inline-block rounded-t-lg p-4 ${
+                      activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                   >
                     Participant
                   </button>
@@ -736,8 +729,9 @@ const Chat = () => {
                 <li className="me-2">
                   <button
                     onClick={() => setActiveTab('2')}
-                    className={`inline-block rounded-t-lg p-4 ${activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                      }`}
+                    className={`inline-block rounded-t-lg p-4 ${
+                      activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                   >
                     Files
                   </button>
@@ -749,15 +743,13 @@ const Chat = () => {
                 {activeTab === '1' && (
                   <div className="ms-2">
                     <div className="mt-1">
-                      <PerfectScrollbar className="chat-users relative h-48 md:h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
+                      <PerfectScrollbar className="chat-users relative h-48 min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)] md:h-full">
                         <ul className="space-y-2">
                           <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                             <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
                             <div className="flex flex-col justify-start space-y-0">
                               <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
-                              <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">
-                                {selectedChatRoom?.client_id?.role === 'user' && 'Client'}
-                              </span>
+                              <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
                             </div>
                           </li>
 
@@ -772,16 +764,10 @@ const Chat = () => {
                             })),
                           ].map((item, index) => (
                             <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
-                              <span
-                                className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'
-                                  }`}
-                              ></span>
+                              <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
                               <div className="flex flex-col space-y-0">
                                 <span className="text-black dark:text-white">{item?.id?.name}</span>
-                                <span
-                                  className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'
-                                    }`}
-                                >
+                                <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
                                   {item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
                                 </span>
                               </div>
@@ -822,9 +808,9 @@ const Chat = () => {
       )}
 
       {/* for lg details menu sidebar */}
-      <div className='hidden lg:block'>
+      <div className="hidden lg:block">
         {threeDotSidebar && (
-          <div className={`panel absolute  z-5 md:space-y-4 w-96 h-96 md:h-full max-w-xs flex-none overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+          <div className={`panel z-5  absolute h-96 w-96 max-w-xs flex-none overflow-hidden p-4 md:h-full md:space-y-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
             <div className="mt-1 flex w-full justify-end gap-3 sm:gap-5">
               <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b] " onClick={toggleThreeDotSidebar}>
                 <div className="ml-2 mt-1">
@@ -845,8 +831,9 @@ const Chat = () => {
                 <li className="me-2">
                   <button
                     onClick={() => setActiveTab('1')}
-                    className={`inline-block rounded-t-lg p-4 ${activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                      }`}
+                    className={`inline-block rounded-t-lg p-4 ${
+                      activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                   >
                     Participant
                   </button>
@@ -854,8 +841,9 @@ const Chat = () => {
                 <li className="me-2">
                   <button
                     onClick={() => setActiveTab('2')}
-                    className={`inline-block rounded-t-lg p-4 ${activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                      }`}
+                    className={`inline-block rounded-t-lg p-4 ${
+                      activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                   >
                     Files
                   </button>
@@ -867,15 +855,13 @@ const Chat = () => {
                 {activeTab === '1' && (
                   <div className="">
                     <div className="mt-1">
-                      <PerfectScrollbar className="chat-users relative h-48 md:h-full min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
+                      <PerfectScrollbar className="chat-users relative h-48 min-h-[100px] space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)] md:h-full">
                         <ul className="space-y-2">
                           <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                             <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
                             <div className="flex flex-col justify-start space-y-0">
                               <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
-                              <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">
-                                {selectedChatRoom?.client_id?.role === 'user' && 'Client'}
-                              </span>
+                              <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
                             </div>
                           </li>
                           {[
@@ -889,16 +875,10 @@ const Chat = () => {
                             })),
                           ].map((item, index) => (
                             <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
-                              <span
-                                className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'
-                                  }`}
-                              ></span>
+                              <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
                               <div className="flex flex-col space-y-0">
                                 <span className="text-black dark:text-white">{item?.id?.name}</span>
-                                <span
-                                  className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'
-                                    }`}
-                                >
+                                <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
                                   {item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
                                 </span>
                               </div>
@@ -932,7 +912,6 @@ const Chat = () => {
         )}
       </div>
       {/*  ends details sidebar menu*/}
-
     </div>
   );
 };

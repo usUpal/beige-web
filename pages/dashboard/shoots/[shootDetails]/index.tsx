@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, Fragment, useMemo, useCallback } from 'react';
+import React, { useState, Fragment, useMemo, useCallback, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import StatusBg from '@/components/Status/StatusBg';
 import { useRouter } from 'next/router';
-import { API_ENDPOINT, MAPAPIKEY } from '@/config';
+import { MAPAPIKEY } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import { swalToast } from '@/utils/Toast/SwalToast';
 import { toast } from 'react-toastify';
@@ -21,12 +21,11 @@ import 'tippy.js/dist/tippy.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 
-import { useAssignCpMutation, useGetShootDetailsQuery, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
+import { useAssignCpMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';
 import { shootStatusMessage, allStatus } from '@/utils/shootUtils/shootDetails';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
-import DefaultLayout from '@/components/Layouts/DefaultLayout';
 
 const ShootDetails = () => {
   const { userData } = useAuth();
@@ -53,6 +52,8 @@ const ShootDetails = () => {
   const [assignCp, { isLoading: isAssignCpLoading }] = useAssignCpMutation();
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
+  const [updateOrder, { isLoading: isUpdateOrderLoading, isSuccess }] = useUpdateOrderMutation();
+
   const queryParams = useMemo(
     () => ({
       sortBy: 'createdAt:desc',
@@ -179,43 +180,24 @@ const ShootDetails = () => {
       return swalToast('danger', 'Invalid CP data.');
     }
     try {
-      const response = await fetch(`${API_ENDPOINT}orders/${shootId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const updateRes = await updateOrder({
+        requestData: {
           cp_ids: [
             {
               id: cp.id.id,
               decision: 'cancelled',
             },
           ],
-        }),
+        },
+        id: shootId,
       });
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        swalToast('danger', `Error: ${errorMessage}`);
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      // Optionally: Get updated shoot details from the server if needed
-      const updatedShootDetails = await response.json();
-      setCp_ids((prevCpIds) => prevCpIds.filter((cpItem) => cpItem._id !== cp._id));
-      //getShootDetails(shootId);
-
-      swalToast('success', 'CP cancelled successfully.');
+      // setCp_ids((prevCpIds) => prevCpIds.filter((cpItem) => cpItem._id !== cp._id));
+      refetch();
     } catch (error) {
       console.error('Error occurred while sending PATCH request:', error);
     }
   };
-
-  // handleDetailsInfo
-  const handleDetailsInfo = (cpId) => {
-    console.log("cpId:", cpId);
-    toast.warning("This page is under development.")
-  }
+  //
 
   return (
     <>
@@ -318,31 +300,31 @@ const ShootDetails = () => {
               <div className="mb-4 basis-[45%] md:mb-2 md:flex">
                 <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Cost</label>
                 <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="font-sans capitalize ml-5 md:ml-3 text-black">${data?.shoot_cost ?? ''}</span>
+                  <span className="ml-5 font-sans capitalize text-black md:ml-3">${data?.shoot_cost ?? ''}</span>
                 </div>
               </div>
               {/* Shoot Duration */}
               <div className="mb-4 basis-[45%] md:mb-2 md:flex">
                 <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Duration</label>
                 <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="font-sans capitalize text-black ml-5 md:ml-3">{data?.shoot_duration ?? ''} Hours</span>
+                  <span className="ml-5 font-sans capitalize text-black md:ml-3">{data?.shoot_duration ?? ''} Hours</span>
                 </div>
               </div>
             </div>
 
             <div className="items-center justify-between md:mb-4 md:flex">
               {/* Payment Status */}
-              <div className="basis-[45%] space-y-4 mb-3">
+              <div className="mb-3 basis-[45%] space-y-4">
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-3 md:mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Payment Status</label>
+                  <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Payment Status</label>
                   {data?.payment?.payment_status && (
-                    <div className="ml-12 md:ml-3 mt-1 flex-1 md:mt-0">
+                    <div className="ml-12 mt-1 flex-1 md:ml-3 md:mt-0">
                       <StatusBg>{data?.payment?.payment_status}</StatusBg>
                     </div>
                   )}
                 </div>
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-3 md:mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Current Shoot Status</label>
+                  <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Current Shoot Status</label>
                   {data?.order_status && (
                     <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
                       <StatusBg>{data?.order_status}</StatusBg>
@@ -445,13 +427,11 @@ const ShootDetails = () => {
                             </svg>
                           )}
                         </button>
-
                       </div>
                     )}
                   </div>
                 )}
               </div>
-
 
               {/* Assigned Cp's */}
               <div className="mb-4 basis-[45%]">
@@ -483,9 +463,6 @@ const ShootDetails = () => {
                             <th className="border-b px-4 py-2">
                               <div className="flex justify-center">Action</div>
                             </th>
-                            <th className="border-b px-4 py-2 text-right">
-                              <div className="flex justify-center">Details</div>
-                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -508,27 +485,18 @@ const ShootDetails = () => {
                                 <div className="flex justify-center">
                                   {userData?.role === 'admin' ? (
                                     <Tippy content="Cancel">
-                                      <button onClick={() => cancelCp(cp)} className={`rounded bg-red-500 p-1 text-white`}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                        </svg>
+                                      <button onClick={() => cancelCp(cp)} className={`rounded p-1 text-white`}>
+                                        <span className="badge bg-danger">Remove</span>
                                       </button>
                                     </Tippy>
                                   ) : (
-                                    <Tippy content="Only for admin">
-                                      <button className={`rounded bg-[#E8E8E8] p-1  text-black`}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                        </svg>
+                                    <Tippy content="You haven't permission to remove cp">
+                                      <button onClick={() => cancelCp(cp)} className={`rounded p-1`}>
+                                        <span className="badge bg-slate-300  text-black">Remove</span>
                                       </button>
                                     </Tippy>
                                   )}
                                 </div>
-                              </td>
-                              <td className="border-b px-4 py-2 text-right">
-                                <p className="flex justify-center" onClick={() => handleDetailsInfo(cp?._id)}>
-                                  {allSvgs?.threeDotMenuIcon}
-                                </p>
                               </td>
                             </tr>
                           ))}
@@ -583,7 +551,7 @@ const ShootDetails = () => {
                     )}
 
                     <div className="ml-6 lg:ml-0 lg:mt-10">
-                      <h3 className="text-xl font-bold text-gray-900 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500 b break-all"> {status}</h3>
+                      <h3 className="b break-all text-xl font-bold text-gray-900 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500"> {status}</h3>
 
                       <h4 className="mt-2 text-base text-gray-700">{shootStatusMessage(status)}</h4>
                     </div>
@@ -616,8 +584,9 @@ const ShootDetails = () => {
                             aria-hidden="true"
                           ></span>
                           <div
-                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
-                              } transition-all duration-200`}
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
+                              status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
+                            } transition-all duration-200`}
                           >
                             {status === 'Cancelled' ? (
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -658,7 +627,7 @@ const ShootDetails = () => {
           <Dialog as="div" open={cpModal} onClose={() => setCpModal(false)}>
             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
               <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                <Dialog.Panel as="div" className="panel my-24 w-5/6 space-x-0 md:space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+                <Dialog.Panel as="div" className="panel my-24 w-5/6 space-x-0 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:space-x-6">
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                     <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Assign CP's </div>
                     <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setCpModal(false)}>
@@ -671,17 +640,17 @@ const ShootDetails = () => {
                         onChange={(event) => setQuery(event.target.value)}
                         type="search"
                         value={query}
-                        className=" w-full lg:w-[20%] rounded-lg border border-solid border-[#ACA686] px-3 py-2"
+                        className=" w-full rounded-lg border border-solid border-[#ACA686] px-3 py-2 lg:w-[20%]"
                         placeholder="Search"
                       />
                     </div>
-                    <div className="lg:grid lg:grid-cols-3 md:grid md:grid-cols-2 grid grid-cols-1 gap-6 2xl:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-6 md:grid md:grid-cols-2 lg:grid lg:grid-cols-3 2xl:grid-cols-4">
                       {allCp?.results?.length > 0 ? (
                         allCp?.results?.map((cp: any) => {
                           const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                           return (
                             <div key={cp?.userId?._id} className="rounded-lg border border-solid border-[#ACA686] p-3 shadow">
-                              <div className="grid grid-cols-3 items-start justify-start md:h-[140px] h-[150px]">
+                              <div className="grid h-[150px] grid-cols-3 items-start justify-start md:h-[140px]">
                                 <div className="media relative h-14 w-14 rounded-full">
                                   <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="mr-3 h-full w-full rounded-full object-cover" alt="img" />
                                   <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
@@ -703,8 +672,9 @@ const ShootDetails = () => {
                               <div className="mt-3 flex">
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
-                                    } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
+                                    isSelected ? 'bg-red-500' : 'bg-black'
+                                  } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
                                 </p>
@@ -721,9 +691,10 @@ const ShootDetails = () => {
                       )}
                     </div>
 
-
                     <div className="flex justify-center">
-                      <DefaultButton onClick={updateCps} disabled={false} css='my-5' >Submit</DefaultButton>
+                      <DefaultButton onClick={updateCps} disabled={false} css="my-5">
+                        Submit
+                      </DefaultButton>
                     </div>
                     <div className="my-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
                       <ResponsivePagination current={currentPage} total={allCp?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
@@ -734,7 +705,7 @@ const ShootDetails = () => {
             </div>
           </Dialog>
         </Transition>
-      </div >
+      </div>
     </>
   );
 };

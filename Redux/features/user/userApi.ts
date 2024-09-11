@@ -1,5 +1,4 @@
 import { baseApi } from "@/Redux/api/baseApi";
-import { method } from "lodash";
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllCp: builder.query({
@@ -10,25 +9,45 @@ const userApi = baseApi.injectEndpoints({
         }
       },
     }),
-
     getAllUser: builder.query({
-      query:(args) => {
+      query: (args) => {
+        const roleParam = args?.role ? `&role=${args.role}` : '';
+        const searchParam = args?.search ? `&search=${encodeURIComponent(args.search)}` : '';
+        const url = `users?limit=10&page=${args?.page || 1}${roleParam}${searchParam}`;
         return {
-          url : `users?limit=10&page=${args?.page}`,
-          method:"GET",
+          url,
+          method: 'GET',
+        };
+      },
+    }),
+
+
+    getUserDetails: builder.query({
+      query: (data) => {
+        return {
+          url: `users/${data}`,
+          method: "GET",
         }
       }
     }),
-
-    getUserDetails : builder.query({
-      query:(data) => {
+    getCpDetails: builder.query({
+      query: (data) => {
         return {
-          url : `users/${data}`,
-          method:"GET",
+          url: `cp/${data?.id}`,
+          method: "GET",
         }
       }
-    })
+    }),
+    updateCpById: builder.mutation({
+      query: (data) => {
+        return {
+          url: `cp/${data?.id}?role=admin`,
+          method: "PATCH",
+          body: data?.formData
+        }
+      }
+    }),
   }),
 });
 
-export const { useGetAllCpQuery ,useGetAllUserQuery,useLazyGetUserDetailsQuery} = userApi;
+export const { useGetAllCpQuery, useGetAllUserQuery, useLazyGetUserDetailsQuery, useLazyGetCpDetailsQuery, useUpdateCpByIdMutation } = userApi;
