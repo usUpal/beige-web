@@ -17,6 +17,7 @@ const Users = () => {
   const [userModal, setUserModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [userInfo, setUserInfo] = useState<any | null>(null);
+
   const { authPermissions } = useAuth();
 
   const query = {

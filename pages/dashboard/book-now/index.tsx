@@ -609,7 +609,7 @@ const BookNow = () => {
   };
 
   const handleClientChange = (client) => {
-    setClient_id(client?._id);
+    setClient_id(client?.id);
     setClientName(client?.name);
     setShowClientDropdown(false);
   };

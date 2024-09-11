@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setPageTitle } from '@/store/themeConfigSlice';
-import Link from 'next/link';
-import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
-import Swal from 'sweetalert2';
-import { API_ENDPOINT } from '@/config';
 import { useUpdatePriceMutation } from '@/Redux/features/algo/pricesApi';
+import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
+import { setPageTitle } from '@/store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import Swal from 'sweetalert2';
 
 const PricingCalculation = () => {
   const dispatch = useDispatch();
@@ -104,9 +103,7 @@ const PricingCalculation = () => {
                         </td>
                         <td onClick={() => handleRateEdit(price)}>
                           {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>Edit</span> */}
-                          <button type="button">
-                            {allSvgs.editPen}
-                          </button>
+                          <button type="button">{allSvgs.editPen}</button>
                         </td>
                       </tr>
                     );
@@ -140,9 +137,7 @@ const PricingCalculation = () => {
                         <td onClick={() => handleRateEdit(price)}>
                           {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>{allSvgs.editPen} </span>
                            */}
-                          <button type="button">
-                            {allSvgs.editPen}
-                          </button>
+                          <button type="button">{allSvgs.editPen}</button>
                         </td>
                       </tr>
                     );
