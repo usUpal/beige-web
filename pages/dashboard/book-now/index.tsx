@@ -50,7 +50,7 @@ interface FormData {
 const BookNow = () => {
   const [addonsData] = useAddons();
   const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
-  const { userData ,authPermissions} = useAuth();
+  const { userData, authPermissions } = useAuth();
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
@@ -101,8 +101,8 @@ const BookNow = () => {
   useEffect(() => {
     dispatch(setPageTitle('Manager Dashboard'));
     localStorage.removeItem('location');
-    if(!(authPermissions?.includes('booking_page'))){
-      router.push('/errors/access-denied')
+    if (!authPermissions?.includes('booking_page')) {
+      router.push('/errors/access-denied');
     }
   }, []);
 
@@ -563,7 +563,7 @@ const BookNow = () => {
           };
 
           const updateRes = await updateOrder({
-            requestBody: formattedData,
+            requestData: formattedData,
             id: orderId,
           });
 
@@ -868,10 +868,10 @@ const BookNow = () => {
                               >
                                 Add
                               </p> */}
-                              <div className='flex justify-end'>
+                              <div className="flex justify-end">
                                 <span
                                   // css="h-9 ml-2 mt-4"
-                                  className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 font-sans text-[14px] text-center capitalize leading-[28px] text-white"
+                                  className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white"
                                   onClick={addDateTime}
                                 >
                                   Add
@@ -1068,14 +1068,15 @@ const BookNow = () => {
                                 </div>
                                 <div className="mt-[30px] flex justify-center gap-3">
                                   <Link href={`cp/${cp?.userId?._id}`}>
-                                    <p className=" inline-block cursor-pointer rounded-[10px] bg-black px-[12px] md:px-[20px] py-[8px] md:py-[12px] font-sans text-[16px] font-medium capitalize leading-none text-white">
+                                    <p className=" inline-block cursor-pointer rounded-[10px] bg-black px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none text-white md:px-[20px] md:py-[12px]">
                                       view profile
                                     </p>
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                      } px-[12px] md:px-[20px] py-[8px] md:py-[12px] font-sans text-[16px] font-medium capitalize leading-none`}
+                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${
+                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                    } px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none md:px-[20px] md:py-[12px]`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1139,7 +1140,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                            // disabled={disableInput}
+                                              // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
