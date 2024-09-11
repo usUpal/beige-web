@@ -7,22 +7,16 @@ import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition } from '@headlessui/react';
-import useDateFormat from '@/hooks/useDateFormat';
-import StatusBg from '@/components/Status/StatusBg';
 import ResponsivePagination from 'react-responsive-pagination';
-import useClient from '@/hooks/useClient';
 import { useAuth } from '@/contexts/authContext';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 
 const Users = () => {
-  const [allClients, setAllClients, totalPagesCount, setTotalPagesCount, currentPage, setCurrentPage] = useClient();
-
   const [isMounted, setIsMounted] = useState(false);
   const [userModalClient, setUserModalClient] = useState(false);
   const { authPermissions } = useAuth();
-  // const [allClients, setAllClients] = useState<any[]>([]);
-  // const [currentPage, setCurrentPage] = useState<number>(1);
-  // const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const [isLoading, setLoading] = useState<boolean>(true);
   const [showError, setShowError] = useState<boolean>(false);
@@ -67,30 +61,17 @@ const Users = () => {
     updatedAt: '2023-11-14T10:56:45.303Z',
     id: '6527c687756ec2096cac7ab2',
   });
-  //   const [backupFootage, setBackupFootage] = useState<string>();
 
-  // time formation
   const inputDate = clientUserInfo?.createdAt;
-  const formattedDateTime = useDateFormat(inputDate);
+  const query = {
+    page : currentPage
+  }
+  const { data: allClients, isLoading: getAllClientsLoading } = useGetAllUserQuery(query, {
+    refetchOnMountOrArgChange: true,
+  });
 
-  useEffect(() => {
-    getAllClients();
-  }, [currentPage]);
+  console.log(' ~ allClients ~',allClients)
 
-  // All Users
-  const getAllClients = async () => {
-    try {
-      const response = await fetch(`${API_ENDPOINT}users?limit=30&page=${currentPage}`);
-      const users = await response.json();
-      setTotalPagesCount(users?.totalPages);
-      setAllClients(users.results);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // User Single
-  // Also unUsed Function For APi
   const getUserDetails = async (singleUserId: string) => {
     setLoading(true);
     try {
@@ -281,11 +262,11 @@ const Users = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {allClients
-                          ?.filter((user) => {
+                        {allClients?.results
+                          ?.filter((user : any) => {
                             return user.role === 'user';
                           })
-                          ?.map((userClient) => (
+                          ?.map((userClient : any) => (
                             <tr key={userClient.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                               <td className="min-w-[150px] font-sans text-black dark:text-white">
                                 <div className="flex items-center">
@@ -316,7 +297,7 @@ const Users = () => {
                       </tbody>
                     </table>
                     <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                      <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
+                      <ResponsivePagination current={currentPage} total={allClients?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
                     </div>
                   </div>
                   {/* modal Starts*/}

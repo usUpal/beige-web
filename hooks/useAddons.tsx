@@ -1,3 +1,4 @@
+import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 import { API_ENDPOINT } from '@/config';
 import { handleClientScriptLoad } from 'next/script';
 import { useEffect, useState } from 'react';
@@ -14,6 +15,14 @@ const useAddons = () => {
       return;
     }
   };
+
+  const {data:getAllAddons} = useGetAllAddonsQuery(undefined,{
+    refetchOnMountOrArgChange:true,
+  });
+
+  if(getAllAddons?.length){
+    setAddonsData(getAllAddons)
+  }
 
   useEffect(() => {
     const fetchData = async () => {
