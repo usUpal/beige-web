@@ -11,9 +11,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useAddNewAddOnMutation, useDeleteSingleAddonMutation, useGetAllAddonsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation } from '@/Redux/features/addons/addonsApi';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-
+import { useRouter } from 'next/router';
 const Addons = () => {
-  const { authPermissions } = useAuth();
+  const { userData, authPermissions } = useAuth();
   const [addonsCategories, setAddonsCategories] = useState([]);
   const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
   const [addonsModal, setAddonsModal] = useState(false);
@@ -23,7 +23,7 @@ const Addons = () => {
   });
   const [newCategory, setNewCategory] = useState('');
   const dispatch = useDispatch();
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -42,6 +42,12 @@ const Addons = () => {
 
   const [updateAddon, { isLoading: useUpdateAddonLoading, isSuccess: isSuccessUpdateAddOn }] = useUpdateAddonMutation();
   const [addNewAddOn, { isLoading: useAddNewAddOnLoading, isSuccess: isSuccessAddNewAddOn }] = useAddNewAddOnMutation();
+
+  useEffect(() => {
+    if (!authPermissions?.includes('add_ons_page') || userData?.role === 'user' || userData?.role === 'cp') {
+      router.push('/errors/access-denied');
+    }
+  }, [authPermissions, userData, router]);
 
   useEffect(() => {
     if (addonsData) {
@@ -148,7 +154,7 @@ const Addons = () => {
 
   const handleDelete = async (addon: any) => {
     try {
-      console.log("🚀 ~ deletePermission ~ id:", addon?._id)
+      console.log('🚀 ~ deletePermission ~ id:', addon?._id);
       await deleteSingleAddon(addon?._id);
       refetch();
       toast.success('Addon deleted successfully');
@@ -199,8 +205,9 @@ const Addons = () => {
                     <Tab key={index}>
                       {({ selected }) => (
                         <button
-                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${selected ? 'bg-success text-white outline-none' : ''
-                            }`}
+                          className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${
+                            selected ? 'bg-success text-white outline-none' : ''
+                          }`}
                           title={category}
                         >
                           {category}
@@ -257,7 +264,7 @@ const Addons = () => {
                                     </td>
 
                                     {authPermissions?.includes('add_ons_edit') && (
-                                      <td className='flex items-center gap-5'>
+                                      <td className="flex items-center gap-5">
                                         <button
                                           onClick={() => {
                                             getDetails(addon);
@@ -269,9 +276,9 @@ const Addons = () => {
 
                                         <button
                                           onClick={() => {
-                                            handleDelete(addon)
+                                            handleDelete(addon);
                                           }}
-                                          className='text-red-600'
+                                          className="text-red-600"
                                         >
                                           {allSvgs.trash}
                                         </button>
@@ -290,10 +297,10 @@ const Addons = () => {
             </Tab.Group>
           </div>
         </div>
-      </div >
+      </div>
 
       {/* modal for update  button starts */}
-      < Transition Transition appear show={addonsModal} as={Fragment}>
+      <Transition Transition appear show={addonsModal} as={Fragment}>
         <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
@@ -397,10 +404,10 @@ const Addons = () => {
             </div>
           </div>
         </Dialog>
-      </Transition >
+      </Transition>
 
       {/* add addons modal starts */}
-      < Transition Transition appear show={addonsAddBtnModal} as={Fragment}>
+      <Transition Transition appear show={addonsAddBtnModal} as={Fragment}>
         <Dialog as="div" open={addonsAddBtnModal} onClose={() => setAddonsAddBtnModal(false)}>
           <div className="fixed inset-0" />
 
@@ -582,9 +589,9 @@ const Addons = () => {
             </div>
           </div>
         </Dialog>
-      </Transition >
+      </Transition>
       {/* add addons modal ends */}
-    </div >
+    </div>
   );
 };
 export default Addons;

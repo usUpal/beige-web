@@ -232,6 +232,7 @@ const Chat = () => {
 
   const { data: clientsData } = useGetAllUserQuery(searchQuer, {
     refetchOnMountOrArgChange: true,
+    skip: userData?.role === 'cp' || userData?.role === 'user',
   });
   const getAllClients = async () => {
     setIsClientLoading(true);
