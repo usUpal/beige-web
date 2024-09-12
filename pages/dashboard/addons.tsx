@@ -10,9 +10,9 @@ import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAddNewAddOnMutation, useGetAllAddonsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation } from '@/Redux/features/addons/addonsApi';
 import { toast } from 'react-toastify';
-
+import { useRouter } from 'next/router';
 const Addons = () => {
-  const { authPermissions } = useAuth();
+  const {userData, authPermissions } = useAuth();
   const [addonsCategories, setAddonsCategories] = useState([]);
   const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
   const [addonsModal, setAddonsModal] = useState(false);
@@ -22,7 +22,7 @@ const Addons = () => {
   });
   const [newCategory, setNewCategory] = useState('');
   const dispatch = useDispatch();
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -41,6 +41,13 @@ const Addons = () => {
 
   const [updateAddon, { isLoading: useUpdateAddonLoading, isSuccess: isSuccessUpdateAddOn }] = useUpdateAddonMutation();
   const [addNewAddOn, { isLoading: useAddNewAddOnLoading, isSuccess: isSuccessAddNewAddOn }] = useAddNewAddOnMutation();
+
+
+  useEffect(() => {
+    if (!authPermissions?.includes('add_ons_page') || userData?.role === 'user') {
+      router.push('/errors/access-denied');
+    }
+  }, [authPermissions, userData, router]);
 
   useEffect(() => {
     if (addonsData) {

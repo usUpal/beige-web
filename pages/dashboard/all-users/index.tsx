@@ -17,8 +17,15 @@ const Users = () => {
   const [userModal, setUserModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [userInfo, setUserInfo] = useState<any | null>(null);
+  const router = useRouter();
 
-  const { authPermissions } = useAuth();
+  const { authPermissions ,userData} = useAuth();
+
+  useEffect(() => {
+    if (!authPermissions?.includes('all_users') || userData?.role === 'user') {
+      router.push('/errors/access-denied');
+    }
+  }, [authPermissions, userData, router]);
 
   const query = {
     page: currentPage,
@@ -26,7 +33,6 @@ const Users = () => {
   const { data: getAllUser } = useGetAllUserQuery(query, {
     refetchOnMountOrArgChange: true,
   });
-  const router = useRouter();
 
   const dispatch = useDispatch();
   useEffect(() => {
