@@ -1,30 +1,22 @@
 import { baseApi } from "@/Redux/api/baseApi";
 
-const profileFormApi = baseApi.injectEndpoints({
+const profileUpdate = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    sendFromProfile: builder.mutation({
+    updateUserInfo: builder.mutation({
       query: (userData) => ({
-        // users/${userData?.id}
         url: `users/${userData.id}`,
         method: 'PATCH',
-        body: JSON.stringify({
-          name: userData.name,
-          location: userData.location,
-          email: userData.email
-        }),
+        body: JSON.stringify(userData?.data),
       }),
     }),
-    sendCpData: builder.mutation({
+    updateCpDataForLocation: builder.mutation({
       query: (userData) => ({
         url: `cp/${userData.id}`,
         method: 'PATCH',
-        body: JSON.stringify({
-          geo_location: userData.geo_location,
-          city: userData.location
-        }),
+        body: JSON.stringify(userData?.data),
       }),
     }),
   }),
 });
 
-export const { useSendFromProfileMutation, useSendCpDataMutation } = profileFormApi;
+export const { useUpdateUserInfoMutation, useUpdateCpDataForLocationMutation } = profileUpdate;
