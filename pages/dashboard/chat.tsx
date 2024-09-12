@@ -75,13 +75,11 @@ const Chat = () => {
     setCurrentPage(page);
   };
 
-  const queryData = useMemo(
-    () => ({
-      userRole,
-      userD: userData?.id,
-    }),
-    []
-  );
+  const queryData = {
+    userRole,
+    userD: userData?.id,
+    page: currentPage,
+  };
 
   // Fetch all chat - data based on query parameters
   const { data, error, isFetching, refetch } = useGetAllChatQuery(queryData, {
@@ -213,9 +211,9 @@ const Chat = () => {
   const allChatParticipants = [
     selectedChatRoom?.client_id
       ? {
-        ...selectedChatRoom.client_id,
-        type: 'client',
-      }
+          ...selectedChatRoom.client_id,
+          type: 'client',
+        }
       : null,
 
     ...(selectedChatRoom?.cp_ids || []).map((cp) => ({
@@ -273,7 +271,11 @@ const Chat = () => {
 
   return (
     <div className={`relative flex h-full gap-0 sm:h-[calc(100vh_-_150px)]  sm:min-h-0 md:gap-5 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
-      <div className={`panel absolute z-10 hidden w-full md:w-80 lg:w-full h-10/12 md:h-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+      <div
+        className={`panel h-10/12 absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 md:h-full md:w-80 lg:w-full xl:relative xl:block xl:h-full ${
+          isShowChatMenu ? '!block' : ''
+        }`}
+      >
         <div className="relative">
           <input type="text" className="peer form-input ltr:pr-9 rtl:pl-9" placeholder="Searching..." value={searchUser} onChange={(event) => getSearchResultByQuery(event, 'searchChat')} />
           <div className="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-2 rtl:left-2">
@@ -302,8 +304,9 @@ const Chat = () => {
                 <div key={chat?.id} className="">
                   <button
                     type="button"
-                    className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
-                      }`}
+                    className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${
+                      selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
+                    }`}
                     onClick={() => selectUser(chat)}
                   >
                     <div className="flex-1">
@@ -328,16 +331,14 @@ const Chat = () => {
         </div>
 
         <>
-
-          <div className='hidden lg:block'>
-
+          <div className="hidden lg:block">
             <div className=" mt-4 flex justify-start lg:justify-center ">
               <ResponsivePaginationComponent
                 current={currentPage}
                 total={data?.totalPages}
                 onPageChange={handlePageChange}
                 maxWidth={200}
-              // styles={{ display: "inline-block" }}
+                // styles={{ display: "inline-block" }}
               />
             </div>
           </div>
@@ -348,14 +349,13 @@ const Chat = () => {
                 total={data?.totalPages}
                 onPageChange={handlePageChange}
                 maxWidth={260}
-                className="my-pagination flex justify-start lg:justify-center w-48 mx-auto"
+                className="my-pagination mx-auto flex w-48 justify-start lg:justify-center"
                 pageLinkClassName={`w-5 border-solid bg-gray-300 px-2 py-0.5 mr-1 rounded `}
-              // activeItemClassName="bg-black"
+                // activeItemClassName="bg-black"
               />
             </div>
           </div>
         </>
-
       </div>
       <div className={`absolute  z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
       <div className={`panel flex-1 p-0 ${threeDotSidebar && 'hidden lg:block'}`}>
@@ -505,9 +505,9 @@ const Chat = () => {
                 <div className="mx-3">
                   <Link href={`./shoots/${selectedChatRoom?.order_id?.id}`}>
                     <p className="font-semibold">
-                      <span className='block md:hidden lg:hidden'>{truncateLongText(selectedChatRoom?.order_id?.order_name, 20)}</span>
-                      <span className='hidden md:block  lg:hidden'>{truncateLongText(selectedChatRoom?.order_id?.order_name, 40)}</span>
-                      <span className='hidden lg:block'>{truncateLongText(selectedChatRoom?.order_id?.order_name, 80)}</span>
+                      <span className="block md:hidden lg:hidden">{truncateLongText(selectedChatRoom?.order_id?.order_name, 20)}</span>
+                      <span className="hidden md:block  lg:hidden">{truncateLongText(selectedChatRoom?.order_id?.order_name, 40)}</span>
+                      <span className="hidden lg:block">{truncateLongText(selectedChatRoom?.order_id?.order_name, 80)}</span>
                     </p>
                     <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + updatedAtDateTime?.time}</p>
                   </Link>
@@ -550,7 +550,7 @@ const Chat = () => {
                                   {clients.length <= 0 && (
                                     <div
                                       className="absolute top-1/2 -translate-y-1/2  cursor-pointer ltr:right-2 rtl:left-2"
-                                    // onClick={handleSearchParticipants}
+                                      // onClick={handleSearchParticipants}
                                     >
                                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5"></circle>
@@ -654,15 +654,16 @@ const Chat = () => {
                                 ? message?.senderName == 'Admin User'
                                   ? createImageByName('MA')
                                   : message?.senderName == 'User'
-                                    ? createImageByName('A')
-                                    : createImageByName('CP')
+                                  ? createImageByName('A')
+                                  : createImageByName('CP')
                                 : ''}
                             </div>
                             <div className="">
                               <div className="flex items-center gap-3">
                                 <div
-                                  className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
-                                    }`}
+                                  className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${
+                                    message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
+                                  }`}
                                 >
                                   {message?.message}
                                 </div>
@@ -743,8 +744,9 @@ const Chat = () => {
                 <li className="me-2">
                   <button
                     onClick={() => setActiveTab('1')}
-                    className={`inline-block rounded-t-lg p-4 ${activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                      }`}
+                    className={`inline-block rounded-t-lg p-4 ${
+                      activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                   >
                     Participant
                   </button>
@@ -752,8 +754,9 @@ const Chat = () => {
                 <li className="me-2">
                   <button
                     onClick={() => setActiveTab('2')}
-                    className={`inline-block rounded-t-lg p-4 ${activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                      }`}
+                    className={`inline-block rounded-t-lg p-4 ${
+                      activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                   >
                     Files
                   </button>
@@ -853,8 +856,9 @@ const Chat = () => {
                 <li className="me-2">
                   <button
                     onClick={() => setActiveTab('1')}
-                    className={`inline-block rounded-t-lg p-4 ${activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                      }`}
+                    className={`inline-block rounded-t-lg p-4 ${
+                      activeTab === '1' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                   >
                     Participant
                   </button>
@@ -862,8 +866,9 @@ const Chat = () => {
                 <li className="me-2">
                   <button
                     onClick={() => setActiveTab('2')}
-                    className={`inline-block rounded-t-lg p-4 ${activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
-                      }`}
+                    className={`inline-block rounded-t-lg p-4 ${
+                      activeTab === '2' ? 'bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500' : 'hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                    }`}
                   >
                     Files
                   </button>

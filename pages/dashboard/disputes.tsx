@@ -32,8 +32,12 @@ const Disputes = () => {
   const query = {
     currentPage,
     userData,
-  }
-  const { data: allDisputes, isLoading: getAllDisputesLoading, refetch } = useGetAllDisputesQuery(query, {
+  };
+  const {
+    data: allDisputes,
+    isLoading: getAllDisputesLoading,
+    refetch,
+  } = useGetAllDisputesQuery(query, {
     refetchOnMountOrArgChange: true,
   });
   const [getDisputesDetails, { isLoading: getDisputeDetailsLoading }] = useLazyGetDisputesDetailsQuery();
@@ -52,26 +56,21 @@ const Disputes = () => {
     setCurrentPage(page);
   };
 
-
   const handleUpdateStatusSubmit = async (id: string) => {
     try {
       const selectedStatus = statusRef.current?.value;
       const result = await updateDisputeStatus({ id, status: selectedStatus });
 
-      console.log("result", result);
-
+      console.log('result', result);
 
       toast.success('Dispute status updated successfully');
       setDisputeModal(false);
       refetch();
-
-    }
-    catch (error) {
+    } catch (error) {
       toast.error('Something went wrong!');
       console.error('Patch error:', error);
     }
   };
-
 
   // get Time Hooks
   const inputedDesputeDate = disputeInfo?.createdAt;
@@ -95,7 +94,6 @@ const Disputes = () => {
               </tr>
             </thead>
             <tbody>
-
               {getAllDisputesLoading ? (
                 <>
                   <PreLoader></PreLoader>
@@ -112,8 +110,8 @@ const Disputes = () => {
                         </td>
 
                         <td>
-                          {new Date(dispute?.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}{' '} ,
-                          Time: {new Date(dispute?.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
+                          {new Date(dispute?.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} , Time:{' '}
+                          {new Date(dispute?.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
                         </td>
 
                         <td className="">
@@ -132,18 +130,15 @@ const Disputes = () => {
                         </td>
                       </tr>
                     ))
-
                   ) : (
                     <tr>
                       <td colSpan={50} className="text-center">
-                        <span className="text-[red] font-semibold flex justify-center"> No desputes found </span>
+                        <span className="flex justify-center font-semibold text-[red]"> No desputes found </span>
                       </td>
                     </tr>
                   )}
-
                 </>
               )}
-
             </tbody>
           </table>
 
@@ -162,7 +157,7 @@ const Disputes = () => {
             <div className="flex min-h-screen items-start justify-center px-4">
               <Dialog.Panel as="div" className="panel my-24 w-5/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark lg:w-3/6 2xl:w-2/6">
                 <div className="flex items-center justify-between bg-[#fbfbfb] py-4 dark:bg-[#121c2c]">
-                  <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
+                  <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Dispute Details </h2>
 
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setDisputeModal(false)}>
                     {allSvgs.closeModalSvg}
@@ -170,7 +165,6 @@ const Disputes = () => {
                 </div>
 
                 <div className="mt-5 px-5">
-
                   {/*  */}
                   <div className="justify-between md:flex">
                     <div>
@@ -179,8 +173,6 @@ const Disputes = () => {
                           Reason : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{disputeInfo?.reason}</span>
                         </span>
                       </div>
-
-
 
                       <p>
                         <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
@@ -193,8 +185,6 @@ const Disputes = () => {
                           Date : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{formattedDateTime?.date}</span>
                         </span>
                       </p>
-
-
                     </div>
 
                     <div>
@@ -205,12 +195,10 @@ const Disputes = () => {
                       </p>
 
                       <div className="flex flex-col md:mt-0">
-                        <span
-                          className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]"
-                        >Status</span>
+                        <span className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">Status</span>
                         <select
                           ref={statusRef}
-                          className=" h-9 w-auto md:w-72  rounded border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
+                          className=" h-9 w-auto rounded  border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
                           name="status"
                           defaultValue={disputeInfo?.status}
                         >
@@ -221,18 +209,19 @@ const Disputes = () => {
                       </div>
                     </div>
                   </div>
-
                 </div>
 
-                <div className="flex justify-center md:justify-end mr-12 mt-8">
-                  <DefaultButton onClick={() => handleUpdateStatusSubmit(disputeInfo?.id)} css='' type="submit">Update</DefaultButton>
+                <div className="mr-12 mt-8 flex justify-center md:justify-end">
+                  <DefaultButton onClick={() => handleUpdateStatusSubmit(disputeInfo?.id)} css="" type="submit">
+                    Update
+                  </DefaultButton>
                 </div>
               </Dialog.Panel>
             </div>
           </div>
-        </Dialog >
-      </Transition >
-    </div >
+        </Dialog>
+      </Transition>
+    </div>
   );
 };
 
