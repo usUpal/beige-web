@@ -16,7 +16,33 @@ const profileUpdate = baseApi.injectEndpoints({
         body: JSON.stringify(userData?.data),
       }),
     }),
+    getCpReview : builder.query({
+      query: (data) => {
+        return {
+          url : `review?cp_id=${data}&populate=client_id`,
+          method:'GET'
+        }
+      }
+    }),
+    getCpUploadedImage : builder.query({
+      query:(data) => {
+        console.log("🚀 ~ data:", data)
+        return {
+          url : `/gcp/get-content/${data}/images`,
+          method:'GET',
+        }
+      }
+    }),
+    getCpUploadedVideo : builder.query({
+      query:(data) => {
+        console.log("🚀 ~ data:", data)
+        return {
+          url :`/gcp/get-content/${data}/videos`,
+          method:'GET',
+        }
+      }
+    })
   }),
 });
 
-export const { useUpdateUserInfoMutation, useUpdateCpDataForLocationMutation } = profileUpdate;
+export const { useUpdateUserInfoMutation, useUpdateCpDataForLocationMutation ,useGetCpReviewQuery,useGetCpUploadedImageQuery,useGetCpUploadedVideoQuery} = profileUpdate;

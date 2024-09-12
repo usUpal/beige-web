@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { API_ENDPOINT } from '@/config';
 import Swal from 'sweetalert2';
 import Cookies from 'js-cookie';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 // interface FormData {
 //   profile_picture: FileList;
@@ -32,21 +34,65 @@ const ProfileImageForm = () => {
     });
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if (file) {
+      // Set the image preview
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfilePicture(reader.result);
+        setProfilePicture(reader.result); // Preview the image
       };
       reader.readAsDataURL(file);
-      setValue('profile_picture', event.target.files);
+
+      // Prepare data for signed URL request
+      const formData = {
+        fileName: file.name,
+        fileContentType: file.type,
+        fileSize: file.size,
+        userId: userData?.id, // Make sure userData is available
+      };
+
+      // Step 1: Request signed URL from backend
+      try {
+        const response = await axios.post(`${API_ENDPOINT}gcp/profile-image`, formData);
+        const { url, filePath } = response.data;
+        // Step 2: Upload the file to GCP using the signed URL
+        const uploadResponse = await axios.put(url, file, {
+          headers: {
+            'Content-Type': file.type, // Ensure Content-Type matches the signed URL
+          },
+        });
+
+        if (uploadResponse.status === 200) {
+          // Step 3: Make the file public
+          const publicResponse = await axios.post(`${API_ENDPOINT}gcp/make-file-public`, { filePaths: [filePath] });
+          toast.success('Profile picture uploaded successfully', {
+            position: 'top-right',
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+
+          // Step 4: Update user data with the new profile picture URL
+          const publicUrl = publicResponse.data.publicUrls[0];
+          setUserData({ ...userData, profile_picture: publicUrl });
+          Cookies.set('userData', JSON.stringify({ ...userData, profile_picture: publicUrl }), { expires: 7 });
+        }
+      } catch (error) {
+        toast.error('Failed to upload profile picture');
+      }
     }
   };
 
   const onSubmit = async (data) => {
     coloredToast('success', 'Under development');
     return;
+
     setIsLoading(true);
     try {
       const patchResponse = await fetch(`${API_ENDPOINT}users/${userData?.id}`, {
@@ -73,7 +119,7 @@ const ProfileImageForm = () => {
 
   return (
     <div>
-      
+
         <div className="relative group flex flex-col items-center justify-center">
           {profilePicture ? (
             <img
@@ -87,7 +133,7 @@ const ProfileImageForm = () => {
             </span>
           )}
 
-          
+
         <form onSubmit={handleSubmit(onSubmit)} className="rounded-md bg-white p-2 dark:border-[#191e3a] dark:bg-black">
           <div className="h-32 w-32 rounded-full bg-[#02020281] absolute top-0 right-[32%] bottom-0  flex flex-col gap-0 justify-center items-center opacity-0 transition-opacity duration-300 ease-out hover:opacity-100">
             <label className="cursor-pointer">
@@ -98,11 +144,11 @@ const ProfileImageForm = () => {
               {isLoading ? 'Updating...' : 'Update'}
             </button>
           </div>
-          
+
         </form>
       </div>
 
-        
+
       <p className="text-xl font-semibold text-primary mt-2 text-center">{name}</p>
     </div>
   );

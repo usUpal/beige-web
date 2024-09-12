@@ -181,12 +181,7 @@ const Disputes = () => {
                           Date : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{formattedDateTime?.date}</span>
                         </span>
                       </p>
-
-                      {/* <button onClick={() => setDisputeModal(false)} type="submit" className="btn mx-auto mt-8 bg-black font-sans text-white md:me-0 md:mt-24">
-                        Close
-                      </button> */}
-                      <DefaultButton onClick={() => setDisputeModal(false)} css=''>Close</DefaultButton>
-                      {/* </div> */}
+                      {/* <DefaultButton onClick={() => setDisputeModal(false)} css=''>Close</DefaultButton> */}
                     </div>
                   </div>
                 </div>

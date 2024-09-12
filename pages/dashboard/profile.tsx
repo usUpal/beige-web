@@ -13,10 +13,8 @@ import 'swiper/swiper-bundle.css';
 import { Dialog, Transition } from '@headlessui/react';
 import { API_ENDPOINT } from '@/config';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
-import Swal from 'sweetalert2';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
-import { toast } from 'react-toastify';
-
+import { useGetCpReviewQuery, useGetCpUploadedImageQuery, useGetCpUploadedVideoQuery } from '@/Redux/features/profile/profileFormApi';
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 
 const ImageModal = ({ src, onClose }) => {
@@ -75,6 +73,9 @@ const Profile = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showImage, setShowImage] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [activeTab, setActiveTab] = useState<string>('image');
+
   const profileDesignation = (role) => {
     switch (role) {
       case 'user':
@@ -92,68 +93,19 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(setPageTitle('Profile'));
+  const { data: allCpReview, isLoading: isGetAllCpReviewLoading } = useGetCpReviewQuery(userData?.id, {
+    refetchOnMountOrArgChange: true,
+  })
+  const { data: allCpImage, isLoading: isGetAllCpImageLoading } = useGetCpUploadedImageQuery(userData?.id, {
+    refetchOnMountOrArgChange: true,
+  })
 
-    const fetchReviews = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(`${API_ENDPOINT}/review?cp_id=${userData?.id}&populate=client_id`);
-        if (response.ok) {
-          const data = await response.json();
-          setReviews(data.results);
-        } else {
-          console.error('Error fetching reviews:', response.statusText);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-        setIsLoading(false);
-      }
-    };
+  const { data: allCpVideo, isLoading: isGetAllCpVideoLoading } = useGetCpUploadedVideoQuery(userData?.id, {
+    refetchOnMountOrArgChange: true,
+  })
+  console.log("🚀 ~ Profile ~ allCpVideo:", allCpVideo)
 
-    fetchReviews();
-  }, [dispatch]);
 
-  useEffect(() => {
-    const fetchUploadImage = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(`${API_ENDPOINT}/gcp/get-content/${userData?.id}/images`);
-
-        if (response.ok) {
-          const data = await response.json();
-          setUploadImage(data.contents);
-        } else {
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Error fetching upload image:', error);
-        setIsLoading(false);
-      }
-    };
-    fetchUploadImage();
-  }, []);
-
-  useEffect(() => {
-    const fetchUploadVideo = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(`${API_ENDPOINT}/gcp/get-content/${userData?.id}/videos`);
-
-        if (response.ok) {
-          const data = await response.json();
-          setUploadVideo(data.contents);
-        } else {
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Error fetching upload image:', error);
-        setIsLoading(false);
-      }
-    };
-    fetchUploadVideo();
-  }, []);
 
   const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
@@ -230,38 +182,40 @@ const Profile = () => {
                     slidesPerView: 3,
                   },
                 }} className="mySwiper">
-                {isLoading && reviews?.length > 0 ? (
-                  reviews?.map((review, index) => ((console.log(review)),
-                    <SwiperSlide key={index}>
-                      <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
-                        <div className="flex gap-4">
-                          {!review?.client_id?.profile_picture ? (
-                            <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : ""}</MakeProfileImage>
-                          ) : (
-                            <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="User profile picture" />
-                          )}
+                {allCpReview?.results && allCpReview?.results?.length > 0 ? (
+                  <>
+                    {allCpReview?.results?.map((review, index) => (
+                      <SwiperSlide key={index}>
+                        <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
+                          <div className="flex gap-4">
+                            {!review?.client_id?.profile_picture ? (
+                              <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : ""}</MakeProfileImage>
+                            ) : (
+                              <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="User profile picture" />
+                            )}
 
-                          <div className="w-full">
-                            <div className="flex w-full items-center justify-between">
-                              <div>
-                                <h2 className="text-left text-[20px] font-bold leading-5">{review?.client_id?.name}</h2>
-                                <p className="mt-1 text-left text-[14px] font-medium text-[#928989]">{review?.client_id?.location}</p>
-                              </div>
-                              <div>
-                                <div className="flex items-center justify-end gap-1">
-                                  <svg className="h-4 w-4 text-center" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style={{ fill: '#c2ad36' }}>
-                                    <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.7 18L202.6 95.1 59 116.3c-12 1.8-22.2 10.7-25.7 21.7s-0.7 24.3 7.9 32.7L166.6 329l-97.4 93.1c-2.2 12-0.6 24.1 6.6 32.5 6.6 7.7 15.7 12.1 24.2 12.7 6.3 0 12.7-1.5 18.5-4.6l146.1-82.8 146.1 82.8c5.9 3.1 12.2 4.6 18.5 4.6 9.1 0 18.2-3.6 24.8-10.2 9.4-8.4 14.5-20.5 12.7-32.5L438.2 329l104.4-96.2c8.6-8.5 11.9-20.8 7.9-32.7s-13.7-19.9-25.7-21.7l-143.6-21.2L316.9 18z" />
-                                  </svg>
-                                  <span className="font-bold">{review?.rating}</span>
+                            <div className="w-full">
+                              <div className="flex w-full items-center justify-between">
+                                <div>
+                                  <h2 className="text-left text-[20px] font-bold leading-5">{review?.client_id?.name}</h2>
+                                  <p className="mt-1 text-left text-[14px] font-medium text-[#928989]">{review?.client_id?.location}</p>
+                                </div>
+                                <div>
+                                  <div className="flex items-center justify-end gap-1">
+                                    <svg className="h-4 w-4 text-center" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style={{ fill: '#c2ad36' }}>
+                                      <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.7 18L202.6 95.1 59 116.3c-12 1.8-22.2 10.7-25.7 21.7s-0.7 24.3 7.9 32.7L166.6 329l-97.4 93.1c-2.2 12-0.6 24.1 6.6 32.5 6.6 7.7 15.7 12.1 24.2 12.7 6.3 0 12.7-1.5 18.5-4.6l146.1-82.8 146.1 82.8c5.9 3.1 12.2 4.6 18.5 4.6 9.1 0 18.2-3.6 24.8-10.2 9.4-8.4 14.5-20.5 12.7-32.5L438.2 329l104.4-96.2c8.6-8.5 11.9-20.8 7.9-32.7s-13.7-19.9-25.7-21.7l-143.6-21.2L316.9 18z" />
+                                    </svg>
+                                    <span className="font-bold">{review?.rating}</span>
+                                  </div>
                                 </div>
                               </div>
+                              <p className="mt-3 text-left text-[14px]">{review?.reviewText}</p>
                             </div>
-                            <p className="mt-3 text-left text-[14px]">{review?.reviewText}</p>
                           </div>
                         </div>
-                      </div>
-                    </SwiperSlide>
-                  ))
+                      </SwiperSlide>
+                    ))}
+                  </>
                 ) : (
                   <p>No reviews available</p>
                 )}
@@ -275,8 +229,8 @@ const Profile = () => {
           <div className="panel mt-5">
             <div className="flex flex-wrap items-center gap-2">
 
-              <DefaultButton onClick={handleImageClick} css=''>Image</DefaultButton>
-              <DefaultButton onClick={handleVideoClick} css=''>Vedio</DefaultButton>
+              <DefaultButton onClick={() => setActiveTab('image')} css=''>Image</DefaultButton>
+              <DefaultButton onClick={() => setActiveTab('video')} css=''>Vedio</DefaultButton>
 
 
               {/* {showImage &&
@@ -293,13 +247,13 @@ const Profile = () => {
                   } */}
             </div>
 
-            {showImage && (
+            {activeTab === 'image' && (
               <>
-                {uploadImage?.Corporate?.length > 0 && (
+                {allCpImage?.contents?.Corporate && allCpImage?.contents?.Corporate?.length > 0 && (
                   <>
                     <h2 className="mb-0 mt-6 text-left text-[20px] font-bold">Corporate Images</h2>
                     <div className="image-sec mt-4 flex flex-wrap items-center gap-4">
-                      {uploadImage?.Corporate?.map((src, index) => (
+                      {allCpImage?.contents?.Corporate?.map((src: any, index: number) => (
                         <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
                           <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
                         </div>
@@ -308,11 +262,11 @@ const Profile = () => {
                   </>
                 )}
 
-                {uploadImage?.Wedding?.length > 0 && (
+                {allCpImage?.contents?.Wedding?.length > 0 && (
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Images</h2>
                     <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                      {uploadImage?.Wedding?.map((src, index) => (
+                      {allCpImage?.contents?.Wedding?.map((src, index) => (
                         <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
                           <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
                         </div>
@@ -321,11 +275,11 @@ const Profile = () => {
                   </>
                 )}
 
-                {uploadImage?.Other?.length > 0 && (
+                {allCpImage?.contents?.Other?.length > 0 && (
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Images</h2>
                     <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                      {uploadImage?.Other?.map((src, index) => (
+                      {allCpImage?.contents?.Other?.map((src, index) => (
                         <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
                           <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
                         </div>
@@ -338,14 +292,14 @@ const Profile = () => {
 
             <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
 
-            {!showImage && (
+            {activeTab === 'video' && (
               <>
-                {uploadVideo?.Corporate?.length > 0 && (
+                {allCpVideo?.contents?.Corporate?.length > 0 && (
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Corporate Videos</h2>
                     <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {uploadVideo?.Corporate?.map((src, index) => (
-                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                      {allCpVideo?.contents?.Corporate?.map((src, index) => (
+                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
                           <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
                         </div>
                       ))}
@@ -353,12 +307,12 @@ const Profile = () => {
                   </>
                 )}
 
-                {uploadVideo?.Wedding?.length > 0 && (
+                {allCpVideo?.contents?.Wedding?.length > 0 && (
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Videos</h2>
                     <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {uploadVideo?.Wedding?.map((src, index) => (
-                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                      {allCpVideo?.contents?.Wedding?.map((src, index) => (
+                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
                           <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
                         </div>
                       ))}
@@ -366,12 +320,12 @@ const Profile = () => {
                   </>
                 )}
 
-                {uploadVideo?.Other?.length > 0 && (
+                {allCpVideo?.contents?.Other?.length > 0 && (
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Videos</h2>
                     <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {uploadVideo?.Other?.map((src, index) => (
-                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover">
+                      {allCpVideo?.contents?.Other?.map((src, index) => (
+                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
                           <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
                         </div>
                       ))}
