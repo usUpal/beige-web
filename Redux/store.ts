@@ -32,13 +32,12 @@ const rootReducer = combineReducers({
 });
 
 const errorHandlerMiddleware = ({ dispatch }) => (next) => (action) => {
-  if (action.payload && action.payload.status === 403) {
+  if (action.payload && action.payload.status === 401) {
     window.location.href = '/errors/access-denied';
     return;
   }
   return next(action);
 };
-
 
 // Configure the store with the combined reducers and middleware
 export const store = configureStore({

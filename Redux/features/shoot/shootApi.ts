@@ -83,4 +83,4 @@ const shootApi = baseApi.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation, useLazyGetAlgoCpQuery,useUpdateOrderMutation } = shootApi;
+export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation, useLazyGetAlgoCpQuery, useUpdateOrderMutation } = shootApi;
