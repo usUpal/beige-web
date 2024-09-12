@@ -21,9 +21,20 @@ const disputeApi = baseApi.injectEndpoints({
           method: "GET"
         }
       }
-    })
+    }),
+
+    updateDisputeStatus: builder.mutation({
+      query: (data) => {
+        
+        return {
+          url: `disputes/${data?.id}`,
+          method: 'PATCH',
+          body: JSON.stringify({ status: data?.status }),
+        }
+      },
+    }),
 
   }),
 });
 
-export const { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery } = disputeApi;
+export const { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery, useUpdateDisputeStatusMutation } = disputeApi;

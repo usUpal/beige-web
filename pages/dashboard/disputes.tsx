@@ -1,5 +1,5 @@
 import 'tippy.js/dist/tippy.css';
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, Fragment, useRef } from 'react';
 import 'tippy.js/dist/tippy.css';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
@@ -13,7 +13,8 @@ import { useAuth } from '@/contexts/authContext';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
-import { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery } from '@/Redux/features/dispute/disputeApi';
+import { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery, useUpdateDisputeStatusMutation } from '@/Redux/features/dispute/disputeApi';
+import { toast } from 'react-toastify';
 const Disputes = () => {
   const [disputeModal, setDisputeModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -22,6 +23,7 @@ const Disputes = () => {
   const [disputeInfo, setDisputeInfo] = useState<any>({});
   const { userData } = useAuth();
   const dispatch = useDispatch();
+  const statusRef = useRef(null);
 
   useEffect(() => {
     dispatch(setPageTitle('Disputes'));
@@ -31,10 +33,12 @@ const Disputes = () => {
     currentPage,
     userData,
   }
-  const { data: allDisputes, isLoading: getAllDisputesLoading } = useGetAllDisputesQuery(query, {
+  const { data: allDisputes, isLoading: getAllDisputesLoading, refetch } = useGetAllDisputesQuery(query, {
     refetchOnMountOrArgChange: true,
   });
   const [getDisputesDetails, { isLoading: getDisputeDetailsLoading }] = useLazyGetDisputesDetailsQuery();
+
+  const [updateDisputeStatus, { isLoading: updateDisputeStatusLoading, isError: updateDisputeStatusError }] = useUpdateDisputeStatusMutation();
 
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
@@ -47,6 +51,27 @@ const Disputes = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
+
+  const handleUpdateStatusSubmit = async (id: string) => {
+    try {
+      const selectedStatus = statusRef.current?.value;
+      const result = await updateDisputeStatus({ id, status: selectedStatus });
+
+      console.log("result", result);
+
+
+      toast.success('Dispute status updated successfully');
+      setDisputeModal(false);
+      refetch();
+
+    }
+    catch (error) {
+      toast.error('Something went wrong!');
+      console.error('Patch error:', error);
+    }
+  };
+
 
   // get Time Hooks
   const inputedDesputeDate = disputeInfo?.createdAt;
@@ -135,7 +160,7 @@ const Disputes = () => {
 
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center px-4">
-              <Dialog.Panel as="div" className="panel my-24 w-4/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark md:w-3/6 2xl:w-2/6">
+              <Dialog.Panel as="div" className="panel my-24 w-5/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark lg:w-3/6 2xl:w-2/6">
                 <div className="flex items-center justify-between bg-[#fbfbfb] py-4 dark:bg-[#121c2c]">
                   <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
 
@@ -145,7 +170,7 @@ const Disputes = () => {
                 </div>
 
                 <div className="mt-5 px-5">
-                  {/* <h2 className="mb-[20px] text-[22px] font-bold capitalize leading-[28.6px] text-[#ACA686]">Shoot Name: {disputeInfo?.order_id?.order_name}</h2> */}
+
                   {/*  */}
                   <div className="justify-between md:flex">
                     <div>
@@ -155,21 +180,8 @@ const Disputes = () => {
                         </span>
                       </div>
 
-                      <p>
-                        <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
-                          Amount : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{disputeInfo?.order_id ? disputeInfo?.order_id?.shoot_cost : 0}</span>
-                        </span>
-                      </p>
 
-                      <span className="my-[10px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">
-                        Status:
-                        <span className="ps-1 text-[14px] font-semibold">
-                          <StatusBg>{disputeInfo?.status}</StatusBg>
-                        </span>
-                      </span>
-                    </div>
 
-                    <div>
                       <p>
                         <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
                           Time : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{formattedDateTime?.time}</span>
@@ -182,20 +194,45 @@ const Disputes = () => {
                         </span>
                       </p>
 
-                      {/* <button onClick={() => setDisputeModal(false)} type="submit" className="btn mx-auto mt-8 bg-black font-sans text-white md:me-0 md:mt-24">
-                        Close
-                      </button> */}
-                      <DefaultButton onClick={() => setDisputeModal(false)} css=''>Close</DefaultButton>
-                      {/* </div> */}
+
+                    </div>
+
+                    <div>
+                      <p>
+                        <span className="text-[16px] font-bold capitalize leading-none text-[#000000]">
+                          Amount : <span className="text-[16px] font-semibold leading-[28px] text-[#000000]">{disputeInfo?.order_id ? disputeInfo?.order_id?.shoot_cost : 0}</span>
+                        </span>
+                      </p>
+
+                      <div className="flex flex-col md:mt-0">
+                        <span
+                          className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]"
+                        >Status</span>
+                        <select
+                          ref={statusRef}
+                          className=" h-9 w-auto md:w-72  rounded border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
+                          name="status"
+                          defaultValue={disputeInfo?.status}
+                        >
+                          <option value={'pending'}>Pending</option>
+                          <option value={'approved'}>Approved</option>
+                          <option value={'rejected'}>Rejected</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
+
+                </div>
+
+                <div className="flex justify-center md:justify-end mr-12 mt-8">
+                  <DefaultButton onClick={() => handleUpdateStatusSubmit(disputeInfo?.id)} css='' type="submit">Update</DefaultButton>
                 </div>
               </Dialog.Panel>
             </div>
           </div>
-        </Dialog>
-      </Transition>
-    </div>
+        </Dialog >
+      </Transition >
+    </div >
   );
 };
 
