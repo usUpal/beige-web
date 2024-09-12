@@ -12,7 +12,7 @@ import { setPageTitle } from '../../../store/themeConfigSlice';
 import { useRouter } from 'next/router';
 const Users = () => {
   const [userModalClient, setUserModalClient] = useState(false);
-  const { authPermissions ,userData} = useAuth();
+  const { authPermissions, userData } = useAuth();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [clientUserInfo, setClientUserInfo] = useState<any | null>(null);
   const router = useRouter();
@@ -24,11 +24,10 @@ const Users = () => {
     refetchOnMountOrArgChange: true,
   });
   useEffect(() => {
-    if (!authPermissions?.includes('client_page') || userData?.role === 'user') {
+    if (!authPermissions?.includes('client_page') || userData?.role === 'user' || userData?.role === 'cp') {
       router.push('/errors/access-denied');
     }
   }, [authPermissions, userData, router]);
-
 
   const dispatch = useDispatch();
   useEffect(() => {

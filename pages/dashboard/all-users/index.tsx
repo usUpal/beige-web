@@ -19,10 +19,10 @@ const Users = () => {
   const [userInfo, setUserInfo] = useState<any | null>(null);
   const router = useRouter();
 
-  const { authPermissions ,userData} = useAuth();
+  const { authPermissions, userData } = useAuth();
 
   useEffect(() => {
-    if (!authPermissions?.includes('all_users') || userData?.role === 'user') {
+    if (!authPermissions?.includes('all_users') || userData?.role === 'user' || userData?.role === 'cp') {
       router.push('/errors/access-denied');
     }
   }, [authPermissions, userData, router]);

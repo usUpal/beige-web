@@ -12,7 +12,7 @@ import { useAddNewAddOnMutation, useGetAllAddonsQuery, useLazyGetAddonsDetailsQu
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 const Addons = () => {
-  const {userData, authPermissions } = useAuth();
+  const { userData, authPermissions } = useAuth();
   const [addonsCategories, setAddonsCategories] = useState([]);
   const [addonsInfo, setAddonsInfo] = useState<any | null>(null);
   const [addonsModal, setAddonsModal] = useState(false);
@@ -42,9 +42,8 @@ const Addons = () => {
   const [updateAddon, { isLoading: useUpdateAddonLoading, isSuccess: isSuccessUpdateAddOn }] = useUpdateAddonMutation();
   const [addNewAddOn, { isLoading: useAddNewAddOnLoading, isSuccess: isSuccessAddNewAddOn }] = useAddNewAddOnMutation();
 
-
   useEffect(() => {
-    if (!authPermissions?.includes('add_ons_page') || userData?.role === 'user') {
+    if (!authPermissions?.includes('add_ons_page') || userData?.role === 'user' || userData?.role === 'cp') {
       router.push('/errors/access-denied');
     }
   }, [authPermissions, userData, router]);
