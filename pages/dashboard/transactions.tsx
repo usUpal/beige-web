@@ -185,7 +185,7 @@ const Transactions = () => {
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Holder</span>
                           <input
                             value={selectedPayoutInfo?.accountHolder}
-                            className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 "
                             disabled
                           />
                         </div>
@@ -197,7 +197,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Number</span>
                             <input
                               value={selectedPayoutInfo?.accountNumber}
-                              className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 "
                               disabled
                             />
                           </div>
@@ -206,7 +206,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">card Number</span>
                             <input
                               value={selectedPayoutInfo?.cardNumber}
-                              className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 "
                               disabled
                             />
                           </div>
@@ -216,7 +216,7 @@ const Transactions = () => {
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Account Type </span>
                           <input
                             value={selectedPayoutInfo?.accountType == 'debitCard' ? 'Card' : 'Bank'}
-                            className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-54  md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0"
                             disabled
                           />
                         </div>
@@ -228,7 +228,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Bank Name</span>
                             <input
                               value={selectedPayoutInfo?.bankName}
-                              className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 "
                               disabled
                             />
                           </div>
@@ -239,7 +239,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Branch Name </span>
                             <input
                               value={selectedPayoutInfo?.branchName}
-                              className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 "
                               disabled
                             />
                           </div>
@@ -251,7 +251,7 @@ const Transactions = () => {
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Withdraw Amount</span>
                           <input
                             value={selectedPayoutInfo?.withdrawAmount}
-                            className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 "
                             disabled
                           />
                         </div>
@@ -260,7 +260,7 @@ const Transactions = () => {
                           <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Status</span>
                           <select
                             ref={statusRef}
-                            className=" h-9 w-54 rounded border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
+                            className=" h-9 w-72 rounded border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
                             name="status"
                             defaultValue={selectedPayoutInfo?.status}
                           >
@@ -277,7 +277,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">Phone Number</span>
                             <input
                               value={selectedPayoutInfo?.phoneNumber}
-                              className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 "
                               disabled
                             />
                           </div>
@@ -288,7 +288,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">CVC</span>
                             <input
                               value={selectedPayoutInfo?.cvc}
-                              className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 "
                               disabled
                             />
                           </div>
@@ -301,7 +301,7 @@ const Transactions = () => {
                           <input
                             // value={selectedPayoutInfo?.date}
                             value={payoutDate?.date}
-                            className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                            className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0"
                             disabled
                           />
                         </div>
@@ -313,7 +313,7 @@ const Transactions = () => {
                             <span className="text-[14px] font-light capitalize leading-none text-[#000000]">expireDate</span>
                             <input
                               value={selectedPayoutInfo?.expireDate}
-                              className=" h-9 w-54 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              className=" h-9 w-54 md:w-72 rounded border border-gray-300 bg-gray-200 p-1 text-[13px] text-gray-600 hover:text-gray-500 focus:border-gray-500 focus:outline-none md:ms-0 "
                               disabled
                             />
                           </div>

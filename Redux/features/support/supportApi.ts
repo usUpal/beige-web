@@ -3,9 +3,12 @@ const supportApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllSupports: builder.query({
             query: (args) => {
-                const roleParam = args?.role ? `&role=${args.role}` : '';
-                const searchParam = args?.search ? `&search=${encodeURIComponent(args.search)}` : '';
-                const url = `users?limit=10&page=${args?.page || 1}${roleParam}${searchParam}`;
+              let url = `orders?sortBy=createdAt:desc&limit=10&page=${args?.page}`;
+              if (args?.id === 'client') {
+                url = `orders?sortBy=createdAt:desc&limit=10&page=${args?.page}&client_id=${args?.user?.id}`;
+              } else if (args?.user?.role === 'cp') {
+                url = `orders?sortBy=createdAt:desc&limit=10&page=${args?.page}&cp_id=${args?.user?.id}`;
+              }
                 return {
                     url,
                     method: 'GET',
