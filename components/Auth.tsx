@@ -4,19 +4,16 @@ import { IRootState } from '@/store';
 import { useEffect, useState } from 'react';
 import { setPageTitle, toggleRTL } from '@/store/themeConfigSlice';
 import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
 import { API_ENDPOINT, HOSTNAME } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import Cookies from 'js-cookie';
 import Loader from './SharedComponent/Loader';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import Swal from 'sweetalert2';
-// import allauthSvg from '@/utils/allsvgs/allauthSvg';
 
 const Auth = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  // svg files
 
   const { setUserData, setAccessToken, setRefreshToken, setAuthPermissions } = useAuth();
 
