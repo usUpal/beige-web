@@ -70,7 +70,7 @@ const ProfileForm = () => {
         expires: 7,
       });
       coloredToast('success', 'Profile updated successfully');
-      if (userData?.role == 'cp') {
+      if (userData?.role == 'cp' && geo_location?.coordinates?.length > 0) {
         const cpData = {
           geo_location,
           city: data.location,
