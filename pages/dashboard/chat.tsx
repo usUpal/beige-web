@@ -16,6 +16,7 @@ import { useGetAllChatQuery, useLazyGetChatDetailsQuery } from '@/Redux/features
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePaginationComponent from 'react-responsive-pagination';
+import { dropEllipsis } from 'react-responsive-pagination/narrowBehaviour';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
@@ -74,13 +75,11 @@ const Chat = () => {
     setCurrentPage(page);
   };
 
-  const queryData = useMemo(
-    () => ({
-      userRole,
-      userD: userData?.id,
-    }),
-    []
-  );
+  const queryData = {
+    userRole,
+    userD: userData?.id,
+    page: currentPage,
+  };
 
   // Fetch all chat - data based on query parameters
   const { data, error, isFetching, refetch } = useGetAllChatQuery(queryData, {
@@ -233,6 +232,7 @@ const Chat = () => {
 
   const { data: clientsData } = useGetAllUserQuery(searchQuer, {
     refetchOnMountOrArgChange: true,
+    skip: userData?.role === 'cp' || userData?.role === 'user',
   });
   const getAllClients = async () => {
     setIsClientLoading(true);
@@ -272,7 +272,11 @@ const Chat = () => {
 
   return (
     <div className={`relative flex h-full gap-0 sm:h-[calc(100vh_-_150px)]  sm:min-h-0 md:gap-5 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
-      <div className={`panel absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+      <div
+        className={`panel h-10/12 absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 md:h-full md:w-80 lg:w-full xl:relative xl:block xl:h-full ${
+          isShowChatMenu ? '!block' : ''
+        }`}
+      >
         <div className="relative">
           <input type="text" className="peer form-input ltr:pr-9 rtl:pl-9" placeholder="Searching..." value={searchUser} onChange={(event) => getSearchResultByQuery(event, 'searchChat')} />
           <div className="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-2 rtl:left-2">
@@ -283,11 +287,11 @@ const Chat = () => {
           </div>
         </div>
 
-        <div className="block text-center md:hidden">
+        <div className="block text-start md:hidden">
           {!isAddParticipant && (userRole === 'manager' || userRole === 'admin') && (
             <>
               <div className="block md:hidden">
-                <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px]'}>
+                <DefaultButton onClick={handleAddPerticipant} css={'px-2 py-0 md:text-[14px] text-[12px]'}>
                   Add Participant
                 </DefaultButton>
               </div>
@@ -326,17 +330,35 @@ const Chat = () => {
             })}
           </PerfectScrollbar>
         </div>
-        <div className="mt-4 flex justify-center ">
-          <ResponsivePaginationComponent
-            current={currentPage}
-            total={data?.totalPages}
-            onPageChange={handlePageChange}
-            maxWidth={400}
-            // styles={styles}
-          />
-        </div>
+
+        <>
+          <div className="hidden lg:block">
+            <div className=" mt-4 flex justify-start lg:justify-center ">
+              <ResponsivePaginationComponent
+                current={currentPage}
+                total={data?.totalPages}
+                onPageChange={handlePageChange}
+                maxWidth={200}
+                // styles={{ display: "inline-block" }}
+              />
+            </div>
+          </div>
+          <div className="mt-4 lg:hidden">
+            <div className="pagination-container max-w-xs ">
+              <ResponsivePaginationComponent
+                current={currentPage}
+                total={data?.totalPages}
+                onPageChange={handlePageChange}
+                maxWidth={260}
+                className="my-pagination mx-auto flex w-48 justify-start lg:justify-center"
+                pageLinkClassName={`w-5 border-solid bg-gray-300 px-2 py-0.5 mr-1 rounded `}
+                // activeItemClassName="bg-black"
+              />
+            </div>
+          </div>
+        </>
       </div>
-      <div className={`absolute z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
+      <div className={`absolute  z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
       <div className={`panel flex-1 p-0 ${threeDotSidebar && 'hidden lg:block'}`}>
         {!isShowUserChat && (
           <div className={`relative flex h-full items-center justify-center p-4  `}>
@@ -483,7 +505,11 @@ const Chat = () => {
                 </div>
                 <div className="mx-3">
                   <Link href={`./shoots/${selectedChatRoom?.order_id?.id}`}>
-                    <p className="font-semibold">{selectedChatRoom?.order_id?.order_name}</p>
+                    <p className="font-semibold">
+                      <span className="block md:hidden lg:hidden">{truncateLongText(selectedChatRoom?.order_id?.order_name, 20)}</span>
+                      <span className="hidden md:block  lg:hidden">{truncateLongText(selectedChatRoom?.order_id?.order_name, 40)}</span>
+                      <span className="hidden lg:block">{truncateLongText(selectedChatRoom?.order_id?.order_name, 80)}</span>
+                    </p>
                     <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + updatedAtDateTime?.time}</p>
                   </Link>
                 </div>

@@ -7,11 +7,11 @@ import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
-
+import { useRouter } from 'next/router';
 const CpUsers = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const { authPermissions } = useAuth();
-
+  const { authPermissions, userData } = useAuth();
+  const router = useRouter();
   const query = {
     page: currentPage,
     role: 'cp',
@@ -19,6 +19,13 @@ const CpUsers = () => {
   const { data: allCpUsers } = useGetAllUserQuery(query, {
     refetchOnMountOrArgChange: true,
   });
+
+  useEffect(() => {
+    if (!authPermissions?.includes('content_provider') || userData?.role === 'user' || userData?.role === 'cp') {
+      router.push('/errors/access-denied');
+    }
+  }, [authPermissions, userData, router]);
+
   // routing
   const dispatch = useDispatch();
   useEffect(() => {

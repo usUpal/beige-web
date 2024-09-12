@@ -45,7 +45,14 @@ const addonsApi = baseApi.injectEndpoints({
         }
       }
     }),
+
+    deleteSingleAddon: builder.mutation({
+      query: (id) => ({
+        url: `addOns/${id}`,
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
-export const { useGetAllAddonsQuery, useLazyGetDisputesDetailsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation, useAddNewAddOnMutation } = addonsApi;
+export const { useGetAllAddonsQuery, useLazyGetDisputesDetailsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation, useAddNewAddOnMutation, useDeleteSingleAddonMutation } = addonsApi;

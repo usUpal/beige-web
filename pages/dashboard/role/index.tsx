@@ -20,19 +20,6 @@ const Role = () => {
   const statusCode = 404
   const { authPermissions } = useAuth();
 
-  if (isAllRoleError) {
-    if (allRolesError.data.code === statusCode) {
-      router.push('/errors/not-found');
-      toast.error(allRolesError?.data?.message)
-    } else if (allRolesError.data.code === statusCode) {
-      router.push('/errors/access-denied');
-      toast.error(allRolesError?.data?.message)
-    } else {
-      console.log("🚀 ~ Role ~ allRolesError:", allRolesError?.data?.code)
-    }
-  }
-
-
   const deletePermission = async (id: string) => {
     const result = await Swal.fire({
       title: "Are you sure?",

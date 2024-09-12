@@ -294,26 +294,6 @@ const Dashboard = (props: any) => {
     },
   };
 
-  // // Shoots
-  // const [myShoots, setMyShoots] = useState<any>([]);
-
-  // useEffect(() => {
-  //   getAllMyShoots();
-  // }, []);
-
-  const getAllMyShoots = async () => {
-    try {
-      const response = await fetch(`${API_ENDPOINT}orders?sortBy=createdAt:desc&limit=5`);
-      const allShots = await response.json();
-      setMyShoots((prevShoots: any) => {
-        const newShoots = allShots.results?.filter((shoot: any) => !prevShoots.some((prevShoot: any) => prevShoot.id === shoot.id));
-        return [...prevShoots, ...newShoots];
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <div>
       <ul className="flex space-x-2 rtl:space-x-reverse">
