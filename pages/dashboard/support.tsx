@@ -1,3 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, Fragment } from 'react';
 import 'tippy.js/dist/tippy.css';
 import { useDispatch } from 'react-redux';

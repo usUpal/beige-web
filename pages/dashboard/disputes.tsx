@@ -13,65 +13,37 @@ import { useAuth } from '@/contexts/authContext';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
+import { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery } from '@/Redux/features/dispute/disputeApi';
 const Disputes = () => {
-  // previous code
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(setPageTitle('Disputes'));
-  });
-
   const [disputeModal, setDisputeModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   const [desputes, setDesputes] = useState<MeetingResponsTypes[]>([]);
   const [disputeInfo, setDisputeInfo] = useState<any>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const { userData } = useAuth();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    getAllDusputes();
-  }, [currentPage]);
+    dispatch(setPageTitle('Disputes'));
+  });
 
-  const { userData } = useAuth();
+  const query = {
+    currentPage,
+    userData,
+  }
+  const { data: allDisputes, isLoading: getAllDisputesLoading } = useGetAllDisputesQuery(query, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [getDisputesDetails, { isLoading: getDisputeDetailsLoading }] = useLazyGetDisputesDetailsQuery();
+
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
-  // all disputes user base
-  const getAllDusputes = async () => {
-    setIsLoading(true);
-    let url = `${API_ENDPOINT}disputes?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
-    if (userRole === 'client' || userRole === 'cp') {
-      url = `${API_ENDPOINT}disputes/user/${userData?.id}?sortBy=createdAt:desc&limit=10&page=${currentPage}`;
-    }
-
-    try {
-      const response = await fetch(url);
-      const allDusputes = await response.json();
-      setTotalPagesCount(allDusputes?.totalPages);
-      setDesputes(allDusputes.results);
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
-
-  // get single despute dynamically
   const getSingleDesputeDetails = async (disputeId: string) => {
-    try {
-      const response = await fetch(`${API_ENDPOINT}disputes/${disputeId}`);
-      const disputeDetailsRes = await response.json();
-
-      if (!disputeDetailsRes) {
-      } else {
-        setDisputeModal(true);
-        setDisputeInfo(disputeDetailsRes);
-        console.log('disputeDetailsRes', disputeDetailsRes);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+    const res = await getDisputesDetails(disputeId);
+    setDisputeModal(true);
+    setDisputeInfo(res?.data);
   };
 
-  // previous code
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -99,15 +71,14 @@ const Disputes = () => {
             </thead>
             <tbody>
 
-              {isLoading ? (
+              {getAllDisputesLoading ? (
                 <>
                   <PreLoader></PreLoader>
                 </>
               ) : (
                 <>
-                  {desputes && desputes.length > 0 ? (
-
-                    desputes?.map((dispute) => (
+                  {allDisputes?.results && allDisputes?.results.length > 0 ? (
+                    allDisputes?.results?.map((dispute: any) => (
                       <tr key={dispute.id ? dispute?.id : dispute?._id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                         <td className=" min-w-[150px] text-black dark:text-white">
                           <div className="flex items-center">
@@ -152,7 +123,7 @@ const Disputes = () => {
           </table>
 
           <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-            <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
+            <ResponsivePagination current={currentPage} total={allDisputes?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
           </div>
         </div>
       </div>

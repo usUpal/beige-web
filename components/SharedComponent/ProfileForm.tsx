@@ -1,12 +1,10 @@
-import { useForm } from 'react-hook-form';
 import { useAuth } from '@/contexts/authContext';
-import Map from '../Map';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { API_ENDPOINT } from '@/config';
-import Swal from 'sweetalert2';
+import { useUpdateCpDataForLocationMutation, useUpdateUserInfoMutation } from '@/Redux/features/profile/profileFormApi';
 import Cookies from 'js-cookie';
-import { setLazyProp } from 'next/dist/server/api-utils';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
+import Map from '../Map';
 import DefaultButton from './DefaultButton';
 
 interface FormData {
@@ -21,11 +19,9 @@ const ProfileForm = () => {
   const [geo_location, setGeo_location] = useState<{ coordinates: number[]; type: 'Point' }>({ coordinates: [], type: 'Point' });
   const [location, setLocation] = useState('');
   const { userData } = useAuth();
-  const userRole = userData?.role === 'user' ? 'client' : userData?.role;
-  const { setUserData, setAccessToken, setRefreshToken } = useAuth();
+  const { setUserData } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const { register, handleSubmit, setValue, watch, reset } = useForm<FormData>({
     defaultValues: {
       name: userData?.name || '',
@@ -36,34 +32,14 @@ const ProfileForm = () => {
     },
   });
 
+  const [updateUserInfo, {}] = useUpdateUserInfoMutation();
+  const [updateCpDataForLocation, {}] = useUpdateCpDataForLocationMutation();
+
   useEffect(() => {
     setValue('geo_location', geo_location);
     setValue('location', userData?.location || '');
     localStorage.removeItem('location');
   }, [geo_location, setValue, userData?.location]);
-
-  const watchedGeoLocation = watch('geo_location');
-
-  const reverseGeocode = async (coordinates: number[]) => {
-    try {
-      const [longitude, latitude] = coordinates;
-      const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
-        params: {
-          latlng: `${latitude},${longitude}`,
-          key: googleMapsApiKey,
-        },
-      });
-
-      if (response.data.results.length > 0) {
-        return response.data.results[0].formatted_address;
-      } else {
-        return 'Unknown Location';
-      }
-    } catch (error) {
-      console.error('Error during reverse geocoding:', error);
-      return 'Unknown Location';
-    }
-  };
 
   const coloredToast = (color: any, message: string) => {
     const toast = Swal.mixin({
@@ -83,56 +59,24 @@ const ProfileForm = () => {
 
   const onSubmit = async (data: userData) => {
     setIsLoading(true);
-    if (userRole == 'admin') {
-      coloredToast('danger', 'Admin profile update is under development');
-      setIsLoading(false);
-      return;
-    }
     const updatedProfileInfo = {
       name: data.name,
-      email: data.email,
       location: location || data.location,
     };
-
     try {
-      const patchResponse = await fetch(`${API_ENDPOINT}users/${userData?.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedProfileInfo),
-      });
-      if (!patchResponse.ok) {
-        throw new Error('Failed to patch data');
-      }
-
-      if (userRole == 'cp') {
-        try {
-          const cpResponse = await fetch(`${API_ENDPOINT}cp/${userData?.id}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ geo_location, city: data.location }),
-          });
-          if (!cpResponse.ok) {
-            throw new Error('Failed to patch data');
-          }
-        } catch (error) {
-          console.error('Cp patch error:', error);
-        }
-      }
-      const updatedAddon = await patchResponse.json();
-
-      setUserData(updatedAddon);
-      Cookies.set('userData', JSON.stringify(updatedAddon), {
+      const updatedData: any = await updateUserInfo({ id: userData?.id, data: updatedProfileInfo }).unwrap();
+      setUserData(updatedData);
+      Cookies.set('userData', JSON.stringify(updatedData), {
         expires: 7,
       });
       coloredToast('success', 'Profile updated successfully');
-      // const updatedAddonsData = addonsData.map((addon: any) => (addon._id === addonsInfo?._id ? updatedAddon : addon));
-      // setAddonsData(updatedAddonsData);
-
-      // setAddonsModal(false);
+      if (userData?.role == 'cp') {
+        const cpData = {
+          geo_location,
+          city: data.location,
+        };
+        const updatedCpData: any = await updateCpDataForLocation({ id: userData?.id, data: cpData }).unwrap();
+      }
     } catch (error) {
       console.error('Patch error:', error);
     } finally {
@@ -171,7 +115,7 @@ const ProfileForm = () => {
           {/* <button type="submit" className="btn btn-primary" disabled={isLoading}>
             {isLoading ? 'Saving...' : 'Save'}
           </button> */}
-          <DefaultButton css='font-semibold'>{isLoading ? 'Saving...' : 'Save'}</DefaultButton>
+          <DefaultButton css="font-semibold">{isLoading ? 'Saving...' : 'Save'}</DefaultButton>
         </div>
       </form>
     </div>

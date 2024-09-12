@@ -9,7 +9,45 @@ const userApi = baseApi.injectEndpoints({
         }
       },
     }),
+    getAllUser: builder.query({
+      query: (args) => {
+        const roleParam = args?.role ? `&role=${args.role}` : '';
+        const searchParam = args?.search ? `&search=${encodeURIComponent(args.search)}` : '';
+        const url = `users?limit=10&page=${args?.page || 1}${roleParam}${searchParam}`;
+        return {
+          url,
+          method: 'GET',
+        };
+      },
+    }),
+
+
+    getUserDetails: builder.query({
+      query: (data) => {
+        return {
+          url: `users/${data}`,
+          method: "GET",
+        }
+      }
+    }),
+    getCpDetails: builder.query({
+      query: (data) => {
+        return {
+          url: `cp/${data?.id}`,
+          method: "GET",
+        }
+      }
+    }),
+    updateCpById: builder.mutation({
+      query: (data) => {
+        return {
+          url: `cp/${data?.id}?role=admin`,
+          method: "PATCH",
+          body: data?.formData
+        }
+      }
+    }),
   }),
 });
 
-export const { useGetAllCpQuery } = userApi;
+export const { useGetAllCpQuery, useGetAllUserQuery, useLazyGetUserDetailsQuery, useLazyGetCpDetailsQuery, useUpdateCpByIdMutation } = userApi;

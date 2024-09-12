@@ -1,6 +1,5 @@
 import { baseApi } from "@/Redux/api/baseApi";
 
-// Define the API service with your endpoints
 const chatApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
       getAllChat: builder.query({
@@ -14,6 +13,8 @@ const chatApi = baseApi.injectEndpoints({
   
       getChatDetails: builder.query({
         query: ({ roomId, page = 1 }) => {
+          console.log(roomId);
+          
           return {
             url: `chats/${roomId}?limit=20&page=${page}`,
             method: 'GET',
@@ -25,5 +26,4 @@ const chatApi = baseApi.injectEndpoints({
     overrideExisting: true,
 });
 
-// Export the auto-generated hook
 export const { useGetAllChatQuery, useLazyGetChatDetailsQuery } = chatApi;

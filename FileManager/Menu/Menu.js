@@ -11,7 +11,7 @@ const Menu = ({ setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen, path }
       <div className="mr-48 flex items-center justify-between gap-3">
         {path.length > 0 && (userData?.role !== 'admin' || userData?.role !== 'post_production_manager' || userData?.role !== 'user') && (
           <>
-            <h6 className="text-md flex items-center gap-2 rounded-md px-2 py-1" style={{ backgroundColor: '#93c5fd' }} onClick={() => setFileUploadOpen(true)}>
+            <h6 className="text-md flex items-center gap-2 rounded-md px-2 py-1" style={{ backgroundColor: '#67e8f9' }} onClick={() => setFileUploadOpen(true)}>
               <Image src="/assets/icons/uploadCloud.png" alt=" Upload Files" width={18} height={18} />
               Upload Files
             </h6>
