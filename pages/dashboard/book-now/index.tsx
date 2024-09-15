@@ -699,13 +699,13 @@ const BookNow = () => {
                 <div>
                   {activeTab === 1 && (
                     <>
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between lg:mb-8 md:mb-8 xl:gap-4 md:gap-6">
                         {/* Content Type */}
                         <div className="flex w-full flex-col sm:flex-row">
-                          <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Content Type</label>
-                          <div className="flex-1">
+                          <label className="rtl:ml-2 sm:w-1/4 md:w-16 lg:w-24 2xl:w-40">Content Type</label>
+                          <div className="flex-1 md:ml-2 lg:ml-1 2xl:ml-0 ">
                             {/* Video */}
-                            <div className="mb-2">
+                            <div className="mb-2 ">
                               <label className="flex items-center">
                                 <input
                                   type="checkbox"
@@ -730,12 +730,12 @@ const BookNow = () => {
                           </div>
                         </div>
                         {/* Category || content vertical*/}
-                        <div className="flex w-full flex-col sm:flex-row">
+                        <div className="flex w-full flex-col sm:flex-row 2xl:ml-32">
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Category
                           </label>
                           <select
-                            className={`form-select text-black ${errors.content_vertical ? 'border-red-500' : ''}`}
+                            className={`xl:ml-2 2xl:ml-0 form-select text-black ${errors.content_vertical ? 'border-red-500' : ''}`}
                             id="content_vertical"
                             defaultValue="SelectCategory"
                             {...register('content_vertical', {
@@ -755,7 +755,7 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      <div className="my-5 flex-col items-center justify-between gap-4 md:flex md:flex-row">
+                      <div className="my-5 flex-col items-center justify-between gap-4 md:gap-9 xl:gap-5 md:flex md:flex-row md:mb-10">
                         {userData?.role === 'admin' && (
                           <div className="relative flex  w-full flex-col sm:flex-row ">
                             <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
@@ -767,7 +767,7 @@ const BookNow = () => {
                                 setClientName(event?.target?.value);
                                 getAllClients();
                               }}
-                              className={`form-input flex-grow bg-slate-100 `}
+                              className={`form-input flex-grow bg-slate-100 2xl:ml-3`}
                               value={clientName}
                               placeholder="Client"
                               required={!clientName}
@@ -817,19 +817,20 @@ const BookNow = () => {
                         )}
 
                         {/* Location */}
-                        <div className="mt-2  flex w-full flex-col sm:flex-row md:mt-0">
-                          <label htmlFor="location" className="mb-0 capitalize rtl:ml-2 sm:ltr:mr-2 md:w-[87px] 2xl:w-[138px]">
+                        <div className={`mt-2 flex w-full flex-col sm:flex-row md:mt-0 2xl:ml-32 ${userData?.role !== 'admin' && 'md:w-[49.5%]'}`}>
+                          <label htmlFor="location" className={`mb-0 capitalize 2xl:w-36 xl:w-24 `}>
+                            {/* ${userData?.role !== "admin" && "lg:w-40 "} */}
                             Location
                           </label>
-                          <div className="flex-grow">
+                          <div className="flex-grow md:ml-2 lg:ml-0">
                             <Map setGeo_location={setGeo_location} setLocation={setLocation} />
                           </div>
                         </div>
                       </div>
-                      <div className="mt-5 w-full flex-col items-start justify-between gap-4 md:flex md:flex-row">
+                      <div className="mt-5 w-full flex-col items-start justify-between 2xl:gap-32 xl:gap-8 md:gap-4 md:flex md:flex-row md:mb-10">
                         {/* Shoot Name */}
-                        <div className="flex  w-full  flex-col sm:flex-row">
-                          <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <div className="flex w-full  flex-col sm:flex-row">
+                          <label htmlFor="order_name" className="mb-0  sm:w-1/4 md:w-24 xl:w-28 lg:w-40 ">
                             Shoot Name
                           </label>
                           <input
@@ -838,31 +839,31 @@ const BookNow = () => {
                             disabled
                             value={orderName()}
                             type="text"
-                            className="form-input flex-grow bg-slate-100"
+                            className="form-input flex-grow bg-slate-100 md:ml-2 lg:ml-2 xl:ml-4 2xl:ml-16"
                             placeholder="Shoot Name"
                             {...register('order_name')}
                           />
                         </div>
 
                         {/* references */}
-                        <div className="mt-2  flex w-full flex-col sm:flex-row md:mt-0">
-                          <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 ">
+                        <div className="mt-2 flex w-full flex-col sm:flex-row md:mt-0 2xl:ml-5">
+                          <label htmlFor="references" className="mb-0  ">
                             References
                           </label>
-                          <input id="references" type="text" placeholder="https://sitename.com" className="form-input" {...register('references')} />
+                          <input id="references" type="text" placeholder="https://sitename.com" className="xl:ml-2 form-input 2xl:ml-16" {...register('references')} />
                         </div>
                       </div>
 
-                      <div className="mt-5">
+                      <div className="mt-5 md:mb-0 lg:mb-6">
                         <div className="table-responsive">
-                          <div className="mb-8 items-center justify-between md:flex">
+                          <div className="mb-8 items-center w-full justify-between md:flex">
                             {/* Starting Date and Time */}
-                            <div className="mb-3 flex  w-full flex-col sm:flex-row md:mb-0">
-                              <label htmlFor="start_date_time" className="mb-3 mt-4 w-24 rtl:ml-2 sm:ltr:mr-2 md:mb-0 2xl:w-36">
+                            <div className="mb-3 flex w-full flex-col sm:flex-row md:mb-0">
+                              <label htmlFor="start_date_time" className="mb-3 mt-4 md:ml-2 lg:ml-0 md:w-16  xl:w-24 2xl:w-40">
                                 Shoot Time
                               </label>
 
-                              <div className="relative">
+                              <div className="relative ">
                                 <p className="mb-1 text-xs font-bold sm:mb-0">Start Time</p>
                                 <input
                                   id="start_date_time"
@@ -939,7 +940,7 @@ const BookNow = () => {
                       </div>
 
                       {userData?.role === 'admin' && (
-                        <div className="mt-4 w-full flex-col items-center justify-between md:flex md:flex-row md:gap-4">
+                        <div className="mt-4 md:mt-0 w-full flex-col items-center justify-between md:flex md:flex-row 2xl:gap-32 xl:gap-8 md:gap-4">
                           {/* Special Note */}
                           <div className="flex  w-full flex-col sm:flex-row">
                             <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
