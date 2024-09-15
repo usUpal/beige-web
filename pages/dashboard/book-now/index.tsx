@@ -817,12 +817,12 @@ const BookNow = () => {
                         )}
 
                         {/* Location */}
-                        <div className={`mt-2 flex w-full flex-col sm:flex-row md:mt-0 2xl:ml-32 ${userData?.role !== 'admin' && 'md:w-[49.5%]'}`}>
+                        <div className={`mt-2 flex w-full flex-col sm:flex-row md:mt-0  ${userData?.role !== 'admin' ? 'md:w-[49.5%] ' : "2xl:ml-32"}`}>
                           <label htmlFor="location" className={`mb-0 capitalize 2xl:w-36 xl:w-24 `}>
                             {/* ${userData?.role !== "admin" && "lg:w-40 "} */}
                             Location
                           </label>
-                          <div className="flex-grow md:ml-2 lg:ml-0">
+                          <div className={`flex-grow md:ml-2 lg:ml-0 ${userData?.role !== 'admin' ? '2xl:ml-3 2xl:mr-16' : ""}`}>
                             <Map setGeo_location={setGeo_location} setLocation={setLocation} />
                           </div>
                         </div>
