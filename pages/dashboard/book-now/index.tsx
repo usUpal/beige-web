@@ -46,6 +46,15 @@ interface FormData {
   duration: number;
   vst: string;
 }
+
+interface CategoryListData {
+  name: string;
+  budget: {
+    max: BudgetData;
+    min: BudgetData;
+  };
+}
+
 const BookNow = () => {
   const { data: addonsData } = useGetAllAddonsQuery(undefined, {
     refetchOnMountOrArgChange: true,
@@ -231,7 +240,6 @@ const BookNow = () => {
       const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setStartDateTime(starting_date);
     } catch (error) {
-      console.error('Error parsing date:', error);
     }
   };
 
@@ -244,7 +252,6 @@ const BookNow = () => {
       const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setEndDateTime(ending_date);
     } catch (error) {
-      console.error('Error parsing end date:', error);
     }
   };
 
@@ -488,12 +495,38 @@ const BookNow = () => {
         //toast.success('Meeting create success.');
         return true;
       } else {
-        console.log("Don't create the meeting");
         toast.error('Something want wrong...!');
       }
     } else {
-      console.log("Don't create the meeting link");
       toast.error('Something want wrong...!');
+    }
+  };
+
+  const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
+  const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
+
+
+  // set category data for the ui
+  const categoryList: CategoryListData[] = [
+    { name: 'Commercial', budget: { min: 1500, max: 10000 } },
+    { name: 'Corporate', budget: { min: 1500, max: 10000 } },
+    { name: 'Music', budget: { min: 1500, max: 10000 } },
+    { name: 'Private', budget: { min: 1500, max: 10000 } },
+    { name: 'Weeding', budget: { min: 1000, max: 1500 } },
+    { name: 'Other', budget: { min: 1000, max: 10000 } },
+  ];
+
+  // setting default budget
+  const handleChangeCategoryWithBudget = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategory = event.target.value;
+    const category = categoryList.find((cat) => cat.name === selectedCategory);
+
+    if (category) {
+      setMyMaxBud(category.budget.max);
+      setMyMinBud(category.budget.min);
+    } else {
+      setMyMaxBud(0);
+      setMyMinBud(0);
     }
   };
 
@@ -507,12 +540,13 @@ const BookNow = () => {
     if (data.content_type == false) {
       toast.error('Please select a content type...!');
       return;
-    } else {
+    }
+    else {
       try {
         const formattedData = {
           budget: {
-            max: parseFloat(data.max_budget),
-            min: parseFloat(data.min_budget),
+            min: myMinBud,
+            max: myMaxBud,
           },
           client_id,
           order_status: 'pre_production',
@@ -634,7 +668,7 @@ const BookNow = () => {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef?.current?.contains(event.target)) {
         setShowClientDropdown(false);
       }
     }
@@ -675,11 +709,11 @@ const BookNow = () => {
                               <label className="flex items-center">
                                 <input
                                   type="checkbox"
-                                  className={`form-checkbox ${errors.content_type && 'border border-danger'}`}
+                                  className={`form-checkbox ${errors?.content_type && 'border border-danger'}`}
                                   value="video"
                                   {...register('content_type', {
                                     validate: {
-                                      required: () => contentTypes.length > 0 || 'Select at least one content type',
+                                      required: () => contentTypes?.length > 0 || 'Select at least one content type',
                                     },
                                   })}
                                 />
@@ -689,7 +723,7 @@ const BookNow = () => {
                             {/* Photo */}
                             <div className="mb-2">
                               <label className="flex items-center">
-                                <input type="checkbox" className={`form-checkbox ${errors.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
+                                <input type="checkbox" className={`form-checkbox ${errors?.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
                                 <span className="text-black">Photography</span>
                               </label>
                             </div>
@@ -708,14 +742,15 @@ const BookNow = () => {
                               required: 'Category is required',
                               validate: (value) => value !== 'SelectCategory' || 'Please select a valid category',
                             })}
+                            onChange={handleChangeCategoryWithBudget}
                           >
                             <option value="SelectCategory">Select Category</option>
-                            <option value="Commercial">Commercial</option>
-                            <option value="Corporate">Corporate</option>
-                            <option value="Music">Music</option>
-                            <option value="Private">Private</option>
-                            <option value="Wedding">Wedding</option>
-                            <option value="Other">Other</option>
+                            {categoryList.map((category) => (
+                              <option key={category?.name} value={category?.name}>
+                                {category?.name}
+                              </option>
+                            ))}
+
                           </select>
                         </div>
                       </div>
@@ -757,14 +792,14 @@ const BookNow = () => {
                                         <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
                                           {clients?.map((client) => (
                                             <li
-                                              key={client.id}
+                                              key={client?.id}
                                               onClick={() => handleClientChange(client)}
                                               className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
                                             >
                                               <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                                <img src={client.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                                <img src={client?.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
                                               </div>
-                                              <a href="#">{client.name}</a>
+                                              <a href="#">{client?.name}</a>
                                             </li>
                                           ))}
                                         </ul>
@@ -857,14 +892,8 @@ const BookNow = () => {
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
-                              {/* <p className="btn rounded-md border-2 border-[#b7aa85] text-[#b7aa85] ml-2 mt-4 h-9 cursor-pointer shadow-none"
-                                onClick={addDateTime}
-                              >
-                                Add
-                              </p> */}
                               <div className="flex justify-end">
                                 <span
-                                  // css="h-9 ml-2 mt-4"
                                   className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white"
                                   onClick={addDateTime}
                                 >
@@ -909,59 +938,6 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      <div className="w-full flex-col items-center justify-between md:flex md:flex-row md:gap-4">
-                        {/* min_budget budget */}
-                        <div className="mt-2  flex w-full flex-col sm:flex-row">
-                          <label htmlFor="min_budget" className="mb-0  mb-3 w-full rtl:ml-2  sm:ltr:mr-2 md:w-[24%]">
-                            Min Budget
-                          </label>
-                          <div className="flex w-full flex-col">
-                            <input
-                              id="min_budget"
-                              type="number"
-                              placeholder="Min Budget"
-                              className={`form-input block w-full ${errors.min_budget ? 'border-red-500' : ''}`}
-                              {...register('min_budget', {
-                                required: 'Min Budget is required',
-                                min: {
-                                  value: 1000,
-                                  message: 'Min Budget must be at least $1000',
-                                },
-                                validate: (value) => value > 0 || 'Min Budget must be greater than 0',
-                              })}
-                            />
-
-                            {errors.min_budget && <p className="ml-4 text-danger">{errors?.min_budget.message}</p>}
-                          </div>
-                        </div>
-
-                        <div className="mt-2  flex w-full flex-col sm:flex-row">
-                          <label htmlFor="max_budget" className="mb-2 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-[23%]">
-                            Max Budget
-                          </label>
-                          <div className="flex w-full flex-col">
-                            <input
-                              id="max_budget"
-                              type="number"
-                              placeholder="Max Budget"
-                              className={`form-input block w-full ${errors.max_budget ? 'border-red-500' : ''}`}
-                              {...register('max_budget', {
-                                required: 'Max Budget is required',
-                                min: {
-                                  value: 1000,
-                                  message: 'Max Budget must be greater than Min Budget',
-                                },
-                                validate: (value) => {
-                                  const minBudget = getValues('min_budget');
-                                  return value >= minBudget || 'Max Budget must be greater than or equal to Min Budget';
-                                },
-                              })}
-                            />
-
-                            {errors.max_budget && <p className="ml-4 text-danger">{errors?.max_budget.message}</p>}
-                          </div>
-                        </div>
-                      </div>
                       {userData?.role === 'admin' && (
                         <div className="mt-4 w-full flex-col items-center justify-between md:flex md:flex-row md:gap-4">
                           {/* Special Note */}
@@ -1068,9 +1044,8 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none md:px-[20px] md:py-[12px]`}
+                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none md:px-[20px] md:py-[12px]`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1134,7 +1109,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
