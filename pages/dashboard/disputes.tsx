@@ -14,13 +14,15 @@ import PreLoader from '@/components/ProfileImage/PreLoader';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 import { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery } from '@/Redux/features/dispute/disputeApi';
+import AccessDenied from '@/components/errors/AccessDenied';
 const Disputes = () => {
   const [disputeModal, setDisputeModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPagesCount, setTotalPagesCount] = useState<number>(1);
   const [desputes, setDesputes] = useState<MeetingResponsTypes[]>([]);
   const [disputeInfo, setDisputeInfo] = useState<any>({});
-  const { userData } = useAuth();
+  const { userData,authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('disputes_page');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -51,6 +53,14 @@ const Disputes = () => {
   // get Time Hooks
   const inputedDesputeDate = disputeInfo?.createdAt;
   const formattedDateTime = useDateFormat(inputedDesputeDate);
+
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
+
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">

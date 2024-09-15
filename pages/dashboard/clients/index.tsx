@@ -9,13 +9,14 @@ import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
-import { useRouter } from 'next/router';
+import AccessDenied from '@/components/errors/AccessDenied';
 const Users = () => {
   const [userModalClient, setUserModalClient] = useState(false);
-  const { authPermissions, userData } = useAuth();
+  const { authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('client_page');
+
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [clientUserInfo, setClientUserInfo] = useState<any | null>(null);
-  const router = useRouter();
   const query = {
     page: currentPage,
     role: 'user',
@@ -23,11 +24,7 @@ const Users = () => {
   const { data: allClients } = useGetAllUserQuery(query, {
     refetchOnMountOrArgChange: true,
   });
-  useEffect(() => {
-    if (!authPermissions?.includes('client_page') || userData?.role === 'user' || userData?.role === 'cp') {
-      router.push('/errors/access-denied');
-    }
-  }, [authPermissions, userData, router]);
+
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -38,6 +35,12 @@ const Users = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
   return (
     <>

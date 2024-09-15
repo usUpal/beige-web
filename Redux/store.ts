@@ -1,5 +1,8 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import authReducer from './features/auth/authSlice';
+import { redirect } from 'next/navigation';
+import Router from 'next/router';
+
 import {
   persistReducer,
   persistStore,
@@ -14,7 +17,6 @@ import storage from 'redux-persist/lib/storage';
 import { baseApi } from './api/baseApi';
 import themeConfigSlice from '@/store/themeConfigSlice';
 
-import Router from 'next/router';
 // Configure the persistence for the auth slice
 const persistConfig = {
   key: 'auth',
@@ -33,8 +35,7 @@ const rootReducer = combineReducers({
 
 const errorHandlerMiddleware = ({ dispatch }) => (next) => (action) => {
   if (action.payload && action.payload.status === 401) {
-    window.location.href = '/errors/access-denied';
-    return;
+    Router.push('/errors/access-denied');
   }
   return next(action);
 };
@@ -49,7 +50,6 @@ export const store = configureStore({
       },
     })
       .concat(baseApi.middleware) // Add RTK Query middleware
-      .concat(errorHandlerMiddleware), // Add your custom middleware at the end
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

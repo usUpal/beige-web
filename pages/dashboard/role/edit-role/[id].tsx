@@ -6,9 +6,16 @@ import Loader from '@/components/SharedComponent/Loader';
 import { useGetAllPermissionsQuery } from '@/Redux/features/role/roleApi';
 import { toast } from 'react-toastify';
 import { createSlug } from '@/utils/helper';
+import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 const EditRole = () => {
+
+
+  const { authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('edit_role');
   const router = useRouter();
+
   const roleId = router.query.id as string;
   const { data: roleData, isLoading: isRoleDetailsLoading, isError: isRoleDetailsError, error: roleError } = useGetSingleRoleQuery(roleId, {
     refetchOnMountOrArgChange: true,
@@ -73,6 +80,14 @@ const EditRole = () => {
       };
     });
   };
+
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
+
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">

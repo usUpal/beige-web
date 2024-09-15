@@ -12,6 +12,7 @@ import ResponsivePagination from 'react-responsive-pagination';
 import { toast } from 'react-toastify';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 const Users = () => {
   const [userModal, setUserModal] = useState(false);
@@ -20,12 +21,7 @@ const Users = () => {
   const router = useRouter();
 
   const { authPermissions, userData } = useAuth();
-
-  useEffect(() => {
-    if (!authPermissions?.includes('all_users') || userData?.role === 'user' || userData?.role === 'cp') {
-      router.push('/errors/access-denied');
-    }
-  }, [authPermissions, userData, router]);
+  const isHavePermission = authPermissions?.includes('all_users');
 
   const query = {
     page: currentPage,
@@ -66,6 +62,13 @@ const Users = () => {
   const handleCreateNewCp = () => {
     toast.warning('This page is under Development.');
   };
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
+
 
   return (
     <>
