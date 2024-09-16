@@ -21,9 +21,13 @@ import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
+import AccessDenied from '@/components/errors/AccessDenied';
 // types
 
 const Chat = () => {
+  const { userData, authPermissions } = useAuth() as any;
+  const isHavePermission = authPermissions?.includes('chat_page');
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setPageTitle('Chat'));
@@ -44,7 +48,7 @@ const Chat = () => {
   const [msgPage, setMsgPage] = useState(1);
   const [totalMsgPage, setTotalMsgPage] = useState(0);
 
-  const { userData, authPermissions } = useAuth() as any;
+
   const socket = useRef<any | null>(null);
 
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
@@ -269,6 +273,14 @@ const Chat = () => {
     setIsAddParticipant(true);
     return;
   };
+
+
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
   return (
     <div className={`relative flex h-full gap-0 sm:h-[calc(100vh_-_150px)]  sm:min-h-0 md:gap-5 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>

@@ -29,6 +29,7 @@ import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { useRouter } from 'next/router';
 import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 interface FormData {
   content_type: string;
@@ -60,6 +61,7 @@ const BookNow = () => {
     refetchOnMountOrArgChange: true,
   });
   const { userData, authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('booking_page');
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
@@ -677,6 +679,12 @@ const BookNow = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [dropdownRef]);
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
   return (
     <div>

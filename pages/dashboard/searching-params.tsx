@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
+import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 interface FormData {
   content_type: number;
@@ -16,6 +18,8 @@ interface FormData {
 }
 const SearchingParams = () => {
   const dispatch = useDispatch();
+  const {authPermissions} = useAuth();
+  const isHavePermission = authPermissions?.includes('searching_params');
   useEffect(() => {
     dispatch(setPageTitle('Searching Params'));
   });
@@ -24,7 +28,7 @@ const SearchingParams = () => {
   // State for manage Tabledata
   const [tableData, setTableData] = useState({
     accepted_shoots: { weight: '', score: '' },
-    average_rating: { weight: '', score: '' },
+    average_rating: { weight: '', score : '' },
     avg_response_time: { weight: '', score: '' },
     backup_footage: { weight: '', score: '' },
     city: { weight: '', score: '' },
@@ -83,6 +87,14 @@ const SearchingParams = () => {
       position: toast.POSITION.TOP_RIGHT,
     });
   };
+
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
+
 
   return (
     <>

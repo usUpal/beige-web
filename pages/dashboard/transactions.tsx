@@ -15,10 +15,12 @@ import PreLoader from '@/components/ProfileImage/PreLoader';
 import { useGetAllTransactionQuery, useUpdateTransactionStatusMutation } from '@/Redux/features/transaction/transactionApi';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 const Transactions = () => {
   const dispatch = useDispatch();
   const { userData, authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('transactions_page');
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
   const [query, setQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -79,6 +81,12 @@ const Transactions = () => {
       console.error('Patch error:', error);
     }
   };
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-1">
