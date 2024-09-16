@@ -8,8 +8,12 @@ import { useAuth } from '@/contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import Swal from 'sweetalert2';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 const Role = () => {
+  const { authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('role_page');
+
   const { data: allRoles, isLoading: isAllRolesLoading, isError: isAllRoleError, status: allRoleStatus, error: allRolesError, refetch } = useGetAllRolesQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
@@ -18,7 +22,7 @@ const Role = () => {
 
   const router = useRouter();
   const statusCode = 404
-  const { authPermissions } = useAuth();
+
 
   const deletePermission = async (id: string) => {
     const result = await Swal.fire({
@@ -47,6 +51,13 @@ const Role = () => {
         console.log("🚀 ~ deletePermission ~ error:", error)
       }
     }
+  }
+
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
   }
 
   return (

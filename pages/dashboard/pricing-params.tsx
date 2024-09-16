@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useUpdatePriceMutation } from '@/Redux/features/algo/pricesApi';
 import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
+import AccessDenied from '@/components/errors/AccessDenied';
+import { useAuth } from '@/contexts/authContext';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import Link from 'next/link';
@@ -10,6 +12,9 @@ import Swal from 'sweetalert2';
 
 const PricingCalculation = () => {
   const dispatch = useDispatch();
+  const {authPermissions} = useAuth();
+  const isHavePermission = authPermissions?.includes('pricing_params');
+
   //Start theme functionality
   useEffect(() => {
     dispatch(setPageTitle('Pricing parameters'));
@@ -56,6 +61,14 @@ const PricingCalculation = () => {
       }
     }
   };
+
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
+
 
   return (
     <div>
