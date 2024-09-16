@@ -7,15 +7,18 @@ import useDateFormat from '@/hooks/useDateFormat';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useForm } from 'react-hook-form';
 import Loader from '@/components/SharedComponent/Loader';
-import Swal from 'sweetalert2';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { useLazyGetCpDetailsQuery, useUpdateCpByIdMutation } from '@/Redux/features/user/userApi';
 import { toast } from 'react-toastify';
+import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 const CpDetails = () => {
+  const { authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('edit_content_provider');
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<any | null>(null);
-  console.log('🚀 ~ CpDetails ~ formData:', formData);
   const params = useParams();
   const dob = formData?.date_of_birth;
   const formattedDateTime = useDateFormat(dob);
@@ -226,6 +229,12 @@ const CpDetails = () => {
     };
     const response = await updateCpById(updatedData);
   };
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
   return (
     <div className="p-5">
