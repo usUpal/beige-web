@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
-import 'tippy.js/dist/tippy.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
-import { toast } from 'react-toastify';
-import { API_ENDPOINT } from '@/config';
+/* eslint-disable react-hooks/exhaustive-deps */
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { useGetAllSearchingParamsQuery, useUpdateSearchingParamsMutation } from '@/Redux/features/searchingParams/searchingApi';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import 'tippy.js/dist/tippy.css';
+import { setPageTitle } from '../../store/themeConfigSlice';
+import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 interface FormData {
   content_type: number;
@@ -15,6 +18,8 @@ interface FormData {
 }
 const SearchingParams = () => {
   const dispatch = useDispatch();
+  const {authPermissions} = useAuth();
+  const isHavePermission = authPermissions?.includes('searching_params');
   useEffect(() => {
     dispatch(setPageTitle('Searching Params'));
   });
@@ -23,7 +28,7 @@ const SearchingParams = () => {
   // State for manage Tabledata
   const [tableData, setTableData] = useState({
     accepted_shoots: { weight: '', score: '' },
-    average_rating: { weight: '', score: '' },
+    average_rating: { weight: '', score : '' },
     avg_response_time: { weight: '', score: '' },
     backup_footage: { weight: '', score: '' },
     city: { weight: '', score: '' },
@@ -42,7 +47,13 @@ const SearchingParams = () => {
     travel_to_distant_shoots: { weight: '', score: '' },
     vst: { weight: '', score: '' },
   });
-
+  const { data, isSuccess } = useGetAllSearchingParamsQuery({});
+  useEffect(() => {
+    if (isSuccess) {
+      setParams(data);
+      setTableData(data);
+    }
+  }, [isSuccess]);
   // Event handler for form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -64,59 +75,26 @@ const SearchingParams = () => {
       });
     }
   };
-
+  const [updateSearchingParams, { isLoading }] = useUpdateSearchingParamsMutation();
   // Event handler for form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // You can perform actions with the form data here
     console.log('Form submitted with data:', tableData);
 
-    handlePostSearchingParams(tableData);
+    const res = await updateSearchingParams(tableData);
+    toast.success('Info Updated Successfully', {
+      position: toast.POSITION.TOP_RIGHT,
+    });
   };
 
-  const fetchDataAndPopulateForm = () => {
-    fetch(`${API_ENDPOINT}settings/algo/search`)
-      .then((res) => res.json())
-      .then((data) => {
-        setParams(data);
-        setTableData(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
-  useEffect(() => {
-    fetchDataAndPopulateForm();
-  }, []);
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
-  const handlePostSearchingParams = (searchingParams: any) => {
-    // setIsLoading(true);
-    fetch(`${API_ENDPOINT}settings/algo/search`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(searchingParams),
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        if (data) {
-          if (data.code === 401 || data.code === 400) {
-            console.log('Error:', data);
-            return;
-          } else {
-            toast.success('Params Set Successfully.', {
-              position: toast.POSITION.TOP_CENTER,
-            });
-          }
-        }
-      })
-      .catch((error) => {
-        // console.log(error);
-        // setIsLoading(false);
-      });
-  };
 
   return (
     <>
@@ -531,11 +509,10 @@ const SearchingParams = () => {
                 </tr>
               </tbody>
             </table>
-            <div className="flex w-full md:justify-end justify-center">
-              <DefaultButton css='mt-5 md:me-4 ' type='submit'>Save</DefaultButton>
-              {/* <button className="custom-button" type="submit">
-                Save
-              </button> */}
+            <div className="flex w-full justify-center md:justify-end">
+              <DefaultButton css="mt-5 md:me-4 " type="submit">
+                {isLoading ? 'Saving...' : 'Save'}
+              </DefaultButton>
             </div>
           </div>
         </div>

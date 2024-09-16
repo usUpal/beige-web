@@ -19,25 +19,33 @@ const addonsApi = baseApi.injectEndpoints({
         }
       }
     }),
-    getAddonsDetails:builder.query({
-      query:(data) => {
+    getAddonsDetails: builder.query({
+      query: (data) => {
         return {
-          url : `addons/${data}`,
-          method:'GET'
+          url: `addOns/${data}`,
+          method: 'GET'
         }
       }
     }),
-    updateAddon : builder.mutation({
-      query:(data)=> {
-        console.log("🚀 ~ data:", data)
+    updateAddon: builder.mutation({
+      query: (data) => {
         return {
-          url:`addons/${data?.id}`,
-          method:"PATCH",
-          data:JSON.stringify(data?.formData)
+          url: `addOns/${data?.id}`,
+          method: "PATCH",
+          body: data?.formData
         }
       }
-    })
+    }),
+    addNewAddOn: builder.mutation({
+      query: (data) => {
+        return {
+          url: `addOns`,
+          method: "POST",
+          body: JSON.stringify(data)
+        }
+      }
+    }),
   }),
 });
 
-export const { useGetAllAddonsQuery, useLazyGetDisputesDetailsQuery , useLazyGetAddonsDetailsQuery,useUpdateAddonMutation} = addonsApi;
+export const { useGetAllAddonsQuery, useLazyGetDisputesDetailsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation, useAddNewAddOnMutation } = addonsApi;

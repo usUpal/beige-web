@@ -1,20 +1,24 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import 'tippy.js/dist/tippy.css';
-import { API_ENDPOINT } from '@/config';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import useDateFormat from '@/hooks/useDateFormat';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useForm } from 'react-hook-form';
 import Loader from '@/components/SharedComponent/Loader';
-import Swal from 'sweetalert2';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { useLazyGetCpDetailsQuery, useUpdateCpByIdMutation } from '@/Redux/features/user/userApi';
+import { toast } from 'react-toastify';
+import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 const CpDetails = () => {
+  const { authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('edit_content_provider');
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const [formData, setFormData] = useState<any | null>(null);
-
   const params = useParams();
   const dob = formData?.date_of_birth;
   const formattedDateTime = useDateFormat(dob);
@@ -26,62 +30,75 @@ const CpDetails = () => {
   const [showVstInput, setShowVstInput] = useState(false);
   const [showShootAvailabilityInput, setShowShootAvailabilityInput] = useState(false);
   const [showPortfolioInput, setShowPortfolioInput] = useState(false);
+  const [getCpDetails, { data, isLoading: isCpInfoLoading, isSuccess, isError }] = useLazyGetCpDetailsQuery();
+  const [updateCpById, { data: cpData, isLoading: isCpDataLoading, isSuccess: isCpDataSuccess, isError: isCpDataError }] = useUpdateCpByIdMutation();
 
-  // Toggle functions for input field visibility
   useEffect(() => {
-    if (params?.cp) {
-      const singleUserId = Array.isArray(params.cp) ? params.cp[0] : params.cp;
-      getUserDetails(singleUserId);
-    }
-  }, [params?.cp]);
-
-  // User Single
-  const getUserDetails = async (singleUserId: string) => {
-    try {
-      const response = await fetch(`${API_ENDPOINT}cp/${singleUserId}`);
-      const userDetailsRes = await response.json();
-
-      if (!userDetailsRes) {
-        setIsLoading(true);
-      } else {
-        setFormData(userDetailsRes);
-        setIsLoading(false);
+    const fetchData = async () => {
+      if (params?.cp) {
+        const res = await getCpDetails({ id: params.cp });
       }
-    } catch (error) {
-      console.error(error);
+    };
+    fetchData();
+    // Cleanup if necessary
+  }, [params?.cp]);
+  //
+  useEffect(() => {
+    if (isSuccess && data) {
+      setFormData(data); // Update formData only when the query is successful
     }
-  };
-
+  }, [isSuccess, data]);
+  //
+  useEffect(() => {
+    if (isCpDataSuccess) {
+      toast.success('CP Updated Successfully', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setIsLoading(false);
+    }
+  }, [isCpDataSuccess]);
   const { register, handleSubmit, getValues, reset } = useForm();
 
   const handleSetNewItem = (fieldName: string) => {
     const value = getValues(fieldName);
-
     if (!fieldName) return;
+
+    // Create a copy of the formData object to ensure immutability
+    let updatedFormData = { ...formData };
 
     switch (fieldName) {
       case 'equipment':
-        formData.equipment.push(value);
+        updatedFormData.equipment = Array.isArray(formData.equipment) ? [...formData.equipment, value] : [value];
         break;
       case 'equipment_specific':
-        formData.equipment_specific.push(value);
+        updatedFormData.equipment_specific = Array.isArray(formData.equipment_specific) ? [...formData.equipment_specific, value] : [value];
         break;
       case 'backup_footage':
-        formData.backup_footage.push(value);
+        updatedFormData.backup_footage = Array.isArray(formData.backup_footage) ? [...formData.backup_footage, value] : [value];
         break;
       case 'vst':
-        formData.vst.push(value);
+        updatedFormData.vst = Array.isArray(formData.vst) ? [...formData.vst, value] : [value];
         break;
       case 'shoot_availability':
-        formData.shoot_availability.push(value);
+        updatedFormData.shoot_availability = Array.isArray(formData.shoot_availability) ? [...formData.shoot_availability, value] : [value];
         break;
       case 'portfolio':
-        formData.portfolio.push(value);
+        updatedFormData.portfolio = Array.isArray(formData.portfolio) ? [...formData.portfolio, value] : [value];
         break;
       default:
+        console.warn('Unknown fieldName:', fieldName);
         break;
     }
 
+    // Update the state with the new formData
+    setFormData(updatedFormData);
+
+    // Reset the value of the input field after updating formData
     reset({ [fieldName]: '' });
   };
 
@@ -146,23 +163,6 @@ const CpDetails = () => {
     });
   };
 
-  const coloredToast = (color: any, message: string) => {
-    const toast = Swal.mixin({
-      toast: true,
-      position: 'top',
-      showConfirmButton: false,
-      timer: 3000,
-      showCloseButton: true,
-      customClass: {
-        popup: `color-${color}`,
-      },
-    });
-    toast.fire({
-      title: message,
-      icon: 'success',
-    });
-  };
-
   const onSubmit = async (data: any) => {
     const singleUserId = Array.isArray(params.cp) ? params.cp[0] : params.cp;
 
@@ -219,35 +219,27 @@ const CpDetails = () => {
     setIsLoading(true);
 
     const updatedData = {
-      ...arrayInputFields,
-      ...disabledStringFields,
-      ...updatableStringFields,
-      ...booleanFields,
-    };
-
-    const patchResponse = await fetch(`${API_ENDPOINT}cp/${singleUserId}?role=manager`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
+      formData: {
+        ...arrayInputFields,
+        ...disabledStringFields,
+        ...updatableStringFields,
+        ...booleanFields,
       },
-      body: JSON.stringify(updatedData),
-    });
-
-    if (!patchResponse.ok) {
-      return 'error failed to patch';
-    }
-    coloredToast('success', 'Successfully Saved');
-    setIsLoading(false);
-
-    // to show the patch data
-    const patchedData = await patchResponse.json();
-    console.log('Patch successful:', patchedData);
+      id: params?.cp,
+    };
+    const response = await updateCpById(updatedData);
   };
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
   return (
     <div className="p-5">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-        <div className="gap-3 md:mb-3 flex-wrap flex md:flex ">
+        <div className="flex flex-wrap gap-3 md:mb-3 md:flex ">
           {/* Content Vertical */}
           <div className=" flex-col md:mb-2 md:flex ">
             <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2  md:whitespace-nowrap">Content Vertical</label>
@@ -266,7 +258,7 @@ const CpDetails = () => {
                           <button
                             type="button"
                             className="text-white-dark group-hover:text-red-400"
-                          // onClick={() => removeEquipmentItem(content_verticals_item, 'equipment')}
+                            // onClick={() => removeEquipmentItem(content_verticals_item, 'equipment')}
                           >
                             {allSvgs.closeBtnCp}
                           </button>
@@ -295,7 +287,7 @@ const CpDetails = () => {
                           <button
                             type="button"
                             className="text-white-dark group-hover:text-red-400"
-                          // onClick={() => removeEquipmentItem(content_type_item, 'equipment')}
+                            // onClick={() => removeEquipmentItem(content_type_item, 'equipment')}
                           >
                             {allSvgs.closeBtnCp}
                           </button>
@@ -307,53 +299,53 @@ const CpDetails = () => {
             </div>
           </div>
         </div>
-        <div className='flex flex-wrap gap-3  justify-between'>
+        <div className="flex flex-wrap justify-between  gap-3">
           {/* Successful Shoots */}
-          <div className=" flex-col items-center md:flex sm:w-[32%] w-full">
-            <label htmlFor="successful_beige_shoots" className="mb-0  font-sans text-[14px] capitalize  w-full">
-              Successful   Shoots
+          <div className=" w-full flex-col items-center sm:w-[32%] md:flex">
+            <label htmlFor="successful_beige_shoots" className="mb-0  w-full font-sans text-[14px]  capitalize">
+              Successful Shoots
             </label>
 
             <input
               type="number"
               {...register('successful_beige_shoots')}
               defaultValue={formData?.successful_beige_shoots}
-              className="mt-1 rounded border bg-gray-200 p-3 md:ms-0 w-full "
+              className="mt-1 w-full rounded border bg-gray-200 p-3 md:ms-0 "
               disabled
               onChange={(e) => handleInputChange('successful_beige_shoots', e.target.value)}
             />
           </div>
 
           {/* Trust Score */}
-          <div className=" flex-col items-center md:flex sm:w-[32%] w-full">
-            <label htmlFor="trust_score" className="mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className=" w-full flex-col items-center sm:w-[32%] md:flex">
+            <label htmlFor="trust_score" className="mb-0  w-full font-sans text-[14px]  capitalize">
               trust score
             </label>
             <input
               type="number"
               {...register('trust_score')}
               defaultValue={formData?.trust_score}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               onChange={(e) => handleInputChange('trust_score', e.target.value)}
             />
           </div>
 
           {/* References */}
-          <div className=" items-center flex-col md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="reference" className="mb-0 mt-2 font-sans text-[14px]  w-full">
+          <div className=" w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="reference" className="mb-0 mt-2 w-full font-sans  text-[14px]">
               Reference
             </label>
             <input
               {...register('reference')}
               defaultValue={formData?.reference}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               onChange={(e) => handleInputChange('reference', e.target.value)}
             />
           </div>
 
           {/* Total Earnings */}
-          <div className=" items-center flex-col md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="total_earnings" className="mb-0 font-sans text-[14px] capitalize  w-full">
+          <div className=" w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="total_earnings" className="mb-0 w-full font-sans text-[14px]  capitalize">
               total earnings ($)
             </label>
             <input
@@ -361,15 +353,15 @@ const CpDetails = () => {
               {...register('total_earnings')}
               defaultValue={formData?.total_earnings}
               // className='border rounded bg-gray-200 p-3'
-              className="mt-1 rounded border bg-gray-200 p-3  w-full focus:border-gray-400 focus:outline-none md:ms-0"
+              className="mt-1 w-full rounded border bg-gray-200  p-3 focus:border-gray-400 focus:outline-none md:ms-0"
               disabled
               onChange={(e) => handleInputChange('total_earnings', e.target.value)}
             />
           </div>
 
           {/* rate */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="initiative" className="mb-0 font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="initiative" className="mb-0 w-full font-sans text-[14px]  capitalize">
               rate
             </label>
             <input
@@ -377,19 +369,19 @@ const CpDetails = () => {
               {...register('rate')}
               defaultValue={formData?.rate}
               // className='border rounded p-3 focus:outline-none focus:border-gray-400'
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               onChange={(e) => handleInputChange('rate', e.target.value)}
             />
           </div>
 
           {/* Rate Flexibility */}
-          <div className="mb:mt-0 mb-6 flex flex-col  md:mb-0 sm:w-[32%] w-full">
-            <label htmlFor="rateFlexibility" className="mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb:mt-0 mb-6 flex w-full  flex-col sm:w-[32%] md:mb-0">
+            <label htmlFor="rateFlexibility" className="mb-0  w-full font-sans text-[14px]  capitalize">
               rate Flexibility
             </label>
             <select
               // className="border focus:border-gray-400 rounded w-56 p-3"
-              className=" rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0 w-full"
+              className=" w-full rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0"
               id="rateFlexibility"
               defaultValue={formData?.rateFlexibility}
               {...register('rateFlexibility')}
@@ -401,25 +393,25 @@ const CpDetails = () => {
           </div>
         </div>
 
-        <div className='flex flex-wrap gap-3  justify-between md:mt-5 mt-0'>
+        <div className="mt-0 flex flex-wrap  justify-between gap-3 md:mt-5">
           {/* Avg Res Time */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="avg_response_time" className="mb-0 font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="avg_response_time" className="mb-0 w-full font-sans text-[14px]  capitalize">
               avg response time
             </label>
             <input
               type="number"
               {...register('avg_response_time')}
               defaultValue={formData?.avg_response_time}
-              className="mt-1 rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
               onChange={(e) => handleInputChange('avg_response_time', e.target.value)}
             />
           </div>
 
           {/* average rating */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="average_rating" className="mb-0 font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="average_rating" className="mb-0 w-full font-sans text-[14px]  capitalize">
               {/* className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2" */}
               average rating
             </label>
@@ -427,19 +419,19 @@ const CpDetails = () => {
               type="number"
               {...register('average_rating')}
               defaultValue={formData?.average_rating}
-              className="mt-1 rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
               onChange={(e) => handleInputChange('average_rating', e.target.value)}
             />
           </div>
 
           {/* Travel to distant */}
-          <div className="mb-4 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="travel_to_distant_shoots" className=" mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="travel_to_distant_shoots" className=" mb-0  w-full font-sans text-[14px]  capitalize">
               travel to distant shoots
             </label>
             <select
-              className=" mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className=" mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               id="travel_to_distant_shoots"
               defaultValue={formData?.travel_to_distant_shoots}
               {...register('travel_to_distant_shoots')}
@@ -451,35 +443,30 @@ const CpDetails = () => {
           </div>
 
           {/* avg response time to new shoot inquiry */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
             {/* <label htmlFor="avg_response_time_to_new_shoot_inquiry" className="mb-0  font-sans text-[14px] capitalize  w-full line-clamp-1">
               avg response time to new shoot inquiry
             </label> */}
-            <label
-              className="mb-0 font-sans text-[14px] capitalize mr-auto"
-            >
-              avg response time to new shoot inquiry
-            </label>
+            <label className="mb-0 mr-auto font-sans text-[14px] capitalize">avg response time to new shoot inquiry</label>
 
             <input
               type="number"
               {...register('avg_response_time_to_new_shoot_inquiry')}
               defaultValue={formData?.avg_response_time_to_new_shoot_inquiry}
               // className='border rounded p-3 bg-gray-200'
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
               onChange={(e) => handleInputChange('avg_response_time_to_new_shoot_inquiry', e.target.value)}
             />
           </div>
 
-
           {/* Experience with Post Production */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="experience_with_post_production_edit" className="mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="experience_with_post_production_edit" className="mb-0  w-full font-sans text-[14px]  capitalize">
               experience with post production
             </label>
             <select
-              className=" mt-1 w-56 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className=" mt-1 w-56 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               id="experience_with_post_production_edit"
               defaultValue={formData?.experience_with_post_production_edit}
               {...register('experience_with_post_production_edit')}
@@ -491,12 +478,12 @@ const CpDetails = () => {
           </div>
 
           {/* Customer Service Skills Experience */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="customer_service_skills_experience" className="mb-0  font-sans text-[14px] capitalize  w-full ">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="customer_service_skills_experience" className="mb-0  w-full font-sans text-[14px]  capitalize ">
               customer service skills experience
             </label>
             <select
-              className=" mt-1  rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className=" mt-1  w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               id="customer_service_skills_experience"
               defaultValue={formData?.customer_service_skills_experience}
               {...register('customer_service_skills_experience')}
@@ -506,18 +493,16 @@ const CpDetails = () => {
               <option value="false">No</option>
             </select>
           </div>
-
         </div>
 
-        <div className='flex flex-wrap gap-3  justify-between md:mt-5 mt-0'>
-
+        <div className="mt-0 flex flex-wrap  justify-between gap-3 md:mt-5">
           {/* Team Player */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="team_player" className=" mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="team_player" className=" mb-0  w-full font-sans text-[14px]  capitalize">
               team player
             </label>
             <select
-              className=" mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className=" mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               id="team_player"
               defaultValue={formData?.team_player}
               {...register('team_player')}
@@ -530,96 +515,95 @@ const CpDetails = () => {
           </div>
 
           {/* Handle co worker conflicts */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="avg_response_time_to_new_shoot_inquiry" className=" mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="avg_response_time_to_new_shoot_inquiry" className=" mb-0  w-full font-sans text-[14px]  capitalize">
               Handle Co Worker Conflicts
             </label>
             <input
               {...register('handle_co_worker_conflicts')}
               defaultValue={formData?.handle_co_worker_conflicts}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               onChange={(e) => handleInputChange('handle_co_worker_conflicts', e.target.value)}
             />
           </div>
 
           {/* Num Declined Shoots */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="num_declined_shoots" className=" mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="num_declined_shoots" className=" mb-0  w-full font-sans text-[14px]  capitalize">
               declined shoots
             </label>
             <input
               type="number"
               {...register('num_declined_shoots')}
               defaultValue={formData?.num_declined_shoots}
-              className="mt-1 rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
               onChange={(e) => handleInputChange('num_declined_shoots', e.target.value)}
             />
           </div>
 
           {/* Num accepted Shoots */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="num_accepted_shoots" className=" mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="num_accepted_shoots" className=" mb-0  w-full font-sans text-[14px]  capitalize">
               accepted shoots
             </label>
             <input
               type="number"
               {...register('num_accepted_shoots')}
               defaultValue={formData?.num_accepted_shoots}
-              className="mt-1 rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
               onChange={(e) => handleInputChange('num_accepted_shoots', e.target.value)}
             />
           </div>
 
           {/* initiative */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="initiative" className="mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="initiative" className="mb-0  w-full font-sans text-[14px]  capitalize">
               initiative
             </label>
             <input
               {...register('initiative')}
               defaultValue={formData?.initiative}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               onChange={(e) => handleInputChange('initiative', e.target.value)}
             />
           </div>
 
-          <div className="mb-4 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="additional_info" className="mb-0  font-sans text-[14px] capitalize  w-full">
-              additional  info
+          <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="additional_info" className="mb-0  w-full font-sans text-[14px]  capitalize">
+              additional info
             </label>
             <input
               {...register('additional_info')}
               defaultValue={formData?.additional_info}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               onChange={(e) => handleInputChange('additional_info', e.target.value)}
             />
           </div>
-
         </div>
 
-        <div className='flex flex-wrap gap-3  justify-between md:mt-5 mt-0'>
+        <div className="mt-0 flex flex-wrap  justify-between gap-3 md:mt-5">
           {/* Timezone */}
-          <div className="mb-6 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="timezone" className=" mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="timezone" className=" mb-0  w-full font-sans text-[14px]  capitalize">
               timezone
             </label>
             <input
               {...register('timezone')}
               defaultValue={formData?.timezone}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               onChange={(e) => handleInputChange('timezone', e.target.value)}
             />
           </div>
 
           {/* own transportation method */}
-          <div className="mb-4 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="own_transportation_method" className=" mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="own_transportation_method" className=" mb-0  w-full font-sans text-[14px]  capitalize">
               own transportation method
             </label>
             <select
-              className=" mt-1 w-56 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className=" mt-1 w-56 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               id="own_transportation_method"
               defaultValue={formData?.own_transportation_method}
               {...register('own_transportation_method')}
@@ -631,93 +615,91 @@ const CpDetails = () => {
           </div>
 
           {/* City */}
-          <div className="mb-4 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="city" className="mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="city" className="mb-0  w-full font-sans text-[14px]  capitalize">
               city
             </label>
             <input
               {...register('city')}
               defaultValue={formData?.city}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               onChange={(e) => handleInputChange('city', e.target.value)}
             />
           </div>
 
           {/* Neighbourhood */}
-          <div className="mb-4 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="neighborhood" className="mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="neighborhood" className="mb-0  w-full font-sans text-[14px]  capitalize">
               neighborhood
             </label>
             <input
               {...register('neighborhood')}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               defaultValue={formData?.neighborhood}
               onChange={(e) => handleInputChange('neighborhood', e.target.value)}
             />
           </div>
 
           {/* Zip code */}
-          <div className="mb-4 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="zip_code" className="mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="zip_code" className="mb-0  w-full font-sans text-[14px]  capitalize">
               zip code
             </label>
             <input
               {...register('zip_code')}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               defaultValue={formData?.zip_code}
               onChange={(e) => handleInputChange('zip_code', e.target.value)}
             />
           </div>
 
           {/* in work pressure */}
-          <div className="mb-4 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="inWorkPressure" className="mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="inWorkPressure" className="mb-0  w-full font-sans text-[14px]  capitalize">
               In Work Pressure
             </label>
             <input
               {...register('inWorkPressure')}
-              className="mt-1 rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               defaultValue={formData?.inWorkPressure}
               onChange={(e) => handleInputChange('inWorkPressure', e.target.value)}
             />
           </div>
-
         </div>
 
-        <div className='flex flex-wrap gap-0 md:gap-10  md:mt-4 mt-0'>
+        <div className="mt-0 flex flex-wrap gap-0  md:mt-4 md:gap-10">
           {/* DOB || AGE */}
-          <div className="mb-4 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="own_transportation_method" className=" mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="own_transportation_method" className=" mb-0  w-full font-sans text-[14px]  capitalize">
               Date Of Birth
             </label>
             <input
               {...register('date_of_birth')}
               defaultValue={formattedDateTime?.date}
-              className="mt-1 rounded border bg-gray-200 p-3 capitalize focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className="mt-1 w-full rounded border bg-gray-200 p-3 capitalize focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
               onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
             />
           </div>
 
           {/* Review Status */}
-          <div className="mb-4 flex-col items-center md:mb-0 md:flex sm:w-[32%] w-full">
-            <label htmlFor="review_status" className=" mb-0  font-sans text-[14px] capitalize  w-full">
+          <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+            <label htmlFor="review_status" className=" mb-0  w-full font-sans text-[14px]  capitalize">
               review status
             </label>
             <input
               {...register('review_status')}
-              className=" mt-1 rounded border bg-gray-200 p-3 capitalize text-gray-600 focus:border-gray-400 focus:outline-none md:ms-0  w-full"
+              className=" mt-1 w-full rounded border bg-gray-200 p-3 capitalize text-gray-600 focus:border-gray-400 focus:outline-none  md:ms-0"
               defaultValue={formData?.review_status}
               disabled
               onChange={(e) => handleInputChange('review_status', e.target.value)}
             />
           </div>
-
         </div>
 
-        <div className='md:flex  md:w-full w-full gap-5  justify-between mt-8'>
+        <div className="mt-8  w-full justify-between gap-5  md:flex md:w-full">
           {/* Equipment */}
-          <div className="mb-8 flex-col md:mb-2 md:flex sm:w-[32%] w-full">
+          <div className="mb-8 w-full flex-col sm:w-[32%] md:mb-2 md:flex">
             <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 ">Equipment</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
@@ -725,7 +707,7 @@ const CpDetails = () => {
                 {formData?.equipment &&
                   formData?.equipment?.map((equipment_item: any, index: any) => (
                     <div className="mb-2" key={`${equipment_item}_${index}`}>
-                      <ul className="group ms-5 flex  list-disc items-center justify-between text-white-dark w-[86%]">
+                      <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark">
                         <li>
                           <span className="font-sans capitalize text-white-dark  group-hover:text-dark">{equipment_item}</span>
                         </li>
@@ -748,7 +730,7 @@ const CpDetails = () => {
                 {/* Input field to add new equipment */}
                 {showEquipmentInput && (
                   <div className="relative flex items-center justify-start">
-                    <input {...register('equipment')} className="rounded border p-3 capitalize focus:border-gray-400 focus:outline-none w-[90%]" placeholder="Add Equipment" />
+                    <input {...register('equipment')} className="w-[90%] rounded border p-3 capitalize focus:border-gray-400 focus:outline-none" placeholder="Add Equipment" />
                     <button className="btn ml-1 cursor-pointer border-none p-0 pb-2 font-sans text-red-500" type="button" onClick={() => handleSetNewItem('equipment')}>
                       {allSvgs.plusForAddCp}
                     </button>
@@ -759,7 +741,7 @@ const CpDetails = () => {
           </div>
 
           {/* Equipment Specific */}
-          <div className="mb-8 flex-col md:mb-2 md:flex sm:w-[32%] w-full">
+          <div className="mb-8 w-full flex-col sm:w-[32%] md:mb-2 md:flex">
             <label className="font-sans text-[14px] capitalize rtl:ml-2  sm:ltr:mr-2">Equipment Specific</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
@@ -767,7 +749,7 @@ const CpDetails = () => {
                 {formData?.equipment_specific &&
                   formData?.equipment_specific?.map((equipmentSpecific_item: any, index: any) => (
                     <div className="mb-2" key={`${equipmentSpecific_item}_${index}`}>
-                      <ul className="group ms-5 flex  list-disc items-center justify-between text-white-dark w-[86%]">
+                      <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark">
                         <li>
                           <span className="font-sans capitalize text-white-dark hover:text-dark group-hover:text-dark">{equipmentSpecific_item}</span>
                         </li>
@@ -788,7 +770,7 @@ const CpDetails = () => {
                 {/* Input field to add new specific equipment */}
                 {showEquipmentSpecificInput && (
                   <div className="relative flex items-center justify-start">
-                    <input {...register('equipment_specific')} className="rounded border p-3 capitalize focus:border-gray-400 focus:outline-none w-[90%]" placeholder="Add Equipment Specific" />
+                    <input {...register('equipment_specific')} className="w-[90%] rounded border p-3 capitalize focus:border-gray-400 focus:outline-none" placeholder="Add Equipment Specific" />
                     <button type="button" className="ml-1 cursor-pointer border-none p-0 pb-2 font-sans text-red-500" onClick={() => handleSetNewItem('equipment_specific')}>
                       {allSvgs.plusForAddCp}
                     </button>
@@ -799,7 +781,7 @@ const CpDetails = () => {
           </div>
 
           {/* backup */}
-          <div className="mb-8 flex-col md:mb-2 md:flex sm:w-[32%] w-full">
+          <div className="mb-8 w-full flex-col sm:w-[32%] md:mb-2 md:flex">
             <label className="font-sans text-[14px] capitalize rtl:ml-2  sm:ltr:mr-2">Backup Footage</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
@@ -807,7 +789,7 @@ const CpDetails = () => {
                 {formData?.backup_footage &&
                   formData?.backup_footage?.map((backupFootage_item: any, index: any) => (
                     <div className="mb-2" key={`${backupFootage_item}_${index}`}>
-                      <ul className="group ms-5 flex  list-disc items-center justify-between text-white-dark w-[86%] hover:text-dark">
+                      <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark hover:text-dark">
                         <li>
                           <span className="font-sans capitalize text-white-dark group-hover:text-dark">{backupFootage_item}</span>
                         </li>
@@ -830,7 +812,7 @@ const CpDetails = () => {
                 {/* Input field to add new backup footage */}
                 {showBackupFootageInput && (
                   <div className="relative flex items-center justify-start">
-                    <input {...register('backup_footage')} className="rounded border p-3 capitalize focus:border-gray-400 focus:outline-none w-[90%]" placeholder="Add backup footage" />
+                    <input {...register('backup_footage')} className="w-[90%] rounded border p-3 capitalize focus:border-gray-400 focus:outline-none" placeholder="Add backup footage" />
 
                     <button type="button" className="ml-1 cursor-pointer border-none p-0 pb-2 font-sans text-red-500" onClick={() => handleSetNewItem('backup_footage')}>
                       {allSvgs.plusForAddCp}
@@ -842,7 +824,7 @@ const CpDetails = () => {
           </div>
 
           {/* VST */}
-          <div className="mb-8 flex-col md:mb-2 md:flex sm:w-[32%] w-full">
+          <div className="mb-8 w-full flex-col sm:w-[32%] md:mb-2 md:flex">
             <label className="font-sans text-[14px] capitalize rtl:ml-2 ">VST</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
@@ -850,7 +832,7 @@ const CpDetails = () => {
                 {formData?.vst &&
                   formData?.vst?.map((vst_item: any, index: any) => (
                     <div className="mb-2" key={`${vst_item}_${index}`}>
-                      <ul className="group ms-5 flex  list-disc items-center justify-between text-white-dark w-[86%] hover:text-dark">
+                      <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark hover:text-dark">
                         <li>
                           <span className="font-sans capitalize text-white-dark group-hover:text-dark">{vst_item}</span>
                         </li>
@@ -871,7 +853,7 @@ const CpDetails = () => {
                 {/* Input field to add new VST */}
                 {showVstInput && (
                   <div className="relative flex items-center justify-start">
-                    <input {...register('vst')} className="rounded border p-3 capitalize focus:border-gray-400 focus:outline-none w-[90%]" placeholder="Add vst" />
+                    <input {...register('vst')} className="w-[90%] rounded border p-3 capitalize focus:border-gray-400 focus:outline-none" placeholder="Add vst" />
                     <button type="button" onClick={() => handleSetNewItem('vst')} className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
                       {allSvgs.plusForAddCp}
                     </button>
@@ -882,9 +864,9 @@ const CpDetails = () => {
           </div>
         </div>
 
-        <div className='md:flex  md:w-full w-full gap-5   mt-8'>
+        <div className="mt-8  w-full gap-5 md:flex   md:w-full">
           {/* Shoot Availability */}
-          <div className="mb-8 flex-col md:mb-2 md:flex sm:w-[24%] w-full">
+          <div className="mb-8 w-full flex-col sm:w-[24%] md:mb-2 md:flex">
             <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 ">Shoot Availability</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
@@ -892,7 +874,7 @@ const CpDetails = () => {
                 {formData?.shoot_availability &&
                   formData?.shoot_availability?.map((shootAvailability_item: any, index: any) => (
                     <div className="mb-2" key={`${shootAvailability_item}_${index}`}>
-                      <ul className="group ms-5 flex  list-disc items-center justify-between text-white-dark w-[86%] hover:text-dark">
+                      <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark hover:text-dark">
                         <li>
                           <span className="font-sans capitalize text-white-dark group-hover:text-dark ">{shootAvailability_item}</span>
                         </li>
@@ -913,7 +895,7 @@ const CpDetails = () => {
                 {/* Input field to add new shoot availability */}
                 {showShootAvailabilityInput && (
                   <div className="relative flex items-center justify-start">
-                    <input {...register('shoot_availability')} className="rounded border p-3 capitalize focus:border-gray-400 focus:outline-none w-[90%]" placeholder="Add shoot availability" />
+                    <input {...register('shoot_availability')} className="w-[90%] rounded border p-3 capitalize focus:border-gray-400 focus:outline-none" placeholder="Add shoot availability" />
                     <button type="button" onClick={() => handleSetNewItem('shoot_availability')} className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
                       {allSvgs.plusForAddCp}
                     </button>
@@ -924,7 +906,7 @@ const CpDetails = () => {
           </div>
 
           {/* Portfolio */}
-          <div className="mb-8 flex-col md:mb-2 md:flex sm:w-[24%] w-full">
+          <div className="mb-8 w-full flex-col sm:w-[24%] md:mb-2 md:flex">
             <label className="font-sans text-[14px] capitalize rtl:ml-2 ">Portfolio</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
@@ -932,7 +914,7 @@ const CpDetails = () => {
                 {formData?.portfolio &&
                   formData?.portfolio?.map((portfolio_item: any, index: any) => (
                     <div className="mb-2" key={`${portfolio_item}_${index}`}>
-                      <ul className="group ms-6 flex  list-disc items-center justify-between text-white-dark w-[86%] hover:text-dark">
+                      <ul className="group ms-6 flex  w-[86%] list-disc items-center justify-between text-white-dark hover:text-dark">
                         <li>
                           <span className="font-sans capitalize text-white-dark group-hover:text-dark">{portfolio_item}</span>
                         </li>
@@ -953,8 +935,7 @@ const CpDetails = () => {
                 {/* Textarea field to add new portfolio */}
                 {showPortfolioInput && (
                   <div className="relative flex items-center justify-start gap-1">
-
-                    <input {...register('portfolio')} className="rounded border p-3 capitalize focus:border-gray-400 focus:outline-none w-[90%]" placeholder="Add Portfolio" />
+                    <input {...register('portfolio')} className="w-[90%] rounded border p-3 capitalize focus:border-gray-400 focus:outline-none" placeholder="Add Portfolio" />
 
                     {/* <textarea {...register('portfolio')} className=" rounded border p-3 capitalize focus:border-gray-400 focus:outline-none w-[90%] " placeholder="Add Portfolio" /> */}
                     <button type="button" onClick={(e) => handleSetNewItem('portfolio')} className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
@@ -967,21 +948,15 @@ const CpDetails = () => {
           </div>
         </div>
 
-
         {/* array fields ends */}
         <div className="flex items-center justify-between">
           {/* <DefaultButton css='font-semibold ml-4'> */}
-          <Link className='flex bg-black px-4 py-1 text-white rounded items-center' href={`/dashboard/all-users`}>
+          <Link className="flex items-center rounded bg-black px-4 py-1 text-white" href={`/dashboard/all-users`}>
             Back
           </Link>
           {/* </DefaultButton> */}
 
-          <DefaultButton css='font-semibold ml-4'>{isLoading ? (
-            <Loader />
-          ) : (
-            'Save'
-          )}</DefaultButton>
-
+          <DefaultButton css="font-semibold ml-4">{isLoading ? <Loader /> : 'Save'}</DefaultButton>
         </div>
       </form>
     </div>

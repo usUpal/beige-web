@@ -6,9 +6,16 @@ import Loader from '@/components/SharedComponent/Loader';
 import { useGetAllPermissionsQuery } from '@/Redux/features/role/roleApi';
 import { toast } from 'react-toastify';
 import { createSlug } from '@/utils/helper';
+import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 const EditRole = () => {
+
+
+  const { authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('edit_role');
   const router = useRouter();
+
   const roleId = router.query.id as string;
   const { data: roleData, isLoading: isRoleDetailsLoading, isError: isRoleDetailsError, error: roleError } = useGetSingleRoleQuery(roleId, {
     refetchOnMountOrArgChange: true,
@@ -74,6 +81,14 @@ const EditRole = () => {
     });
   };
 
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
+
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       <div className="panel h-full w-full">
@@ -97,7 +112,7 @@ const EditRole = () => {
             <h3 className='mt-5'>Permission List</h3>
             <hr className='border border-dashed border-black/30' />
 
-            <div className="grid grid-cols-5 mt-5 gap-3">
+            <div className="grid grid-cols-4 mt-5 gap-3">
               {allPermissions?.length && allPermissions?.map((module: any, index: number) => (
                 <div className="border border-black/30 rounded p-3 " key={index}>
                   <div className="flex justify-between items-center">

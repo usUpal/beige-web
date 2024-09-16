@@ -6,7 +6,13 @@ import { createSlug } from '@/utils/helper';
 import Loader from '@/components/SharedComponent/Loader';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
+import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
 const AddRole = () => {
+
+  const { authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('add_role');
+
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [checkedPermissions, setCheckedPermissions] = useState<string[]>([
     'dashboard_page',
@@ -49,7 +55,12 @@ const AddRole = () => {
     });
   };
 
-  console.log('errors',errors)
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}

@@ -15,12 +15,14 @@ import PreLoader from '@/components/ProfileImage/PreLoader';
 import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [meetingInfo, setMeetingInfo] = useState<any>({});
   const [meetingModal, setMeetingModal] = useState(false);
   const { userData, authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('meeting_page');
   const dispatch = useDispatch();
   const [metingDate, setMetingDate] = useState();
   const myInputDate = meetingInfo?.meeting_date_time;
@@ -109,6 +111,12 @@ const Meeting = () => {
       console.error('Error occurred while sending POST request:', error);
     }
   };
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">

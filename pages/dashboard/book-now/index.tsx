@@ -1,10 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-import OrderApi from '@/Api/OrderApi';
 import Map from '@/components/Map';
 import Loader from '@/components/SharedComponent/Loader';
-import useAddons from '@/hooks/useAddons';
-import useAllCp from '@/hooks/useAllCp';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { shootCostCalculation } from '@/utils/BookingUtils/shootCostCalculation';
 import { swalToast } from '@/utils/Toast/SwalToast';
@@ -30,6 +27,9 @@ import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/
 import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { useRouter } from 'next/router';
+import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
+import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 interface FormData {
   content_type: string;
@@ -48,12 +48,15 @@ interface FormData {
   vst: string;
 }
 const BookNow = () => {
-  const [addonsData] = useAddons();
-  const [allCpUsers, totalPagesCount, currentPage, setCurrentPage, getUserDetails, query, setQuery] = useAllCp();
+  const { data: addonsData } = useGetAllAddonsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const { userData, authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('booking_page');
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(1);
+  const [currentPage, setCurrentPage] = useState<any>(1);
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
   const [dateTimes, setDateTimes] = useState<FormData[]>([]);
@@ -101,8 +104,8 @@ const BookNow = () => {
   useEffect(() => {
     dispatch(setPageTitle('Manager Dashboard'));
     localStorage.removeItem('location');
-    if (!(authPermissions?.includes('booking_page'))) {
-      router.push('/errors/access-denied')
+    if (!authPermissions?.includes('booking_page')) {
+      router.push('/errors/access-denied');
     }
   }, []);
 
@@ -533,12 +536,14 @@ const BookNow = () => {
         if (Object.keys(formattedData).length > 0) {
           setIsLoading(true);
           setFormDataPageOne(formattedData);
-          const result = await postOrder(formattedData);
-          const res = await getAlgoCp(result?.data?.id);
-          if (res?.isSuccess) {
-            setActiveTab(activeTab === 1 ? 2 : 3);
-            setOrderId(result?.data?.id);
-            setIsLoading(false);
+          if (activeTab === 1) {
+            const result = await postOrder(formattedData);
+            const res = await getAlgoCp(result?.data?.id);
+            if (res?.isSuccess) {
+              setActiveTab(activeTab === 1 ? 2 : 3);
+              setOrderId(result?.data?.id);
+              setIsLoading(false);
+            }
           }
         } else {
           return false;
@@ -563,7 +568,7 @@ const BookNow = () => {
           };
 
           const updateRes = await updateOrder({
-            requestBody: formattedData,
+            requestData: formattedData,
             id: orderId,
           });
 
@@ -588,30 +593,21 @@ const BookNow = () => {
   };
   const contentTypes = watch('content_type', []);
   const contentVertical = watch('content_vertical');
-  //
-  // const handleClientChange = (event) => {
-  //   const selectedOption = event.target.options[event.target.selectedIndex];
-  //   setClient_id(selectedOption.value);
-  //   setClientName(selectedOption.getAttribute('data-name'));
-  // };
+
+  const searchQuer = {
+    role: 'user',
+    search: clientName,
+  };
+
+  const { data } = useGetAllUserQuery(searchQuer, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const getAllClients = async () => {
     setIsClientLoading(true);
-    try {
-      let res;
-      if (clientName) {
-        res = await fetch(`${API_ENDPOINT}users?role=user&search=${clientName}`);
-      } else {
-        res = await fetch(`${API_ENDPOINT}users?role=user`);
-      }
-      const users = await res.json();
-      setClients(users?.results || []);
-      setShowClientDropdown(true);
-      setIsClientLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsClientLoading(false);
-    }
+    setClients(data?.results || []);
+    setShowClientDropdown(true);
+    setIsClientLoading(false);
   };
 
   const handleClientChange = (client) => {
@@ -649,6 +645,12 @@ const BookNow = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [dropdownRef]);
+
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
   return (
     <div>
@@ -868,10 +870,10 @@ const BookNow = () => {
                               >
                                 Add
                               </p> */}
-                              <div className='flex justify-end'>
+                              <div className="flex justify-end">
                                 <span
                                   // css="h-9 ml-2 mt-4"
-                                  className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 font-sans text-[14px] text-center capitalize leading-[28px] text-white"
+                                  className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white"
                                   onClick={addDateTime}
                                 >
                                   Add
@@ -1029,13 +1031,13 @@ const BookNow = () => {
                           </div>
                         </div>
                         <div className="mb-5 md:mb-0">
-                          <input
+                          {/* <input
                             type="text"
                             className="peer form-input w-64 bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
                             placeholder="Search..."
                             onChange={(event) => setQuery(event.target.value)}
                             value={query}
-                          />
+                          /> */}
                         </div>
                         {/* search ends */}
                       </div>
@@ -1068,19 +1070,15 @@ const BookNow = () => {
                                 </div>
                                 <div className="mt-[30px] flex justify-center  gap-3">
                                   <Link href={`cp/${cp?.userId?._id}`}>
-                                    {/* class="w-32 h-9  cursor-pointer rounded-[8px] bg-black text-center  font-sans text-[14px] md:text-[16px] font-medium capitalize  text-white" */}
-                                    {/* <p className="w-32 h-9 inline-block cursor-pointer rounded-[8px] bg-black px-[10px] text-center md:px-[14px] font-sans text-[14px] md:text-[16px] font-medium capitalize leading-none text-white"> */}
-
-                                    <p className="w-32 h-9 flex items-center justify-center cursor-pointer rounded-[8px] bg-black text-center  font-sans text-[14px] md:text-[16px] font-medium capitalize  text-white">
+                                    <p className=" inline-block cursor-pointer rounded-[10px] bg-black px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none text-white md:px-[20px] md:py-[12px]">
                                       view profile
                                     </p>
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    // className={`w-32 h-9 text-center  cursor-pointer rounded-[8px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    //   } px-[10px] md:px-[14px] font-sans text-[14px] md:text-[16ox] font-medium capitalize leading-none`}
-                                    className={`w-32 h-9 text-center cursor-pointer rounded-[8px]  border border-solid  ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                      } font-sans text-[14px] md:text-[16ox] font-medium capitalize flex justify-center items-center`}
+                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${
+                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                    } px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none md:px-[20px] md:py-[12px]`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1144,7 +1142,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                            // disabled={disableInput}
+                                              // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1282,8 +1280,8 @@ const BookNow = () => {
             </div>
           </div>
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 

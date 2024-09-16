@@ -1,3 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, Fragment } from 'react';
 import 'tippy.js/dist/tippy.css';
 import { useDispatch } from 'react-redux';
@@ -10,6 +13,7 @@ import PreLoader from '@/components/ProfileImage/PreLoader';
 import { Dialog, Transition } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { useGetAllSupportsQuery } from '@/Redux/features/support/supportApi';
 
 interface supportsType {
   title: string;
@@ -33,6 +37,14 @@ const support = () => {
   useEffect(() => {
     getAllSupports();
   }, [currentPage]);
+
+  const query = {
+    user:userData,
+    page: currentPage
+  }
+
+  const { data: allSupports, isLoading: isAllSupportLoading } = useGetAllSupportsQuery(query);
+  console.log("🚀 ~ support ~ allSupports:", allSupports)
 
   // All Supports - user base and here need to implement the support api
   const getAllSupports = async () => {
@@ -90,7 +102,7 @@ const support = () => {
           </div>
         </div>
 
-        {supports.length !== 0 ? (
+        {allSupports?.results?.length !== 0 ? (
           <div className="table-responsive">
             <table>
               <thead>
@@ -107,8 +119,8 @@ const support = () => {
                   </>
                 ) : (
                   <>
-                    {supports && supports.length > 0 ? (
-                      supports?.map((support) => (
+                    {allSupports?.results && allSupports?.results.length > 0 ? (
+                      allSupports?.results?.map((support) => (
                         <tr key={support?.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                           <td className="min-w-[150px] text-black dark:text-white">
                             <div className="flex items-center">
@@ -143,9 +155,10 @@ const support = () => {
               </tbody>
             </table>
 
-            <div className="mt-4 flex justify-center md:justify-between lg:mr-5 2xl:mr-16">
-              <ResponsivePagination current={currentPage} total={totalPagesCount} onPageChange={handlePageChange} maxWidth={400} />
+            <div className="mt-4 flex justify-end md:justify-between lg:mr-5 2xl:mr-16">
+              <ResponsivePagination current={currentPage} total={allSupports?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
             </div>
+
           </div>
         ) : (
           <div className="text-center">
