@@ -314,10 +314,10 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Positions </h2>
-
+                                    <h2 className="text-sm font-bold">Positions </h2>
+                                    <p className="text-sm text-gray-500">Select your main position</p>
                                     <Controller
-                                        name="PositionsOptions"
+                                        name="positions_options"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -332,10 +332,11 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="font-semibold mb-2">Positions & Roles</h2>
+                                    <h2 className="font-semibold ">Positions & Roles</h2>
+                                    <p className="text-sm text-gray-500">Please select the positions/Roles that you work on.</p>
 
                                     <Controller
-                                        name="PositionsOptionsRole"
+                                        name="positions_options_role"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -349,7 +350,9 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Portfolio</h2>
+                                    <h2 className="text-sm font-bold">Portfolio</h2>
+                                    <p className="text-sm text-gray-500">Please provide a link to your portfolio(Website, media
+                                        platform, etc)</p>
                                     <input {...register("protfolio_answer")}
                                         type="text"
                                         className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -358,9 +361,11 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Backup Footage</h2>
+                                    <h2 className="text-sm font-bold">Backup Footage</h2>
+                                    <p className="text-sm text-gray-500">How do you back up footage on the day of shoot to
+                                        ensure it does not get lost?</p>
                                     <Controller
-                                        name="backupFootage"
+                                        name="backup_footage"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -375,9 +380,11 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Availability</h2>
+                                    <h2 className="text-sm font-bold">Availability</h2>
+                                    <p className="text-sm text-gray-500">We want to work with you on the best way possible,
+                                        Please let us know about your availibility?</p>
                                     <Controller
-                                        name="Availibility"
+                                        name="availibility"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -392,9 +399,11 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Notification</h2>
+                                    <h2 className="text-sm font-bold">Notification</h2>
+                                    <p className="text-sm text-gray-500">We want to work with you on the best way possible,
+                                        Please let us know about your availibility?</p>
                                     <Controller
-                                        name="Notification"
+                                        name="notification"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -408,9 +417,10 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Videography Camera</h2>
+                                    <h2 className="text-sm font-bold ">Videography Camera</h2>
+                                    <p className="text-sm text-gray-500">Camera gear for Video</p>
                                     <Controller
-                                        name="videographyCamera"
+                                        name="videography_camera"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -424,9 +434,10 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Photography Camera</h2>
+                                    <h2 className="text-sm font-bold">Photography Camera</h2>
+                                    <p className="text-sm text-gray-500">Camera gear for Photo</p>
                                     <Controller
-                                        name="Photography"
+                                        name="photography"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -440,9 +451,11 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Lenses</h2>
+                                    <h2 className="text-sm font-bold">Lenses</h2>
+                                    <p className="text-sm text-gray-500">Lenses: Wide Angle, Clear “Protective” Lens, Polarizer,
+                                        Zoom Lens, Macros, etc.</p>
                                     <Controller
-                                        name="Lenses"
+                                        name="lenses"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -456,9 +469,10 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Lighting</h2>
+                                    <h2 className="text-sm font-bold ">Lighting</h2>
+                                    <p className="text-sm text-gray-500">Light equipment</p>
                                     <Controller
-                                        name="Lighting"
+                                        name="lighting"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -472,9 +486,10 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Sound</h2>
+                                    <h2 className="text-sm font-bold">Sound</h2>
+                                    <p className="text-sm text-gray-500">Sound equipment</p>
                                     <Controller
-                                        name="Sound"
+                                        name="sound"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -488,9 +503,10 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Stabilizer</h2>
+                                    <h2 className="text-sm font-bold ">Stabilizer</h2>
+                                    <p className="text-sm text-gray-500">Stabilizer Equipment</p>
                                     <Controller
-                                        name="Stabilizer"
+                                        name="stabilizer"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -505,9 +521,12 @@ const CreateNewCp = () => {
 
 
                                 <div>
-                                    <h2 className="text-sm font-bold mb-2">Content Speciality Experience</h2>
+                                    <h2 className="text-sm font-bold">Content Speciality Experience</h2>
+                                    <p className="text-sm text-gray-500">As a professional, one can do difference type of shoots,
+                                        nevertheless, we all have are strengths and weakness in
+                                        our work area, Please share the types of shoots you have experience with and are comfortable with doing.</p>
                                     <Controller
-                                        name="ContentExperience"
+                                        name="content_experience"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -541,7 +560,9 @@ const CreateNewCp = () => {
                     <div className='mt-4'>
                         <div className="md:grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
                             <div>
-                                <h2 className="text-sm font-bold mb-2">Additional Equipment</h2>
+                                <h2 className="text-sm font-bold ">Additional Equipment</h2>
+                                <p className="text-sm text-gray-500">Please provide a link to your portfolio(Website, media
+                                    platform, etc)</p>
                                 <textarea
                                     placeholder="Your answer"
                                     rows="1"
@@ -551,7 +572,8 @@ const CreateNewCp = () => {
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">Rates($)</h2>
+                                <h2 className="text-sm font-bold ">Rates($)</h2>
+                                <p className="text-sm text-gray-500">Please let us know how you work and pricing.</p>
                                 <textarea
                                     placeholder="Your Rates($)"
                                     rows="1"
@@ -562,7 +584,9 @@ const CreateNewCp = () => {
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">Experience/Post Production</h2>
+                                <h2 className="text-sm font-bold">Experience/Post Production</h2>
+                                <p className="text-sm text-gray-500">if you also edit your own work, please let us know the
+                                    tools you use for editing and your style of editing.</p>
                                 <textarea
                                     placeholder="Your Experience"
                                     rows="1"
@@ -572,7 +596,12 @@ const CreateNewCp = () => {
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">Creative empowerment & Initiative</h2>
+                                <h2 className="text-sm font-bold">Creative empowerment & Initiative</h2>
+                                <p className="text-sm text-gray-500">it’s important for us to know if you’re comfortable to
+                                    take initiative on set. We want to provide our clients
+                                    our best quality service and also take care of our crew.
+                                    Are you in extrovert or an introvert? Do you feel
+                                    comfortable interacting with people?</p>
                                 <textarea
                                     placeholder="Your Creative"
                                     rows="1"
