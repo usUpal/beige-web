@@ -866,7 +866,7 @@ const BookNow = () => {
                       <div className="mt-5 md:mb-0 lg:mb-6">
                         <div className="mb-8 items-center w-full justify-between md:flex">
                           {/* Starting Date and Time */}
-                          <div className="flex w-full sm:flex-row md:mb-0">
+                          <div className="flex flex-col w-full sm:flex-row md:mb-0">
                             <label htmlFor="start_date_time" className="mb-3 mt-4 md:ml-2 lg:ml-0 md:w-16 xl:w-24 2xl:w-40">
                               Shoot Time
                             </label>
@@ -881,23 +881,23 @@ const BookNow = () => {
                                 placeholder="Start time"
                                 required={startDateTime?.length === 0}
                               />
-                              <span className="pointer-events-none absolute right-[10px] top-[55%] -translate-y-1/4 transform">🗓️</span>
+                              <span className="pointer-events-none absolute right-[10px] top-[55%] -translate-y-1/4 transform hidden md:!hidden">🗓️</span>
 
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
 
                             <div className="relative mt-3 sm:mt-0">
-                              <p className="mb-1 ml-1 text-xs font-bold sm:mb-0">End Time</p>
+                              <p className="mb-1 ml-0 md:ml-1 text-xs font-bold sm:mb-0">End Time</p>
                               <input
                                 id="end_date_time"
                                 ref={endDateTimeRef}
                                 type="text"
-                                className={`form-input ml-1 w-full cursor-pointer sm:w-[220px] md:w-60 p-0 py-2 pl-1.5 ${errors?.end_date_time ? 'border-red-500' : ''}`}
+                                className={`form-input ml-0 md:ml-1 w-full cursor-pointer sm:w-[220px] md:w-60 p-0 py-2 pl-1.5 ${errors?.end_date_time ? 'border-red-500' : ''}`}
                                 placeholder="End time"
                                 required={endDateTime?.length === 0}
                               />
 
-                              <span className="pointer-events-none absolute right-[10px] top-[55%] md:top[40%] lg:top-[55%] -translate-y-1/4 transform">🗓️</span>
+                              <span className="pointer-events-none absolute right-[10px] top-[55%] md:top[40%] lg:top-[55%] -translate-y-1/4 transform hidden md:!hidden">🗓️</span>
                               {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                             </div>
 
