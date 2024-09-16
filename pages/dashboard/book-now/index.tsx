@@ -838,7 +838,7 @@ const BookNow = () => {
                       <div className="mt-5 w-full flex-col items-start justify-between 2xl:gap-32 xl:gap-8 md:gap-4 md:flex md:flex-row md:mb-10">
                         {/* Shoot Name */}
                         <div className="flex w-full  flex-col sm:flex-row">
-                          <label htmlFor="order_name" className="mb-0  sm:w-1/4 md:w-24 xl:w-28 lg:w-40 ">
+                          <label htmlFor="order_name" className="mb-0  sm:w-1/4 md:w-24 lg:w-24 2xl:w-40 ">
                             Shoot Name
                           </label>
                           <input
@@ -847,7 +847,7 @@ const BookNow = () => {
                             disabled
                             value={orderName()}
                             type="text"
-                            className="form-input flex-grow bg-slate-100 md:ml-2 lg:ml-2 xl:ml-4 2xl:ml-16"
+                            className="form-input flex-grow bg-slate-100  md:ml-2 lg:ml-2 xl:ml-5 2xl:ml-8 h-10"
                             placeholder="Shoot Name"
                             {...register('order_name')}
                           />
@@ -862,56 +862,58 @@ const BookNow = () => {
                         </div>
                       </div>
 
+                      {/* Shoot Timings */}
                       <div className="mt-5 md:mb-0 lg:mb-6">
-                        <div className="table-responsive">
-                          <div className="mb-8 items-center w-full justify-between md:flex">
-                            {/* Starting Date and Time */}
-                            <div className="mb-3 flex w-full flex-col sm:flex-row md:mb-0">
-                              <label htmlFor="start_date_time" className="mb-3 mt-4 md:ml-2 lg:ml-0 md:w-16  xl:w-24 2xl:w-40">
-                                Shoot Time
-                              </label>
+                        <div className="mb-8 items-center w-full justify-between md:flex">
+                          {/* Starting Date and Time */}
+                          <div className="flex w-full sm:flex-row md:mb-0">
+                            <label htmlFor="start_date_time" className="mb-3 mt-4 md:ml-2 lg:ml-0 md:w-16 xl:w-24 2xl:w-40">
+                              Shoot Time
+                            </label>
 
-                              <div className="relative ">
-                                <p className="mb-1 text-xs font-bold sm:mb-0">Start Time</p>
-                                <input
-                                  id="start_date_time"
-                                  ref={startDateTimeRef}
-                                  type="text"
-                                  className={`form-input w-full cursor-pointer sm:w-[220px] ${errors?.start_date_time ? 'border-red-500' : ''}`}
-                                  placeholder="Start time"
-                                  required={startDateTime?.length === 0}
-                                />
-                                <span className="pointer-events-none absolute right-[14px] top-[55%] -translate-y-1/4 transform">🗓️</span>
+                            <div className="relative ">
+                              <p className="mb-1 text-xs font-bold sm:mb-0">Start Time</p>
+                              <input
+                                id="start_date_time"
+                                ref={startDateTimeRef}
+                                type="text"
+                                className={`form-input w-full cursor-pointer sm:w-[220px] md:w-60 p-0 py-2 xl:pl-1.5 ${errors?.start_date_time ? 'border-red-500' : ''}`}
+                                placeholder="Start time"
+                                required={startDateTime?.length === 0}
+                              />
+                              <span className="pointer-events-none absolute right-[10px] top-[55%] -translate-y-1/4 transform">🗓️</span>
 
-                                {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
-                              </div>
-
-                              <div className="relative mt-3 sm:mt-0">
-                                <p className="mb-1 ml-1 text-xs font-bold sm:mb-0">End Time</p>
-                                <input
-                                  id="end_date_time"
-                                  ref={endDateTimeRef}
-                                  type="text"
-                                  className={`form-input ml-1 w-full cursor-pointer sm:w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`}
-                                  placeholder="End time"
-                                  required={endDateTime?.length === 0}
-                                />
-
-                                <span className="pointer-events-none absolute right-[14px] top-[55%] -translate-y-1/4 transform">🗓️</span>
-                                {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
-                              </div>
-
-                              <div className="flex justify-end">
-                                <span
-                                  className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white"
-                                  onClick={addDateTime}
-                                >
-                                  Add
-                                </span>
-                              </div>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
+
+                            <div className="relative mt-3 sm:mt-0">
+                              <p className="mb-1 ml-1 text-xs font-bold sm:mb-0">End Time</p>
+                              <input
+                                id="end_date_time"
+                                ref={endDateTimeRef}
+                                type="text"
+                                className={`form-input ml-1 w-full cursor-pointer sm:w-[220px] md:w-60 p-0 py-2 pl-1.5 ${errors?.end_date_time ? 'border-red-500' : ''}`}
+                                placeholder="End time"
+                                required={endDateTime?.length === 0}
+                              />
+
+                              <span className="pointer-events-none absolute right-[10px] top-[55%] md:top[40%] lg:top-[55%] -translate-y-1/4 transform">🗓️</span>
+                              {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
+                            </div>
+
+                            <div className="flex justify-end">
+                              <span
+                                className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white"
+                                onClick={addDateTime}
+                              >
+                                Add
+                              </span>
+                            </div>
+                            {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                           </div>
+                        </div>
+
+                        <div className="table-responsive">
 
                           {/* DateTime Output show Table */}
                           {dateTimes?.length !== 0 && (
