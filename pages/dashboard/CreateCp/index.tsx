@@ -88,7 +88,7 @@ const CreateNewCp = () => {
 
         // console.log("Form Data:", data);
 
-        // console.log("Data:", filteredData);
+        console.log("Data:", filteredData);
 
         // const onSubmit = (data) => {
         //     console.log('Form Data:', data);
@@ -97,6 +97,16 @@ const CreateNewCp = () => {
     };
 
     const PositionsOptions = [
+        { value: 'Producer', label: 'Producer' },
+        { value: 'Director', label: 'Director' },
+        { value: 'Videographer', label: 'Videographer' },
+        { value: 'Photographer', label: 'Photographer' },
+        { value: 'Drone Operator', label: 'Drone Operator' },
+        { value: 'Photo Editor', label: 'Photo Editor' },
+        { value: 'Video Editor', label: 'Video Editor' },
+    ];
+
+    const PositionsRole = [
         { value: 'Producer', label: 'Producer' },
         { value: 'Director', label: 'Director' },
         { value: 'Videographer', label: 'Videographer' },
@@ -151,26 +161,75 @@ const CreateNewCp = () => {
         { value: 'Sony FX9', label: 'Sony FX9' },
         { value: 'Others', label: 'Others' },
     ];
+
     const ContentExperience = [
-        { value: 'C200', label: 'C200' },
-        { value: 'C300 mark 2', label: 'C300 mark 2' },
-        { value: 'C300 mark 3', label: 'C300 mark 3' },
-        { value: 'C300 mark 4', label: 'C300 mark 4' },
-        { value: 'GH5', label: 'GH5' },
-        { value: 'GH511', label: 'GH511' },
-        { value: 'Sony A7S3', label: 'Sony A7S3' },
-        { value: 'Sony A1', label: 'Sony A1' },
-        { value: 'Sony FX3', label: 'Sony FX3' },
-        { value: 'Sony FX6', label: 'Sony FX6' },
-        { value: 'Sony FX9', label: 'Sony FX9' },
+        { value: 'Corporate/Commercials', label: 'Corporate/Commercials' },
+        { value: 'Corporate Events', label: 'Corporate Events' },
+        { value: 'Documentary', label: 'Documentary' },
+        { value: 'Events(Birthday party, baby Shower, Launch Party, etc)', label: 'Events(Birthday party, baby Shower, Launch Party, etc)' },
+        { value: 'Sports', label: 'Sports' },
+        { value: 'Wedding', label: 'Wedding' },
+        { value: 'Interviews Testimonials', label: 'Interviews Testimonials' },
+        { value: 'Live Stream', label: 'Live Stream' },
+    ];
+
+    const Photography = [
+        { value: 'Panasonic GH5(4K)', label: 'Panasonic GH5(4K)' },
+        { value: 'Camera Light', label: 'Camera Light' },
+        { value: 'GoPro Hero', label: 'GoPro Hero' },
+        { value: 'DJI Inspire Quadcopter', label: 'DJI Inspire Quadcopter' },
+        { value: '360-Degree Video', label: '360-Degree Video' },
+        { value: 'DSLR Camera (4K)', label: 'DSLR Camera (4K)' },
+        { value: 'Sony A7III', label: 'Sony A7III' },
+        { value: 'Sony A7SIII', label: 'Sony A7SIII' },
+        { value: 'Sony ZV-1', label: 'Sony ZV-1' },
+        { value: 'Nikon D850', label: 'Nikon D850' },
+        { value: 'Canon EOS R', label: 'Canon EOS R' },
         { value: 'Others', label: 'Others' },
     ];
 
-    const Photography = [...videographyCamera];
-    const Lenses = [...videographyCamera];
-    const Lighting = [...videographyCamera];
-    const Sound = [...videographyCamera];
-    const Stabilizer = [...videographyCamera];
+    const Lenses = [
+        { value: 'Wild Angle', label: 'Wild Angle' },
+        { value: 'Clear “Protective” Lens', label: 'Clear “Protective” Lens' },
+        { value: 'Polarizer', label: 'Polarizer' },
+        { value: 'Zoom Lens', label: 'Zoom Lens' },
+        { value: 'Macros', label: 'Macros' },
+        { value: 'Tamron SP 85mm F/71.8 Di VC USD', label: 'Tamron SP 85mm F/71.8 Di VC USD' },
+        { value: 'Nikon AF-S NIKKOR 70-200 f/2.8 E FL ED VR lens', label: 'Nikon AF-S NIKKOR 70-200 f/2.8 E FL ED VR lens' },
+        { value: 'Canon RF 24-70 mm f/2/8 L IS USM Lens', label: 'Canon RF 24-70 mm f/2/8 L IS USM Lens' },
+        { value: 'Others', label: 'Others' },
+    ];
+
+    const Lighting = [
+        { value: 'Three-point Lighting Kit', label: 'Three-point Lighting Kit' },
+        { value: 'Light Reflector', label: 'Light Reflector' },
+        { value: 'GVM 3-Point Light Kit With RGB Leds', label: 'GVM 3-Point Light Kit With RGB Leds' },
+        { value: 'Aputure Light Dome SE', label: 'Aputure Light Dome SE' },
+        { value: 'Others', label: 'Others' },
+    ];
+
+    const Sound = [
+        { value: 'Sound equipment', label: 'Sound equipment' },
+        { value: 'Shotgun Microphone', label: 'Shotgun Microphone' },
+        { value: 'Boom Pole', label: 'Boom Pole' },
+        { value: 'Shock Mount', label: 'Shock Mount' },
+        { value: 'Audio(XLR) Cables', label: 'Audio(XLR) Cables' },
+        { value: 'Wireless Microphone', label: 'Wireless Microphone' },
+        { value: 'Portable Digital Audio Recorder', label: 'Portable Digital Audio Recorder' },
+        { value: 'Rode VideoLic Pro+', label: 'Rode VideoLic Pro+' },
+        { value: 'Rode VideoMic Go', label: 'Rode VideoMic Go' },
+        { value: 'Lavalier Microphones', label: 'Lavalier Microphones' },
+    ];
+
+    const Stabilizer = [
+        { value: 'DSLR Shoulder Mount Rig', label: 'DSLR Shoulder Mount Rig' },
+        { value: 'Gimbal Stabilizer', label: 'Gimbal Stabilizer' },
+        { value: 'Tripod Dolly', label: 'Tripod Dolly' },
+        { value: 'Jid Crane', label: 'Jid Crane' },
+        { value: 'DJI Osmo Mobile 4', label: 'DJI Osmo Mobile 4' },
+    ];
+
+
 
 
     const handleBack = () => {
@@ -223,13 +282,13 @@ const CreateNewCp = () => {
 
                                 <div>
                                     <label htmlFor="role">Password</label>
-                                    <input type='password' id="password" placeholder="Password" {...register("Password", { required: true, pattern: PasswordPattern })} className="form-input capitalize" />
+                                    <input type='password' id="password" placeholder="Password" {...register("password", { required: true, pattern: PasswordPattern })} className="form-input capitalize" />
                                     {errors.Password && <span className='text-danger text-sm'>Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.)</span>}
                                 </div>
 
                                 <div>
                                     <label htmlFor="role">Confirm password</label>
-                                    <input type='password' id="confirm_password" {...register("CPassword", { required: true })} placeholder="Confirm password" className="form-input capitalize" />
+                                    <input type='password' id="confirm_password" {...register("confirm_password", { required: true })} placeholder="Confirm password" className="form-input capitalize" />
                                     {errors.CPassword && <span className='text-danger text-sm'>Enter your Confirm password</span>}
                                 </div>
 
@@ -238,32 +297,7 @@ const CreateNewCp = () => {
                                     <Map setGeo_location={setGeoLocation} setLocation={setLocation} defaultValue={geoLocation} {...register("location")} />
                                 </div>
 
-                                <div className='relative'>
-                                    <label htmlFor="role">Role</label>
-                                    {!showRoleInput ? (
-                                        <select {...register("role")} className="form-input">
-                                            <option value="select">Select Role</option>
-                                            {roleOptions.map((role) => (
-                                                <option key={role} value={role}>{role}</option>
-                                            ))}
-                                        </select>
-                                    ) : (
-                                        <div className="relative flex items-center justify-start gap-1">
-                                            <input {...register('role')} className="form-input" placeholder="Add Role" />
-                                            <button type="button" onClick={() => handleSetNewItem('role')} className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
-                                                {allSvgs.plusForAddCp}
-                                            </button>
-                                        </div>
-                                    )}
-                                    <div className="mb-2 mt-2 flex items-center justify-between absolute">
-                                        <button type="button" onClick={() => setShowRoleInput((prev) => !prev)} className="text-bold cursor-pointer p-0 font-sans text-white-dark">
-                                            {showRoleInput ? allSvgs.minusForHide : allSvgs.plusForAddCp}
-                                        </button>
-                                    </div>
-                                    {errors.role && <span className='text-danger text-sm'>Enter your role</span>}
-                                </div>
-
-                                <div className='mt-4'>
+                                <div className=''>
                                     <label htmlFor="timezone">Timezone</label>
                                     <TimezoneSelect
                                         value={timezone}
@@ -274,19 +308,9 @@ const CreateNewCp = () => {
                                     />
                                 </div>
 
-                                <div className='mt-4'>
+                                <div className=''>
                                     <label htmlFor="dateOfBirth">Date of Birth</label>
-                                    <input type='date' {...register('dateOfBirth')} className="form-input" placeholder="Add Role" />
-                                </div>
-
-                                <div className='mt-4'>
-                                    <label htmlFor="position">Select your main position</label>
-                                    <select {...register("position")} className="form-input">
-                                        <option value="select">Select Role</option>
-                                        {roleOptions.map((position) => (
-                                            <option key={position} value={position}>{position}</option>
-                                        ))}
-                                    </select>
+                                    <input type='date' {...register('date_of_birth')} className="form-input" placeholder="Add Role" />
                                 </div>
 
                                 <div>
@@ -317,7 +341,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={PositionsOptions}
+                                                options={PositionsRole}
                                                 placeholder="Choose cameras..."
                                             />
                                         )}
@@ -326,7 +350,7 @@ const CreateNewCp = () => {
 
                                 <div>
                                     <h2 className="text-sm font-bold mb-2">Portfolio</h2>
-                                    <input {...register("answer")}
+                                    <input {...register("protfolio_answer")}
                                         type="text"
                                         className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                         placeholder="Your answer"
@@ -479,6 +503,24 @@ const CreateNewCp = () => {
                                     />
                                 </div>
 
+
+                                <div>
+                                    <h2 className="text-sm font-bold mb-2">Content Speciality Experience</h2>
+                                    <Controller
+                                        name="ContentExperience"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Select
+                                                {...field}
+                                                isMulti
+                                                options={ContentExperience}
+                                                placeholder="Choose cameras..."
+                                            />
+                                        )}
+                                    />
+                                </div>
+
+
                             </div>
                         </div>
 
@@ -500,210 +542,119 @@ const CreateNewCp = () => {
                         <div className="md:grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
                             <div>
                                 <h2 className="text-sm font-bold mb-2">Additional Equipment</h2>
-                                <textarea placeholder="Your answer" rows="1"  {...register("Additionalanswer")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-
-                            </div>
-
-                            <div>
-                                <h2 className="text-sm font-bold mb-2">Content Speciality Experience</h2>
-                                <Controller
-                                    name="ContentExperience"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select
-                                            {...field}
-                                            isMulti
-                                            options={ContentExperience}
-                                            placeholder="Choose cameras..."
-                                        />
-                                    )}
+                                <textarea
+                                    placeholder="Your answer"
+                                    rows="1"
+                                    {...register("additional_equipment")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
 
                             <div>
                                 <h2 className="text-sm font-bold mb-2">Rates($)</h2>
-
-                                <textarea placeholder="Your Rates($)" rows="1" type="number" {...register("Rates($)")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-
+                                <textarea
+                                    placeholder="Your Rates($)"
+                                    rows="1"
+                                    type="number"
+                                    {...register("rates")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
                                 <h2 className="text-sm font-bold mb-2">Experience/Post Production</h2>
-                                <textarea placeholder="Your Experience" rows="1"  {...register("Experience")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <textarea
+                                    placeholder="Your Experience"
+                                    rows="1"
+                                    {...register("experience")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">Creative empowerment &
-                                    Initiative</h2>
-                                <textarea placeholder="Your Creative" rows="1"  {...register("Creative")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-sm font-bold mb-2">Creative empowerment & Initiative</h2>
+                                <textarea
+                                    placeholder="Your Creative"
+                                    rows="1"
+                                    {...register("creative_empowerment")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">Describe a situation when you had to handle a
-                                    high-pressure task. How did you manage it
-                                    and what was the outcome?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Creative")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-sm font-bold mb-2">Describe a situation when you had to handle a high-pressure task. How did you manage it and what was the outcome?</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly. "
+                                    rows="1"
+                                    {...register("high_pressure_task")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">What motivates you in your work? Is it
-                                    achieving goals, helping others, or something
-                                    else?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("motivates")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-sm font-bold mb-2">What motivates you in your work? Is it achieving goals, helping others, or something else?</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly. "
+                                    rows="1"
+                                    {...register("motivation")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">How do you handle conflicts or disagreements
-                                    with coworkers or superiors?*</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("disagreements")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-sm font-bold mb-2">How do you handle conflicts or disagreements with coworkers or superiors?*</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly. "
+                                    rows="1"
+                                    {...register("conflict_handling")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">Describe a time when you had to work on a
-                                    team project. What was your role, and how did
-                                    you contribute to the team's success?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("project")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-sm font-bold mb-2">Describe a time when you had to work on a team project. What was your role, and how did you contribute to the team's success?</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly. "
+                                    rows="1"
+                                    {...register("team_project")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">What do you consider your greatest
-                                    professional strength, and how does it benefit
-                                    your work?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("greatest")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-
-                            <div>
-                                <h2 className="text-sm font-bold mb-2">What are your long-term career goals, and how
-                                    does this position align with them?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("long-term")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-
-                            <div>
-                                <h2 className="text-sm font-bold mb-2">Describe a situation when you faced failure or
-                                    made a mistake at work. How did you handle it,
-                                    and what did you learn from the experience?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("situation")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-
-                            <div>
-                                <h2 className="text-sm font-bold mb-2">Describe a situation when you faced failure or
-                                    made a mistake at work. How did you handle it,
-                                    and what did you learn from the experience?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Describe")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-sm font-bold mb-2">Describe a situation when you faced failure or made a mistake at work. How did you handle it, and what did you learn from the experience?</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly. "
+                                    rows="1"
+                                    {...register("failure_experience")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
                                 <h2 className="text-xl font-bold mb-2">Additional Information</h2>
-                                <h2 className="text-sm font-bold mb-2">Is there anything that you'd like us to know or
-                                    take in consideration when working together?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Additional")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-sm font-bold mb-2">Is there anything that you'd like us to know or take in consideration when working together?</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly. "
+                                    rows="1"
+                                    {...register("additional_info")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">Describe a time when you had to work on a
-                                    team project. What was your role, and how did
-                                    you contribute to the team's success?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("project")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-xl font-bold mb-2">Networking</h2>
+                                <h2 className="text-sm font-bold mb-2 w-full">This will not have any impact whatsoever on our decision to hire you. We are expanding and we are looking to onboard as many talented creatives in the many cities we are involved in. Great way to provide value to your friends. Please provide their name and contact information (phone number and email) below.</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly. "
+                                    rows="1"
+                                    {...register("networking")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
-
-                            <div>
-                                <h2 className="text-xl font-bold mb-2"> Networking</h2>
-                                <h2 className="text-sm font-bold mb-2 w-full">This will not have any impact whatsoever on
-                                    our decision to hire you. We are expanding and
-                                    we are looking to onboard as many talented
-                                    creatives in the many cities we are involved in.
-                                    Great way to provide value to your friends.
-                                    Please provide their name and contact
-                                    information (phone number and email) below.</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Networking")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-
-                            {/* <div className="space-y-2">
-                                <h2 className="text-sm font-bold mb-2">Rate Flexibility</h2>
-                                <div className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        id="yes"
-                                        name="flexibility"
-                                        value="yes"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="yes" className="ml-2 block text-sm text-gray-900">
-                                        Yes
-                                    </label>
-                                </div>
-                                <div className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        id="no"
-                                        name="flexibility"
-                                        value="no"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="no" className="ml-2 block text-sm text-gray-900">
-                                        No
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <h2 className="text-sm font-bold mb-2">Are you a team player?</h2>
-                                <div className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        id="yes"
-                                        name="flexibility"
-                                        value="yes"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="yes" className="ml-2 block text-sm text-gray-900">
-                                        Yes
-                                    </label>
-                                </div>
-                                <div className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        id="no"
-                                        name="flexibility"
-                                        value="no"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="no" className="ml-2 block text-sm text-gray-900">
-                                        No
-                                    </label>
-                                </div>
-                            </div>
-
-
-                            <div className="space-y-2">
-                                <h2 className="text-sm font-bold mb-2">Travel</h2>
-                                <div className="flex items-center">
-                                    <input  {...register("Travel")}
-                                        type="radio"
-                                        id="yes"
-                                        name="flexibility"
-                                        value="yes"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="yes" className="ml-2 block text-sm text-gray-900">
-                                        Yes
-                                    </label>
-                                </div>
-                                <div className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        id="no"
-                                        name="flexibility"
-                                        value="no"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="no" className="ml-2 block text-sm text-gray-900">
-                                        No
-                                    </label>
-                                </div>
-                            </div> */}
 
                         </div>
+
                         <div className="flex justify-end gap-2">
                             <DefaultButton
                                 css={`font-semibold text-[16px] h-9 }`}
@@ -727,139 +678,105 @@ const CreateNewCp = () => {
                 {activeTab === 3 && (
                     <div className='mt-4'>
                         <div className="md:grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
-
                             <div>
-                                <h2 className="text-sm font-bold mb-2">What do you consider your greatest
-                                    professional strength, and how does it benefit
-                                    your work?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("greatest")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-sm font-bold mb-2">What do you consider your greatest professional strength, and how does it benefit your work?</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly."
+                                    rows="1"
+                                    {...register("greatest_professional")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">What are your long-term career goals, and how
-                                    does this position align with them?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("long-term")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-
-                            <div>
-                                <h2 className="text-sm font-bold mb-2">Describe a situation when you faced failure or
-                                    made a mistake at work. How did you handle it,
-                                    and what did you learn from the experience?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("situation")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-
-                            <div>
-                                <h2 className="text-sm font-bold mb-2">Describe a situation when you faced failure or
-                                    made a mistake at work. How did you handle it,
-                                    and what did you learn from the experience?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Describe")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-
-                            <div>
-                                <h2 className="text-xl font-bold mb-2">Additional Information</h2>
-                                <h2 className="text-sm font-bold mb-2">Is there anything that you'd like us to know or
-                                    take in consideration when working together?</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Additional")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-
-                            <div>
-                                <h2 className="text-xl font-bold mb-2"> Networking</h2>
-                                <h2 className="text-sm font-bold mb-2 w-full">This will not have any impact whatsoever on
-                                    our decision to hire you. We are expanding and
-                                    we are looking to onboard as many talented
-                                    creatives in the many cities we are involved in.
-                                    Great way to provide value to your friends.
-                                    Please provide their name and contact
-                                    information (phone number and email) below.</h2>
-                                <textarea placeholder="Please answer the following questions honestly. " rows="1"  {...register("Networking")} name="" id="" className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <h2 className="text-sm font-bold mb-2">What are your long-term career goals, and how does this position align with them?</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly."
+                                    rows="1"
+                                    {...register("long_term")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
 
                             <div className="space-y-2">
                                 <h2 className="text-sm font-bold mb-2">Rate Flexibility</h2>
                                 <div className="flex items-center">
-                                    <input {...register("Rate")}
+                                    <input
+                                        {...register("rate_flexibility")}
                                         type="radio"
-                                        id="yes"
-                                        name="flexibilityOne"
+                                        id="rateYes"
+                                        name="Rate"
                                         value="yes"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
-                                    <label htmlFor="yes" className="ml-2 block text-sm text-gray-900">
-                                        Yes
-                                    </label>
+                                    <label htmlFor="rateYes" className="ml-2 block text-sm text-gray-900">Yes</label>
                                 </div>
                                 <div className="flex items-center">
-                                    <input {...register("Rate")}
+                                    <input
+                                        {...register("rate_flexibility")}
                                         type="radio"
-                                        id="no"
-                                        name="flexibilityOne"
+                                        id="rateNo"
+                                        name="Rate"
                                         value="no"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
-                                    <label htmlFor="no" className="ml-2 block text-sm text-gray-900">
-                                        No
-                                    </label>
+                                    <label htmlFor="rateNo" className="ml-2 block text-sm text-gray-900">No</label>
                                 </div>
                             </div>
 
                             <div className="space-y-2">
                                 <h2 className="text-sm font-bold mb-2">Are you a team player?</h2>
                                 <div className="flex items-center">
-                                    <input {...register("player")}
+                                    <input
+                                        {...register("team_player")}
                                         type="radio"
-                                        id="yes"
-                                        name="flexibilityTwo"
+                                        id="playerYes"
+                                        name="player"
                                         value="yes"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
-                                    <label htmlFor="yes" className="ml-2 block text-sm text-gray-900">
-                                        Yes
-                                    </label>
+                                    <label htmlFor="playerYes" className="ml-2 block text-sm text-gray-900">Yes</label>
                                 </div>
                                 <div className="flex items-center">
-                                    <input {...register("player")}
+                                    <input
+                                        {...register("team_player")}
                                         type="radio"
-                                        id="no"
-                                        name="flexibilityTwo"
+                                        id="playerNo"
+                                        name="player"
                                         value="no"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
-                                    <label htmlFor="no" className="ml-2 block text-sm text-gray-900">
-                                        No
-                                    </label>
+                                    <label htmlFor="playerNo" className="ml-2 block text-sm text-gray-900">No</label>
                                 </div>
                             </div>
-
 
                             <div className="space-y-2">
                                 <h2 className="text-sm font-bold mb-2">Travel</h2>
                                 <div className="flex items-center">
-                                    <input {...register("Travel")}
+                                    <input
+                                        {...register("travel")}
                                         type="radio"
-                                        id="yes"
-                                        name="flexibilityThree"
+                                        id="travelYes"
+                                        name="Travel"
                                         value="yes"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
-                                    <label htmlFor="yes" className="ml-2 block text-sm text-gray-900">
-                                        Yes
-                                    </label>
+                                    <label htmlFor="travelYes" className="ml-2 block text-sm text-gray-900">Yes</label>
                                 </div>
                                 <div className="flex items-center">
-                                    <input {...register("Travel")}
+                                    <input
+                                        {...register("travel")}
                                         type="radio"
-                                        id="no"
-                                        name="flexibilityThree"
+                                        id="travelNo"
+                                        name="Travel"
                                         value="no"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
-                                    <label htmlFor="no" className="ml-2 block text-sm text-gray-900">
-                                        No
-                                    </label>
+                                    <label htmlFor="travelNo" className="ml-2 block text-sm text-gray-900">No</label>
                                 </div>
                             </div>
-
                         </div>
+
                         <div className="flex justify-end gap-2">
                             <DefaultButton
                                 css={`font-semibold text-[16px] h-9 }`}
@@ -877,6 +794,7 @@ const CreateNewCp = () => {
                                 {isLoading ? <Loader /> : 'Submit'}
                             </DefaultButton>
                         </div>
+
                     </div>
                 )}
             </form>
