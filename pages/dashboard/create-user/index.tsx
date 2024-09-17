@@ -152,21 +152,35 @@ const CreateUser = () => {
                                     <label htmlFor="role">Role</label>
                                     {!showRoleInput ? (
                                         <select {...register("role")} className="form-input">
-                                            <option value="select">Select Role</option>
+                                            <option value="">Select Role</option>
                                             {roleOptions.map((role) => (
                                                 <option key={role} value={role}>{role}</option>
                                             ))}
                                         </select>
                                     ) : (
                                         <div className="relative flex items-center justify-start gap-1">
-                                            <input {...register('role')} className="form-input" placeholder="Add Role" />
+                                            <input
+                                                {...register('role')}
+                                                className="form-input"
+                                                placeholder='Add Role'
+                                            />
                                             <button type="button" onClick={() => handleSetNewItem('role')} className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
                                                 {allSvgs.plusForAddCp}
                                             </button>
                                         </div>
                                     )}
                                     <div className="mb-2 mt-2 flex items-center justify-between absolute">
-                                        <button type="button" onClick={() => setShowRoleInput((prev) => !prev)} className="text-bold cursor-pointer p-0 font-sans text-white-dark">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setShowRoleInput((prev) => !prev);
+                                                if (!showRoleInput) {
+                                                    // Clear the input when switching to input mode
+                                                    setValue('role', '');
+                                                }
+                                            }}
+                                            className="text-bold cursor-pointer p-0 font-sans text-white-dark"
+                                        >
                                             {showRoleInput ? allSvgs.minusForHide : allSvgs.plusForAddCp}
                                         </button>
                                     </div>
