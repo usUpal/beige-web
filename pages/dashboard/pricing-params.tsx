@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 
 const PricingCalculation = () => {
   const dispatch = useDispatch();
-  const {authPermissions} = useAuth();
+  const { authPermissions } = useAuth();
   const isHavePermission = authPermissions?.includes('pricing_params');
 
   //Start theme functionality
@@ -127,7 +127,8 @@ const PricingCalculation = () => {
               <thead>
                 <tr>
                   <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
-                  <th>Extra Rate($)</th>
+                  {/* <th>Extra Rate($)</th> */}
+                  <th className="whitespace-nowrap overflow-hidden text-ellipsis">Extra Rate($)</th>
                   <th>Status</th>
                   <th>Edit</th>
                 </tr>

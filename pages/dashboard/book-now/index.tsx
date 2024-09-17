@@ -881,7 +881,7 @@ const BookNow = () => {
                                 placeholder="Start time"
                                 required={startDateTime?.length === 0}
                               />
-                              <span className="pointer-events-none absolute right-[10px] top-[55%] -translate-y-1/4 transform hidden md:!hidden">🗓️</span>
+                              <span className="pointer-events-none absolute right-[10px] top-[55%] -translate-y-1/4 transform hidden md:block">🗓️</span>
 
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
@@ -897,7 +897,7 @@ const BookNow = () => {
                                 required={endDateTime?.length === 0}
                               />
 
-                              <span className="pointer-events-none absolute right-[10px] top-[55%] md:top[40%] lg:top-[55%] -translate-y-1/4 transform hidden md:!hidden">🗓️</span>
+                              <span className="pointer-events-none absolute right-[10px] top-[55%] md:top[40%] lg:top-[55%] -translate-y-1/4 transform hidden md:block">🗓️</span>
                               {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                             </div>
 

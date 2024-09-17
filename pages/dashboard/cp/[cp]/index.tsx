@@ -258,7 +258,7 @@ const CpDetails = () => {
                           <button
                             type="button"
                             className="text-white-dark group-hover:text-red-400"
-                            // onClick={() => removeEquipmentItem(content_verticals_item, 'equipment')}
+                          // onClick={() => removeEquipmentItem(content_verticals_item, 'equipment')}
                           >
                             {allSvgs.closeBtnCp}
                           </button>
@@ -287,7 +287,7 @@ const CpDetails = () => {
                           <button
                             type="button"
                             className="text-white-dark group-hover:text-red-400"
-                            // onClick={() => removeEquipmentItem(content_type_item, 'equipment')}
+                          // onClick={() => removeEquipmentItem(content_type_item, 'equipment')}
                           >
                             {allSvgs.closeBtnCp}
                           </button>
@@ -332,7 +332,7 @@ const CpDetails = () => {
 
           {/* References */}
           <div className=" w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="reference" className="mb-0 mt-2 w-full font-sans  text-[14px]">
+            <label htmlFor="reference" className="mb-0 mt-2 xl:mt-0 w-full font-sans  text-[14px]">
               Reference
             </label>
             <input
@@ -447,14 +447,14 @@ const CpDetails = () => {
             {/* <label htmlFor="avg_response_time_to_new_shoot_inquiry" className="mb-0  font-sans text-[14px] capitalize  w-full line-clamp-1">
               avg response time to new shoot inquiry
             </label> */}
-            <label className="mb-0 mr-auto font-sans text-[14px] capitalize">avg response time to new shoot inquiry</label>
+            <label className="mb-0 mr-auto font-sans text-[14px]  capitalize">avg response time to new shoot inquiry</label>
 
             <input
               type="number"
               {...register('avg_response_time_to_new_shoot_inquiry')}
               defaultValue={formData?.avg_response_time_to_new_shoot_inquiry}
               // className='border rounded p-3 bg-gray-200'
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border p-3 bg-gray-200 focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
               onChange={(e) => handleInputChange('avg_response_time_to_new_shoot_inquiry', e.target.value)}
             />
@@ -466,7 +466,7 @@ const CpDetails = () => {
               experience with post production
             </label>
             <select
-              className=" mt-1 w-56 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className=" mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               id="experience_with_post_production_edit"
               defaultValue={formData?.experience_with_post_production_edit}
               {...register('experience_with_post_production_edit')}
@@ -667,7 +667,7 @@ const CpDetails = () => {
           </div>
         </div>
 
-        <div className="mt-0 flex flex-wrap gap-0  md:mt-4 md:gap-10">
+        <div className="mt-0 flex flex-wrap gap-0  md:mt-4 md:gap-10 xl:gap-5">
           {/* DOB || AGE */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
             <label htmlFor="own_transportation_method" className=" mb-0  w-full font-sans text-[14px]  capitalize">

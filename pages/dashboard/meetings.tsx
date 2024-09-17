@@ -216,7 +216,7 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setMeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-32 w-5/6 md:w-4/6 lg:w-3/6 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+              <Dialog.Panel as="div" className="panel my-32 w-5/6 md:w-4/6 lg:w-3/6 2xl:w-2/6 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                   <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setMeetingModal(false)}>
