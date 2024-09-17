@@ -7,13 +7,37 @@ import Cookies from 'js-cookie';
 const axios = axiosLib.create({
   baseURL: config.APIEndpoint,
 });
-const refreshToken = JSON.parse(Cookies.get('refreshToken'));
-const reqConfig = () => ({
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${refreshToken.token}`,
-  },
-});
+let refreshToken;
+let reqConfig;
+
+try {
+  const refreshTokenCookie = Cookies.get('refreshToken');
+  if (refreshTokenCookie) {
+    refreshToken = JSON.parse(refreshTokenCookie);
+    reqConfig = () => ({
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${refreshToken.token}`,
+      },
+    });
+  } else {
+    console.warn('No refresh token found in cookies');
+    refreshToken = null;
+    reqConfig = () => ({
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+} catch (error) {
+  console.error('Error parsing refresh token:', error);
+  refreshToken = null;
+  reqConfig = () => ({
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
 
 export default {
   idToken: null,
