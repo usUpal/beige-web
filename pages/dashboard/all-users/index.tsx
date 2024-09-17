@@ -60,7 +60,7 @@ const Users = () => {
   };
 
   const handleCreateNewCp = () => {
-    toast.warning('This page is under Development.');
+    // toast.warning('This page is under Development.');
   };
 
   if (!isHavePermission) {

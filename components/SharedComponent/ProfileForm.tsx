@@ -32,8 +32,8 @@ const ProfileForm = () => {
     },
   });
 
-  const [updateUserInfo, {}] = useUpdateUserInfoMutation();
-  const [updateCpDataForLocation, {}] = useUpdateCpDataForLocationMutation();
+  const [updateUserInfo, { }] = useUpdateUserInfoMutation();
+  const [updateCpDataForLocation, { }] = useUpdateCpDataForLocationMutation();
 
   useEffect(() => {
     setValue('geo_location', geo_location);
@@ -106,7 +106,7 @@ const ProfileForm = () => {
 
             <div>
               <label htmlFor="email">Email</label>
-              <input id="email" {...register('email')} disabled type="email" placeholder="Jimmy@gmail.com" className="form-input bg-gray-200" />
+              <input id="email" {...register('email')} disabled type="email" placeholder="eg: exmpal@gmail.com" className="form-input bg-gray-200" />
             </div>
           </div>
         </div>

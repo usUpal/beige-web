@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useState, useRef } from 'react';
 import 'tippy.js/dist/tippy.css';
 import Map from '@/components/Map';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import TimezoneSelect from 'react-timezone-select';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
@@ -24,33 +23,7 @@ const CreateNewCp = () => {
         "Post Production Manager", "Sales Representative",
         "User Success"
     ]);
-    const [step, setStep] = useState(1); // Manage form steps
-    const [selectedPositions, setselectedPositions] = useState([]);
-    const [selectedPositionsRole, setselectedPositionsRole] = useState([]);
-    const [selectedBackFootage, setselectedBackFootage] = useState([]);
-    const [selectedAvailibility, setselectedAvailibility] = useState([]);
-    const [selectedNotification, setselectedNotification] = useState([]);
-    const [selectedVideography, setselectedVideography] = useState([]);
-    const [selectedPhotography, setselectedPhotography] = useState([]);
-    const [selectedLenses, setselectedLenses] = useState([]);
-    const [selectedLighting, setselectedLighting] = useState([]);
-    const [selectedSound, setselectedSound] = useState([]);
-    const [selectedStabilizer, setselectedStabilizer] = useState([]);
-    const [selectedContentExperience, setselectedContentExperience] = useState([]);
-
-    const handlePositionChange = (selected) => setselectedPositions(selected);
-    const handleRoleChange = (selected) => setselectedPositionsRole(selected);
-    const handleBackFootageChange = (selected) => setselectedBackFootage(selected);
-    const handleAvailibilityChange = (selected) => setselectedAvailibility(selected);
-    const handleNotificationChange = (selected) => setselectedNotification(selected);
-    const handleVideographyonChange = (selected) => setselectedVideography(selected);
-    const handlePhotographyonChange = (selected) => setselectedPhotography(selected);
-    const handleLensesonChange = (selected) => setselectedLenses(selected);
-    const handleLightingonChange = (selected) => setselectedLighting(selected);
-    const handleSoundonChange = (selected) => setselectedSound(selected);
-    const handleStabilizeronChange = (selected) => setselectedStabilizer(selected);
-    const handleContentExperienceonChange = (selected) => setselectedContentExperience(selected);
-
+    const [step, setStep] = useState(1);
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
     const PasswordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
 
@@ -270,13 +243,13 @@ const CreateNewCp = () => {
 
                                 <div>
                                     <label htmlFor="name">Full Name</label>
-                                    <input id="name" placeholder="Exmpal Turner" {...register("firstName", { required: true })} className="form-input" />
+                                    <input id="name" placeholder="Full Name" {...register("firstName", { required: true })} className="form-input" />
                                     {errors.firstName && <span className='text-danger text-sm'>Enter your name</span>}
                                 </div>
 
                                 <div>
                                     <label htmlFor="email">Email</label>
-                                    <input id="email" type="email" defaultValue="" {...register("email", { required: true, pattern: emailRegex })} placeholder="Jimmy@gmail.com" className="form-input" />
+                                    <input id="email" type="email" defaultValue="" {...register("email", { required: true, pattern: emailRegex })} placeholder="eg: exmpal@gmail.com" className="form-input" />
                                     {errors.email && <span className='text-danger text-sm'>Enter a valid Email</span>}
                                 </div>
 
@@ -324,7 +297,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={PositionsOptions}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -343,7 +316,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={PositionsRole}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -372,7 +345,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={backupFootage}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -391,7 +364,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={Availibility}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -410,7 +383,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={Notification}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -427,7 +400,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={videographyCamera}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -444,7 +417,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={Photography}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -462,7 +435,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={Lenses}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -479,7 +452,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={Lighting}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -496,7 +469,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={Sound}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -513,7 +486,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={Stabilizer}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -533,7 +506,7 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={ContentExperience}
-                                                placeholder="Choose cameras..."
+                                                placeholder="Choose Select..."
                                             />
                                         )}
                                     />
@@ -613,7 +586,7 @@ const CreateNewCp = () => {
                             <div>
                                 <h2 className="text-sm font-bold mb-2">Describe a situation when you had to handle a high-pressure task. How did you manage it and what was the outcome?</h2>
                                 <textarea
-                                    placeholder="Please answer the following questions honestly. "
+                                    placeholder="Please answer"
                                     rows="1"
                                     {...register("high_pressure_task")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -623,7 +596,7 @@ const CreateNewCp = () => {
                             <div>
                                 <h2 className="text-sm font-bold mb-2">What motivates you in your work? Is it achieving goals, helping others, or something else?</h2>
                                 <textarea
-                                    placeholder="Please answer the following questions honestly. "
+                                    placeholder="Please answer"
                                     rows="1"
                                     {...register("motivation")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -633,7 +606,7 @@ const CreateNewCp = () => {
                             <div>
                                 <h2 className="text-sm font-bold mb-2">How do you handle conflicts or disagreements with coworkers or superiors?*</h2>
                                 <textarea
-                                    placeholder="Please answer the following questions honestly. "
+                                    placeholder="Please answer"
                                     rows="1"
                                     {...register("conflict_handling")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -643,7 +616,7 @@ const CreateNewCp = () => {
                             <div>
                                 <h2 className="text-sm font-bold mb-2">Describe a time when you had to work on a team project. What was your role, and how did you contribute to the team's success?</h2>
                                 <textarea
-                                    placeholder="Please answer the following questions honestly. "
+                                    placeholder="Please answer"
                                     rows="1"
                                     {...register("team_project")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -653,7 +626,7 @@ const CreateNewCp = () => {
                             <div>
                                 <h2 className="text-sm font-bold mb-2">Describe a situation when you faced failure or made a mistake at work. How did you handle it, and what did you learn from the experience?</h2>
                                 <textarea
-                                    placeholder="Please answer the following questions honestly. "
+                                    placeholder="Please answer"
                                     rows="1"
                                     {...register("failure_experience")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -664,7 +637,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-xl font-bold mb-2">Additional Information</h2>
                                 <h2 className="text-sm font-bold mb-2">Is there anything that you'd like us to know or take in consideration when working together?</h2>
                                 <textarea
-                                    placeholder="Please answer the following questions honestly. "
+                                    placeholder="Please answer"
                                     rows="1"
                                     {...register("additional_info")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -675,7 +648,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-xl font-bold mb-2">Networking</h2>
                                 <h2 className="text-sm font-bold mb-2 w-full">This will not have any impact whatsoever on our decision to hire you. We are expanding and we are looking to onboard as many talented creatives in the many cities we are involved in. Great way to provide value to your friends. Please provide their name and contact information (phone number and email) below.</h2>
                                 <textarea
-                                    placeholder="Please answer the following questions honestly. "
+                                    placeholder="Please answer"
                                     rows="1"
                                     {...register("networking")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"

@@ -121,13 +121,13 @@ const CreateUser = () => {
 
                                 <div>
                                     <label htmlFor="name">Full Name</label>
-                                    <input id="name" placeholder="Exmpal Turner" {...register("firstName", { required: true })} className="form-input" />
+                                    <input id="name" placeholder="Full Name" {...register("firstName", { required: true })} className="form-input" />
                                     {errors.firstName && <span className='text-danger text-sm'>Enter your name</span>}
                                 </div>
 
                                 <div>
                                     <label htmlFor="email">Email</label>
-                                    <input id="email" type="email" defaultValue="" {...register("email", { required: true, pattern: emailRegex })} placeholder="Jimmy@gmail.com" className="form-input" />
+                                    <input id="email" type="email" defaultValue="" {...register("email", { required: true, pattern: emailRegex })} placeholder="eg: exmpal@gmail.com" className="form-input" />
                                     {errors.email && <span className='text-danger text-sm'>Enter a valid Email</span>}
                                 </div>
 
