@@ -641,7 +641,7 @@ const ShootDetails = () => {
                       {allSvgs.closeModalSvg}
                     </button>
                   </div>
-                  <div className="basis-[50%] px-5 py-2">
+                  <div className="basis-[45%]  md:pe-5 py-2">
                     <div className="mb-2 flex justify-end">
                       <input
                         onChange={(event) => setQuery(event.target.value)}
@@ -680,7 +680,7 @@ const ShootDetails = () => {
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
                                   className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
-                                    } w-full py-2 text-center font-sans text-sm capitalize leading-none text-white`}
+                                    } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
                                 </p>
@@ -697,7 +697,7 @@ const ShootDetails = () => {
                       )}
                     </div>
 
-                    <div className="flex justify-center">
+                    <div className="flex justify-end">
                       <DefaultButton onClick={updateCps} disabled={false} css="my-5">
                         Submit
                       </DefaultButton>

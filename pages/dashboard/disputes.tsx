@@ -217,7 +217,7 @@ const Disputes = () => {
                   </div>
                 </div>
 
-                <div className="mr-12 mt-8 flex justify-center md:justify-end">
+                <div className="mr-0 md:mr-5 mt-8 flex justify-center md:justify-end">
                   <DefaultButton onClick={() => handleUpdateStatusSubmit(disputeInfo?.id)} css="" type="submit">
                     Update
                   </DefaultButton>
