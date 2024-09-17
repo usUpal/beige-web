@@ -10,7 +10,7 @@ import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAddNewAddOnMutation, useDeleteSingleAddonMutation, useGetAllAddonsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation } from '@/Redux/features/addons/addonsApi';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
 import { useRouter } from 'next/router';
 import AccessDenied from '@/components/errors/AccessDenied';
 const Addons = () => {
@@ -348,7 +348,10 @@ const Addons = () => {
                             <div className="mt-3 flex w-full flex-col md:mt-0">
                               <span className="pb-2 text-[14px] font-bold capitalize leading-none text-[#000000]">Extend Rate</span>
                               <input
-                                {...register('ExtendRate')}
+                                type="number"
+                                {...register('ExtendRate', {
+                                  min: 0
+                                })}
                                 onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
                                 value={addonsInfo?.ExtendRate || 0}
                                 className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 "
@@ -383,6 +386,7 @@ const Addons = () => {
                           <div className="mt-3 flex w-full flex-col md:mt-0">
                             <span className="mb-2 text-[14px] font-bold capitalize leading-none text-[#000000]">Rate</span>
                             <input
+                              type="number"
                               {...register('rate')}
                               onChange={(e) => handleInputChange('rate', e.target.value)}
                               value={addonsInfo?.rate || 0}

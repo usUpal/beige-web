@@ -7,12 +7,14 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import TimezoneSelect from 'react-timezone-select';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { useCreateClientMutation } from '@/Redux/features/auth/authApi';
+import { API_ENDPOINT } from '@/config';
 
 const CreateUser = () => {
     const [geoLocation, setGeoLocation] = useState('');
     const [location, setLocation] = useState('');
     const [image, setImage] = useState("https://cdn.vectorstock.com/i/500p/53/42/user-member-avatar-face-profile-icon-vector-22965342.jpg");
-    const [timezone, setTimezone] = useState(null);
+    // const [timezone, setTimezone] = useState(null);
 
     const { register, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm();
     const fileInputRef = useRef(null);
@@ -24,7 +26,7 @@ const CreateUser = () => {
     ]);
 
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
-    const PasswordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
 
     const handleIconClick = () => {
         fileInputRef.current.click();
@@ -41,7 +43,7 @@ const CreateUser = () => {
         }
     };
 
-    const handleSetNewItem = (fieldName) => {
+    const handleSetNewItem = (fieldName: any) => {
         const value = getValues(fieldName);
         if (!value) return;
 
@@ -51,28 +53,58 @@ const CreateUser = () => {
         reset({ [fieldName]: '' });
     };
 
-    const onSubmit = (data) => {
-        const { Password, CPassword, email } = data;
+    // const [createClient, { isLoading: createClientIsLoading, isSuccess: createClientIsSuccess }] = useCreateClientMutation();
+
+    const onSubmit = async (data: any) => {
+        const { password, CPassword, email } = data;
 
         if (!emailRegex.test(email)) {
             toast.error('Please enter a valid email.');
             return;
         }
-
-        if (!PasswordPattern.test(Password)) {
+        if (!passwordPattern.test(password)) {
             toast.error('Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.).');
             return;
         }
-
-        if (Password !== CPassword) {
+        if (password !== CPassword) {
             toast.error("Password dosen't match.");
             return;
         }
+        const filteredUserData = {
+            name: data.name,
+            email: email,
+            password: password,
+            location,
+            role: data.role,
+        }
+        try {
+            const response = await fetch(`${API_ENDPOINT}auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(filteredUserData),
+            });
 
-        const filteredData = Object.fromEntries(
-            Object.entries({ ...data, timezone: timezone?.value, location: location }).filter(([key, value]) => value !== '')
-        );
-        console.log("Data:", filteredData);
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log('Success:', result);
+                toast.success('Registration successful!');
+            } else {
+                if (result.code === 400) {
+                    toast.error(`${result.message}`);
+                }
+                else {
+                    toast.error(`Something went wrong, Please try again!`);
+                }
+            }
+
+        } catch (error) {
+            console.error('Network error:', error);
+            toast.error('An error occurred. Please try again later.');
+        }
+
     };
 
     return (
@@ -121,7 +153,7 @@ const CreateUser = () => {
 
                                 <div>
                                     <label htmlFor="name">Full Name</label>
-                                    <input id="name" placeholder="Full Name" {...register("firstName", { required: true })} className="form-input" />
+                                    <input id="name" placeholder="Full Name" {...register("name", { required: true })} className="form-input" />
                                     {errors.firstName && <span className='text-danger text-sm'>Enter your name</span>}
                                 </div>
 
@@ -133,7 +165,7 @@ const CreateUser = () => {
 
                                 <div>
                                     <label htmlFor="role">Password</label>
-                                    <input type='password' id="password" placeholder="Password" {...register("Password", { required: true, pattern: PasswordPattern })} className="form-input capitalize" />
+                                    <input type='password' id="password" placeholder="Password" {...register("password", { required: true, pattern: passwordPattern })} className="form-input capitalize" />
                                     {errors.Password && <span className='text-danger text-sm'>Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.)</span>}
                                 </div>
 
@@ -187,7 +219,7 @@ const CreateUser = () => {
                                     {errors.role && <span className='text-danger text-sm'>Enter your role</span>}
                                 </div>
 
-                                <div>
+                                {/* <div>
                                     <label htmlFor="timezone">Timezone</label>
                                     <TimezoneSelect
                                         value={timezone}
@@ -196,7 +228,7 @@ const CreateUser = () => {
                                             setValue("Timezone", selectedTimezone?.value || '');
                                         }}
                                     />
-                                </div>
+                                </div> */}
                             </div>
                         </div>
 

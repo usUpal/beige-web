@@ -186,7 +186,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Dialog.Panel as="div" className="panel my-24 w-5/6 md:w-3/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark">
+                    <Dialog.Panel as="div" className="panel my-24 w-5/6 md:w-3/6 2xl:w-2/5 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark">
                       <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                         <div className="text-lg font-bold capitalize text-red-600">Upload {state.folderUpload ? 'a Folder' : 'Files'}</div>
                         <button
@@ -224,12 +224,12 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
 
 
 
-                        <p className=" font-semibold">
+                        <div className=" font-semibold">
                           <p>
                             You can select multiple files or a single folder to upload. If you upload a folder, file structure will be preserved. Files will be uploaded to{' '}
                             {(path || []).join('/') + '/'}.
                           </p>
-                        </p>
+                        </div>
 
                         {/* <div className={styles.fileInputContainer}> */}
                         <div className='w-full'>

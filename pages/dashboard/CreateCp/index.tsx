@@ -25,7 +25,7 @@ const CreateNewCp = () => {
     ]);
     const [step, setStep] = useState(1);
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
-    const PasswordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
 
     const handleSetNewItem = (fieldName) => {
         const value = getValues(fieldName);
@@ -35,68 +35,60 @@ const CreateNewCp = () => {
         reset({ [fieldName]: '' });
     };
 
-    const onSubmit = (data) => {
-        const { Password, CPassword, email } = data;
+    const onSubmit = (data: any) => {
+        const { password, CPassword, email } = data;
 
         if (!emailRegex.test(email)) {
             toast.error('Please enter a valid email.');
             return;
         }
-
-        if (!PasswordPattern.test(Password)) {
+        if (!passwordPattern.test(password)) {
             toast.error('Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.).');
             return;
         }
-
-        if (Password !== CPassword) {
+        if (password !== CPassword) {
             toast.error("Password doesn't match.");
             return;
         }
-
         setFormFlipped(true);
 
         const filteredData = Object.fromEntries(
             Object.entries({ ...data, timezone: timezone?.value, location: location }).filter(([key, value]) => value !== '')
         );
-
-        // console.log("Form Data:", data);
-
         console.log("Data:", filteredData);
-
         // const onSubmit = (data) => {
         //     console.log('Form Data:', data);
         // };
-
     };
 
-    const PositionsOptions = [
-        { value: 'Producer', label: 'Producer' },
-        { value: 'Director', label: 'Director' },
-        { value: 'Videographer', label: 'Videographer' },
-        { value: 'Photographer', label: 'Photographer' },
-        { value: 'Drone Operator', label: 'Drone Operator' },
-        { value: 'Photo Editor', label: 'Photo Editor' },
-        { value: 'Video Editor', label: 'Video Editor' },
+    const positionsOptions = [
+        { value: 'producer', label: 'Producer' },
+        { value: 'director', label: 'Director' },
+        { value: 'videographer', label: 'Videographer' },
+        { value: 'photographer', label: 'Photographer' },
+        { value: 'droneOperator', label: 'Drone Operator' },
+        { value: 'photoEditor', label: 'Photo Editor' },
+        { value: 'videoEditor', label: 'Video Editor' },
     ];
 
-    const PositionsRole = [
-        { value: 'Producer', label: 'Producer' },
-        { value: 'Director', label: 'Director' },
-        { value: 'Videographer', label: 'Videographer' },
-        { value: 'Photographer', label: 'Photographer' },
-        { value: 'Drone Operator', label: 'Drone Operator' },
-        { value: 'Photo Editor', label: 'Photo Editor' },
-        { value: 'Video Editor', label: 'Video Editor' },
+    const positionsRole = [
+        { value: 'producer', label: 'Producer' },
+        { value: 'director', label: 'Director' },
+        { value: 'videographer', label: 'Videographer' },
+        { value: 'photographer', label: 'Photographer' },
+        { value: 'droneOperator', label: 'Drone Operator' },
+        { value: 'photoEditor', label: 'Photo Editor' },
+        { value: 'videoEditor', label: 'Video Editor' },
     ];
 
-    const backupFootage = [
-        { value: 'Hard Drive ', label: 'Hard Drive ' },
-        { value: 'SD Card', label: 'SD Card' },
-        { value: 'Google Drive', label: 'Google Drive' },
-        { value: 'We Transfer', label: 'We Transfer' },
+    const backupFootages = [
+        { value: 'hardDrive ', label: 'Hard Drive ' },
+        { value: 'sdCard', label: 'SD Card' },
+        { value: 'googleDrive', label: 'Google Drive' },
+        { value: 'weTransfer', label: 'We Transfer' },
     ];
 
-    const Availibility = [
+    const shootAvailibilities = [
         { value: 'During the week and weekend', label: 'During the week and weekend' },
         { value: 'Only during the week', label: 'Only during the week' },
         { value: 'Only during the weekends', label: 'Only during the weekends' },
@@ -104,14 +96,14 @@ const CreateNewCp = () => {
         { value: 'All of the above', label: 'All of the above' },
     ];
 
-    const Notification = [
+    const notifications = [
         { value: '1 Day anticipation', label: '1 days anticipation' },
         { value: '2 days anticipation', label: '2 days anticipation' },
         { value: '1 week anticipation', label: '1 week anticipation' },
         { value: '1 month anticipation', label: '1 month anticipation' },
     ];
 
-    const videographyCamera = [
+    const videographyEqupmentCamera = [
         { value: 'BMPCC 4K', label: 'BMPCC 4K' },
         { value: 'BMPCC 6k G2', label: 'BMPCC 6k G2' },
         { value: 'BMPCC 6k Pro', label: 'BMPCC 6k Pro' },
@@ -135,7 +127,7 @@ const CreateNewCp = () => {
         { value: 'Others', label: 'Others' },
     ];
 
-    const ContentExperience = [
+    const contentExperience = [
         { value: 'Corporate/Commercials', label: 'Corporate/Commercials' },
         { value: 'Corporate Events', label: 'Corporate Events' },
         { value: 'Documentary', label: 'Documentary' },
@@ -146,7 +138,7 @@ const CreateNewCp = () => {
         { value: 'Live Stream', label: 'Live Stream' },
     ];
 
-    const Photography = [
+    const photography = [
         { value: 'Panasonic GH5(4K)', label: 'Panasonic GH5(4K)' },
         { value: 'Camera Light', label: 'Camera Light' },
         { value: 'GoPro Hero', label: 'GoPro Hero' },
@@ -161,19 +153,19 @@ const CreateNewCp = () => {
         { value: 'Others', label: 'Others' },
     ];
 
-    const Lenses = [
-        { value: 'Wild Angle', label: 'Wild Angle' },
+    const lenses = [
+        { value: 'wildAngle', label: 'Wild Angle' },
         { value: 'Clear “Protective” Lens', label: 'Clear “Protective” Lens' },
         { value: 'Polarizer', label: 'Polarizer' },
         { value: 'Zoom Lens', label: 'Zoom Lens' },
-        { value: 'Macros', label: 'Macros' },
+        { value: 'macros', label: 'Macros' },
         { value: 'Tamron SP 85mm F/71.8 Di VC USD', label: 'Tamron SP 85mm F/71.8 Di VC USD' },
         { value: 'Nikon AF-S NIKKOR 70-200 f/2.8 E FL ED VR lens', label: 'Nikon AF-S NIKKOR 70-200 f/2.8 E FL ED VR lens' },
         { value: 'Canon RF 24-70 mm f/2/8 L IS USM Lens', label: 'Canon RF 24-70 mm f/2/8 L IS USM Lens' },
         { value: 'Others', label: 'Others' },
     ];
 
-    const Lighting = [
+    const lighting = [
         { value: 'Three-point Lighting Kit', label: 'Three-point Lighting Kit' },
         { value: 'Light Reflector', label: 'Light Reflector' },
         { value: 'GVM 3-Point Light Kit With RGB Leds', label: 'GVM 3-Point Light Kit With RGB Leds' },
@@ -181,7 +173,7 @@ const CreateNewCp = () => {
         { value: 'Others', label: 'Others' },
     ];
 
-    const Sound = [
+    const sound = [
         { value: 'Sound equipment', label: 'Sound equipment' },
         { value: 'Shotgun Microphone', label: 'Shotgun Microphone' },
         { value: 'Boom Pole', label: 'Boom Pole' },
@@ -194,16 +186,13 @@ const CreateNewCp = () => {
         { value: 'Lavalier Microphones', label: 'Lavalier Microphones' },
     ];
 
-    const Stabilizer = [
+    const stabilizer = [
         { value: 'DSLR Shoulder Mount Rig', label: 'DSLR Shoulder Mount Rig' },
         { value: 'Gimbal Stabilizer', label: 'Gimbal Stabilizer' },
         { value: 'Tripod Dolly', label: 'Tripod Dolly' },
         { value: 'Jid Crane', label: 'Jid Crane' },
         { value: 'DJI Osmo Mobile 4', label: 'DJI Osmo Mobile 4' },
     ];
-
-
-
 
     const handleBack = () => {
         setActiveTab(activeTab - 1);
@@ -242,8 +231,8 @@ const CreateNewCp = () => {
                             <div className="grid flex-1 grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
 
                                 <div>
-                                    <label htmlFor="name">Full Name</label>
-                                    <input id="name" placeholder="Full Name" {...register("firstName", { required: true })} className="form-input" />
+                                    <label htmlFor="name">Name</label>
+                                    <input id="name" placeholder="Full Name" {...register("name", { required: true })} className="form-input" />
                                     {errors.firstName && <span className='text-danger text-sm'>Enter your name</span>}
                                 </div>
 
@@ -255,8 +244,8 @@ const CreateNewCp = () => {
 
                                 <div>
                                     <label htmlFor="role">Password</label>
-                                    <input type='password' id="password" placeholder="Password" {...register("password", { required: true, pattern: PasswordPattern })} className="form-input capitalize" />
-                                    {errors.Password && <span className='text-danger text-sm'>Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.)</span>}
+                                    <input type='password' id="password" placeholder="Password" {...register("password", { required: true, pattern: passwordPattern })} className="form-input capitalize" />
+                                    {errors.password && <span className='text-danger text-sm'>Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.)</span>}
                                 </div>
 
                                 <div>
@@ -296,7 +285,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={PositionsOptions}
+                                                options={positionsOptions}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -309,13 +298,14 @@ const CreateNewCp = () => {
                                     <p className="text-sm text-gray-500">Please select the positions/Roles that you work on.</p>
 
                                     <Controller
+                                        // not matched
                                         name="positions_options_role"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={PositionsRole}
+                                                options={positionsRole}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -326,7 +316,7 @@ const CreateNewCp = () => {
                                     <h2 className="text-sm font-bold">Portfolio</h2>
                                     <p className="text-sm text-gray-500">Please provide a link to your portfolio(Website, media
                                         platform, etc)</p>
-                                    <input {...register("protfolio_answer")}
+                                    <input {...register("portfolio")}
                                         type="text"
                                         className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                         placeholder="Your answer"
@@ -344,7 +334,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={backupFootage}
+                                                options={backupFootages}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -357,13 +347,13 @@ const CreateNewCp = () => {
                                     <p className="text-sm text-gray-500">We want to work with you on the best way possible,
                                         Please let us know about your availibility?</p>
                                     <Controller
-                                        name="availibility"
+                                        name="shoot_availability"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={Availibility}
+                                                options={shootAvailibilities}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -382,7 +372,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={Notification}
+                                                options={notifications}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -393,13 +383,14 @@ const CreateNewCp = () => {
                                     <h2 className="text-sm font-bold ">Videography Camera</h2>
                                     <p className="text-sm text-gray-500">Camera gear for Video</p>
                                     <Controller
-                                        name="videography_camera"
+                                        // vediographyCamera
+                                        name="equipment"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={videographyCamera}
+                                                options={videographyEqupmentCamera}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -410,13 +401,14 @@ const CreateNewCp = () => {
                                     <h2 className="text-sm font-bold">Photography Camera</h2>
                                     <p className="text-sm text-gray-500">Camera gear for Photo</p>
                                     <Controller
-                                        name="photography"
+                                        // not matched
+                                        name="photographyCamera"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={Photography}
+                                                options={photography}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -428,13 +420,14 @@ const CreateNewCp = () => {
                                     <p className="text-sm text-gray-500">Lenses: Wide Angle, Clear “Protective” Lens, Polarizer,
                                         Zoom Lens, Macros, etc.</p>
                                     <Controller
-                                        name="lenses"
+                                        // name="lenses"
+                                        name='equipment_specification'
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={Lenses}
+                                                options={lenses}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -451,7 +444,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={Lighting}
+                                                options={lighting}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -468,7 +461,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={Sound}
+                                                options={sound}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -485,7 +478,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={Stabilizer}
+                                                options={stabilizer}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -505,7 +498,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={ContentExperience}
+                                                options={contentExperience}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -545,13 +538,25 @@ const CreateNewCp = () => {
                             </div>
 
                             <div>
+                                <h2 className="text-sm font-bold ">Rate($)</h2>
+                                <p className="text-sm text-gray-500">Please let us know how you work and pricing.</p>
+                                <textarea
+                                    placeholder="Your Rates($)"
+                                    rows="1"
+                                    type="number"
+                                    {...register("rate")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+
+                            <div>
                                 <h2 className="text-sm font-bold ">Rates($)</h2>
                                 <p className="text-sm text-gray-500">Please let us know how you work and pricing.</p>
                                 <textarea
                                     placeholder="Your Rates($)"
                                     rows="1"
                                     type="number"
-                                    {...register("rates")}
+                                    {...register("rate")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>

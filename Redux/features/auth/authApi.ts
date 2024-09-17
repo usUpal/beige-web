@@ -16,8 +16,18 @@ const authApi = baseApi.injectEndpoints({
           method: 'GET'
         }
       }
+    }),
+
+    // create client
+    createClient: builder.mutation({
+      query: (userInfo) => ({
+        url: '/auth/register',
+        method: 'POST',
+        body: userInfo,
+      }),
     })
+
   }),
 });
 
-export const { useLoginMutation, useLazyGetAuthPermissionsQuery } = authApi;
+export const { useLoginMutation, useLazyGetAuthPermissionsQuery, useCreateClientMutation } = authApi;

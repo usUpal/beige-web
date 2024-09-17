@@ -19,6 +19,8 @@ const CpDetails = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<any | null>(null);
+  console.log(formData);
+
   const params = useParams();
   const dob = formData?.date_of_birth;
   const formattedDateTime = useDateFormat(dob);
@@ -667,7 +669,7 @@ const CpDetails = () => {
           </div>
         </div>
 
-        <div className="mt-0 flex flex-wrap gap-0  md:mt-4 md:gap-10 xl:gap-5">
+        <div className="mt-0 flex flex-wrap gap-0  md:mt-4 md:gap-10 xl:gap-5 2xl:gap-8">
           {/* DOB || AGE */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
             <label htmlFor="own_transportation_method" className=" mb-0  w-full font-sans text-[14px]  capitalize">
