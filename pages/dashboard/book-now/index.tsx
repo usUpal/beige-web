@@ -547,7 +547,7 @@ const BookNow = () => {
             max: myMaxBud,
           },
           client_id,
-          order_status: 'pre_production',
+          order_status: userData?.role === 'admin' ? 'pre_production' : 'pending',
           content_type: data.content_type,
           content_vertical: data.content_vertical,
           description: data.description,
