@@ -516,7 +516,7 @@ const Chat = () => {
                   <Link href={`./shoots/${selectedChatRoom?.order_id?.id}`}>
                     <p className="font-semibold">
                       <span className="block md:hidden xl:hidden">{truncateLongText(selectedChatRoom?.order_id?.order_name, 20)}</span>
-                      <span className="hidden md:block  lg">{truncateLongText(selectedChatRoom?.order_id?.order_name, 35)}</span>
+                      <span className="hidden md:block 2xl:hidden ">{truncateLongText(selectedChatRoom?.order_id?.order_name, 35)}</span>
                       <span className="hidden  2xl:block">{truncateLongText(selectedChatRoom?.order_id?.order_name, 80)}</span>
                     </p>
                     <p className="text-xs text-white-dark">{selectedChatRoom.active ? 'Active now' : 'Last seen at ' + updatedAtDateTime?.time}</p>
