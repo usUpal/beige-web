@@ -2,13 +2,16 @@
 import axiosLib from 'axios';
 import config from '../../config';
 import { toast } from 'react-toastify';
+import Cookies from 'js-cookie';
+
 const axios = axiosLib.create({
   baseURL: config.APIEndpoint,
 });
-
-const reqConfig = (obj) => ({
+const refreshToken = JSON.parse(Cookies.get('refreshToken'));
+const reqConfig = () => ({
   headers: {
-    Authorization: `Bearer ${obj.idToken}`,
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${refreshToken.token}`,
   },
 });
 
@@ -129,7 +132,6 @@ export default {
     }
   },
   postFile(uploadPolicy, file, progressCb) {
-    console.log('🚀 ~ postFile ~ file:', file);
     try {
       const data = new FormData();
       for (const [key, value] of Object.entries(uploadPolicy.fields)) {
