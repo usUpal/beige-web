@@ -8,8 +8,9 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '@/contexts/authContext';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import 'react-toastify/dist/ReactToastify.css';
-import { useAddNewAddOnMutation, useGetAllAddonsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation } from '@/Redux/features/addons/addonsApi';
+import { useAddNewAddOnMutation, useDeleteSingleAddonMutation, useGetAllAddonsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation } from '@/Redux/features/addons/addonsApi';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 import { useRouter } from 'next/router';
 import AccessDenied from '@/components/errors/AccessDenied';
 const Addons = () => {
@@ -38,7 +39,7 @@ const Addons = () => {
 
   const { data: addonsData, refetch } = useGetAllAddonsQuery(undefined, {
     refetchOnMountOrArgChange: true,
-    skip:!isHavePermission
+    skip: !isHavePermission,
   });
 
   const [getAddonsDetails, { data: addonsDetails, isLoading: getAddonsDetailsLoading }] = useLazyGetAddonsDetailsQuery();
@@ -119,11 +120,9 @@ const Addons = () => {
       status: data?.status || false,
     };
     try {
-      // Wait for the mutation to complete
       const response = await addNewAddOn(newAddonsData);
-      // Check if the mutation was successful
       if (isSuccessAddNewAddOn) {
-        refetch(); // Trigger refetch if required
+        refetch();
         setAddonsAddBtnModal(false);
         toast.success('Addon added successfully!', {
           position: 'top-right',
@@ -133,7 +132,7 @@ const Addons = () => {
           pauseOnHover: true,
           draggable: true,
         });
-        reset(); // Reset form if necessary
+        reset();
       } else {
         toast.error('Failed to add addon!', {
           position: 'top-right',
@@ -149,10 +148,22 @@ const Addons = () => {
     }
   };
 
+  const [deleteSingleAddon, { isLoading: deleteSingleAddonLoading, isSuccess: deleteSingleAddonSuccess }] = useDeleteSingleAddonMutation();
+
+  const handleDelete = async (addon: any) => {
+    try {
+      console.log('🚀 ~ deletePermission ~ id:', addon?._id);
+      await deleteSingleAddon(addon?._id);
+      refetch();
+      toast.success('Addon deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete addon');
+      console.error('Delete error:', error);
+    }
+  };
+
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
 
   return (
@@ -255,7 +266,7 @@ const Addons = () => {
                                       </td>
 
                                       {authPermissions?.includes('add_ons_edit') && (
-                                        <td>
+                                        <td className="flex items-center gap-5">
                                           <button
                                             onClick={() => {
                                               getDetails(addon);
@@ -263,6 +274,15 @@ const Addons = () => {
                                             }}
                                           >
                                             {allSvgs.editPen}
+                                          </button>
+
+                                          <button
+                                            onClick={() => {
+                                              handleDelete(addon);
+                                            }}
+                                            className="text-red-600"
+                                          >
+                                            {allSvgs.trash}
                                           </button>
                                         </td>
                                       )}
@@ -286,7 +306,7 @@ const Addons = () => {
           <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
               <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                <Dialog.Panel as="div" className="panel my-24   w-[80%] overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-2/5 md:px-0">
+                <Dialog.Panel as="div" className="panel my-24   w-[80%] overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-3/5 lg:w-3/6 2xl:w-2/5 md:px-0">
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
                     <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
 
@@ -389,7 +409,7 @@ const Addons = () => {
         </Transition>
 
         {/* add addons modal starts */}
-        <Transition appear show={addonsAddBtnModal} as={Fragment}>
+        <Transition Transition appear show={addonsAddBtnModal} as={Fragment}>
           <Dialog as="div" open={addonsAddBtnModal} onClose={() => setAddonsAddBtnModal(false)}>
             <div className="fixed inset-0" />
 
@@ -417,7 +437,7 @@ const Addons = () => {
                                 showNewCategoryInput: !prevState?.showNewCategoryInput,
                               }))
                             }
-                            className="ms-2 cursor-pointer text-[12px] text-blue-500 hover:bg-slate-300"
+                            className="ms-2 cursor-pointer text-[12px] capitalize text-blue-500 hover:bg-slate-300"
                           >
                             select
                           </span>

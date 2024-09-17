@@ -18,7 +18,7 @@ interface FormData {
 }
 const SearchingParams = () => {
   const dispatch = useDispatch();
-  const {authPermissions} = useAuth();
+  const { authPermissions } = useAuth();
   const isHavePermission = authPermissions?.includes('searching_params');
   useEffect(() => {
     dispatch(setPageTitle('Searching Params'));
@@ -28,7 +28,7 @@ const SearchingParams = () => {
   // State for manage Tabledata
   const [tableData, setTableData] = useState({
     accepted_shoots: { weight: '', score: '' },
-    average_rating: { weight: '', score : '' },
+    average_rating: { weight: '', score: '' },
     avg_response_time: { weight: '', score: '' },
     backup_footage: { weight: '', score: '' },
     city: { weight: '', score: '' },
@@ -108,7 +108,7 @@ const SearchingParams = () => {
                   <th title="Team name" className="text-left text-xl font-medium">
                     Perams
                   </th>
-                  <th title="Losses" className="p-3 text-xl font-medium">
+                  <th title="Losses" className="p-3 text-xl font-medium capitalize">
                     weight
                   </th>
                   <th title="Win percentage" className="p-3 text-xl font-medium">

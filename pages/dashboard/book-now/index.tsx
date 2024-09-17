@@ -47,6 +47,15 @@ interface FormData {
   duration: number;
   vst: string;
 }
+
+interface CategoryListData {
+  name: string;
+  budget: {
+    max: BudgetData;
+    min: BudgetData;
+  };
+}
+
 const BookNow = () => {
   const { data: addonsData } = useGetAllAddonsQuery(undefined, {
     refetchOnMountOrArgChange: true,
@@ -140,7 +149,7 @@ const BookNow = () => {
       }
     };
 
-    const updatedComputedRates = filteredAddonsData.reduce((prevAddon: any, addon: addonTypes) => {
+    const updatedComputedRates = filteredAddonsData?.reduce((prevAddon: any, addon: addonTypes) => {
       prevAddon[addon?._id] = calculateUpdatedRate(addon);
       return prevAddon;
     }, {});
@@ -232,9 +241,7 @@ const BookNow = () => {
       }
       const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setStartDateTime(starting_date);
-    } catch (error) {
-      console.error('Error parsing date:', error);
-    }
+    } catch (error) {}
   };
 
   const handleChangeEndDateTime = (dateStr) => {
@@ -245,9 +252,7 @@ const BookNow = () => {
       }
       const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setEndDateTime(ending_date);
-    } catch (error) {
-      console.error('Error parsing end date:', error);
-    }
+    } catch (error) {}
   };
 
   const addDateTime = () => {
@@ -490,12 +495,37 @@ const BookNow = () => {
         //toast.success('Meeting create success.');
         return true;
       } else {
-        console.log("Don't create the meeting");
         toast.error('Something want wrong...!');
       }
     } else {
-      console.log("Don't create the meeting link");
       toast.error('Something want wrong...!');
+    }
+  };
+
+  const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
+  const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
+
+  // set category data for the ui
+  const categoryList: CategoryListData[] = [
+    { name: 'Commercial', budget: { min: 1500, max: 10000 } },
+    { name: 'Corporate', budget: { min: 1500, max: 10000 } },
+    { name: 'Music', budget: { min: 1500, max: 10000 } },
+    { name: 'Private', budget: { min: 1500, max: 10000 } },
+    { name: 'Weeding', budget: { min: 1000, max: 1500 } },
+    { name: 'Other', budget: { min: 1000, max: 10000 } },
+  ];
+
+  // setting default budget
+  const handleChangeCategoryWithBudget = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategory = event.target.value;
+    const category = categoryList.find((cat) => cat.name === selectedCategory);
+
+    if (category) {
+      setMyMaxBud(category.budget.max);
+      setMyMinBud(category.budget.min);
+    } else {
+      setMyMaxBud(0);
+      setMyMinBud(0);
     }
   };
 
@@ -513,11 +543,11 @@ const BookNow = () => {
       try {
         const formattedData = {
           budget: {
-            max: parseFloat(data.max_budget),
-            min: parseFloat(data.min_budget),
+            min: myMinBud,
+            max: myMaxBud,
           },
           client_id,
-          order_status: 'pre_production',
+          order_status: userData?.role === 'admin' ? 'pre_production' : 'pending',
           content_type: data.content_type,
           content_vertical: data.content_vertical,
           description: data.description,
@@ -555,9 +585,9 @@ const BookNow = () => {
         }
         if (activeTab === 3) {
           setIsLoading(true);
-          const formattedCpIds = cp_ids.map((cp) => ({
+          const formattedCpIds = cp_ids.map((cp: any) => ({
             id: cp.id,
-            decision: userData?.role === 'admin' ? 'accepted' : null,
+            decision: userData?.role === 'admin' ? 'accepted' : 'pending',
           }));
 
           const formattedData = {
@@ -636,7 +666,7 @@ const BookNow = () => {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef?.current?.contains(event.target)) {
         setShowClientDropdown(false);
       }
     }
@@ -647,9 +677,7 @@ const BookNow = () => {
   }, [dropdownRef]);
 
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
 
   return (
@@ -673,21 +701,21 @@ const BookNow = () => {
                 <div>
                   {activeTab === 1 && (
                     <>
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between md:mb-8 md:gap-6 lg:mb-8 xl:gap-4">
                         {/* Content Type */}
                         <div className="flex w-full flex-col sm:flex-row">
-                          <label className="rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">Content Type</label>
-                          <div className="flex-1">
+                          <label className="rtl:ml-2 sm:w-1/4 md:w-16 lg:w-24 2xl:w-40">Content Type</label>
+                          <div className="flex-1 md:ml-2 lg:ml-1 2xl:ml-0 ">
                             {/* Video */}
-                            <div className="mb-2">
+                            <div className="mb-2 ">
                               <label className="flex items-center">
                                 <input
                                   type="checkbox"
-                                  className={`form-checkbox ${errors.content_type && 'border border-danger'}`}
+                                  className={`form-checkbox ${errors?.content_type && 'border border-danger'}`}
                                   value="video"
                                   {...register('content_type', {
                                     validate: {
-                                      required: () => contentTypes.length > 0 || 'Select at least one content type',
+                                      required: () => contentTypes?.length > 0 || 'Select at least one content type',
                                     },
                                   })}
                                 />
@@ -697,38 +725,38 @@ const BookNow = () => {
                             {/* Photo */}
                             <div className="mb-2">
                               <label className="flex items-center">
-                                <input type="checkbox" className={`form-checkbox ${errors.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
+                                <input type="checkbox" className={`form-checkbox ${errors?.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
                                 <span className="text-black">Photography</span>
                               </label>
                             </div>
                           </div>
                         </div>
                         {/* Category || content vertical*/}
-                        <div className="flex w-full flex-col sm:flex-row">
+                        <div className="flex w-full flex-col sm:flex-row 2xl:ml-32">
                           <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                             Category
                           </label>
                           <select
-                            className={`form-select text-black ${errors.content_vertical ? 'border-red-500' : ''}`}
+                            className={`form-select text-black xl:ml-2 2xl:ml-0 ${errors.content_vertical ? 'border-red-500' : ''}`}
                             id="content_vertical"
                             defaultValue="SelectCategory"
                             {...register('content_vertical', {
                               required: 'Category is required',
                               validate: (value) => value !== 'SelectCategory' || 'Please select a valid category',
                             })}
+                            onChange={handleChangeCategoryWithBudget}
                           >
                             <option value="SelectCategory">Select Category</option>
-                            <option value="Commercial">Commercial</option>
-                            <option value="Corporate">Corporate</option>
-                            <option value="Music">Music</option>
-                            <option value="Private">Private</option>
-                            <option value="Wedding">Wedding</option>
-                            <option value="Other">Other</option>
+                            {categoryList.map((category) => (
+                              <option key={category?.name} value={category?.name}>
+                                {category?.name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </div>
 
-                      <div className="my-5 flex-col items-center justify-between gap-4 md:flex md:flex-row">
+                      <div className="my-5 flex-col items-center justify-between gap-4 md:mb-10 md:flex md:flex-row md:gap-9 xl:gap-5">
                         {userData?.role === 'admin' && (
                           <div className="relative flex  w-full flex-col sm:flex-row ">
                             <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
@@ -740,7 +768,7 @@ const BookNow = () => {
                                 setClientName(event?.target?.value);
                                 getAllClients();
                               }}
-                              className={`form-input flex-grow bg-slate-100 `}
+                              className={`form-input flex-grow bg-slate-100 2xl:ml-3`}
                               value={clientName}
                               placeholder="Client"
                               required={!clientName}
@@ -765,14 +793,14 @@ const BookNow = () => {
                                         <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
                                           {clients?.map((client) => (
                                             <li
-                                              key={client.id}
+                                              key={client?.id}
                                               onClick={() => handleClientChange(client)}
                                               className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
                                             >
                                               <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                                <img src={client.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                                <img src={client?.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
                                               </div>
-                                              <a href="#">{client.name}</a>
+                                              <a href="#">{client?.name}</a>
                                             </li>
                                           ))}
                                         </ul>
@@ -790,19 +818,20 @@ const BookNow = () => {
                         )}
 
                         {/* Location */}
-                        <div className="mt-2  flex w-full flex-col sm:flex-row md:mt-0">
-                          <label htmlFor="location" className="mb-0 capitalize rtl:ml-2 sm:ltr:mr-2 md:w-[87px] 2xl:w-[138px]">
+                        <div className={`mt-2 flex w-full flex-col sm:flex-row md:mt-0  ${userData?.role !== 'admin' ? 'md:w-[49.5%] ' : '2xl:ml-32'}`}>
+                          <label htmlFor="location" className={`mb-0 capitalize xl:w-24 2xl:w-36 `}>
+                            {/* ${userData?.role !== "admin" && "lg:w-40 "} */}
                             Location
                           </label>
-                          <div className="flex-grow">
+                          <div className={`flex-grow md:ml-2 lg:ml-0 ${userData?.role !== 'admin' ? '2xl:ml-3 2xl:mr-16' : ''}`}>
                             <Map setGeo_location={setGeo_location} setLocation={setLocation} />
                           </div>
                         </div>
                       </div>
-                      <div className="mt-5 w-full flex-col items-start justify-between gap-4 md:flex md:flex-row">
+                      <div className="mt-5 w-full flex-col items-start justify-between md:mb-10 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32">
                         {/* Shoot Name */}
-                        <div className="flex  w-full  flex-col sm:flex-row">
-                          <label htmlFor="order_name" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                        <div className="flex w-full  flex-col sm:flex-row">
+                          <label htmlFor="order_name" className="mb-0  sm:w-1/4 md:w-24 lg:w-24 2xl:w-40 ">
                             Shoot Name
                           </label>
                           <input
@@ -811,78 +840,73 @@ const BookNow = () => {
                             disabled
                             value={orderName()}
                             type="text"
-                            className="form-input flex-grow bg-slate-100"
+                            className="form-input h-10 flex-grow  bg-slate-100 md:ml-2 lg:ml-2 xl:ml-5 2xl:ml-8"
                             placeholder="Shoot Name"
                             {...register('order_name')}
                           />
                         </div>
 
                         {/* references */}
-                        <div className="mt-2  flex w-full flex-col sm:flex-row md:mt-0">
-                          <label htmlFor="references" className="mb-0 rtl:ml-2 sm:w-1/4 ">
+                        <div className="mt-2 flex w-full flex-col sm:flex-row md:mt-0 2xl:ml-5">
+                          <label htmlFor="references" className="mb-0  ">
                             References
                           </label>
-                          <input id="references" type="text" placeholder="https://sitename.com" className="form-input" {...register('references')} />
+                          <input id="references" type="text" placeholder="https://sitename.com" className="form-input xl:ml-2 2xl:ml-16" {...register('references')} />
                         </div>
                       </div>
 
-                      <div className="mt-5">
-                        <div className="table-responsive">
-                          <div className="mb-8 items-center justify-between md:flex">
-                            {/* Starting Date and Time */}
-                            <div className="mb-3 flex  w-full flex-col sm:flex-row md:mb-0">
-                              <label htmlFor="start_date_time" className="mb-3 mt-4 w-24 rtl:ml-2 sm:ltr:mr-2 md:mb-0 2xl:w-36">
-                                Shoot Time
-                              </label>
+                      {/* Shoot Timings */}
+                      <div className="mt-5 md:mb-0 lg:mb-6">
+                        <div className="mb-8 w-full items-center justify-between md:flex">
+                          {/* Starting Date and Time */}
+                          <div className="flex w-full flex-col sm:flex-row md:mb-0">
+                            <label htmlFor="start_date_time" className="mb-3 mt-4 md:ml-2 md:w-16 lg:ml-0 xl:w-24 2xl:w-40">
+                              Shoot Time
+                            </label>
 
-                              <div className="relative">
-                                <p className="mb-1 text-xs font-bold sm:mb-0">Start Time</p>
-                                <input
-                                  id="start_date_time"
-                                  ref={startDateTimeRef}
-                                  type="text"
-                                  className={`form-input w-full cursor-pointer sm:w-[220px] ${errors?.start_date_time ? 'border-red-500' : ''}`}
-                                  placeholder="Start time"
-                                  required={startDateTime?.length === 0}
-                                />
-                                <span className="pointer-events-none absolute right-[14px] top-[55%] -translate-y-1/4 transform">🗓️</span>
+                            <div className="relative ">
+                              <p className="mb-1 text-xs font-bold sm:mb-0">Start Time</p>
+                              <input
+                                id="start_date_time"
+                                ref={startDateTimeRef}
+                                type="text"
+                                className={`form-input w-full cursor-pointer p-0 py-2 sm:w-[220px] md:w-60 xl:pl-1.5 ${errors?.start_date_time ? 'border-red-500' : ''}`}
+                                placeholder="Start time"
+                                required={startDateTime?.length === 0}
+                              />
+                              <span className="pointer-events-none absolute right-[10px] top-[55%] hidden -translate-y-1/4 transform md:block">🗓️</span>
 
-                                {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
-                              </div>
+                              {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                            </div>
 
-                              <div className="relative mt-3 sm:mt-0">
-                                <p className="mb-1 ml-1 text-xs font-bold sm:mb-0">End Time</p>
-                                <input
-                                  id="end_date_time"
-                                  ref={endDateTimeRef}
-                                  type="text"
-                                  className={`form-input ml-1 w-full cursor-pointer sm:w-[220px] ${errors?.end_date_time ? 'border-red-500' : ''}`}
-                                  placeholder="End time"
-                                  required={endDateTime?.length === 0}
-                                />
+                            <div className="relative mt-3 sm:mt-0">
+                              <p className="mb-1 ml-0 text-xs font-bold sm:mb-0 md:ml-1">End Time</p>
+                              <input
+                                id="end_date_time"
+                                ref={endDateTimeRef}
+                                type="text"
+                                className={`form-input ml-0 w-full cursor-pointer p-0 py-2 pl-1.5 sm:w-[220px] md:ml-1 md:w-60 ${errors?.end_date_time ? 'border-red-500' : ''}`}
+                                placeholder="End time"
+                                required={endDateTime?.length === 0}
+                              />
 
-                                <span className="pointer-events-none absolute right-[14px] top-[55%] -translate-y-1/4 transform">🗓️</span>
-                                {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
-                              </div>
+                              <span className="md:top[40%] pointer-events-none absolute right-[10px] top-[55%] hidden -translate-y-1/4 transform md:block lg:top-[55%]">🗓️</span>
+                              {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
+                            </div>
 
-                              {/* <p className="btn rounded-md border-2 border-[#b7aa85] text-[#b7aa85] ml-2 mt-4 h-9 cursor-pointer shadow-none"
+                            <div className="flex justify-end">
+                              <span
+                                className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white"
                                 onClick={addDateTime}
                               >
                                 Add
-                              </p> */}
-                              <div className="flex justify-end">
-                                <span
-                                  // css="h-9 ml-2 mt-4"
-                                  className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white"
-                                  onClick={addDateTime}
-                                >
-                                  Add
-                                </span>
-                              </div>
-                              {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                              </span>
                             </div>
+                            {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                           </div>
+                        </div>
 
+                        <div className="table-responsive">
                           {/* DateTime Output show Table */}
                           {dateTimes?.length !== 0 && (
                             <div className="mb-8">
@@ -917,61 +941,8 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      <div className="w-full flex-col items-center justify-between md:flex md:flex-row md:gap-4">
-                        {/* min_budget budget */}
-                        <div className="mt-2  flex w-full flex-col sm:flex-row">
-                          <label htmlFor="min_budget" className="mb-0  mb-3 w-full rtl:ml-2  sm:ltr:mr-2 md:w-[24%]">
-                            Min Budget
-                          </label>
-                          <div className="flex w-full flex-col">
-                            <input
-                              id="min_budget"
-                              type="number"
-                              placeholder="Min Budget"
-                              className={`form-input block w-full ${errors.min_budget ? 'border-red-500' : ''}`}
-                              {...register('min_budget', {
-                                required: 'Min Budget is required',
-                                min: {
-                                  value: 1000,
-                                  message: 'Min Budget must be at least $1000',
-                                },
-                                validate: (value) => value > 0 || 'Min Budget must be greater than 0',
-                              })}
-                            />
-
-                            {errors.min_budget && <p className="ml-4 text-danger">{errors?.min_budget.message}</p>}
-                          </div>
-                        </div>
-
-                        <div className="mt-2  flex w-full flex-col sm:flex-row">
-                          <label htmlFor="max_budget" className="mb-2 w-24 rtl:ml-2 sm:ltr:mr-2 xl:w-24 2xl:w-[23%]">
-                            Max Budget
-                          </label>
-                          <div className="flex w-full flex-col">
-                            <input
-                              id="max_budget"
-                              type="number"
-                              placeholder="Max Budget"
-                              className={`form-input block w-full ${errors.max_budget ? 'border-red-500' : ''}`}
-                              {...register('max_budget', {
-                                required: 'Max Budget is required',
-                                min: {
-                                  value: 1000,
-                                  message: 'Max Budget must be greater than Min Budget',
-                                },
-                                validate: (value) => {
-                                  const minBudget = getValues('min_budget');
-                                  return value >= minBudget || 'Max Budget must be greater than or equal to Min Budget';
-                                },
-                              })}
-                            />
-
-                            {errors.max_budget && <p className="ml-4 text-danger">{errors?.max_budget.message}</p>}
-                          </div>
-                        </div>
-                      </div>
                       {userData?.role === 'admin' && (
-                        <div className="mt-4 w-full flex-col items-center justify-between md:flex md:flex-row md:gap-4">
+                        <div className="mt-4 w-full flex-col items-center justify-between md:mt-0 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32">
                           {/* Special Note */}
                           <div className="flex  w-full flex-col sm:flex-row">
                             <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
