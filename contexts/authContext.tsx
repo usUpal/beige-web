@@ -1,9 +1,10 @@
-import store from '../store/index';
 import { Provider } from 'react-redux';
-import { createContext, useContext, useEffect, useState, ReactNode, Fragment } from 'react';
-import { AuthContextType, AuthProviderProps, UserData, Token, UserRole } from '@/types/authTypes';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import store from '../store/index';
 import Cookies from 'js-cookie';
 import Auth from '@/components/Auth';
+import { useRouter } from 'next/router';
+import { AuthContextType, AuthProviderProps, UserData, Token } from '@/types/authTypes';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -13,49 +14,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [accessToken, setAccessToken] = useState<Token | null>(null);
   const [refreshToken, setRefreshToken] = useState<Token | null>(null);
   const [ready, setReady] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
-    const userDataCookie = Cookies.get('userData');
-    const authPermissionsCookie = Cookies.get('authPermissions');
-    const accessTokenCookie = Cookies.get('accessToken');
-    const refreshTokenCookie = Cookies.get('refreshToken');
+    const cookies = ['userData', 'authPermissions', 'accessToken', 'refreshToken'];
 
-    try {
-      if (!userData && userDataCookie) {
-        setUserData(JSON.parse(userDataCookie));
-      }
-    } catch (error) {
-      console.error('Error parsing userDataCookie:', error);
-    }
+    cookies.forEach((cookie) => {
+      const cookieValue = Cookies.get(cookie);
 
-    try {
-      if (!authPermissions && authPermissionsCookie) {
-        setAuthPermissions(JSON.parse(authPermissionsCookie));
+      if (cookieValue) {
+        try {
+          const parsedValue = JSON.parse(cookieValue);
+          switch (cookie) {
+            case 'userData':
+              setUserData(parsedValue);
+              break;
+            case 'authPermissions':
+              setAuthPermissions(parsedValue);
+              break;
+            case 'accessToken':
+              setAccessToken(parsedValue?.token || null);
+              break;
+            case 'refreshToken':
+              setRefreshToken(parsedValue?.token || null);
+              break;
+            default:
+              break;
+          }
+        } catch (error) {
+          console.error(`Error parsing ${cookie} cookie:`, error);
+        }
       }
-    } catch (error) {
-      console.error('Error parsing authPermissionsCookie:', error);
-    }
-
-    try {
-      if (!accessToken && accessTokenCookie) {
-        const parsedAccessToken = JSON.parse(accessTokenCookie);
-        setAccessToken(parsedAccessToken?.token || null);
-      }
-    } catch (error) {
-      console.error('Error parsing accessTokenCookie:', error);
-    }
-
-    try {
-      if (!refreshToken && refreshTokenCookie) {
-        const parsedRefreshToken = JSON.parse(refreshTokenCookie);
-        setRefreshToken(parsedRefreshToken?.token || null);
-      }
-    } catch (error) {
-      console.error('Error parsing refreshTokenCookie:', error);
-    }
+    });
 
     setReady(true);
-  }, [userData, authPermissions, accessToken, refreshToken]);
+  }, []);
 
   const providerData = {
     userData,
@@ -68,18 +61,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setRefreshToken,
   };
 
+  const publicRoutes = ['/verify-email', '/password-reset', '/login', '/register'];
+  const isAuthRequired = !publicRoutes.includes(router.pathname);
+
   return (
     <AuthContext.Provider value={providerData}>
       {ready && (
-        <Fragment>
-          {refreshToken ? (
-            <Fragment>{children}</Fragment>
-          ) : (
+        <>
+          {isAuthRequired && !refreshToken ? (
             <Provider store={store}>
               <Auth />
             </Provider>
+          ) : (
+            children
           )}
-        </Fragment>
+        </>
       )}
     </AuthContext.Provider>
   );
@@ -87,7 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
