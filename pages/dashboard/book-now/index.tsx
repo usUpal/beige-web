@@ -8,7 +8,6 @@ import { swalToast } from '@/utils/Toast/SwalToast';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format, isValid, parseISO } from 'date-fns';
-import 'flatpickr/dist/flatpickr.css';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -18,9 +17,8 @@ import { setPageTitle } from '@/store/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import { useAuth } from '@/contexts/authContext';
 import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/flatpickr.min.css';
-import Flatpickr from 'react-flatpickr';
-import { API_ENDPOINT } from '@/config';
 import { useLazyGetAlgoCpQuery, usePostOrderMutation, useUpdateOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
@@ -89,6 +87,9 @@ const BookNow = () => {
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const [isClientLoading, setIsClientLoading] = useState(false);
+  const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
+  const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
+  const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
 
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
@@ -169,6 +170,7 @@ const BookNow = () => {
 
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
+  const meetingDateTimeRef = useRef(null);
 
   const handleBack = () => {
     setActiveTab((prev) => (prev === 3 ? 2 : 1));
@@ -231,6 +233,19 @@ const BookNow = () => {
         },
       });
     }
+    if (meetingDateTimeRef.current) {
+      flatpickr(meetingDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onChange: (selectedDates, dateStr) => {
+          handelOnMeetingDateTimeChange(dateStr);
+        },
+      });
+    }
   }, []);
 
   const handleChangeStartDateTime = (dateStr) => {
@@ -252,6 +267,16 @@ const BookNow = () => {
       }
       const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setEndDateTime(ending_date);
+    } catch (error) {}
+  };
+  const handelOnMeetingDateTimeChange = (dateStr) => {
+    try {
+      const e_time = parseISO(dateStr);
+      if (!isValid(e_time)) {
+        return;
+      }
+      const formattedTime = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      setFormattedMeetingTime(formattedTime);
     } catch (error) {}
   };
 
@@ -461,7 +486,6 @@ const BookNow = () => {
     }
   };
 
-  const [meetingTime, setMeetingTime] = useState(null);
   const convertToISO = (datetime: any) => {
     const date = new Date(datetime);
     const isoDate = date.toISOString();
@@ -501,9 +525,6 @@ const BookNow = () => {
       toast.error('Something want wrong...!');
     }
   };
-
-  const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
-  const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
 
   // set category data for the ui
   const categoryList: CategoryListData[] = [
@@ -562,7 +583,6 @@ const BookNow = () => {
           addOns_cost: allAddonRates,
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
-
         if (Object.keys(formattedData).length > 0) {
           setIsLoading(true);
           setFormDataPageOne(formattedData);
@@ -604,9 +624,9 @@ const BookNow = () => {
 
           if (updateRes?.data) {
             toast.success('Shoot has been created successfully');
-            if (data.meeting_time) {
-              const meeting_time = convertToISO(data.meeting_time);
-              const meetingInfo = await getMeetingLink(updateRes?.data, meeting_time);
+            if (formattedMeetingTime) {
+              // const meeting_time = convertToISO(formattedMeetingTime);
+              const meetingInfo = await getMeetingLink(updateRes?.data, formattedMeetingTime);
               if (meetingInfo) {
                 toast.success('Meeting has been created successfully!');
               }
@@ -956,28 +976,15 @@ const BookNow = () => {
                             </label>
 
                             <div className="relative w-full ">
-                              <Flatpickr
-                                id="meeting_time"
+                              <input
+                                type="text"
+                                id="meeting_date_time"
+                                ref={meetingDateTimeRef}
                                 className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
-                                value={meetingTime}
-                                placeholder="Meeting time ..."
-                                options={{
-                                  altInput: true,
-                                  altFormat: 'F j, Y h:i K',
-                                  dateFormat: 'Y-m-d H:i',
-                                  enableTime: true,
-                                  time_24hr: false,
-                                  minDate: 'today',
-                                }}
-                                onChange={(date) => {
-                                  setMeetingTime(date[0]);
-                                  setValue('meeting_time', date[0]);
-                                }}
+                                placeholder="Meeting time"
+                                required={formattedMeetingTime}
                               />
-                              <input type="hidden" {...register('meeting_time')} />
-
                               <span className="-translate-y-1/6 pointer-events-none absolute right-[14px] top-[21%]  transform">🗓️</span>
-                              {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
                             </div>
                           </div>
                         </div>
@@ -1067,7 +1074,7 @@ const BookNow = () => {
                       </div>
 
                       {/* pagination */}
-                      <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                      <div className="mt-4 flex justify-center md:justify-end ">
                         <ResponsivePagination current={currentPage} total={allAlgoCp?.results?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
                       </div>
                     </div>
@@ -1219,21 +1226,18 @@ const BookNow = () => {
 
                 {/* page end buttons */}
                 <div className="flex justify-between">
-                  <button
-                    type="button"
-                    className={`btn flex flex-col items-center justify-center rounded-lg
-                    bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
-                    onClick={() => handleBack()}
-                  >
-                    Back
-                  </button>
-
-                  {/* <DefaultButton
-                    onClick={() => handleBack()}
-                    css={`btn flex flex-col items-center justify-center ${activeTab === 1 ? 'hidden' : ''}`}
-                  >
-                    Backk
-                  </DefaultButton> */}
+                  {activeTab === 1 || activeTab === 2 ? (
+                    <p></p>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`btn flex flex-col items-center justify-center rounded-lg
+                    bg-black text-[14px] font-bold capitalize text-white outline-none`}
+                      onClick={() => handleBack()}
+                    >
+                      Back
+                    </button>
+                  )}
 
                   {activeTab === 2 && (
                     <DefaultButton css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`} disabled={isLoading}>

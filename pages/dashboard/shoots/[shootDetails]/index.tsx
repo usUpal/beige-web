@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, Fragment, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, Fragment, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import StatusBg from '@/components/Status/StatusBg';
 import { useRouter } from 'next/router';
@@ -19,14 +19,14 @@ import 'tippy.js/dist/tippy.css';
 
 // import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import Flatpickr from 'react-flatpickr';
-
 import { useAssignCpMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';
 import { shootStatusMessage, allStatus } from '@/utils/shootUtils/shootDetails';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import AccessDenied from '@/components/errors/AccessDenied';
+import flatpickr from 'flatpickr';
+import { format, isValid, parseISO } from 'date-fns';
 
 const ShootDetails = () => {
   const { userData, authPermissions } = useAuth();
@@ -39,7 +39,8 @@ const ShootDetails = () => {
   const [cp_ids, setCp_ids] = useState<number[]>([]);
   const [statusBox, setStatusBox] = useState<boolean>(false);
   const [status, setStatus] = useState<string>('');
-  const [metingDate, setMetingDate] = useState<string>('');
+  const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
+
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
   const {
@@ -53,7 +54,7 @@ const ShootDetails = () => {
   const [updateStatus, { isLoading: isStatusLoading }] = useUpdateStatusMutation();
   const [assignCp, { isLoading: isAssignCpLoading }] = useAssignCpMutation();
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
-  const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
+  const [newMeeting, { data: meetingData, isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
   const [updateOrder, { isLoading: isUpdateOrderLoading, isSuccess }] = useUpdateOrderMutation();
 
   const queryParams = useMemo(
@@ -82,7 +83,7 @@ const ShootDetails = () => {
   const cancelIndex = rejectStatus.findIndex((status) => status.toLowerCase() === lowerCaseOrderStatus);
 
   const submitNewMeting = async () => {
-    if (!metingDate) {
+    if (!formattedMeetingTime) {
       toast.error('Input a meeting date...!');
       return;
     }
@@ -93,8 +94,8 @@ const ShootDetails = () => {
         summary: data?.order_name ? data?.order_name : 'Beige Meeting',
         location: 'Online',
         description: `Meeting to discuss ${data?.order_name ? data?.order_name : 'Beige'} order.`,
-        startDateTime: metingDate,
-        endDateTime: metingDate,
+        startDateTime: formattedMeetingTime,
+        endDateTime: formattedMeetingTime,
         orderId: shootId,
       },
     };
@@ -102,7 +103,7 @@ const ShootDetails = () => {
     const response = await newMeetLink(requestBody);
     if (response?.data) {
       const requestBody = {
-        meeting_date_time: metingDate,
+        meeting_date_time: formattedMeetingTime,
         meeting_status: 'pending',
         meeting_type: 'pre_production',
         order_id: shootId,
@@ -111,7 +112,7 @@ const ShootDetails = () => {
       const result = await newMeeting(requestBody);
       if (result?.data) {
         setMeetingBox(false);
-        toast.success('Meeting create success.');
+        toast.success('Meeting successfully created.');
       } else {
         console.log("Don't create the meeting");
         toast.error('Something want wrong...!');
@@ -200,11 +201,39 @@ const ShootDetails = () => {
     }
   };
   //
+  const meetingDateTimeRef = useRef(null);
 
+  useEffect(() => {
+    if (meetingDateTimeRef.current) {
+      flatpickr(meetingDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onClose: (selectedDates, dateStr) => {
+          handleOnMeetingDateTimeChange(dateStr);
+        },
+      });
+    }
+  });
+
+  const handleOnMeetingDateTimeChange = (dateStr) => {
+    try {
+      const e_time = parseISO(dateStr);
+      if (!isValid(e_time)) {
+        return;
+      }
+      const formattedTime = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      setFormattedMeetingTime(formattedTime);
+    } catch (error) {
+      console.error('Date parsing error', error);
+    }
+  };
+  // ========
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
 
   return (
@@ -361,34 +390,27 @@ const ShootDetails = () => {
               {/* Schedule Meeting */}
 
               <div className="mb-4 basis-[45%] flex-row space-y-5">
-                {userData?.role === 'user' && (
+                {(userData?.role === 'user' || 'admin') && (
                   <div className="flex space-x-3">
-                    <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setMeetingBox(!meetingBox)}>
+                    <button className="rounded-lg bg-black px-3 py-1 text-white lg:w-44" onClick={() => setMeetingBox(!meetingBox)}>
                       Schedule Meeting
                     </button>
                     {meetingBox && (
                       <div className="flex space-x-2">
-                        <Flatpickr
-                          id="meeting_time"
-                          className={`cursor-pointer rounded-sm border border-black px-2 lg:w-[240px]`}
-                          value={metingDate}
-                          placeholder="Meeting time ..."
-                          options={{
-                            altInput: true,
-                            altFormat: 'F j, Y h:i K',
-                            dateFormat: 'Y-m-d H:i',
-                            enableTime: true,
-                            time_24hr: false,
-                            minDate: 'today',
-                          }}
-                          onChange={(date) => setMetingDate(date[0])}
+                        <input
+                          type="text"
+                          id="meeting_time_shoot_details"
+                          ref={meetingDateTimeRef}
+                          className="cursor-pointer rounded-sm border border-black px-2 lg:w-[240px]"
+                          placeholder="Meeting time"
+                          required={formattedMeetingTime}
                         />
                         <button
-                          disabled={isNewMeetingLoading === true ? true : false}
+                          disabled={isNewMeetingLoading || isNewMeetLinkLoading}
                           onClick={submitNewMeting}
                           className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                         >
-                          {isNewMeetingLoading === true ? (
+                          {isNewMeetingLoading || isNewMeetLinkLoading ? (
                             <Loader />
                           ) : (
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -592,8 +614,9 @@ const ShootDetails = () => {
                             aria-hidden="true"
                           ></span>
                           <div
-                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
-                              } transition-all duration-200`}
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
+                              status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
+                            } transition-all duration-200`}
                           >
                             {status === 'Cancelled' ? (
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -641,7 +664,7 @@ const ShootDetails = () => {
                       {allSvgs.closeModalSvg}
                     </button>
                   </div>
-                  <div className="basis-[45%]  md:pe-5 py-2">
+                  <div className="basis-[45%]  py-2 md:pe-5">
                     <div className="mb-2 flex justify-end">
                       <input
                         onChange={(event) => setQuery(event.target.value)}
@@ -679,8 +702,9 @@ const ShootDetails = () => {
                               <div className="mt-3 flex">
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
-                                    } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
+                                    isSelected ? 'bg-red-500' : 'bg-black'
+                                  } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
                                 </p>

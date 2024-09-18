@@ -9,13 +9,14 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'flatpickr/dist/flatpickr.min.css';
-import Flatpickr from 'react-flatpickr';
 import { toast } from 'react-toastify';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import AccessDenied from '@/components/errors/AccessDenied';
+import flatpickr from 'flatpickr';
+import { format, isValid, parseISO } from 'date-fns';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -24,10 +25,10 @@ const Meeting = () => {
   const { userData, authPermissions } = useAuth();
   const isHavePermission = authPermissions?.includes('meeting_page');
   const dispatch = useDispatch();
-  const [metingDate, setMetingDate] = useState();
   const myInputDate = meetingInfo?.meeting_date_time;
   const myFormattedDateTime = useDateFormat(myInputDate);
   const [query, setQuery] = useState('');
+  const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
 
   const queryParams = useMemo(
     () => ({
@@ -91,9 +92,41 @@ const Meeting = () => {
       time: formattedTime,
     };
   }
+  //
+  const meetingDateTimeRef = useRef(null);
 
+  useEffect(() => {
+    if (meetingDateTimeRef.current) {
+      flatpickr(meetingDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onClose: (selectedDates, dateStr) => {
+          handleOnMeetingDateTimeChange(dateStr);
+        },
+      });
+    }
+  });
+
+  const handleOnMeetingDateTimeChange = (dateStr) => {
+    try {
+      const e_time = parseISO(dateStr);
+      if (!isValid(e_time)) {
+        return;
+      }
+      const formattedTime = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      setFormattedMeetingTime(formattedTime);
+    } catch (error) {
+      console.error('Date parsing error', error);
+    }
+  };
+  // ========
+  //
   const handelRescheduleMeeting = async (id: any) => {
-    if (!metingDate) {
+    if (!formattedMeetingTime) {
       toast.error('Please select Meting Date & Time...!');
       return;
     }
@@ -103,7 +136,7 @@ const Meeting = () => {
         id: id,
         requestBody: {
           requested_by: userData?.role,
-          requested_time: metingDate,
+          requested_time: formattedMeetingTime,
         },
       };
       const result = await updateReschedule(data);
@@ -113,22 +146,20 @@ const Meeting = () => {
   };
 
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
-        <div className="mb-5 md:flex items-center justify-between ">
+        <div className="mb-5 items-center justify-between md:flex ">
           <h5 className="text-xl font-bold dark:text-white-light">Meeting List</h5>
           <input
             type="text"
             onChange={(event) => setQuery(event.target.value)}
             value={query}
-            className="rounded border border-black px-3 py-1 mt-3 md:mt-0 focus:border-black focus:outline-none"
+            className="mt-3 rounded border border-black px-3 py-1 focus:border-black focus:outline-none md:mt-0"
             placeholder="Search..."
           />
         </div>
@@ -156,12 +187,7 @@ const Meeting = () => {
                       <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                         <td className=" min-w-[150px] text-black dark:text-white">
                           <div className="flex items-center">
-                            <p className="">
-                              {
-                                truncateLongText(meeting?.order?.name, 30)
-                              }
-                            </p>
-
+                            <p className="">{truncateLongText(meeting?.order?.name, 30)}</p>
                           </div>
                         </td>
 
@@ -173,9 +199,9 @@ const Meeting = () => {
                         <td>
                           <p className="">
                             {meeting?.client?.name} with
-                            <span className="ps-1"> {
-                              truncateLongText((meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name), 40)
-                            }
+                            <span className="ps-1">
+                              {' '}
+                              {truncateLongText(meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name, 40)}
                               {/* {meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}12345678901234567890 */}
                             </span>
                           </p>
@@ -216,7 +242,7 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setMeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-32 w-5/6 md:w-4/6 lg:w-3/6 2xl:w-2/6 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+              <Dialog.Panel as="div" className="panel my-32 w-5/6 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-4/6 lg:w-3/6 2xl:w-2/6">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                   <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setMeetingModal(false)}>
@@ -225,7 +251,6 @@ const Meeting = () => {
                 </div>
 
                 <div className="basis-[100%]">
-
                   <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  w-full justify-between space-y-6 pb-6 `}>
                     <div className="leftdata">
                       <p>
@@ -269,30 +294,26 @@ const Meeting = () => {
                     <div className="mr-4">
                       {authPermissions?.includes('meeting_details_reschedule') && (
                         <>
-                          {meetingInfo?.meeting_status === 'pending' && userData?.role === 'cp' && (
+                          {meetingInfo?.meeting_status === 'pending' && (userData?.role === 'cp' || 'admin') && (
                             <div className="flex flex-col items-start">
                               <h2 className="mb-3 text-[14px] font-semibold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
                               <div className="flex flex-col">
-                                <Flatpickr
-                                  id="meeting_time"
+                                <input
+                                  type="text"
+                                  id="meeting_time_shoot_details"
+                                  ref={meetingDateTimeRef}
                                   className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white  py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
-                                  value={metingDate}
-                                  placeholder="Meeting time ..."
-                                  options={{
-                                    altInput: true,
-                                    altFormat: 'F j, Y h:i K',
-                                    dateFormat: 'Y-m-d H:i',
-                                    enableTime: true,
-                                    time_24hr: false,
-                                    minDate: 'today',
-                                  }}
-                                  onChange={(date) => setMetingDate(date[0])}
+                                  placeholder="Meeting time"
+                                  required={formattedMeetingTime}
                                 />
 
                                 {/* <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
                                   Reschedule Request
                                 </button> */}
-                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2 w-64' type={"submit"}> Reschedule Request</DefaultButton>
+                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css="mt-2 w-64" type={'submit'}>
+                                  {' '}
+                                  Reschedule Request
+                                </DefaultButton>
                               </div>
                             </div>
                           )}
@@ -301,9 +322,8 @@ const Meeting = () => {
                     </div>
 
                     {/* Resheduling */}
-
                   </div>
-                  <div className='flex justify-end me-7 pb-7 md:me-5' >
+                  <div className="me-7 flex justify-end pb-7 md:me-5">
                     <DefaultButton onClick={() => setMeetingModal(false)}>Cancel</DefaultButton>
                   </div>
                 </div>
