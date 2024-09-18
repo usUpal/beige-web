@@ -17,15 +17,14 @@ import Loader from '@/components/SharedComponent/Loader';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
-// import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
+import flatpickr from 'flatpickr';
+// import 'flatpickr/dist/flatpickr.min.css';
 import { useAssignCpMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';
 import { shootStatusMessage, allStatus } from '@/utils/shootUtils/shootDetails';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import AccessDenied from '@/components/errors/AccessDenied';
-import flatpickr from 'flatpickr';
 import { format, isValid, parseISO } from 'date-fns';
 
 const ShootDetails = () => {
@@ -202,10 +201,12 @@ const ShootDetails = () => {
   };
   //
   const meetingDateTimeRef = useRef(null);
+  let flatpickrInstance = useRef(null);
 
   useEffect(() => {
     if (meetingDateTimeRef.current) {
-      flatpickr(meetingDateTimeRef.current, {
+      // Initialize flatpickr and store the instance
+      flatpickrInstance.current = flatpickr(meetingDateTimeRef.current, {
         altInput: true,
         altFormat: 'F j, Y h:i K',
         dateFormat: 'Y-m-d H:i',
@@ -216,8 +217,18 @@ const ShootDetails = () => {
           handleOnMeetingDateTimeChange(dateStr);
         },
       });
+
+      // Debug to ensure flatpickr is initialized
+      // console.log('Flatpickr initialized:', flatpickrInstance.current);
     }
-  });
+
+    // Cleanup function to destroy flatpickr instance
+    return () => {
+      if (flatpickrInstance.current) {
+        flatpickrInstance.current.destroy();
+      }
+    };
+  }, [meetingBox]);
 
   const handleOnMeetingDateTimeChange = (dateStr) => {
     try {

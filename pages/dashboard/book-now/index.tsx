@@ -17,8 +17,6 @@ import { setPageTitle } from '@/store/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import { useAuth } from '@/contexts/authContext';
 import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.css';
-import 'flatpickr/dist/flatpickr.min.css';
 import { useLazyGetAlgoCpQuery, usePostOrderMutation, useUpdateOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
@@ -171,13 +169,14 @@ const BookNow = () => {
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
   const meetingDateTimeRef = useRef(null);
+  let flatpickrInstance = useRef(null);
 
   const handleBack = () => {
     setActiveTab((prev) => (prev === 3 ? 2 : 1));
     // Use setTimeout to delay the Flatpickr initialization
     setTimeout(() => {
       if (startDateTimeRef.current) {
-        flatpickr(startDateTimeRef.current, {
+        flatpickrInstance.current = flatpickr(startDateTimeRef.current, {
           altInput: true,
           altFormat: 'F j, Y h:i K',
           dateFormat: 'Y-m-d H:i',
@@ -191,7 +190,7 @@ const BookNow = () => {
       }
 
       if (endDateTimeRef.current) {
-        flatpickr(endDateTimeRef.current, {
+        flatpickrInstance.current = flatpickr(endDateTimeRef.current, {
           altInput: true,
           altFormat: 'F j, Y h:i K',
           dateFormat: 'Y-m-d H:i',
@@ -208,7 +207,7 @@ const BookNow = () => {
 
   useEffect(() => {
     if (startDateTimeRef.current) {
-      flatpickr(startDateTimeRef.current, {
+      flatpickrInstance.current = flatpickr(startDateTimeRef.current, {
         altInput: true,
         altFormat: 'F j, Y h:i K',
         dateFormat: 'Y-m-d H:i',
@@ -246,6 +245,13 @@ const BookNow = () => {
         },
       });
     }
+
+    // Cleanup function to destroy flatpickr instance
+    return () => {
+      if (flatpickrInstance.current) {
+        flatpickrInstance.current.destroy();
+      }
+    };
   }, []);
 
   const handleChangeStartDateTime = (dateStr) => {

@@ -8,7 +8,6 @@ import StatusBg from '@/components/Status/StatusBg';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePagination from 'react-responsive-pagination';
-import 'flatpickr/dist/flatpickr.min.css';
 import { toast } from 'react-toastify';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
@@ -94,10 +93,12 @@ const Meeting = () => {
   }
   //
   const meetingDateTimeRef = useRef(null);
+  let flatpickrInstance = useRef(null);
 
   useEffect(() => {
     if (meetingDateTimeRef.current) {
-      flatpickr(meetingDateTimeRef.current, {
+      // Initialize flatpickr and store the instance
+      flatpickrInstance.current = flatpickr(meetingDateTimeRef.current, {
         altInput: true,
         altFormat: 'F j, Y h:i K',
         dateFormat: 'Y-m-d H:i',
@@ -108,7 +109,17 @@ const Meeting = () => {
           handleOnMeetingDateTimeChange(dateStr);
         },
       });
+
+      // Debug to ensure flatpickr is initialized
+      // console.log('Flatpickr initialized:', flatpickrInstance.current);
     }
+
+    // Cleanup function to destroy flatpickr instance
+    return () => {
+      if (flatpickrInstance.current) {
+        flatpickrInstance.current.destroy();
+      }
+    };
   });
 
   const handleOnMeetingDateTimeChange = (dateStr) => {
@@ -295,14 +306,14 @@ const Meeting = () => {
                       {authPermissions?.includes('meeting_details_reschedule') && (
                         <>
                           {meetingInfo?.meeting_status === 'pending' && (userData?.role === 'cp' || 'admin') && (
-                            <div className="flex flex-col items-start">
+                            <div className="ml-2 flex flex-col items-start">
                               <h2 className="mb-3 text-[14px] font-semibold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
                               <div className="flex flex-col">
                                 <input
                                   type="text"
                                   id="meeting_time_shoot_details"
                                   ref={meetingDateTimeRef}
-                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white  py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
+                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white  p-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
                                   placeholder="Meeting time"
                                   required={formattedMeetingTime}
                                 />
