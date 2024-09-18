@@ -82,6 +82,7 @@ const Addons = () => {
   };
 
   const handleUpdateAddOns = async (data: any) => {
+
     const updatedAddonDetails = {
       title: addonsInfo?.title || data?.title,
       rate: addonsInfo?.rate || data?.rate,
@@ -89,13 +90,16 @@ const Addons = () => {
       ExtendRateType: addonsInfo?.ExtendRateType || data?.ExtendRateType,
       status: addonsInfo?.status || data?.status || false,
     };
+    if (updatedAddonDetails.rate < 0) {
+      return toast.error("Rate Must be a positive value.")
+    }
 
     const requestBody: any = {
       formData: updatedAddonDetails,
       id: addonsInfo?._id,
     };
     const res = await updateAddon(requestBody);
-    if (isSuccessUpdateAddOn) {
+    if (res.data) {
       refetch();
       setAddonsModal(false);
       toast.success('Addon updated successfully!', {
@@ -152,7 +156,7 @@ const Addons = () => {
 
   const handleDelete = async (addon: any) => {
     try {
-      console.log('🚀 ~ deletePermission ~ id:', addon?._id);
+      // console.log('🚀 ~ deletePermission ~ id:', addon?._id);
       await deleteSingleAddon(addon?._id);
       refetch();
       toast.success('Addon deleted successfully');
@@ -205,7 +209,7 @@ const Addons = () => {
                 <div className="mx-3 mb-5 sm:mb-0">
                   <Tab.List className="mb-5 flex flex-row gap-2 overflow-hidden  overflow-x-auto sm:flex sm:flex-col">
                     {addonsCategories.map((category: any, index: any) => (
-                      <Tab key={index}>
+                      <Tab as={Fragment} key={index}>
                         {({ selected }) => (
                           <button
                             className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${selected ? 'bg-success text-white outline-none' : ''
@@ -241,7 +245,7 @@ const Addons = () => {
                               <tbody>
                                 {addonsData
                                   ?.filter((filteredAddon: any) => filteredAddon.category === category)
-                                  .map((addon: any, index) => (
+                                  .map((addon: any, index: any) => (
                                     <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                                       <td className="min-w-[150px] font-sans text-black dark:text-white">
                                         <p className="flex flex-col items-start">{addon.title}</p>
@@ -267,23 +271,27 @@ const Addons = () => {
 
                                       {authPermissions?.includes('add_ons_edit') && (
                                         <td className="flex items-center gap-5">
-                                          <button
-                                            onClick={() => {
-                                              getDetails(addon);
-                                              setAddonsModal(true);
-                                            }}
-                                          >
-                                            {allSvgs.editPen}
-                                          </button>
+                                          <div>
+                                            <button
+                                              onClick={() => {
+                                                getDetails(addon);
+                                                setAddonsModal(true);
+                                              }}
+                                            >
+                                              {allSvgs.editPen}
+                                            </button>
+                                          </div>
 
-                                          <button
-                                            onClick={() => {
-                                              handleDelete(addon);
-                                            }}
-                                            className="text-red-600"
-                                          >
-                                            {allSvgs.trash}
-                                          </button>
+                                          <div>
+                                            <button
+                                              onClick={() => {
+                                                handleDelete(addon);
+                                              }}
+                                              className="text-red-600"
+                                            >
+                                              {allSvgs.trash}
+                                            </button>
+                                          </div>
                                         </td>
                                       )}
                                     </tr>
@@ -299,7 +307,7 @@ const Addons = () => {
               </Tab.Group>
             </div>
           </div>
-        </div>
+        </div >
 
         {/* modal for update  button starts */}
         <Transition appear show={addonsModal} as={Fragment}>
@@ -413,7 +421,7 @@ const Addons = () => {
         </Transition>
 
         {/* add addons modal starts */}
-        <Transition Transition appear show={addonsAddBtnModal} as={Fragment}>
+        <Transition appear show={addonsAddBtnModal} as={Fragment}>
           <Dialog as="div" open={addonsAddBtnModal} onClose={() => setAddonsAddBtnModal(false)}>
             <div className="fixed inset-0" />
 
@@ -595,9 +603,9 @@ const Addons = () => {
               </div>
             </div>
           </Dialog>
-        </Transition>
+        </Transition >
         {/* add addons modal ends */}
-      </div>
+      </div >
     </>
   );
 };
