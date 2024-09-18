@@ -511,7 +511,7 @@ const BookNow = () => {
     { name: 'Corporate', budget: { min: 1500, max: 10000 } },
     { name: 'Music', budget: { min: 1500, max: 10000 } },
     { name: 'Private', budget: { min: 1500, max: 10000 } },
-    { name: 'Weeding', budget: { min: 1000, max: 1500 } },
+    { name: 'Wedding', budget: { min: 1000, max: 1500 } },
     { name: 'Other', budget: { min: 1000, max: 10000 } },
   ];
 
