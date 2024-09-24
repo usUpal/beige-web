@@ -77,40 +77,60 @@ const CreateNewCp = () => {
             location,
             role: "user"
         }
+                
         const tabOneData = {
             ...clientCreationData,
-            role: 'cp',
-            position: data.position,
-            positions_role: data.positions_role,
+            position: handleToStringData(data.position),
+            positions_role: handleToStringData(data.positions_role),
+            date_of_birth: data.date_of_birth,
             portfolio: data.portfolio,
-            backup_footage: data.backup_footage,
-            shoot_availability: data.shoot_availability,
-            notification: data.notification,
-            vediographyCamera: data.vediographyCamera,
-            photographyCamera: data.photographyCamera,
-            lenses: data.lenses,
-            lighting: data.lighting,
-            sound: data.sound,
-            stabilizer: data.stabilizer,
-            content_experience: data.content_experience,
+            backup_footage: handleToStringData(data.backup_footage),
+            shoot_availability: handleToStringData(data.shoot_availability),
+            notification: handleToStringData(data.notification),
+            vediographyCamera: handleToStringData(data.vediographyCamera),
+            photographyCamera: handleToStringData(data.photographyCamera),
+            lenses: handleToStringData(data.lenses),
+            lighting: handleToStringData(data.lighting),
+            sound: handleToStringData(data.sound),
+            stabilizer: handleToStringData(data.stabilizer),
+            content_type: handleToStringData(data.content_type),
+            city: location,
         }
         const tabTwoData = {
+            role: 'cp',
             additional_equipment: data.additional_equipment,
             rate: data.rate,
             experience: data.experience,
-            creative_empowerment: data.creative_empowerment,
-            high_pressure_task: data.high_pressure_task,
-            motivation: data.motivation,
-            conflict_handling: data.conflict_handling,
+            initiative: data.initiative, //creative_enpowerment
+            inWorkPressure: data.inWorkPressure, //high_pressure_task
+            motivation: data.motivation, //ok
+            handle_co_worker_conflicts: data.handle_co_worker_conflicts, //changed from conflict_handling,
             team_project: data.team_project,
-            failure_experience: data.failure_experience,
-            additional_info: data.additional_info,
-            networking: data.networking
+            when_made_mistake: data.when_made_mistake, //changed from failure_experience,
+            additional_info: data.additional_info, //ok
+            networking: data.networking, //ok
+            // contact_number: data.contact_number, //nai
+            // prev_contribution: data.prev_contribution, //nai
+            // coordinates: data.coordinates, //nai type:number, required:true obj
+            // geo_location: data.geo_location, //nai required:true
+            // review_status: data.review_status, //nai
+            // avg_response_time_to_new_shoot_inquiry: data.avg_response_time_to_new_shoot_inquiry, //nai
+            // reference: data.reference, //nai
+            // customer_service_skills_experience: data.customer_service_skills_experience, //nai
+            // experience_with_post_production_edit: data.experience_with_post_production_edit, //nai
+            // travel_to_distant_shoots: data.travel_to_distant_shoots,
+            // own_transportation_method: data.own_transportation_method, // nai
+            // neighborhood: data.neighborhood, //nai
+            // zip_code:  data.zip_code, //nai
+            // content_type: data.content_type, //nai
+            // content_verticals: data.content_verticals, //nai
+            // vst: data.vst, //nai
+            // trust_score: data.trust_score, //nai
         }
         const tabThreeData = {
-            greatest_professional: data.greatest_professional,
-            long_term: data.long_term,
-            rate_flexibility: data.rate_flexibility,
+            professional_strength: data.professional_strength, //greatest_professional,
+            long_term_goals: data.long_term_goals,
+            rateFlexibility: data.rateFlexibility, //
             team_player: data.team_player,
             travel: data.travel
         }
@@ -126,34 +146,34 @@ const CreateNewCp = () => {
 
                 if (Object.keys(clientCreationData).length > 0) {
                     // creating user
-                    try {
-                        const response = await fetch(`${API_ENDPOINT}auth/register`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(clientCreationData),
-                        });
+                    // try {
+                    //     const response = await fetch(`${API_ENDPOINT}auth/register`, {
+                    //         method: 'POST',
+                    //         headers: {
+                    //             'Content-Type': 'application/json',
+                    //         },
+                    //         body: JSON.stringify(clientCreationData),
+                    //     });
 
-                        const result = await response.json();
+                    //     const result = await response.json();
 
-                        if (response.ok) {
-                            console.log('Success:', result);
-                            toast.success('Registration successful!');
-                        } else {
-                            if (result.code === 400) {
-                                toast.error(`${result.message}`);
-                            }
-                            else {
-                                toast.error(`Something went wrong, Please try again!`);
-                            }
-                        }
+                    //     if (response.ok) {
+                    //         console.log('Success:', result);
+                    //         toast.success('Registration successful!');
+                    //     } else {
+                    //         if (result.code === 400) {
+                    //             toast.error(`${result.message}`);
+                    //         }
+                    //         else {
+                    //             toast.error(`Something went wrong, Please try again!`);
+                    //         }
+                    //     }
                         console.log("🚀 ~ onSubmit ~ tabOneData:", tabOneData);
 
-                    } catch (error) {
-                        console.error('Network error:', error);
-                        toast.error('An error occurred. Please try again later.');
-                    }
+                    // } catch (error) {
+                    //     console.error('Network error:', error);
+                    //     toast.error('An error occurred. Please try again later.');
+                    // }
                     setFormFlipped(true);
                     setActiveTab(activeTab === 1 ? 2 : 3);
                     setIsLoading(false);
@@ -161,6 +181,8 @@ const CreateNewCp = () => {
             }
         }
     };
+
+    const handleToStringData = (property) => property.map(p => p.value);
 
     const staticFormInfos =
     {
@@ -297,6 +319,7 @@ const CreateNewCp = () => {
         ],
     }
 
+
     const handleBack = () => {
         setActiveTab((activeTab) => (activeTab === 3 ? 2 : 1));
     }
@@ -412,7 +435,8 @@ const CreateNewCp = () => {
                                     <h2 className="text-sm font-bold">Portfolio</h2>
                                     <p className="text-sm text-gray-500">Please provide a link to your portfolio(Website, media
                                         platform, etc)</p>
-                                    <input {...register("portfolio")}
+                                    <textarea {...register("portfolio")}
+                                        rows={2}
                                         type="text"
                                         className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                         placeholder="Your answer"
@@ -587,7 +611,7 @@ const CreateNewCp = () => {
                                         nevertheless, we all have are strengths and weakness in
                                         our work area, Please share the types of shoots you have experience with and are comfortable with doing.</p>
                                     <Controller
-                                        name="content_experience"
+                                        name="content_type"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
@@ -676,7 +700,7 @@ const CreateNewCp = () => {
                                 <textarea
                                     placeholder="Please answer"
                                     rows={1}
-                                    {...register("high_pressure_task")}
+                                    {...register("inWorkPressure")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -696,7 +720,7 @@ const CreateNewCp = () => {
                                 <textarea
                                     placeholder="Please answer"
                                     rows={1}
-                                    {...register("conflict_handling")}
+                                    {...register("handle_co_worker_conflicts")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -716,7 +740,7 @@ const CreateNewCp = () => {
                                 <textarea
                                     placeholder="Please answer"
                                     rows={1}
-                                    {...register("failure_experience")}
+                                    {...register("when_made_mistake")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -773,7 +797,7 @@ const CreateNewCp = () => {
                                 <textarea
                                     placeholder="Please answer the following questions honestly."
                                     rows={1}
-                                    {...register("greatest_professional")}
+                                    {...register("professional_strength")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -783,7 +807,7 @@ const CreateNewCp = () => {
                                 <textarea
                                     placeholder="Please answer the following questions honestly."
                                     rows={1}
-                                    {...register("long_term")}
+                                    {...register("long_term_goals")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -792,7 +816,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2">Rate Flexibility</h2>
                                 <div className="flex items-center">
                                     <input
-                                        {...register("rate_flexibility")}
+                                        {...register("rateFlexibility")}
                                         type="radio"
                                         id="rateYes"
                                         name="Rate"
