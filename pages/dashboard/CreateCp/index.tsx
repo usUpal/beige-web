@@ -7,6 +7,9 @@ import TimezoneSelect from 'react-timezone-select';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import Select from 'react-select';
+import Loader from '@/components/SharedComponent/Loader';
+import { API_ENDPOINT } from '@/config';
+import { trim } from 'lodash';
 
 const CreateNewCp = () => {
     const [activeTab, setActiveTab] = useState<number>(1);
@@ -23,11 +26,14 @@ const CreateNewCp = () => {
         "Post Production Manager", "Sales Representative",
         "User Success"
     ]);
+
+    const [formDataPageOne, setFormDataPageOne] = useState({});
+
     const [step, setStep] = useState(1);
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
 
-    const handleSetNewItem = (fieldName) => {
+    const handleSetNewItem = (fieldName: any) => {
         const value = getValues(fieldName);
         if (!value) return;
         setRoleOptions((prevOptions) => [...prevOptions, value]);
@@ -35,173 +41,265 @@ const CreateNewCp = () => {
         reset({ [fieldName]: '' });
     };
 
-    const onSubmit = (data: any) => {
-        const { password, CPassword, email } = data;
+    const onSubmit = async (data: any) => {
+        const { password, cPassword, email } = data;
 
         if (!emailRegex.test(email)) {
             toast.error('Please enter a valid email.');
             return;
         }
-        if (!passwordPattern.test(password)) {
-            toast.error('Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.).');
-            return;
-        }
-        if (password !== CPassword) {
+        // if (!passwordPattern.test(password)) {
+        //     toast.error('Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.).');
+        //     return;
+        // }
+
+        if (password !== cPassword) {
             toast.error("Password doesn't match.");
             return;
         }
-        setFormFlipped(true);
 
-        const filteredData = Object.fromEntries(
-            Object.entries({ ...data, timezone: timezone?.value, location: location }).filter(([key, value]) => value !== '')
-        );
-        console.log("Data:", filteredData);
-        // const onSubmit = (data) => {
-        //     console.log('Form Data:', data);
-        // };
+        if (!location) {
+            toast.error("Provide your location.");
+            return;
+        }
+        if (!trim(data?.name)) {
+            toast.error("Provide your Name.");
+            return;
+        }
+        // const filteredData = Object.fromEntries(
+        //     Object.entries({ ...data, timezone: timezone?.value, location: location }).filter(([key, value]) => value !== '')
+        // );
+
+        const clientCreationData = {
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            location,
+            role: "user"
+        }
+        const tabOneData = {
+            ...clientCreationData,
+            role: 'cp',
+            position: data.position,
+            positions_role: data.positions_role,
+            portfolio: data.portfolio,
+            backup_footage: data.backup_footage,
+            shoot_availability: data.shoot_availability,
+            notification: data.notification,
+            vediographyCamera: data.vediographyCamera,
+            photographyCamera: data.photographyCamera,
+            lenses: data.lenses,
+            lighting: data.lighting,
+            sound: data.sound,
+            stabilizer: data.stabilizer,
+            content_experience: data.content_experience,
+        }
+        const tabTwoData = {
+            additional_equipment: data.additional_equipment,
+            rate: data.rate,
+            experience: data.experience,
+            creative_empowerment: data.creative_empowerment,
+            high_pressure_task: data.high_pressure_task,
+            motivation: data.motivation,
+            conflict_handling: data.conflict_handling,
+            team_project: data.team_project,
+            failure_experience: data.failure_experience,
+            additional_info: data.additional_info,
+            networking: data.networking
+        }
+        const tabThreeData = {
+            greatest_professional: data.greatest_professional,
+            long_term: data.long_term,
+            rate_flexibility: data.rate_flexibility,
+            team_player: data.team_player,
+            travel: data.travel
+        }
+
+        const allCpDataForm = {
+            ...tabOneData, ...tabTwoData, ...tabThreeData
+        };
+
+        if (Object.keys(clientCreationData).length > 0) {
+            setIsLoading(true);
+            setFormDataPageOne(data);
+            if (activeTab === 1) {
+
+                if (Object.keys(clientCreationData).length > 0) {
+                    // creating user
+                    try {
+                        const response = await fetch(`${API_ENDPOINT}auth/register`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(clientCreationData),
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            console.log('Success:', result);
+                            toast.success('Registration successful!');
+                        } else {
+                            if (result.code === 400) {
+                                toast.error(`${result.message}`);
+                            }
+                            else {
+                                toast.error(`Something went wrong, Please try again!`);
+                            }
+                        }
+                        console.log("🚀 ~ onSubmit ~ tabOneData:", tabOneData);
+
+                    } catch (error) {
+                        console.error('Network error:', error);
+                        toast.error('An error occurred. Please try again later.');
+                    }
+                    setFormFlipped(true);
+                    setActiveTab(activeTab === 1 ? 2 : 3);
+                    setIsLoading(false);
+                }
+            }
+        }
     };
 
-    const positionsOptions = [
-        { value: 'producer', label: 'Producer' },
-        { value: 'director', label: 'Director' },
-        { value: 'videographer', label: 'Videographer' },
-        { value: 'photographer', label: 'Photographer' },
-        { value: 'droneOperator', label: 'Drone Operator' },
-        { value: 'photoEditor', label: 'Photo Editor' },
-        { value: 'videoEditor', label: 'Video Editor' },
-    ];
+    const staticFormInfos =
+    {
+        positions: [
+            { value: 'producer', label: 'Producer' },
+            { value: 'director', label: 'Director' },
+            { value: 'videographer', label: 'Videographer' },
+            { value: 'photographer', label: 'Photographer' },
+            { value: 'droneOperator', label: 'Drone Operator' },
+            { value: 'photoEditor', label: 'Photo Editor' },
+            { value: 'videoEditor', label: 'Video Editor' },
+        ],
 
-    const positionsRole = [
-        { value: 'producer', label: 'Producer' },
-        { value: 'director', label: 'Director' },
-        { value: 'videographer', label: 'Videographer' },
-        { value: 'photographer', label: 'Photographer' },
-        { value: 'droneOperator', label: 'Drone Operator' },
-        { value: 'photoEditor', label: 'Photo Editor' },
-        { value: 'videoEditor', label: 'Video Editor' },
-    ];
+        positionsRole: [
+            { value: 'producer', label: 'Producer' },
+            { value: 'director', label: 'Director' },
+            { value: 'videographer', label: 'Videographer' },
+            { value: 'photographer', label: 'Photographer' },
+            { value: 'droneOperator', label: 'Drone Operator' },
+            { value: 'photoEditor', label: 'Photo Editor' },
+            { value: 'videoEditor', label: 'Video Editor' },
+        ],
 
-    const backupFootages = [
-        { value: 'hardDrive ', label: 'Hard Drive ' },
-        { value: 'sdCard', label: 'SD Card' },
-        { value: 'googleDrive', label: 'Google Drive' },
-        { value: 'weTransfer', label: 'We Transfer' },
-    ];
+        backupFootages: [
+            { value: 'hardDrive ', label: 'Hard Drive ' },
+            { value: 'sdCard', label: 'SD Card' },
+            { value: 'googleDrive', label: 'Google Drive' },
+            { value: 'weTransfer', label: 'We Transfer' },
+        ],
 
-    const shootAvailibilities = [
-        { value: 'During the week and weekend', label: 'During the week and weekend' },
-        { value: 'Only during the week', label: 'Only during the week' },
-        { value: 'Only during the weekends', label: 'Only during the weekends' },
-        { value: 'Flexibility to do last minute shoots', label: 'Flexibility to do last minute shoots' },
-        { value: 'All of the above', label: 'All of the above' },
-    ];
+        shootAvailibilities: [
+            { value: 'During the week and weekend', label: 'During the week and weekend' },
+            { value: 'Only during the week', label: 'Only during the week' },
+            { value: 'Only during the weekends', label: 'Only during the weekends' },
+            { value: 'Flexibility to do last minute shoots', label: 'Flexibility to do last minute shoots' },
+            { value: 'All of the above', label: 'All of the above' },
+        ],
 
-    const notifications = [
-        { value: '1 Day anticipation', label: '1 days anticipation' },
-        { value: '2 days anticipation', label: '2 days anticipation' },
-        { value: '1 week anticipation', label: '1 week anticipation' },
-        { value: '1 month anticipation', label: '1 month anticipation' },
-    ];
+        notifications: [
+            { value: '1 Day anticipation', label: '1 days anticipation' },
+            { value: '2 days anticipation', label: '2 days anticipation' },
+            { value: '1 week anticipation', label: '1 week anticipation' },
+            { value: '1 month anticipation', label: '1 month anticipation' },
+        ],
 
-    const videographyEqupmentCamera = [
-        { value: 'BMPCC 4K', label: 'BMPCC 4K' },
-        { value: 'BMPCC 6k G2', label: 'BMPCC 6k G2' },
-        { value: 'BMPCC 6k Pro', label: 'BMPCC 6k Pro' },
-        { value: 'BMD Ursa Mini 4.6k', label: 'BMD Ursa Mini 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k', label: 'BMD Ursa Mini Pro 4.6k' },
-        { value: 'BMD Ursa Mini Pro 4.6k G2', label: 'BMD Ursa Mini Pro 4.6k G2' },
-        { value: 'EOS R', label: 'EOS R' },
-        { value: 'EOS R5', label: 'EOS R5' },
-        { value: 'C100', label: 'C100' },
-        { value: 'C200', label: 'C200' },
-        { value: 'C300 mark 2', label: 'C300 mark 2' },
-        { value: 'C300 mark 3', label: 'C300 mark 3' },
-        { value: 'C300 mark 4', label: 'C300 mark 4' },
-        { value: 'GH5', label: 'GH5' },
-        { value: 'GH511', label: 'GH511' },
-        { value: 'Sony A7S3', label: 'Sony A7S3' },
-        { value: 'Sony A1', label: 'Sony A1' },
-        { value: 'Sony FX3', label: 'Sony FX3' },
-        { value: 'Sony FX6', label: 'Sony FX6' },
-        { value: 'Sony FX9', label: 'Sony FX9' },
-        { value: 'Others', label: 'Others' },
-    ];
+        videographyEqupmentCamera: [
+            { value: 'BMPCC 4K', label: 'BMPCC 4K' },
+            { value: 'BMPCC 6k G2', label: 'BMPCC 6k G2' },
+            { value: 'BMPCC 6k Pro', label: 'BMPCC 6k Pro' },
+            { value: 'BMD Ursa Mini 4.6k', label: 'BMD Ursa Mini 4.6k' },
+            { value: 'BMD Ursa Mini Pro 4.6k', label: 'BMD Ursa Mini Pro 4.6k' },
+            { value: 'BMD Ursa Mini Pro 4.6k G2', label: 'BMD Ursa Mini Pro 4.6k G2' },
+            { value: 'EOS R', label: 'EOS R' },
+            { value: 'EOS R5', label: 'EOS R5' },
+            { value: 'C100', label: 'C100' },
+            { value: 'C200', label: 'C200' },
+            { value: 'C300 mark 2', label: 'C300 mark 2' },
+            { value: 'C300 mark 3', label: 'C300 mark 3' },
+            { value: 'C300 mark 4', label: 'C300 mark 4' },
+            { value: 'GH5', label: 'GH5' },
+            { value: 'GH511', label: 'GH511' },
+            { value: 'Sony A7S3', label: 'Sony A7S3' },
+            { value: 'Sony A1', label: 'Sony A1' },
+            { value: 'Sony FX3', label: 'Sony FX3' },
+            { value: 'Sony FX6', label: 'Sony FX6' },
+            { value: 'Sony FX9', label: 'Sony FX9' },
+            { value: 'Others', label: 'Others' },
+        ],
 
-    const contentExperience = [
-        { value: 'Corporate/Commercials', label: 'Corporate/Commercials' },
-        { value: 'Corporate Events', label: 'Corporate Events' },
-        { value: 'Documentary', label: 'Documentary' },
-        { value: 'Events(Birthday party, baby Shower, Launch Party, etc)', label: 'Events(Birthday party, baby Shower, Launch Party, etc)' },
-        { value: 'Sports', label: 'Sports' },
-        { value: 'Wedding', label: 'Wedding' },
-        { value: 'Interviews Testimonials', label: 'Interviews Testimonials' },
-        { value: 'Live Stream', label: 'Live Stream' },
-    ];
+        contentExperience: [
+            { value: 'Corporate/Commercials', label: 'Corporate/Commercials' },
+            { value: 'Corporate Events', label: 'Corporate Events' },
+            { value: 'Documentary', label: 'Documentary' },
+            { value: 'Events(Birthday party, baby Shower, Launch Party, etc)', label: 'Events(Birthday party, baby Shower, Launch Party, etc)' },
+            { value: 'Sports', label: 'Sports' },
+            { value: 'Wedding', label: 'Wedding' },
+            { value: 'Interviews Testimonials', label: 'Interviews Testimonials' },
+            { value: 'Live Stream', label: 'Live Stream' },
+        ],
 
-    const photography = [
-        { value: 'Panasonic GH5(4K)', label: 'Panasonic GH5(4K)' },
-        { value: 'Camera Light', label: 'Camera Light' },
-        { value: 'GoPro Hero', label: 'GoPro Hero' },
-        { value: 'DJI Inspire Quadcopter', label: 'DJI Inspire Quadcopter' },
-        { value: '360-Degree Video', label: '360-Degree Video' },
-        { value: 'DSLR Camera (4K)', label: 'DSLR Camera (4K)' },
-        { value: 'Sony A7III', label: 'Sony A7III' },
-        { value: 'Sony A7SIII', label: 'Sony A7SIII' },
-        { value: 'Sony ZV-1', label: 'Sony ZV-1' },
-        { value: 'Nikon D850', label: 'Nikon D850' },
-        { value: 'Canon EOS R', label: 'Canon EOS R' },
-        { value: 'Others', label: 'Others' },
-    ];
+        photography: [
+            { value: 'Panasonic GH5(4K)', label: 'Panasonic GH5(4K)' },
+            { value: 'Camera Light', label: 'Camera Light' },
+            { value: 'GoPro Hero', label: 'GoPro Hero' },
+            { value: 'DJI Inspire Quadcopter', label: 'DJI Inspire Quadcopter' },
+            { value: '360-Degree Video', label: '360-Degree Video' },
+            { value: 'DSLR Camera (4K)', label: 'DSLR Camera (4K)' },
+            { value: 'Sony A7III', label: 'Sony A7III' },
+            { value: 'Sony A7SIII', label: 'Sony A7SIII' },
+            { value: 'Sony ZV-1', label: 'Sony ZV-1' },
+            { value: 'Nikon D850', label: 'Nikon D850' },
+            { value: 'Canon EOS R', label: 'Canon EOS R' },
+            { value: 'Others', label: 'Others' },
+        ],
 
-    const lenses = [
-        { value: 'wildAngle', label: 'Wild Angle' },
-        { value: 'Clear “Protective” Lens', label: 'Clear “Protective” Lens' },
-        { value: 'Polarizer', label: 'Polarizer' },
-        { value: 'Zoom Lens', label: 'Zoom Lens' },
-        { value: 'macros', label: 'Macros' },
-        { value: 'Tamron SP 85mm F/71.8 Di VC USD', label: 'Tamron SP 85mm F/71.8 Di VC USD' },
-        { value: 'Nikon AF-S NIKKOR 70-200 f/2.8 E FL ED VR lens', label: 'Nikon AF-S NIKKOR 70-200 f/2.8 E FL ED VR lens' },
-        { value: 'Canon RF 24-70 mm f/2/8 L IS USM Lens', label: 'Canon RF 24-70 mm f/2/8 L IS USM Lens' },
-        { value: 'Others', label: 'Others' },
-    ];
+        lenses: [
+            { value: 'wildAngle', label: 'Wild Angle' },
+            { value: 'Clear “Protective” Lens', label: 'Clear “Protective” Lens' },
+            { value: 'Polarizer', label: 'Polarizer' },
+            { value: 'Zoom Lens', label: 'Zoom Lens' },
+            { value: 'macros', label: 'Macros' },
+            { value: 'Tamron SP 85mm F/71.8 Di VC USD', label: 'Tamron SP 85mm F/71.8 Di VC USD' },
+            { value: 'Nikon AF-S NIKKOR 70-200 f/2.8 E FL ED VR lens', label: 'Nikon AF-S NIKKOR 70-200 f/2.8 E FL ED VR lens' },
+            { value: 'Canon RF 24-70 mm f/2/8 L IS USM Lens', label: 'Canon RF 24-70 mm f/2/8 L IS USM Lens' },
+            { value: 'Others', label: 'Others' },
+        ],
 
-    const lighting = [
-        { value: 'Three-point Lighting Kit', label: 'Three-point Lighting Kit' },
-        { value: 'Light Reflector', label: 'Light Reflector' },
-        { value: 'GVM 3-Point Light Kit With RGB Leds', label: 'GVM 3-Point Light Kit With RGB Leds' },
-        { value: 'Aputure Light Dome SE', label: 'Aputure Light Dome SE' },
-        { value: 'Others', label: 'Others' },
-    ];
+        lighting: [
+            { value: 'Three-point Lighting Kit', label: 'Three-point Lighting Kit' },
+            { value: 'Light Reflector', label: 'Light Reflector' },
+            { value: 'GVM 3-Point Light Kit With RGB Leds', label: 'GVM 3-Point Light Kit With RGB Leds' },
+            { value: 'Aputure Light Dome SE', label: 'Aputure Light Dome SE' },
+            { value: 'Others', label: 'Others' },
+        ],
+        sound: [
+            { value: 'Sound equipment', label: 'Sound equipment' },
+            { value: 'Shotgun Microphone', label: 'Shotgun Microphone' },
+            { value: 'Boom Pole', label: 'Boom Pole' },
+            { value: 'Shock Mount', label: 'Shock Mount' },
+            { value: 'Audio(XLR) Cables', label: 'Audio(XLR) Cables' },
+            { value: 'Wireless Microphone', label: 'Wireless Microphone' },
+            { value: 'Portable Digital Audio Recorder', label: 'Portable Digital Audio Recorder' },
+            { value: 'Rode VideoLic Pro+', label: 'Rode VideoLic Pro+' },
+            { value: 'Rode VideoMic Go', label: 'Rode VideoMic Go' },
+            { value: 'Lavalier Microphones', label: 'Lavalier Microphones' },
+        ],
 
-    const sound = [
-        { value: 'Sound equipment', label: 'Sound equipment' },
-        { value: 'Shotgun Microphone', label: 'Shotgun Microphone' },
-        { value: 'Boom Pole', label: 'Boom Pole' },
-        { value: 'Shock Mount', label: 'Shock Mount' },
-        { value: 'Audio(XLR) Cables', label: 'Audio(XLR) Cables' },
-        { value: 'Wireless Microphone', label: 'Wireless Microphone' },
-        { value: 'Portable Digital Audio Recorder', label: 'Portable Digital Audio Recorder' },
-        { value: 'Rode VideoLic Pro+', label: 'Rode VideoLic Pro+' },
-        { value: 'Rode VideoMic Go', label: 'Rode VideoMic Go' },
-        { value: 'Lavalier Microphones', label: 'Lavalier Microphones' },
-    ];
-
-    const stabilizer = [
-        { value: 'DSLR Shoulder Mount Rig', label: 'DSLR Shoulder Mount Rig' },
-        { value: 'Gimbal Stabilizer', label: 'Gimbal Stabilizer' },
-        { value: 'Tripod Dolly', label: 'Tripod Dolly' },
-        { value: 'Jid Crane', label: 'Jid Crane' },
-        { value: 'DJI Osmo Mobile 4', label: 'DJI Osmo Mobile 4' },
-    ];
+        stabilizer: [
+            { value: 'DSLR Shoulder Mount Rig', label: 'DSLR Shoulder Mount Rig' },
+            { value: 'Gimbal Stabilizer', label: 'Gimbal Stabilizer' },
+            { value: 'Tripod Dolly', label: 'Tripod Dolly' },
+            { value: 'Jid Crane', label: 'Jid Crane' },
+            { value: 'DJI Osmo Mobile 4', label: 'DJI Osmo Mobile 4' },
+        ],
+    }
 
     const handleBack = () => {
-        setActiveTab(activeTab - 1);
-    };
-
-    const handleNext = () => {
-        setActiveTab(activeTab + 1);
-        console.log(" Data:", getValues());
-    };
+        setActiveTab((activeTab) => (activeTab === 3 ? 2 : 1));
+    }
 
     const handleSubmited = () => {
         console.log(" Data:", getValues());
@@ -244,14 +342,14 @@ const CreateNewCp = () => {
 
                                 <div>
                                     <label htmlFor="role">Password</label>
-                                    <input type='password' id="password" placeholder="Password" {...register("password", { required: true, pattern: passwordPattern })} className="form-input capitalize" />
+                                    <input type='password' id="password" placeholder="Password" {...register("password", { required: true })} className="form-input capitalize" />
                                     {errors.password && <span className='text-danger text-sm'>Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.)</span>}
                                 </div>
 
                                 <div>
                                     <label htmlFor="role">Confirm password</label>
-                                    <input type='password' id="confirm_password" {...register("confirm_password", { required: true })} placeholder="Confirm password" className="form-input capitalize" />
-                                    {errors.CPassword && <span className='text-danger text-sm'>Enter your Confirm password</span>}
+                                    <input type='password' id="confirm_password" {...register("cPassword", { required: true })} placeholder="Confirm password" className="form-input capitalize" />
+                                    {errors.cPassword && <span className='text-danger text-sm'>Enter your Confirm password</span>}
                                 </div>
 
                                 <div className="flex-grow">
@@ -279,33 +377,31 @@ const CreateNewCp = () => {
                                     <h2 className="text-sm font-bold">Positions </h2>
                                     <p className="text-sm text-gray-500">Select your main position</p>
                                     <Controller
-                                        name="positions_options"
+                                        name="position"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={positionsOptions}
+                                                options={staticFormInfos?.positions}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
                                     />
-
                                 </div>
 
                                 <div>
                                     <h2 className="font-semibold ">Positions & Roles</h2>
                                     <p className="text-sm text-gray-500">Please select the positions/Roles that you work on.</p>
-
                                     <Controller
                                         // not matched
-                                        name="positions_options_role"
+                                        name="positions_role"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={positionsRole}
+                                                options={staticFormInfos?.positionsRole}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -334,7 +430,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={backupFootages}
+                                                options={staticFormInfos?.backupFootages}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -353,7 +449,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={shootAvailibilities}
+                                                options={staticFormInfos?.shootAvailibilities}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -372,7 +468,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={notifications}
+                                                options={staticFormInfos?.notifications}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -384,13 +480,13 @@ const CreateNewCp = () => {
                                     <p className="text-sm text-gray-500">Camera gear for Video</p>
                                     <Controller
                                         // vediographyCamera
-                                        name="equipment"
+                                        name="vediographyCamera"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={videographyEqupmentCamera}
+                                                options={staticFormInfos?.videographyEqupmentCamera}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -408,7 +504,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={photography}
+                                                options={staticFormInfos?.photography}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -421,13 +517,13 @@ const CreateNewCp = () => {
                                         Zoom Lens, Macros, etc.</p>
                                     <Controller
                                         // name="lenses"
-                                        name='equipment_specification'
+                                        name='lenses'
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={lenses}
+                                                options={staticFormInfos?.lenses}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -444,7 +540,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={lighting}
+                                                options={staticFormInfos?.lighting}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -461,7 +557,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={sound}
+                                                options={staticFormInfos?.sound}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -478,13 +574,12 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={stabilizer}
+                                                options={staticFormInfos?.stabilizer}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
                                     />
                                 </div>
-
 
                                 <div>
                                     <h2 className="text-sm font-bold">Content Speciality Experience</h2>
@@ -498,7 +593,7 @@ const CreateNewCp = () => {
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={contentExperience}
+                                                options={staticFormInfos?.contentExperience}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -513,7 +608,7 @@ const CreateNewCp = () => {
                             <DefaultButton
                                 css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`}
                                 disabled={isLoading}
-                                onClick={handleNext}
+                            // onClick={handleNext}
                             >
                                 {isLoading ? <Loader /> : 'Next'}
                             </DefaultButton>
@@ -531,20 +626,8 @@ const CreateNewCp = () => {
                                     platform, etc)</p>
                                 <textarea
                                     placeholder="Your answer"
-                                    rows="1"
+                                    rows={1}
                                     {...register("additional_equipment")}
-                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </div>
-
-                            <div>
-                                <h2 className="text-sm font-bold ">Rate($)</h2>
-                                <p className="text-sm text-gray-500">Please let us know how you work and pricing.</p>
-                                <textarea
-                                    placeholder="Your Rates($)"
-                                    rows="1"
-                                    type="number"
-                                    {...register("rate")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -552,9 +635,9 @@ const CreateNewCp = () => {
                             <div>
                                 <h2 className="text-sm font-bold ">Rates($)</h2>
                                 <p className="text-sm text-gray-500">Please let us know how you work and pricing.</p>
-                                <textarea
+                                <input
                                     placeholder="Your Rates($)"
-                                    rows="1"
+                                    // rows={1}
                                     type="number"
                                     {...register("rate")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -567,7 +650,7 @@ const CreateNewCp = () => {
                                     tools you use for editing and your style of editing.</p>
                                 <textarea
                                     placeholder="Your Experience"
-                                    rows="1"
+                                    rows={1}
                                     {...register("experience")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -582,7 +665,7 @@ const CreateNewCp = () => {
                                     comfortable interacting with people?</p>
                                 <textarea
                                     placeholder="Your Creative"
-                                    rows="1"
+                                    rows={1}
                                     {...register("creative_empowerment")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -592,7 +675,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2">Describe a situation when you had to handle a high-pressure task. How did you manage it and what was the outcome?</h2>
                                 <textarea
                                     placeholder="Please answer"
-                                    rows="1"
+                                    rows={1}
                                     {...register("high_pressure_task")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -602,7 +685,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2">What motivates you in your work? Is it achieving goals, helping others, or something else?</h2>
                                 <textarea
                                     placeholder="Please answer"
-                                    rows="1"
+                                    rows={1}
                                     {...register("motivation")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -612,7 +695,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2">How do you handle conflicts or disagreements with coworkers or superiors?*</h2>
                                 <textarea
                                     placeholder="Please answer"
-                                    rows="1"
+                                    rows={1}
                                     {...register("conflict_handling")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -622,7 +705,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2">Describe a time when you had to work on a team project. What was your role, and how did you contribute to the team's success?</h2>
                                 <textarea
                                     placeholder="Please answer"
-                                    rows="1"
+                                    rows={1}
                                     {...register("team_project")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -632,7 +715,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2">Describe a situation when you faced failure or made a mistake at work. How did you handle it, and what did you learn from the experience?</h2>
                                 <textarea
                                     placeholder="Please answer"
-                                    rows="1"
+                                    rows={1}
                                     {...register("failure_experience")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -643,7 +726,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2">Is there anything that you'd like us to know or take in consideration when working together?</h2>
                                 <textarea
                                     placeholder="Please answer"
-                                    rows="1"
+                                    rows={1}
                                     {...register("additional_info")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -654,7 +737,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2 w-full">This will not have any impact whatsoever on our decision to hire you. We are expanding and we are looking to onboard as many talented creatives in the many cities we are involved in. Great way to provide value to your friends. Please provide their name and contact information (phone number and email) below.</h2>
                                 <textarea
                                     placeholder="Please answer"
-                                    rows="1"
+                                    rows={1}
                                     {...register("networking")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -673,7 +756,7 @@ const CreateNewCp = () => {
                             <DefaultButton
                                 css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`}
                                 disabled={isLoading}
-                                onClick={handleNext}
+                            // onClick={handleNext}
                             >
                                 {isLoading ? <Loader /> : 'Next'}
                             </DefaultButton>
@@ -689,7 +772,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2">What do you consider your greatest professional strength, and how does it benefit your work?</h2>
                                 <textarea
                                     placeholder="Please answer the following questions honestly."
-                                    rows="1"
+                                    rows={1}
                                     {...register("greatest_professional")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -699,7 +782,7 @@ const CreateNewCp = () => {
                                 <h2 className="text-sm font-bold mb-2">What are your long-term career goals, and how does this position align with them?</h2>
                                 <textarea
                                     placeholder="Please answer the following questions honestly."
-                                    rows="1"
+                                    rows={1}
                                     {...register("long_term")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />

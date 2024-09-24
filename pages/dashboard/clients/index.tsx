@@ -10,6 +10,7 @@ import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import AccessDenied from '@/components/errors/AccessDenied';
+import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 const Users = () => {
   const [userModalClient, setUserModalClient] = useState(false);
   const { authPermissions } = useAuth();
@@ -90,7 +91,7 @@ const Users = () => {
                                 </div>
                               </td>
 
-                              <td>{userClient?.name}</td>
+                              <td title={userClient?.name}>{truncateLongText(userClient?.name, 30)}</td>
                               <td className="min-w-[150px] break-all">{userClient?.email}</td>
 
                               <td className="font-sans text-success">{userClient?.role}</td>

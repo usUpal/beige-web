@@ -605,7 +605,7 @@ const CpDetails = () => {
               own transportation method
             </label>
             <select
-              className=" mt-1 w-56 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className=" mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               id="own_transportation_method"
               defaultValue={formData?.own_transportation_method}
               {...register('own_transportation_method')}

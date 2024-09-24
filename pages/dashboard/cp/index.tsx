@@ -9,6 +9,7 @@ import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { useRouter } from 'next/router';
 import AccessDenied from '@/components/errors/AccessDenied';
+import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 const CpUsers = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const { authPermissions } = useAuth();
@@ -77,13 +78,13 @@ const CpUsers = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {allCpUsers?.results?.map((cpUser) => (
+                        {allCpUsers?.results?.map((cpUser: any) => (
                           <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                             <td className="min-w-[150px] font-sans text-black dark:text-white">
                               <div className="flex items-center break-all ">{cpUser?.id}</div>
                             </td>
-                            <td>{cpUser?.name}</td>
-                            <td className="min-w-[150px] break-all">{cpUser?.email}</td>
+                            <td> {truncateLongText(cpUser?.name, 30)}</td>
+                            <td className="min-w-[150px] break-all">{truncateLongText(cpUser?.email, 40)}</td>
                             <td className="font-sans text-success">{cpUser?.role}</td>
 
                             <td>
