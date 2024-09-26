@@ -19,7 +19,7 @@ const CpDetails = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<any | null>(null);
-  console.log(formData);
+
 
   const params = useParams();
   const dob = formData?.date_of_birth;
@@ -93,7 +93,7 @@ const CpDetails = () => {
         updatedFormData.portfolio = Array.isArray(formData.portfolio) ? [...formData.portfolio, value] : [value];
         break;
       default:
-        console.warn('Unknown fieldName:', fieldName);
+        toast.error('Unknown fieldName:', fieldName);
         break;
     }
 
