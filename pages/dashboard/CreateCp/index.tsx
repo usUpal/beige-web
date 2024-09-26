@@ -8,8 +8,15 @@ import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import Select from 'react-select';
 import Loader from '@/components/SharedComponent/Loader';
-import { API_ENDPOINT } from '@/config';
 import { trim } from 'lodash';
+import { useAuth } from '@/contexts/authContext';
+import { API_ENDPOINT } from '@/config';
+import AccessDenied from '@/components/errors/AccessDenied';
+
+interface propertyData {
+    value: string,
+    label: string,
+}
 
 const CreateNewCp = () => {
     const [activeTab, setActiveTab] = useState<number>(1);
@@ -26,20 +33,26 @@ const CreateNewCp = () => {
         "Post Production Manager", "Sales Representative",
         "User Success"
     ]);
-
     const [formDataPageOne, setFormDataPageOne] = useState({});
-
     const [step, setStep] = useState(1);
+
+    const { userData, authPermissions } = useAuth();
+    const isHavePermission = authPermissions?.includes('client_page');
+    const userRole = userData?.role === 'user' ? 'client' : userData?.role;
+
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
 
     const handleSetNewItem = (fieldName: any) => {
         const value = getValues(fieldName);
         if (!value) return;
         setRoleOptions((prevOptions) => [...prevOptions, value]);
-        console.log("New role added:", value);
+
         reset({ [fieldName]: '' });
     };
+
+    const [newuserId, setNewUserId] = useState('');
 
     const onSubmit = async (data: any) => {
         const { password, cPassword, email } = data;
@@ -48,10 +61,10 @@ const CreateNewCp = () => {
             toast.error('Please enter a valid email.');
             return;
         }
-        // if (!passwordPattern.test(password)) {
-        //     toast.error('Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.).');
-        //     return;
-        // }
+        if (!passwordPattern.test(password)) {
+            toast.error('Password must be at least 8 characters long, include at least one letter, one number, and one special character (@, #, $, %, etc.).');
+            return;
+        }
 
         if (password !== cPassword) {
             toast.error("Password doesn't match.");
@@ -66,10 +79,6 @@ const CreateNewCp = () => {
             toast.error("Provide your Name.");
             return;
         }
-        // const filteredData = Object.fromEntries(
-        //     Object.entries({ ...data, timezone: timezone?.value, location: location }).filter(([key, value]) => value !== '')
-        // );
-
         const clientCreationData = {
             name: data.name,
             email: data.email,
@@ -77,112 +86,176 @@ const CreateNewCp = () => {
             location,
             role: "user"
         }
-                
+
+        let portfolioLinks: string[] = [];
+        const links = data.portfolio.split(',');
+        links.forEach((link: string) => {
+            portfolioLinks.push(link.trim());
+        }
+        );
+
+        const cameras: any = [
+            ...(data?.vediographyCamera || []),
+            ...(data?.photographyCamera || [])
+        ];
+
+        const equipment_specific_all: any = [
+            ...(data?.lenses || []),
+            ...(data?.lighting || []),
+            ...(data?.sound || []),
+            ...(data?.stabilizer || [])
+        ];
+
         const tabOneData = {
-            ...clientCreationData,
+            // ...clientCreationData,
+            timezone: data.timezone,
             position: handleToStringData(data.position),
             positions_role: handleToStringData(data.positions_role),
             date_of_birth: data.date_of_birth,
-            portfolio: data.portfolio,
+            portfolio: portfolioLinks,
             backup_footage: handleToStringData(data.backup_footage),
             shoot_availability: handleToStringData(data.shoot_availability),
             notification: handleToStringData(data.notification),
-            vediographyCamera: handleToStringData(data.vediographyCamera),
-            photographyCamera: handleToStringData(data.photographyCamera),
+            vediography_camera: handleToStringData(data.vediographyCamera),
+            photography_camera: handleToStringData(data.photographyCamera),
             lenses: handleToStringData(data.lenses),
             lighting: handleToStringData(data.lighting),
             sound: handleToStringData(data.sound),
             stabilizer: handleToStringData(data.stabilizer),
             content_type: handleToStringData(data.content_type),
+            content_verticals: handleToStringData(data.content_verticals),
             city: location,
-        }
-        const tabTwoData = {
-            role: 'cp',
-            additional_equipment: data.additional_equipment,
-            rate: data.rate,
-            experience: data.experience,
-            initiative: data.initiative, //creative_enpowerment
-            inWorkPressure: data.inWorkPressure, //high_pressure_task
-            motivation: data.motivation, //ok
-            handle_co_worker_conflicts: data.handle_co_worker_conflicts, //changed from conflict_handling,
-            team_project: data.team_project,
-            when_made_mistake: data.when_made_mistake, //changed from failure_experience,
-            additional_info: data.additional_info, //ok
-            networking: data.networking, //ok
-            // contact_number: data.contact_number, //nai
-            // prev_contribution: data.prev_contribution, //nai
-            // coordinates: data.coordinates, //nai type:number, required:true obj
-            // geo_location: data.geo_location, //nai required:true
-            // review_status: data.review_status, //nai
-            // avg_response_time_to_new_shoot_inquiry: data.avg_response_time_to_new_shoot_inquiry, //nai
-            // reference: data.reference, //nai
-            // customer_service_skills_experience: data.customer_service_skills_experience, //nai
-            // experience_with_post_production_edit: data.experience_with_post_production_edit, //nai
-            // travel_to_distant_shoots: data.travel_to_distant_shoots,
-            // own_transportation_method: data.own_transportation_method, // nai
-            // neighborhood: data.neighborhood, //nai
-            // zip_code:  data.zip_code, //nai
-            // content_type: data.content_type, //nai
-            // content_verticals: data.content_verticals, //nai
-            // vst: data.vst, //nai
-            // trust_score: data.trust_score, //nai
-        }
-        const tabThreeData = {
-            professional_strength: data.professional_strength, //greatest_professional,
-            long_term_goals: data.long_term_goals,
-            rateFlexibility: data.rateFlexibility, //
-            team_player: data.team_player,
-            travel: data.travel
+            geo_location: geoLocation,
+            equipment: handleToStringData(cameras),
+            equipment_specific: handleToStringData(equipment_specific_all),
         }
 
-        const allCpDataForm = {
+        const tabTwoData = {
+            role: 'cp',
+            contact_number: data?.contact_number,
+            additional_equipment: data.additional_equipment,
+            rate: data.rate,
+            experience_with_post_production_edit: data.experience_with_post_production_edit,
+            initiative: data.initiative,
+            inWorkPressure: data.inWorkPressure,
+            motivates: data.motivates,
+            handle_co_worker_conflicts: data.handle_co_worker_conflicts,
+            prev_contribution: data.team_project,
+            when_made_mistake: data.when_made_mistake,
+            additional_info: data.additional_info,
+            networking: data.networking,
+
+        }
+        const tabThreeData = {
+            professional_strength: data.professional_strength,
+            long_term_goals: data.long_term_goals,
+            rateFlexibility: data.rateFlexibility,
+            team_player: data.team_player,
+            travel_to_distant_shoots: data.travel_to_distant_shoots,
+            neighborhood: data.neighborhood,
+            reference: data.reference,
+            own_transportation_method: data.own_transportation_method,
+            review_status: userRole === "admin" ? "accepted" : "pending",
+            customer_service_skills_experience: data.customer_service_skills_experience,
+            zip_code: data.zip_code,
+            userId: newuserId,
+        }
+
+        const allCpFormInputData = {
             ...tabOneData, ...tabTwoData, ...tabThreeData
         };
 
         if (Object.keys(clientCreationData).length > 0) {
             setIsLoading(true);
             setFormDataPageOne(data);
-            if (activeTab === 1) {
 
-                if (Object.keys(clientCreationData).length > 0) {
-                    // creating user
-                    // try {
-                    //     const response = await fetch(`${API_ENDPOINT}auth/register`, {
-                    //         method: 'POST',
-                    //         headers: {
-                    //             'Content-Type': 'application/json',
-                    //         },
-                    //         body: JSON.stringify(clientCreationData),
-                    //     });
+            if (Object.keys(clientCreationData).length > 0) {
+                setIsLoading(true);
+                setFormDataPageOne(data);
 
-                    //     const result = await response.json();
+                if (activeTab === 1) {
+                    try {
+                        const response = await fetch(`${API_ENDPOINT}auth/register`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(clientCreationData),
+                        });
+                        const result = await response.json();
+                        if (response.ok) {
+                            // console.log('Success:', result.user.id);
+                            setNewUserId(result.user.id);
+                            toast.success('User Registration successful!');
+                        } else {
+                            if (result.code === 400) {
+                                toast.error(`${result.message}`);
+                            }
+                            else {
+                                toast.error(`Something went wrong, Please try again!`);
+                            }
+                        }
+                    } catch (error) {
+                        // console.error('Network error:', error);
+                        toast.error('An error occurred. Please try again later.');
+                    }
 
-                    //     if (response.ok) {
-                    //         console.log('Success:', result);
-                    //         toast.success('Registration successful!');
-                    //     } else {
-                    //         if (result.code === 400) {
-                    //             toast.error(`${result.message}`);
-                    //         }
-                    //         else {
-                    //             toast.error(`Something went wrong, Please try again!`);
-                    //         }
-                    //     }
-                        console.log("🚀 ~ onSubmit ~ tabOneData:", tabOneData);
-
-                    // } catch (error) {
-                    //     console.error('Network error:', error);
-                    //     toast.error('An error occurred. Please try again later.');
-                    // }
                     setFormFlipped(true);
-                    setActiveTab(activeTab === 1 ? 2 : 3);
-                    setIsLoading(false);
+                    setActiveTab(2);
+
+                } else if (activeTab === 2 || activeTab === 3) {
+                    setFormFlipped(true);
+
+                    if (activeTab === 2) {
+                        setActiveTab(3);
+                    } else {
+                        try {
+                            const response = await fetch(`${API_ENDPOINT}cp`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(allCpFormInputData),
+                            });
+
+                            const result = await response.json();
+
+                            if (response.ok) {
+                                toast.success('Cp Registred successfuly!');
+                            } else {
+                                if (result.code === 400) {
+                                    toast.error(`${result.message}`);
+                                }
+                                else {
+                                    toast.error(`Something went wrong, Please try again!`);
+                                }
+                            }
+
+                        } catch (error) {
+                            // console.error('Network error:', error);
+                            toast.error('An error occurred. Please try again later.');
+                        }
+                    }
                 }
+
+                setIsLoading(false);
+            } else {
+                toast.error("Client creation data is empty or invalid");
             }
         }
     };
 
-    const handleToStringData = (property) => property.map(p => p.value);
+    const handleToStringData = (property: propertyData[]) => property?.map((p: propertyData) => p.value);
+
+    if (!isHavePermission) {
+        return (
+            <AccessDenied />
+        );
+    }
+
+    const handleBack = () => {
+        setActiveTab((activeTab) => (activeTab === 3 ? 2 : 1));
+    }
 
     const staticFormInfos =
     {
@@ -253,7 +326,12 @@ const CreateNewCp = () => {
         ],
 
         contentExperience: [
-            { value: 'Corporate/Commercials', label: 'Corporate/Commercials' },
+            { value: 'Photography', label: 'Photography' },
+            { value: 'Videography', label: 'Videography' },
+        ],
+
+        contentVertical: [
+            { value: 'Corporate & Commercials', label: 'Corporate & Commercials' },
             { value: 'Corporate Events', label: 'Corporate Events' },
             { value: 'Documentary', label: 'Documentary' },
             { value: 'Events(Birthday party, baby Shower, Launch Party, etc)', label: 'Events(Birthday party, baby Shower, Launch Party, etc)' },
@@ -263,7 +341,7 @@ const CreateNewCp = () => {
             { value: 'Live Stream', label: 'Live Stream' },
         ],
 
-        photography: [
+        photographyEquipmentCamera: [
             { value: 'Panasonic GH5(4K)', label: 'Panasonic GH5(4K)' },
             { value: 'Camera Light', label: 'Camera Light' },
             { value: 'GoPro Hero', label: 'GoPro Hero' },
@@ -279,7 +357,7 @@ const CreateNewCp = () => {
         ],
 
         lenses: [
-            { value: 'wildAngle', label: 'Wild Angle' },
+            { value: 'wide Angle', label: 'Wide Angle' },
             { value: 'Clear “Protective” Lens', label: 'Clear “Protective” Lens' },
             { value: 'Polarizer', label: 'Polarizer' },
             { value: 'Zoom Lens', label: 'Zoom Lens' },
@@ -319,15 +397,6 @@ const CreateNewCp = () => {
         ],
     }
 
-
-    const handleBack = () => {
-        setActiveTab((activeTab) => (activeTab === 3 ? 2 : 1));
-    }
-
-    const handleSubmited = () => {
-        console.log(" Data:", getValues());
-    };
-
     return (
         <div className='panel'>
             <div>
@@ -344,7 +413,6 @@ const CreateNewCp = () => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                {/* <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" onSubmit={(e) => e.preventDefault()}> */}
                 {/* Tab 1 */}
                 {activeTab === 1 && (
                     <div className="mb-5 rounded-md bg-white p-4 dark:border-[#191e3a] dark:bg-black">
@@ -386,7 +454,7 @@ const CreateNewCp = () => {
                                         value={timezone}
                                         onChange={(selectedTimezone) => {
                                             setTimezone(selectedTimezone);
-                                            setValue("Timezone", selectedTimezone?.value || '');
+                                            setValue("timezone", selectedTimezone?.value || '');
                                         }}
                                     />
                                 </div>
@@ -417,7 +485,6 @@ const CreateNewCp = () => {
                                     <h2 className="font-semibold ">Positions & Roles</h2>
                                     <p className="text-sm text-gray-500">Please select the positions/Roles that you work on.</p>
                                     <Controller
-                                        // not matched
                                         name="positions_role"
                                         control={control}
                                         render={({ field }) => (
@@ -434,10 +501,9 @@ const CreateNewCp = () => {
                                 <div>
                                     <h2 className="text-sm font-bold">Portfolio</h2>
                                     <p className="text-sm text-gray-500">Please provide a link to your portfolio(Website, media
-                                        platform, etc)</p>
+                                        platform, etc) & also provide a comma(,) after each link.</p>
                                     <textarea {...register("portfolio")}
                                         rows={2}
-                                        type="text"
                                         className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                         placeholder="Your answer"
                                     />
@@ -503,7 +569,6 @@ const CreateNewCp = () => {
                                     <h2 className="text-sm font-bold ">Videography Camera</h2>
                                     <p className="text-sm text-gray-500">Camera gear for Video</p>
                                     <Controller
-                                        // vediographyCamera
                                         name="vediographyCamera"
                                         control={control}
                                         render={({ field }) => (
@@ -521,14 +586,13 @@ const CreateNewCp = () => {
                                     <h2 className="text-sm font-bold">Photography Camera</h2>
                                     <p className="text-sm text-gray-500">Camera gear for Photo</p>
                                     <Controller
-                                        // not matched
                                         name="photographyCamera"
                                         control={control}
                                         render={({ field }) => (
                                             <Select
                                                 {...field}
                                                 isMulti
-                                                options={staticFormInfos?.photography}
+                                                options={staticFormInfos?.photographyEquipmentCamera}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -540,7 +604,6 @@ const CreateNewCp = () => {
                                     <p className="text-sm text-gray-500">Lenses: Wide Angle, Clear “Protective” Lens, Polarizer,
                                         Zoom Lens, Macros, etc.</p>
                                     <Controller
-                                        // name="lenses"
                                         name='lenses'
                                         control={control}
                                         render={({ field }) => (
@@ -606,10 +669,9 @@ const CreateNewCp = () => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-sm font-bold">Content Speciality Experience</h2>
-                                    <p className="text-sm text-gray-500">As a professional, one can do difference type of shoots,
-                                        nevertheless, we all have are strengths and weakness in
-                                        our work area, Please share the types of shoots you have experience with and are comfortable with doing.</p>
+                                    <h2 className="text-sm font-bold">Content Speciality Types</h2>
+                                    <p className="text-sm text-gray-500">As a professional, we're experience with various types of shoots. We all have
+                                        our strengths and weaknesses, so share which types of shoot you're comfortable with.</p>
                                     <Controller
                                         name="content_type"
                                         control={control}
@@ -618,6 +680,24 @@ const CreateNewCp = () => {
                                                 {...field}
                                                 isMulti
                                                 options={staticFormInfos?.contentExperience}
+                                                placeholder="Choose Select..."
+                                            />
+                                        )}
+                                    />
+                                </div>
+
+                                <div>
+                                    <h2 className="text-sm font-bold">Content Speciality Experience</h2>
+                                    <p className="text-sm text-gray-500">As a professional, we're experience with various types of shoots. We all have
+                                        our strengths and weaknesses, so share which types of shoot you're comfortable with.</p>
+                                    <Controller
+                                        name="content_verticals"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Select
+                                                {...field}
+                                                isMulti
+                                                options={staticFormInfos?.contentVertical}
                                                 placeholder="Choose Select..."
                                             />
                                         )}
@@ -646,12 +726,22 @@ const CreateNewCp = () => {
                         <div className="md:grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
                             <div>
                                 <h2 className="text-sm font-bold ">Additional Equipment</h2>
-                                <p className="text-sm text-gray-500">Please provide a link to your portfolio(Website, media
-                                    platform, etc)</p>
+                                <p className="text-sm text-gray-500">Please share about your additional equipments?</p>
                                 <textarea
                                     placeholder="Your answer"
                                     rows={1}
                                     {...register("additional_equipment")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+
+                            <div>
+                                <h2 className="text-sm font-bold ">Contact Number</h2>
+                                <p className="text-sm text-gray-500">Please provide a contact no of yours.</p>
+                                <textarea
+                                    placeholder="Your answer"
+                                    rows={1}
+                                    {...register("contact_number")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -675,7 +765,7 @@ const CreateNewCp = () => {
                                 <textarea
                                     placeholder="Your Experience"
                                     rows={1}
-                                    {...register("experience")}
+                                    {...register("experience_with_post_production_edit")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -690,7 +780,7 @@ const CreateNewCp = () => {
                                 <textarea
                                     placeholder="Your Creative"
                                     rows={1}
-                                    {...register("creative_empowerment")}
+                                    {...register("initiative")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -710,7 +800,7 @@ const CreateNewCp = () => {
                                 <textarea
                                     placeholder="Please answer"
                                     rows={1}
-                                    {...register("motivation")}
+                                    {...register("motivates")}
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -803,7 +893,7 @@ const CreateNewCp = () => {
                             </div>
 
                             <div>
-                                <h2 className="text-sm font-bold mb-2">What are your long-term career goals, and how does this position align with them?</h2>
+                                <h2 className="text-sm font-bold mb-2">What are your long-term career goals?</h2>
                                 <textarea
                                     placeholder="Please answer the following questions honestly."
                                     rows={1}
@@ -811,6 +901,35 @@ const CreateNewCp = () => {
                                     className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
+                            <div>
+                                <h2 className="text-sm font-bold mb-2">Neighborhood</h2>
+                                <textarea
+                                    placeholder="Please answer the following questions honestly."
+                                    rows={1}
+                                    {...register("neighborhood")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <h2 className="text-sm font-bold mb-2">Reference</h2>
+                                <input
+                                    placeholder="Please answer the following questions honestly."
+                                    // rows={1}
+                                    {...register("reference")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+
+                            <div>
+                                <h2 className="text-sm font-bold mb-2">Provide Your Zip-Code</h2>
+                                <input
+                                    placeholder="zip_code"
+                                    type='number'
+                                    {...register("zip_code")}
+                                    className="w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+
 
                             <div className="space-y-2">
                                 <h2 className="text-sm font-bold mb-2">Rate Flexibility</h2>
@@ -819,7 +938,6 @@ const CreateNewCp = () => {
                                         {...register("rateFlexibility")}
                                         type="radio"
                                         id="rateYes"
-                                        name="Rate"
                                         value="yes"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
@@ -830,11 +948,83 @@ const CreateNewCp = () => {
                                         {...register("rate_flexibility")}
                                         type="radio"
                                         id="rateNo"
-                                        name="Rate"
                                         value="no"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
                                     <label htmlFor="rateNo" className="ml-2 block text-sm text-gray-900">No</label>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <h2 className="text-sm font-bold mb-2">Do you Travel to distant shoots?</h2>
+                                <div className="flex items-center">
+                                    <input
+                                        {...register("travel_to_distant_shoots")}
+                                        type="radio"
+                                        id="travel_to_distant_shootsYes"
+                                        value="yes"
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                    />
+                                    <label htmlFor="travel_to_distant_shootsYes" className="ml-2 block text-sm text-gray-900">Yes</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        {...register("travel_to_distant_shoots")}
+                                        type="radio"
+                                        id="travel_to_distant_shootsNo"
+                                        value="no"
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                    />
+                                    <label htmlFor="travel_to_distant_shootsNo" className="ml-2 block text-sm text-gray-900">No</label>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <h2 className="text-sm font-bold mb-2">Travel through Own Transportation Method?</h2>
+                                <div className="flex items-center">
+                                    <input
+                                        {...register("own_transportation_method")}
+                                        type="radio"
+                                        id="own_transportation_methodYes"
+                                        value="yes"
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                    />
+                                    <label htmlFor="own_transportation_methodYes" className="ml-2 block text-sm text-gray-900">Yes</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        {...register("own_transportation_method")}
+                                        type="radio"
+                                        id="own_transportation_methodNo"
+                                        value="no"
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                    />
+                                    <label htmlFor="own_transportation_methodNo" className="ml-2 block text-sm text-gray-900">No</label>
+                                </div>
+                            </div>
+
+                            {/* customer_service_skills_experience */}
+                            <div className="space-y-2">
+                                <h2 className="text-sm font-bold mb-2">Do you have customer service skills experience?</h2>
+                                <div className="flex items-center">
+                                    <input
+                                        {...register("customer_service_skills_experience")}
+                                        type="radio"
+                                        id="customer_service_skills_experience"
+                                        value="yes"
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                    />
+                                    <label htmlFor="customer_service_skills_experienceYes" className="ml-2 block text-sm text-gray-900">Yes</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        {...register("customer_service_skills_experience")}
+                                        type="radio"
+                                        id="customer_service_skills_experienceNo"
+                                        value="no"
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                    />
+                                    <label htmlFor="customer_service_skills_experienceNo" className="ml-2 block text-sm text-gray-900">No</label>
                                 </div>
                             </div>
 
@@ -844,51 +1034,27 @@ const CreateNewCp = () => {
                                     <input
                                         {...register("team_player")}
                                         type="radio"
-                                        id="playerYes"
-                                        name="player"
+                                        id="team_playerYes"
+                                        // name="player"
                                         value="yes"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
-                                    <label htmlFor="playerYes" className="ml-2 block text-sm text-gray-900">Yes</label>
+                                    <label htmlFor="team_playerYes" className="ml-2 block text-sm text-gray-900">Yes</label>
                                 </div>
                                 <div className="flex items-center">
                                     <input
                                         {...register("team_player")}
                                         type="radio"
-                                        id="playerNo"
-                                        name="player"
+                                        id="team_playerNo"
+                                        // name="player"
                                         value="no"
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
-                                    <label htmlFor="playerNo" className="ml-2 block text-sm text-gray-900">No</label>
+                                    <label htmlFor="team_playerNo" className="ml-2 block text-sm text-gray-900">No</label>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <h2 className="text-sm font-bold mb-2">Travel</h2>
-                                <div className="flex items-center">
-                                    <input
-                                        {...register("travel")}
-                                        type="radio"
-                                        id="travelYes"
-                                        name="Travel"
-                                        value="yes"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="travelYes" className="ml-2 block text-sm text-gray-900">Yes</label>
-                                </div>
-                                <div className="flex items-center">
-                                    <input
-                                        {...register("travel")}
-                                        type="radio"
-                                        id="travelNo"
-                                        name="Travel"
-                                        value="no"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="travelNo" className="ml-2 block text-sm text-gray-900">No</label>
-                                </div>
-                            </div>
+
                         </div>
 
                         <div className="flex justify-end gap-2">
@@ -903,7 +1069,7 @@ const CreateNewCp = () => {
                             <DefaultButton
                                 css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`}
                                 disabled={isLoading}
-                                onClick={handleSubmited}
+                            // onClick={handleSubmited}
                             >
                                 {isLoading ? <Loader /> : 'Submit'}
                             </DefaultButton>
