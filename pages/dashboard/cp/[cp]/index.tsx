@@ -180,7 +180,7 @@ const CpDetails = () => {
 
     // disabled Fields Value
     const disabledStringFields = {
-      trust_score: formData?.trust_score || data?.trust_score,
+      trust_score: data?.trust_score,
 
       successful_beige_shoots: formData?.successful_beige_shoots,
       average_rating: formData?.average_rating,

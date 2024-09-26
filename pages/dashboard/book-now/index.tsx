@@ -172,7 +172,6 @@ const BookNow = () => {
 
   const handleBack = () => {
     setActiveTab((prev) => (prev === 3 ? 2 : 1));
-    // Use setTimeout to delay the Flatpickr initialization
     setTimeout(() => {
       if (startDateTimeRef.current) {
         flatpickr(startDateTimeRef.current, {
@@ -241,7 +240,7 @@ const BookNow = () => {
       }
       const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setStartDateTime(starting_date);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleChangeEndDateTime = (dateStr) => {
@@ -252,7 +251,7 @@ const BookNow = () => {
       }
       const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setEndDateTime(ending_date);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const addDateTime = () => {
@@ -277,43 +276,32 @@ const BookNow = () => {
     }
   };
 
-  // date and time format convarsion
-  function convertToEnglishDateFormat(inputDateString) {
-    // Create a new Date object from the input string
+  function convertToEnglishDateFormat(inputDateString: any) {
     let date = new Date(inputDateString);
-    // Arrays for months
     let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    // Get year, month, day, hours, and minutes
-    let year = date.getUTCFullYear(); // Use UTC methods to avoid local timezone effects
+    let year = date.getUTCFullYear();
     let month = date.getUTCMonth();
     let day = date.getUTCDate();
     let hours = date.getUTCHours();
     let minutes = date.getUTCMinutes();
 
-    // Determine AM or PM
     let period = hours >= 12 ? 'PM' : 'AM';
 
-    // Convert hours to 12-hour format
-    let formattedHours = hours % 12 || 12; // Converts 0 hours to 12
+    let formattedHours = hours % 12 || 12;
     let formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 
-    // Create the formatted date and time string
     let formattedDate = `${months[month]} ${day}, ${year} Time: ${formattedHours}:${formattedMinutes} ${period}`;
     return formattedDate;
   }
 
-  const calculateDuration = (startDateTime, endDateTime) => {
-    // Convert date-time strings to Date objects
+  const calculateDuration = (startDateTime: any, endDateTime: any) => {
     const start = new Date(startDateTime);
     const end = new Date(endDateTime);
-    // Calculate the duration in milliseconds
     const durationMs = end - start;
-    // Convert milliseconds to hours
     const durationHours = durationMs / (1000 * 60 * 60); // 1 hour = 3600000 milliseconds
     return Math.ceil(durationHours);
   };
 
-  // Function to log total duration from an array of date-time objects
   const logTotalDuration = (dateTimesArray) => {
     const totalDuration = dateTimesArray.reduce((acc, dateTime) => {
       const duration = calculateDuration(dateTime.start_date_time, dateTime.end_date_time);
@@ -322,19 +310,16 @@ const BookNow = () => {
     setTotalDuration(totalDuration);
   };
 
-  // handleTimeRemove
   const handleTimeRemove = (rmvDateTime: any) => {
     const updatedDateTimes = dateTimes.filter((dateTime) => dateTime.start_date_time !== rmvDateTime);
 
     setDateTimes(updatedDateTimes);
   };
 
-  // for pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  // show addon data
   const handleShowAddonsData = () => {
     let shoot_type = formDataPageOne?.content_vertical;
     const photography = formDataPageOne?.content_type?.includes('photo');
@@ -407,7 +392,6 @@ const BookNow = () => {
   };
 
   const handleHoursOnChange = (addonId: string, hoursInput: number) => {
-    // Create a new array with the updated addon
     const updatedAddons: any = selectedFilteredAddons.map((addon: any) => {
       if (addon._id === addonId) {
         return { ...addon, hours: hoursInput };
@@ -416,7 +400,6 @@ const BookNow = () => {
     });
     setSelectedFilteredAddons(updatedAddons);
 
-    // Extra code i keep it for addOn rate calculator
     if (hoursInput >= 0) {
       setAddonExtraHours((prevHours: number) => ({ ...prevHours, [addonId]: Number(hoursInput) }));
     } else {
@@ -492,7 +475,6 @@ const BookNow = () => {
       };
       const result = await newMeeting(requestBody);
       if (result?.data) {
-        //toast.success('Meeting create success.');
         return true;
       } else {
         toast.error('Something want wrong...!');
@@ -505,7 +487,6 @@ const BookNow = () => {
   const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
   const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
 
-  // set category data for the ui
   const categoryList: CategoryListData[] = [
     { name: 'Commercial', budget: { min: 1500, max: 10000 } },
     { name: 'Corporate', budget: { min: 1500, max: 10000 } },
@@ -515,7 +496,6 @@ const BookNow = () => {
     { name: 'Other', budget: { min: 1000, max: 10000 } },
   ];
 
-  // setting default budget
   const handleChangeCategoryWithBudget = (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedCategory = event.target.value;
     const category = categoryList.find((cat) => cat.name === selectedCategory);
@@ -856,7 +836,7 @@ const BookNow = () => {
                       </div>
 
                       {/* Shoot Timings */}
-                      <div className="mt-5 md:mb-0 lg:mb-6">
+                      <div className="mt-5 mb-0 lg:mb-6">
                         <div className="mb-8 w-full items-center justify-between md:flex">
                           {/* Starting Date and Time */}
                           <div className="flex w-full flex-col sm:flex-row md:mb-0">
@@ -941,20 +921,20 @@ const BookNow = () => {
                         </div>
                       </div>
 
-                      {userData?.role === 'admin' && (
-                        <div className="mt-4 w-full flex-col items-center justify-between md:mt-0 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32">
-                          {/* Special Note */}
-                          <div className="flex  w-full flex-col sm:flex-row">
-                            <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                              Special Note
-                            </label>
-                            <textarea id="description" rows={1} className="form-textarea" placeholder="Type your note here..." {...register('description')}></textarea>
-                          </div>
+                      {/* {userData?.role === 'admin' && ( */}
+                      <div className={` ${userData?.role === 'admin' ? 'mt-4' : ''} w-full flex-col items-center justify-between md:mt-0 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32`}>
+                        {/* Special Note */}
+                        <div className={`flex flex-col sm:flex-row ${userData?.role === 'admin' ? 'w-full' : '2xl:w-[45%]  md:w-[50%]'}`}>
+                          <label htmlFor="description" className="mb-0 2xl:w-[160px] xl:w-[105px] md:w-[100px] rtl:ml-2 sm:ltr:mr-2">
+                            Special Note
+                          </label>
+                          <textarea id="description" rows={1} className="form-textarea 2xl:ml-5 xl:ml-2" placeholder="Type your note here..." {...register('description')}></textarea>
+                        </div>
+                        {userData?.role === 'admin' && (
                           <div className="mb-3 mt-3  flex w-full flex-col sm:mt-0 sm:flex-row md:mb-0">
                             <label htmlFor="meeting_time" className="mb-0  w-full rtl:ml-2 sm:ltr:mr-2 md:w-[24%] ">
                               Meeting time
                             </label>
-
                             <div className="relative w-full ">
                               <Flatpickr
                                 id="meeting_time"
@@ -980,8 +960,8 @@ const BookNow = () => {
                               {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                       <div className="mt-5 flex items-center justify-end ltr:ml-auto rtl:mr-auto">
                         <DefaultButton css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`} disabled={isLoading}>
                           {isLoading === true ? <Loader /> : 'Next'}
@@ -1047,9 +1027,8 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${
-                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                    } px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none md:px-[20px] md:py-[12px]`}
+                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                      } px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none md:px-[20px] md:py-[12px]`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -1113,7 +1092,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                              // disabled={disableInput}
+                                            // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'

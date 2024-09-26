@@ -3,30 +3,33 @@ import Link from 'next/link';
 import { useState, useRef } from 'react';
 import 'tippy.js/dist/tippy.css';
 import Map from '@/components/Map';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import TimezoneSelect from 'react-timezone-select';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
-import { useCreateClientMutation } from '@/Redux/features/auth/authApi';
 import { API_ENDPOINT } from '@/config';
+import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 const CreateUser = () => {
     const [geoLocation, setGeoLocation] = useState('');
     const [location, setLocation] = useState('');
     const [image, setImage] = useState("https://cdn.vectorstock.com/i/500p/53/42/user-member-avatar-face-profile-icon-vector-22965342.jpg");
-    // const [timezone, setTimezone] = useState(null);
 
     const { register, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm();
     const fileInputRef = useRef(null);
     const [showRoleInput, setShowRoleInput] = useState(false);
     const [roleOptions, setRoleOptions] = useState([
-        "Admin", "User", "Cp", "Project Manager",
-        "Post Production Manager", "Sales Representative",
-        "User Success"
+        "admin", "user", "cp", "project manager",
+        "post production manager", "sales representative",
+        "user success"
     ]);
 
+    const { userData, authPermissions } = useAuth();
+    const isHavePermission = authPermissions?.includes('client_page');
+
+
+
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=])[A-Za-z\d@#$%^&+=]{8,}$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     const handleIconClick = () => {
         fileInputRef.current.click();
@@ -43,18 +46,6 @@ const CreateUser = () => {
         }
     };
 
-    const handleSetNewItem = (fieldName: any) => {
-        const value = getValues(fieldName);
-        if (!value) return;
-
-        setRoleOptions((prevOptions) => [...prevOptions, value]);
-        console.log("New role added:", value);
-
-        reset({ [fieldName]: '' });
-    };
-
-    // const [createClient, { isLoading: createClientIsLoading, isSuccess: createClientIsSuccess }] = useCreateClientMutation();
-
     const onSubmit = async (data: any) => {
         const { password, CPassword, email } = data;
 
@@ -70,6 +61,10 @@ const CreateUser = () => {
             toast.error("Password dosen't match.");
             return;
         }
+        if (!location) {
+            toast.error("Location can't be empty.");
+            return;
+        }
         const filteredUserData = {
             name: data.name,
             email: email,
@@ -77,35 +72,46 @@ const CreateUser = () => {
             location,
             role: data.role,
         }
-        try {
-            const response = await fetch(`${API_ENDPOINT}auth/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(filteredUserData),
-            });
 
-            const result = await response.json();
+        if (filteredUserData) {
 
-            if (response.ok) {
-                console.log('Success:', result);
-                toast.success('Registration successful!');
-            } else {
-                if (result.code === 400) {
-                    toast.error(`${result.message}`);
+            try {
+                const response = await fetch(`${API_ENDPOINT}auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(filteredUserData),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // console.log('Success:', result);
+                    toast.success('Registration successful!');
+                    reset();
+
+                } else {
+                    if (result.code === 400) {
+                        toast.error(`${result.message}`);
+                    }
+                    else {
+                        toast.error(`Something went wrong, Please try again!`);
+                    }
                 }
-                else {
-                    toast.error(`Something went wrong, Please try again!`);
-                }
+            } catch (error) {
+                console.error('Network error:', error);
+                toast.error('An error occurred. Please try again later.');
             }
-
-        } catch (error) {
-            console.error('Network error:', error);
-            toast.error('An error occurred. Please try again later.');
         }
 
     };
+
+    if (!isHavePermission) {
+        return (
+            <AccessDenied />
+        );
+    }
 
     return (
         <>
@@ -159,7 +165,7 @@ const CreateUser = () => {
 
                                 <div>
                                     <label htmlFor="email">Email</label>
-                                    <input id="email" type="email" defaultValue="" {...register("email", { required: true, pattern: emailRegex })} placeholder="eg: exmpal@gmail.com" className="form-input" />
+                                    <input id="email" type="email" defaultValue="" {...register("email", { required: true, pattern: emailRegex })} placeholder="eg: example@gmail.com" className="form-input" />
                                     {errors.email && <span className='text-danger text-sm'>Enter a valid Email</span>}
                                 </div>
 
@@ -196,9 +202,9 @@ const CreateUser = () => {
                                                 className="form-input"
                                                 placeholder='Add Role'
                                             />
-                                            <button type="button" onClick={() => handleSetNewItem('role')} className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
+                                            {/* <button type="button" onClick={() => handleSetNewItem('role')} className="cursor-pointer border-none p-0 pb-2 font-sans text-indigo-500 md:me-0">
                                                 {allSvgs.plusForAddCp}
-                                            </button>
+                                            // </button> */}
                                         </div>
                                     )}
                                     <div className="mb-2 mt-2 flex items-center justify-between absolute">
@@ -207,28 +213,18 @@ const CreateUser = () => {
                                             onClick={() => {
                                                 setShowRoleInput((prev) => !prev);
                                                 if (!showRoleInput) {
-                                                    // Clear the input when switching to input mode
                                                     setValue('role', '');
                                                 }
                                             }}
                                             className="text-bold cursor-pointer p-0 font-sans text-white-dark"
                                         >
-                                            {showRoleInput ? allSvgs.minusForHide : allSvgs.plusForAddCp}
+                                            {/* hidden conditional +,- buttons for add role */}
+                                            {/* {showRoleInput ? allSvgs.minusForHide : allSvgs.plusForAddCp} */}
                                         </button>
                                     </div>
                                     {errors.role && <span className='text-danger text-sm'>Enter your role</span>}
                                 </div>
 
-                                {/* <div>
-                                    <label htmlFor="timezone">Timezone</label>
-                                    <TimezoneSelect
-                                        value={timezone}
-                                        onChange={(selectedTimezone) => {
-                                            setTimezone(selectedTimezone);
-                                            setValue("Timezone", selectedTimezone?.value || '');
-                                        }}
-                                    />
-                                </div> */}
                             </div>
                         </div>
 
