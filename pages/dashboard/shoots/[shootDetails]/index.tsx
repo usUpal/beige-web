@@ -295,32 +295,6 @@ const ShootDetails = () => {
               </div>
             </div>
 
-
-
-
-            {/* <div className="items-center justify-between md:mb-4 md:flex">
-              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Duration</label>
-                <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="ml-5 font-sans capitalize text-black md:ml-3">{data?.shoot_duration ?? ''} Hours</span>
-                </div>
-              </div>
-            </div> */}
-
-
-            {/* <div className="items-center justify-between md:mb-4 md:flex"> */}
-            {/* Shoot Cost */}
-            {/* <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Cost</label>
-                <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="ml-5 font-sans capitalize text-black md:ml-3">${data?.shoot_cost ?? ''}</span>
-                </div>
-              </div> */}
-            {/* Shoot Duration */}
-
-            {/* </div> */}
-            {/* ################################# */}
-
             <div className="items-center justify-between md:mb-4 md:flex">
               <div className="mb-4 basis-[45%] flex-row space-y-5">
 
@@ -330,13 +304,9 @@ const ShootDetails = () => {
                     <div className="flex-row">
                       {data?.shoot_datetimes?.map((time: any, key: number) => (
                         <div key={key} className="space-x-4">
-
                           <span className="font-sans text-black">{formatDateAndTime(time?.start_date_time)} </span>
                           <span className="font-sans text-black capitalize font-semibold">to</span>
                           <span className="font-sans text-black">{formatDateAndTime(time?.end_date_time)} </span>
-
-                          {/* <span className="font-sans capitalize text-black">{new Date(time?.start_date_time).toDateString() ?? ''} </span> */}
-                          {/* <span className="font-sans capitalize text-black">{new Date(time?.end_date_time).toDateString() ?? ''}</span> */}
                         </div>
                       ))}
                     </div>
@@ -345,14 +315,9 @@ const ShootDetails = () => {
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Duration</label>
-                  {/* {data?.payment?.payment_status && ( */}
-                  {/* <div className="ml-12 mt-1 flex-1 md:ml-3 md:mt-0">
-                     {data?.shoot_duration ?? ''} Hours
-                    </div> */}
-                  {/* )} */}
 
                   <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
-                    <span className="ml-5 font-sans capitalize text-black md:ml-3">{data?.shoot_duration ?? ''} Hours</span>
+                    <span className="ml-0 font-sans capitalize text-black md:ml-0">{data?.shoot_duration ?? ''} Hours</span>
                   </div>
                 </div>
 
@@ -388,8 +353,6 @@ const ShootDetails = () => {
               </div>
             </div>
 
-            {/* ##################################################### */}
-
             <div className="items-center justify-between md:mb-4 md:flex">
               <div className="mb-4 basis-[45%] flex-row space-y-5">
 
@@ -422,7 +385,7 @@ const ShootDetails = () => {
 
               {/* Select Addons */}
               <div className="mb-4 basis-[45%]">
-                <div className="mb-3 flex w-full items-center gap-2">
+                <div className="mb-1 flex w-full items-center gap-2">
                   <label className="mb-0 font-sans text-[14px] capitalize">AddOns List</label>
                   {userData?.role === 'admin' && (
                     <div className="flex gap-3">
@@ -471,8 +434,6 @@ const ShootDetails = () => {
                 </div>
               </div>
             </div>
-
-            {/* ###################################################### */}
 
             <div className="items-center justify-between md:mb-4 md:flex">
               {/* Schedule Meeting */}
