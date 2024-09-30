@@ -12,6 +12,7 @@ import { useLazyGetCpDetailsQuery, useUpdateCpByIdMutation } from '@/Redux/featu
 import { toast } from 'react-toastify';
 import { useAuth } from '@/contexts/authContext';
 import AccessDenied from '@/components/errors/AccessDenied';
+import validateToPreventZero from '@/utils/UiAssistMethods/validatePreventZero';
 
 const CpDetails = () => {
   const { authPermissions } = useAuth();
@@ -42,12 +43,11 @@ const CpDetails = () => {
       }
     };
     fetchData();
-    // Cleanup if necessary
   }, [params?.cp]);
   //
   useEffect(() => {
     if (isSuccess && data) {
-      setFormData(data); // Update formData only when the query is successful
+      setFormData(data);
     }
   }, [isSuccess, data]);
   //
@@ -64,7 +64,7 @@ const CpDetails = () => {
       setIsLoading(false);
     }
   }, [isCpDataSuccess]);
-  const { register, handleSubmit, getValues, reset } = useForm();
+  const { register, handleSubmit, getValues, reset, formState: { errors }, setValue, setError, control } = useForm();
 
   const handleSetNewItem = (fieldName: string) => {
     const value = getValues(fieldName);
@@ -157,30 +157,39 @@ const CpDetails = () => {
     }
   };
 
-  // for string and boolean data
-  const handleInputChange = (key: any, value: any) => {
-    setFormData({
-      ...formData,
+  const handleInputChange = (
+    key: string,
+    value: any,
+    type: 'string' | 'number' | 'boolean' = 'string'
+  ) => {
+    const convertedValue = validateToPreventZero(key, value, type, setError);
+    if (convertedValue === null) {
+      return;
+    }
+
+    setFormData((prevData: any) => ({
+      ...prevData,
       [key]: value,
-    });
+    }));
   };
+
 
   const onSubmit = async (data: any) => {
     const singleUserId = Array.isArray(params.cp) ? params.cp[0] : params.cp;
 
     // Boolean Fields Value
     const booleanFields = {
-      rateFlexibility: data?.rateFlexibility || formData?.rateFlexibility,
-      team_player: data?.team_player || formData?.team_player,
-      experience_with_post_production_edit: data?.experience_with_post_production_edit || formData?.experience_with_post_production_edit,
-      travel_to_distant_shoots: data?.travel_to_distant_shoots || formData?.travel_to_distant_shoots,
-      own_transportation_method: data?.own_transportation_method || formData?.own_transportation_method,
-      customer_service_skills_experience: data?.customer_service_skills_experience || formData?.customer_service_skills_experience,
+      rateFlexibility: data?.rateFlexibility,
+      team_player: data?.team_player,
+      experience_with_post_production_edit: data?.experience_with_post_production_edit,
+      travel_to_distant_shoots: data?.travel_to_distant_shoots,
+      own_transportation_method: data?.own_transportation_method,
+      customer_service_skills_experience: data?.customer_service_skills_experience,
     };
 
     // disabled Fields Value
     const disabledStringFields = {
-      trust_score: data?.trust_score,
+      trust_score: data?.trust_score || formData?.trust_score,
 
       successful_beige_shoots: formData?.successful_beige_shoots,
       average_rating: formData?.average_rating,
@@ -325,11 +334,23 @@ const CpDetails = () => {
             </label>
             <input
               type="number"
-              {...register('trust_score')}
+              {...register('trust_score',
+                {
+                  required: false,
+                  min: {
+                    value: 0,
+                    message: "Negative values are not allowed"
+                  }
+                }
+              )}
               defaultValue={formData?.trust_score}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
-              onChange={(e) => handleInputChange('trust_score', e.target.value)}
+              disabled
+              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0 bg-gray-200"
+              onChange={(e) => handleInputChange('trust_score', e.target.value, 'number')}
             />
+            <div className='flex justify-start w-full ms-2'>
+              {errors.trust_score && <p className='text-red-500 text-sm'>{errors?.trust_score.message as string}</p>}
+            </div>
           </div>
 
           {/* References */}
@@ -341,7 +362,7 @@ const CpDetails = () => {
               {...register('reference')}
               defaultValue={formData?.reference}
               className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
-              onChange={(e) => handleInputChange('reference', e.target.value)}
+              onChange={(e) => handleInputChange('reference', e.target.value, "string")}
             />
           </div>
 
@@ -357,7 +378,7 @@ const CpDetails = () => {
               // className='border rounded bg-gray-200 p-3'
               className="mt-1 w-full rounded border bg-gray-200  p-3 focus:border-gray-400 focus:outline-none md:ms-0"
               disabled
-              onChange={(e) => handleInputChange('total_earnings', e.target.value)}
+              onChange={(e) => handleInputChange('total_earnings', e.target.value, "string")}
             />
           </div>
 
@@ -368,12 +389,21 @@ const CpDetails = () => {
             </label>
             <input
               type="number"
-              {...register('rate')}
+              {...register('rate', {
+                required: false,
+                min: {
+                  value: 0,
+                  message: "Negative values are not allowed"
+                }
+              })}
               defaultValue={formData?.rate}
               // className='border rounded p-3 focus:outline-none focus:border-gray-400'
               className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
-              onChange={(e) => handleInputChange('rate', e.target.value)}
+              onChange={(e) => handleInputChange('rate', e.target.value, "number")}
             />
+            <div className='flex justify-start w-full ms-2'>
+              {errors.rate && <p className='text-red-500 text-sm'>{errors?.rate.message as string}</p>}
+            </div>
           </div>
 
           {/* Rate Flexibility */}
@@ -387,7 +417,7 @@ const CpDetails = () => {
               id="rateFlexibility"
               defaultValue={formData?.rateFlexibility}
               {...register('rateFlexibility')}
-              onChange={(e) => handleInputChange('rateFlexibility', e.target.value)}
+              onChange={(e) => handleInputChange('rateFlexibility', e.target.value, "string")}
             >
               <option value="true">Yes</option>
               <option value="false">No</option>
@@ -407,7 +437,7 @@ const CpDetails = () => {
               defaultValue={formData?.avg_response_time}
               className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
-              onChange={(e) => handleInputChange('avg_response_time', e.target.value)}
+              onChange={(e) => handleInputChange('avg_response_time', e.target.value, "string")}
             />
           </div>
 
@@ -423,7 +453,7 @@ const CpDetails = () => {
               defaultValue={formData?.average_rating}
               className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
-              onChange={(e) => handleInputChange('average_rating', e.target.value)}
+              onChange={(e) => handleInputChange('average_rating', e.target.value, "string")}
             />
           </div>
 
@@ -437,7 +467,7 @@ const CpDetails = () => {
               id="travel_to_distant_shoots"
               defaultValue={formData?.travel_to_distant_shoots}
               {...register('travel_to_distant_shoots')}
-              onChange={(e) => handleInputChange('travel_to_distant_shoots', e.target.value)}
+              onChange={(e) => handleInputChange('travel_to_distant_shoots', e.target.value, "string")}
             >
               <option value="true">Yes</option>
               <option value="false">No</option>
@@ -458,7 +488,7 @@ const CpDetails = () => {
               // className='border rounded p-3 bg-gray-200'
               className="mt-1 w-full rounded border p-3 bg-gray-200 focus:border-gray-400 focus:outline-none  md:ms-0"
               disabled
-              onChange={(e) => handleInputChange('avg_response_time_to_new_shoot_inquiry', e.target.value)}
+              onChange={(e) => handleInputChange('avg_response_time_to_new_shoot_inquiry', e.target.value, "string")}
             />
           </div>
 

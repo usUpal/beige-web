@@ -63,8 +63,6 @@ const Disputes = () => {
       const selectedStatus = statusRef.current?.value;
       const result = await updateDisputeStatus({ id, status: selectedStatus });
 
-      console.log('result', result);
-
       toast.success('Dispute status updated successfully');
       setDisputeModal(false);
       refetch();
@@ -201,26 +199,45 @@ const Disputes = () => {
                       </p>
 
                       <div className="flex flex-col md:mt-0">
-                        <span className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">Status</span>
-                        <select
-                          ref={statusRef}
-                          className=" h-9 w-auto rounded  border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                          name="status"
-                          defaultValue={disputeInfo?.status}
-                        >
-                          <option value={'pending'}>Pending</option>
-                          <option value={'approved'}>Approved</option>
-                          <option value={'rejected'}>Rejected</option>
-                        </select>
+                        {userRole === "admin" ?
+                          (
+                            <>
+                              <span className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">Status</span>
+                              <select
+                                ref={statusRef}
+                                className=" h-9 w-auto rounded  border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                                name="status"
+                                defaultValue={disputeInfo?.status}
+                              >
+                                <option value={'pending'}>Pending</option>
+                                <option value={'approved'}>Approved</option>
+                                <option value={'rejected'}>Rejected</option>
+                              </select>
+                            </>
+                          ) :
+                          (
+                            <>
+                              <span className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">Status:</span>
+                              <StatusBg>{disputeInfo?.status}</StatusBg>
+                            </>
+                          )
+                        }
                       </div>
+
+
+
                     </div>
                   </div>
                 </div>
 
                 <div className="mr-0 md:mr-5 mt-8 flex justify-center md:justify-end">
-                  <DefaultButton onClick={() => handleUpdateStatusSubmit(disputeInfo?.id)} css="" type="submit">
-                    Update
-                  </DefaultButton>
+
+                  {userRole === 'admin' &&
+                    <DefaultButton onClick={() => handleUpdateStatusSubmit(disputeInfo?.id)} css="" type="submit">
+                      Update
+                    </DefaultButton>
+                  }
+
                 </div>
               </Dialog.Panel>
             </div>

@@ -21,12 +21,15 @@ import 'tippy.js/dist/tippy.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 
-import { useAssignCpMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
+import { useAssignCpMutation, useDeleteOrderMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';
 import { shootStatusMessage, allStatus } from '@/utils/shootUtils/shootDetails';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import AccessDenied from '@/components/errors/AccessDenied';
+import { formatDatetime } from '@/FileManager/util/fileutil';
+import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
+import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 
 const ShootDetails = () => {
   const { userData, authPermissions } = useAuth();
@@ -36,6 +39,8 @@ const ShootDetails = () => {
   const [query, setQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [cpModal, setCpModal] = useState<boolean>(false);
+  const [addonsModal, setAddonsModal] = useState<boolean>(false);
+
   const [cp_ids, setCp_ids] = useState<number[]>([]);
   const [statusBox, setStatusBox] = useState<boolean>(false);
   const [status, setStatus] = useState<string>('');
@@ -55,6 +60,8 @@ const ShootDetails = () => {
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
   const [updateOrder, { isLoading: isUpdateOrderLoading, isSuccess }] = useUpdateOrderMutation();
+  const [deleteOrder] = useDeleteOrderMutation();
+
 
   const queryParams = useMemo(
     () => ({
@@ -71,6 +78,12 @@ const ShootDetails = () => {
     isLoading: isGetCpLoading,
   } = useGetAllCpQuery(queryParams, {
     refetchOnMountOrArgChange: true,
+  });
+
+  // allAddons
+  const { data: allAddonsData, refetch: allAddonsRefetch } = useGetAllAddonsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    skip: !isHavePermission,
   });
 
   const coordinates = data?.geo_location?.coordinates;
@@ -113,11 +126,11 @@ const ShootDetails = () => {
         setMeetingBox(false);
         toast.success('Meeting create success.');
       } else {
-        console.log("Don't create the meeting");
+        // console.log("Don't create the meeting");
         toast.error('Something want wrong...!');
       }
     } else {
-      console.log("Don't create the meeting link");
+      // console.log("Don't create the meeting link");
       toast.error('Something want wrong...!');
     }
   };
@@ -174,6 +187,7 @@ const ShootDetails = () => {
       refetch();
       toast.success('Cp assigned success...!');
       setCpModal(false);
+      setAddonsModal(false);
     }
   };
 
@@ -199,7 +213,25 @@ const ShootDetails = () => {
       console.error('Error occurred while sending PATCH request:', error);
     }
   };
-  //
+
+  //deleteAddons
+  const deleteAddons = async (addon: addonTypes) => {
+    // console.log(addon);
+
+    if (!addon || !addon._id) {
+      return swalToast('danger', 'Invalid Addons.');
+    }
+    return toast.warning("This page is under development.")
+    try {
+      await deleteOrder({ _id: addon._id }).unwrap();
+      console.log("deleteing.....");
+
+      // setCp_ids((prevCpIds) => prevCpIds.filter((cpItem) => cpItem._id !== cp._id));
+      refetch();
+    } catch (error) {
+      console.error('Error occurred while sending PATCH request:', error);
+    }
+  };
 
   if (!isHavePermission) {
     return (
@@ -263,29 +295,82 @@ const ShootDetails = () => {
               </div>
             </div>
 
-            <div className="md:mb-4 md:flex md:items-center md:justify-between">
-              {/* Shoot Date & Time */}
-              <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
-                <label htmlFor="reference" className="mb-0 mt-2 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                  Shoot Date & Time
-                </label>
-                {data?.shoot_datetimes && (
-                  <div className="flex-row">
-                    {data?.shoot_datetimes?.map((time: any, key: number) => (
-                      <div key={key} className="space-x-4">
-                        <span className="font-sans capitalize text-black">{new Date(time?.start_date_time).toDateString() ?? ''} </span>
-                        <span className="font-sans capitalize text-black">{new Date(time?.end_date_time).toDateString() ?? ''}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+
+
+
+            {/* <div className="items-center justify-between md:mb-4 md:flex">
+              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
+                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Duration</label>
+                <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
+                  <span className="ml-5 font-sans capitalize text-black md:ml-3">{data?.shoot_duration ?? ''} Hours</span>
+                </div>
               </div>
-              {/* Geo Location */}
-              <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
+            </div> */}
+
+
+            {/* <div className="items-center justify-between md:mb-4 md:flex"> */}
+            {/* Shoot Cost */}
+            {/* <div className="mb-4 basis-[45%] md:mb-2 md:flex">
+                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Cost</label>
+                <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
+                  <span className="ml-5 font-sans capitalize text-black md:ml-3">${data?.shoot_cost ?? ''}</span>
+                </div>
+              </div> */}
+            {/* Shoot Duration */}
+
+            {/* </div> */}
+            {/* ################################# */}
+
+            <div className="items-center justify-between md:mb-4 md:flex">
+              <div className="mb-4 basis-[45%] flex-row space-y-5">
+
+                <div className="mb-4 space-x-3 md:mb-2 md:flex">
+                  <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Date & Time</label>
+                  {data?.shoot_datetimes && (
+                    <div className="flex-row">
+                      {data?.shoot_datetimes?.map((time: any, key: number) => (
+                        <div key={key} className="space-x-4">
+
+                          <span className="font-sans text-black">{formatDateAndTime(time?.start_date_time)} </span>
+                          <span className="font-sans text-black capitalize font-semibold">to</span>
+                          <span className="font-sans text-black">{formatDateAndTime(time?.end_date_time)} </span>
+
+                          {/* <span className="font-sans capitalize text-black">{new Date(time?.start_date_time).toDateString() ?? ''} </span> */}
+                          {/* <span className="font-sans capitalize text-black">{new Date(time?.end_date_time).toDateString() ?? ''}</span> */}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mb-4 space-x-3 md:mb-2 md:flex">
+                  <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Duration</label>
+                  {/* {data?.payment?.payment_status && ( */}
+                  {/* <div className="ml-12 mt-1 flex-1 md:ml-3 md:mt-0">
+                     {data?.shoot_duration ?? ''} Hours
+                    </div> */}
+                  {/* )} */}
+
+                  <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
+                    <span className="ml-5 font-sans capitalize text-black md:ml-3">{data?.shoot_duration ?? ''} Hours</span>
+                  </div>
+                </div>
+
+                <div className="mb-4 space-x-3 md:mb-2 md:flex">
+                  <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Cost</label>
+                  {data?.payment?.payment_status && (
+                    <div className="ml-12 mt-1 flex-1 md:ml-3 md:mt-0">
+                      ${data?.shoot_cost ?? ''}
+                    </div>
+                  )}
+                </div>
+
+              </div>
+              <div className="mb-4 basis-[45%]">
                 <div style={{ height: '200px', width: '100%' }}>
                   {isLocationAvailable ? (
                     <GoogleMapReact
-                      bootstrapURLKeys={{ key: MAPAPIKEY }}
+                      bootstrapURLKeys={{ key: MAPAPIKEY as string }}
                       defaultCenter={{
                         lat: coordinates[1], // Latitude
                         lng: coordinates[0], // Longitude
@@ -303,26 +388,11 @@ const ShootDetails = () => {
               </div>
             </div>
 
-            <div className="items-center justify-between md:mb-4 md:flex">
-              {/* Shoot Cost */}
-              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Cost</label>
-                <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="ml-5 font-sans capitalize text-black md:ml-3">${data?.shoot_cost ?? ''}</span>
-                </div>
-              </div>
-              {/* Shoot Duration */}
-              <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Shoot Duration</label>
-                <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="ml-5 font-sans capitalize text-black md:ml-3">{data?.shoot_duration ?? ''} Hours</span>
-                </div>
-              </div>
-            </div>
+            {/* ##################################################### */}
 
             <div className="items-center justify-between md:mb-4 md:flex">
-              {/* Payment Status */}
-              <div className="mb-3 basis-[45%] space-y-4">
+              <div className="mb-4 basis-[45%] flex-row space-y-5">
+
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Payment Status</label>
                   {data?.payment?.payment_status && (
@@ -331,6 +401,7 @@ const ShootDetails = () => {
                     </div>
                   )}
                 </div>
+
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Current Shoot Status</label>
                   {data?.order_status && (
@@ -340,30 +411,76 @@ const ShootDetails = () => {
                   )}
                 </div>
 
-                {/*  */}
                 <div className="mb-4 md:mb-2 md:flex">
                   <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Description</label>
                   <div className="ml-5 mt-1 flex-1 md:ml-4 md:mt-0">
                     <span className="font-sans capitalize text-black">{data?.description ?? ''}</span>
                   </div>
                 </div>
+
               </div>
-              {/* Description */}
-              {/* <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-                <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Description</label>
-                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="font-sans capitalize text-black">{data?.description ?? ''}</span>
+
+              {/* Select Addons */}
+              <div className="mb-4 basis-[45%]">
+                <div className="mb-3 flex w-full items-center gap-2">
+                  <label className="mb-0 font-sans text-[14px] capitalize">AddOns List</label>
+                  {userData?.role === 'admin' && (
+                    <div className="flex gap-3">
+                      <button onClick={() => setAddonsModal(!addonsModal)} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span>Add AddOns</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </div> */}
+                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                  {data?.addOns?.length > 0 && (
+                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded ">
+
+                      {
+                        data?.addOns?.map((addon: addonTypes, key: any) => (
+                          <ul className='list-disc list-inside pl-5 flex items-center justify-start' key={key}>
+                            <li className=''>{addon?.title ?? ''} for {addon?.hours} hours</li>
+                            <span className='text-black hover:text-red-600 duration-300 xl:ml-24 ml-8'>
+                              {/* {allSvgs.closeBtnCp} */}
+
+                              <div className="flex justify-center">
+                                {userData?.role === 'admin' ? (
+                                  <Tippy content="Cancel">
+                                    <button onClick={() => deleteAddons(addon)} className={`rounded p-1 text-white`}>
+                                      <span className="badge text-black hover:text-danger duration-300">{allSvgs.closeBtnCp}</span>
+                                    </button>
+                                  </Tippy>
+                                ) : (
+                                  <Tippy content="You don't have permission to remove cp">
+                                    <button onClick={() => deleteAddons(addon)} className={`rounded p-1`}>
+                                      <span className="badge text-danger">{allSvgs.closeBtnCp}</span>
+                                    </button>
+                                  </Tippy>
+                                )}
+                              </div>
+                            </span>
+                          </ul>
+                        ))
+                      }
+                    </div>
+
+                  )}
+                </div>
+              </div>
             </div>
+
+            {/* ###################################################### */}
 
             <div className="items-center justify-between md:mb-4 md:flex">
               {/* Schedule Meeting */}
 
               <div className="mb-4 basis-[45%] flex-row space-y-5">
-                {userData?.role === 'user' && (
+                {userData?.role === 'user' || userData?.role === "admin" && (
                   <div className="flex space-x-3">
-                    <button className="rounded-lg bg-black px-3 py-1 font-sans font-semibold text-white lg:w-44" onClick={() => setMeetingBox(!meetingBox)}>
+                    <button className="rounded-lg bg-black py-2 font-sans font-semibold text-white px-4 text-[14px]" onClick={() => setMeetingBox(!meetingBox)}>
                       Schedule Meeting
                     </button>
                     {meetingBox && (
@@ -403,7 +520,7 @@ const ShootDetails = () => {
 
                 {userData?.role === 'admin' && (
                   <div className="flex space-x-3">
-                    <DefaultButton onClick={() => setStatusBox(!statusBox)}>Change Status</DefaultButton>
+                    <DefaultButton onClick={() => setStatusBox(!statusBox)} css='font-semibold'>Change Status</DefaultButton>
                     {statusBox && (
                       <div className="flex space-x-2">
                         <select name="" id="" onChange={(event) => setStatus(event?.target?.value)} className="rounded-sm border border-black px-2 lg:w-[240px]">
@@ -474,7 +591,7 @@ const ShootDetails = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {data?.cp_ids?.map((cp, key) => (
+                          {data?.cp_ids?.map((cp: CpDataTypes, key: any) => (
                             <tr key={key}>
                               <td className="border-b px-4 py-2 font-bold">
                                 <div className="flex items-center justify-center">
@@ -498,7 +615,7 @@ const ShootDetails = () => {
                                       </button>
                                     </Tippy>
                                   ) : (
-                                    <Tippy content="You haven't permission to remove cp">
+                                    <Tippy content="You don't have permission to remove cp">
                                       <button onClick={() => cancelCp(cp)} className={`rounded p-1`}>
                                         <span className="badge bg-slate-300  text-black">Remove</span>
                                       </button>
@@ -629,6 +746,99 @@ const ShootDetails = () => {
             </div>
           </div>
         </div>
+        {/* ############################### */}
+        <Transition appear show={addonsModal} as={Fragment}>
+          <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
+            <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+              <div className="flex min-h-screen items-start justify-center md:px-4 ">
+                <Dialog.Panel as="div" className="panel my-24 w-5/6 space-x-0 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:space-x-6">
+                  <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
+                    <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Assign CP's </div>
+                    <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
+                      {allSvgs.closeModalSvg}
+                    </button>
+                  </div>
+                  <div className="basis-[45%]  md:pe-5 py-2">
+                    <div className="mb-2 flex justify-end">
+                      <input
+                        onChange={(event) => setQuery(event.target.value)}
+                        type="search"
+                        value={query}
+                        className=" w-full rounded-lg border border-solid border-[#ACA686] px-3 py-2 lg:w-[20%]"
+                        placeholder="Search"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 gap-6 md:grid md:grid-cols-2 lg:grid lg:grid-cols-3 2xl:grid-cols-4">
+                      {allAddonsData?.length > 0 ? (
+                        allAddonsData?.map((addon: any) => {
+                          // const isSelected = addon.some((item: any) => item?.id === addon?._id);
+                          
+                          return (
+                            <div key={addon?._id} className="rounded-lg border border-solid border-[#ACA686] p-3 shadow">
+                              <div className="grid h-[150px] grid-cols-3 items-start justify-start md:h-[140px]">
+                                {/* <div className="media relative h-14 w-14 rounded-full">
+                                  <img src={`${addon?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="mr-3 h-full w-full rounded-full object-cover" alt="img" />
+                                  <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
+                                </div> */}
+
+                                <div className="content col-span-2 ms-2 min-h-[115px]">
+                                  <h4 className="font-sans text-[16px] capitalize leading-none text-black">Title: {addon?.title}</h4>
+                                  {/* <span className="profession text-[12px] capitalize leading-none text-[#838383]"> <span>Rate</span> {addon?.rate}</span> */}
+                                  <div className="mt-2 flex items-center justify-start">
+                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">Rate {addon?.rate}</span>
+                                  </div>
+
+                                  <div className="mt-2 flex items-center justify-start">
+                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">Extend Rate {addon?.ExtendRate}</span>
+                                  </div>
+                                  <div>
+                                    <p className="flex flex-col items-start ">
+                                      {addon?.status >= 1 ? (
+                                        <span className="badge w-12 bg-success text-center text-[10px]">Active</span>
+                                      ) : (
+                                        <span className="badge w-12 bg-warning text-center text-[10px]">Inactive</span>
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="mt-3 flex">
+                                {/* <p
+                                  onClick={() => handleSelectProducer(addon)}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
+                                    } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
+                                >
+                                  {isSelected ? 'Remove' : 'Select'}
+                                </p> */}
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-center">
+                            <h3 className="text-center font-semibold">No Data Found</h3>
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="flex justify-end">
+                      <DefaultButton onClick={updateCps} disabled={false} css="my-5">
+                        Submit
+                      </DefaultButton>
+                    </div>
+                    <div className="my-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                      <ResponsivePagination current={currentPage} total={allCp?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
+
+        {/* ############################## */}
 
         <Transition appear show={cpModal} as={Fragment}>
           <Dialog as="div" open={cpModal} onClose={() => setCpModal(false)}>

@@ -11,13 +11,17 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Navigation, Pagination, Autoplay } from 'swiper';
 import 'swiper/swiper-bundle.css';
 import { Dialog, Transition } from '@headlessui/react';
-import { API_ENDPOINT } from '@/config';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { useGetCpReviewQuery, useGetCpUploadedImageQuery, useGetCpUploadedVideoQuery } from '@/Redux/features/profile/profileFormApi';
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 
-const ImageModal = ({ src, onClose }) => {
+interface ImageModalProps {
+  src?: string | null;
+  onClose: () => void; 
+}
+
+const ImageModal:React.FC<ImageModalProps> = ({ src, onClose }) => {
   if (!src) return null;
 
   return (
@@ -67,16 +71,16 @@ const Profile = () => {
   const { userData } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [uploadImage, setUploadImage] = useState<any[]>([]);
-  const [uploadVideo, setUploadVideo] = useState<any[]>([]);
+  // const [reviews, setReviews] = useState<any[]>([]);
+  // const [uploadImage, setUploadImage] = useState<any[]>([]);
+  // const [uploadVideo, setUploadVideo] = useState<any[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showImage, setShowImage] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const [activeTab, setActiveTab] = useState<string>('image');
 
-  const profileDesignation = (role) => {
+  const profileDesignation = (role:any) => {
     switch (role) {
       case 'user':
         return 'Beige User';
@@ -103,9 +107,6 @@ const Profile = () => {
   const { data: allCpVideo, isLoading: isGetAllCpVideoLoading } = useGetCpUploadedVideoQuery(userData?.id, {
     refetchOnMountOrArgChange: true,
   })
-  console.log("🚀 ~ Profile ~ allCpVideo:", allCpVideo)
-
-
 
   const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
@@ -120,9 +121,9 @@ const Profile = () => {
   };
 
   const [profilePicture, setProfilePicture] = useState(userData?.profile_picture || '');
-  const [name, setName] = useState(userData?.name || '');
+  // const [name, setName] = useState(userData?.name || '');
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = (event:any) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -184,7 +185,7 @@ const Profile = () => {
                 }} className="mySwiper">
                 {allCpReview?.results && allCpReview?.results?.length > 0 ? (
                   <>
-                    {allCpReview?.results?.map((review, index) => (
+                    {allCpReview?.results?.map((review:any, index:any) => (
                       <SwiperSlide key={index}>
                         <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
                           <div className="flex gap-4">
@@ -266,7 +267,7 @@ const Profile = () => {
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Images</h2>
                     <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                      {allCpImage?.contents?.Wedding?.map((src, index) => (
+                      {allCpImage?.contents?.Wedding?.map((src:any, index:any) => (
                         <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
                           <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
                         </div>
@@ -279,7 +280,7 @@ const Profile = () => {
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Images</h2>
                     <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                      {allCpImage?.contents?.Other?.map((src, index) => (
+                      {allCpImage?.contents?.Other?.map((src:any, index:any) => (
                         <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
                           <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
                         </div>
@@ -298,7 +299,7 @@ const Profile = () => {
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Corporate Videos</h2>
                     <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {allCpVideo?.contents?.Corporate?.map((src, index) => (
+                      {allCpVideo?.contents?.Corporate?.map((src:any, index:any) => (
                         <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
                           <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
                         </div>
@@ -311,7 +312,7 @@ const Profile = () => {
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Videos</h2>
                     <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {allCpVideo?.contents?.Wedding?.map((src, index) => (
+                      {allCpVideo?.contents?.Wedding?.map((src:any, index:any) => (
                         <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
                           <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
                         </div>
@@ -324,7 +325,7 @@ const Profile = () => {
                   <>
                     <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Videos</h2>
                     <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {allCpVideo?.contents?.Other?.map((src, index) => (
+                      {allCpVideo?.contents?.Other?.map((src:any, index:any) => (
                         <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
                           <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
                         </div>

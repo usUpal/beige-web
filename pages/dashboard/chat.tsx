@@ -22,6 +22,8 @@ import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 import AccessDenied from '@/components/errors/AccessDenied';
+import PreLoader from '@/components/ProfileImage/PreLoader';
+import Loader from '@/components/SharedComponent/Loader';
 // types
 
 const Chat = () => {
@@ -86,7 +88,7 @@ const Chat = () => {
   };
 
   // Fetch all chat - data based on query parameters
-  const { data, error, isFetching, refetch } = useGetAllChatQuery(queryData, {
+  const { data, error, isFetching, refetch, isLoading: isAllDataFetchLoading } = useGetAllChatQuery(queryData, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -274,7 +276,9 @@ const Chat = () => {
     return;
   };
 
-
+  // if (isAllDataFetchLoading) {
+  //   return <span>Loading</span>;
+  // }
 
   if (!isHavePermission) {
     return (
@@ -310,6 +314,18 @@ const Chat = () => {
           )}
         </div>
         <div className="mt-1 xl:h-[83%] 2xl:h-[87%]">
+
+          {isAllDataFetchLoading &&
+            <>
+              <div className="flex items-center justify-center min-h-screen p-5 bg-white min-w-screen">
+                <div className="flex space-x-2 animate-pulse">
+                  <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                </div>
+              </div>
+            </>
+          }
           <PerfectScrollbar className="chat-users relative h-full min-h-full space-y-0.5 ltr:-mr-3.5 ltr:pr-3.5 rtl:-ml-3.5 rtl:pl-3.5 sm:h-[calc(100vh_-_357px)]">
             {data?.results?.map((chat: any) => {
               return (
@@ -339,6 +355,8 @@ const Chat = () => {
               );
             })}
           </PerfectScrollbar>
+
+
         </div>
 
         <>
