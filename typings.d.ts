@@ -153,12 +153,20 @@ declare global {
     title: string;
     rate: number;
     ExtendRate: number;
-    ExtendRateType: string;
-    status: boolean;
+    ExtendRateType: number;
+    status: string;
     category: string;
     info: string;
     hours: number;
   }
+  // interface addonTypes {
+  //   _id: string;
+  //   title: string;
+  //   rate: number;
+  //   ExtendRate: number;
+  //   status: string;
+  //   // Add other fields as necessary
+  // }
 
   interface UpdatedAddonRates {
     [key: string]: number;

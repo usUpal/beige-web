@@ -82,6 +82,37 @@ const shootApi = baseApi.injectEndpoints({
         }
       }
     }),
+    // 
+    addAddons: builder.mutation({
+      query: ({ data }) => {
+        return {
+          url: `orders/${data?.id}`,
+          method: 'PATCH',
+          body: JSON.stringify({ addOns: data?.addOns  }),
+        };
+      },
+    }),
+
+    // addAddons: builder.mutation({
+    //   query: (data) => {
+    //     return {
+    //       url: `orders/${data?.addOns?._id}`,
+    //       method: 'PATCH',
+    //       body: JSON.stringify({ addOns: data?.addOns }),
+    //     };
+    //   },
+    // }),
+
+    deleteAddon: builder.mutation({
+      query: ({ orderId }) => {
+        return {
+          url: `orders/${orderId}`, 
+          method: 'DELETE',
+        };
+      },
+    }),
+
+
     getAlgoCp: builder.query({
       query: (data) => {
         return {
@@ -94,4 +125,4 @@ const shootApi = baseApi.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation, useLazyGetAlgoCpQuery, useUpdateOrderMutation, useDeleteOrderMutation } = shootApi;
+export const { useGetAllShootQuery, useGetShootDetailsQuery, usePostOrderMutation, useUpdateStatusMutation, useAssignCpMutation, useLazyGetAlgoCpQuery, useUpdateOrderMutation, useDeleteOrderMutation, useAddAddonsMutation, useDeleteAddonMutation } = shootApi;

@@ -21,7 +21,7 @@ import 'tippy.js/dist/tippy.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 
-import { useAssignCpMutation, useDeleteOrderMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
+import { useAddAddonsMutation, useAssignCpMutation, useDeleteAddonMutation, useDeleteOrderMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';
 import { shootStatusMessage, allStatus } from '@/utils/shootUtils/shootDetails';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
@@ -30,6 +30,7 @@ import AccessDenied from '@/components/errors/AccessDenied';
 import { formatDatetime } from '@/FileManager/util/fileutil';
 import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
 import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
+import useCalculateAddons from '@/hooks/useCalculateAddons';
 
 const ShootDetails = () => {
   const { userData, authPermissions } = useAuth();
@@ -47,20 +48,39 @@ const ShootDetails = () => {
   const [metingDate, setMetingDate] = useState<string>('');
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
+
   const {
-    data,
+    data: shootDetailsData,
     error: shootDetailsError,
     isLoading: isDetailsLoading,
     refetch,
   } = useGetShootDetailsQuery(shootId, {
     refetchOnMountOrArgChange: true,
   });
+
+  const {
+    selectedFilteredAddons,
+    addonExtraHours,
+    filteredAddonsData,
+    formDataPageOne,
+    computedRates,
+    allAddonRates,
+    setFormDataPageOne,
+    handleHoursOnChange,
+    handleCheckboxChange,
+    handleShowAddonsData,
+  } = useCalculateAddons();
+
   const [updateStatus, { isLoading: isStatusLoading }] = useUpdateStatusMutation();
   const [assignCp, { isLoading: isAssignCpLoading }] = useAssignCpMutation();
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
   const [updateOrder, { isLoading: isUpdateOrderLoading, isSuccess }] = useUpdateOrderMutation();
   const [deleteOrder] = useDeleteOrderMutation();
+  const [addAddons, { isLoading: isAddAddonsLoading }] = useAddAddonsMutation();
+  const [deleteAddon, { isLoading: deleteAddonLoading }] = useDeleteAddonMutation();
+
+  console.log(shootDetailsData);
 
 
   const queryParams = useMemo(
@@ -79,18 +99,30 @@ const ShootDetails = () => {
   } = useGetAllCpQuery(queryParams, {
     refetchOnMountOrArgChange: true,
   });
-
   // allAddons
   const { data: allAddonsData, refetch: allAddonsRefetch } = useGetAllAddonsQuery(undefined, {
     refetchOnMountOrArgChange: true,
     skip: !isHavePermission,
   });
+  const [allRates, setAllRates] = useState(0);
 
-  const coordinates = data?.geo_location?.coordinates;
+  // shoot cost depending on duaration
+  useEffect(() => {
+    setAllRates(shootDetailsData?.shoot_duration + allAddonRates);
+
+    if (shootDetailsData) {
+      setFormDataPageOne({
+        content_type: shootDetailsData.content_type,
+        content_vertical: shootDetailsData.content_vertical,
+      });
+    }
+  }, [shootDetailsData, setFormDataPageOne])
+
+  const coordinates = shootDetailsData?.geo_location?.coordinates;
   const isLocationAvailable = coordinates && coordinates.length === 2;
   const orderStatusArray = ['Pending', 'Pre_production', 'Production', 'Post_production', 'Revision', 'Completed'];
   const rejectStatus = ['In_dispute', 'Cancelled'];
-  const lowerCaseOrderStatus = data?.order_status?.toLowerCase();
+  const lowerCaseOrderStatus = shootDetailsData?.order_status?.toLowerCase();
   const currentIndex = orderStatusArray.findIndex((status) => status.toLowerCase() === lowerCaseOrderStatus);
   const cancelIndex = rejectStatus.findIndex((status) => status.toLowerCase() === lowerCaseOrderStatus);
 
@@ -103,9 +135,9 @@ const ShootDetails = () => {
     const requestBody: any = {
       userId: userData?.id,
       requestData: {
-        summary: data?.order_name ? data?.order_name : 'Beige Meeting',
+        summary: shootDetailsData?.order_name ? shootDetailsData?.order_name : 'Beige Meeting',
         location: 'Online',
-        description: `Meeting to discuss ${data?.order_name ? data?.order_name : 'Beige'} order.`,
+        description: `Meeting to discuss ${shootDetailsData?.order_name ? shootDetailsData?.order_name : 'Beige'} order.`,
         startDateTime: metingDate,
         endDateTime: metingDate,
         orderId: shootId,
@@ -191,6 +223,69 @@ const ShootDetails = () => {
     }
   };
 
+
+  const updateAddons = async () => {
+    if (!selectedFilteredAddons.length) {
+      toast.error('Please select addons...!');
+      return;
+    }
+
+    const data = {
+      // addOns: [ ...shootDetailsData?.addOns, selectedFilteredAddons],
+      addOns: selectedFilteredAddons,
+      id: shootDetailsData?.id,
+    };
+
+    try {
+      const result = await addAddons(data).unwrap();
+      if (result?.data) {
+        refetch();
+        toast.success('Addons added successfully...!');
+        setAddonsModal(false);
+
+      }
+    } catch (error) {
+      toast.error('Failed to add addons: ' + error.message);
+    }
+  };
+
+  // delete Addons
+  // const handleDeleteAddon = async (addonId:string) => {
+  //   try {
+  //     await deleteAddon(addonId); 
+  //     toast.success("Addon deleted successfully.");
+  //   } catch (error) {
+  //     console.error("Failed to delete addon:", error);
+  //     toast.error("An error occurred while deleting the addon.");
+  //   }
+  // };
+
+  const handleDeleteAddon = async (addonId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this addon?");
+    if (!confirmDelete) return;
+
+    try {
+      await deleteAddon({ orderId: shootDetailsData.id, addonId }).unwrap();
+      refetch();
+      toast.success("Addon deleted successfully.");
+    } catch (error) {
+      // console.error("Failed to delete addon:", error);
+      toast.error("An error occurred while deleting the addon.");
+    }
+  };
+
+  // const handleAddAddons = async () => {
+  //   try {
+  //     await addAddons({ orderId, addOns }).unwrap();
+  //     alert('Addons added successfully!');
+  //     // Optionally, reset the form or fetch updated data
+  //     // setAddOns([]);
+  //   } catch (err) {
+  //     console.error("Failed to add addons:", err);
+  //     alert("An error occurred while adding addons.");
+  //   }
+  // };
+
   const cancelCp = async (cp: any) => {
     if (!cp || !cp._id) {
       return swalToast('danger', 'Invalid CP data.');
@@ -213,6 +308,13 @@ const ShootDetails = () => {
       console.error('Error occurred while sending PATCH request:', error);
     }
   };
+
+  // ############################
+  useEffect(() => {
+    if (formDataPageOne?.content_type?.length !== 0 && formDataPageOne?.content_vertical !== '') {
+      handleShowAddonsData();
+    }
+  }, [formDataPageOne?.content_type?.length]);
 
   //deleteAddons
   const deleteAddons = async (addon: addonTypes) => {
@@ -250,7 +352,7 @@ const ShootDetails = () => {
                 <label htmlFor="reference" className="mb-0 mt-2 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                   Shoot Name
                 </label>
-                <span className="font-sans capitalize text-black">{data?.order_name ?? ''}</span>
+                <span className="font-sans capitalize text-black">{shootDetailsData?.order_name ?? ''}</span>
               </div>
 
               {/* Content Vertical */}
@@ -258,7 +360,7 @@ const ShootDetails = () => {
                 <label htmlFor="total_earnings" className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                   Content Vertical
                 </label>
-                <span className="font-sans capitalize text-black">{data?.content_vertical ?? ''}</span>
+                <span className="font-sans capitalize text-black">{shootDetailsData?.content_vertical ?? ''}</span>
               </div>
             </div>
 
@@ -270,15 +372,15 @@ const ShootDetails = () => {
                   <>
                     <div className="mb-2">
                       <ul className="group ms-6 w-48 list-disc flex-row items-center text-white-dark">
-                        {data?.budget?.min && (
+                        {shootDetailsData?.budget?.min && (
                           <li className="">
-                            <span className="font-sans capitalize text-black">Min : ${data?.budget?.min ?? ''}</span>
+                            <span className="font-sans capitalize text-black">Min : ${shootDetailsData?.budget?.min ?? ''}</span>
                           </li>
                         )}
 
-                        {data?.budget?.max && (
+                        {shootDetailsData?.budget?.max && (
                           <li>
-                            <span className="font-sans capitalize text-black">Max : ${data?.budget?.max ?? ''}</span>
+                            <span className="font-sans capitalize text-black">Max : ${shootDetailsData?.budget?.max ?? ''}</span>
                           </li>
                         )}
                       </ul>
@@ -290,7 +392,7 @@ const ShootDetails = () => {
               <div className="mb-4 basis-[45%] md:mb-2 md:flex">
                 <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Location</label>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="font-sans capitalize text-black">{data?.location ?? ''}</span>
+                  <span className="font-sans capitalize text-black">{shootDetailsData?.location ?? ''}</span>
                 </div>
               </div>
             </div>
@@ -300,9 +402,9 @@ const ShootDetails = () => {
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Date & Time</label>
-                  {data?.shoot_datetimes && (
+                  {shootDetailsData?.shoot_datetimes && (
                     <div className="flex-row">
-                      {data?.shoot_datetimes?.map((time: any, key: number) => (
+                      {shootDetailsData?.shoot_datetimes?.map((time: any, key: number) => (
                         <div key={key} className="space-x-4">
                           <span className="font-sans text-black">{formatDateAndTime(time?.start_date_time)} </span>
                           <span className="font-sans text-black capitalize font-semibold">to</span>
@@ -317,15 +419,15 @@ const ShootDetails = () => {
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Duration</label>
 
                   <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
-                    <span className="ml-0 font-sans capitalize text-black md:ml-0">{data?.shoot_duration ?? ''} Hours</span>
+                    <span className="ml-0 font-sans capitalize text-black md:ml-0">{shootDetailsData?.shoot_duration ?? ''} Hours</span>
                   </div>
                 </div>
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Cost</label>
-                  {data?.payment?.payment_status && (
+                  {shootDetailsData?.payment?.payment_status && (
                     <div className="ml-12 mt-1 flex-1 md:ml-3 md:mt-0">
-                      ${data?.shoot_cost ?? ''}
+                      ${shootDetailsData?.shoot_cost ?? ''}
                     </div>
                   )}
                 </div>
@@ -358,18 +460,18 @@ const ShootDetails = () => {
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Payment Status</label>
-                  {data?.payment?.payment_status && (
+                  {shootDetailsData?.payment?.payment_status && (
                     <div className="ml-12 mt-1 flex-1 md:ml-3 md:mt-0">
-                      <StatusBg>{data?.payment?.payment_status}</StatusBg>
+                      <StatusBg>{shootDetailsData?.payment?.payment_status}</StatusBg>
                     </div>
                   )}
                 </div>
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Current Shoot Status</label>
-                  {data?.order_status && (
+                  {shootDetailsData?.order_status && (
                     <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                      <StatusBg>{data?.order_status}</StatusBg>
+                      <StatusBg>{shootDetailsData?.order_status}</StatusBg>
                     </div>
                   )}
                 </div>
@@ -377,7 +479,7 @@ const ShootDetails = () => {
                 <div className="mb-4 md:mb-2 md:flex">
                   <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4">Description</label>
                   <div className="ml-5 mt-1 flex-1 md:ml-4 md:mt-0">
-                    <span className="font-sans capitalize text-black">{data?.description ?? ''}</span>
+                    <span className="font-sans capitalize text-black">{shootDetailsData?.description ?? ''}</span>
                   </div>
                 </div>
 
@@ -399,39 +501,31 @@ const ShootDetails = () => {
                   )}
                 </div>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                  {data?.addOns?.length > 0 && (
+                  {shootDetailsData?.addOns?.length > 0 && (
                     <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded ">
 
-                      {
-                        data?.addOns?.map((addon: addonTypes, key: any) => (
-                          <ul className='list-disc list-inside pl-5 flex items-center justify-start' key={key}>
-                            <li className=''>{addon?.title ?? ''} for {addon?.hours} hours</li>
-                            <span className='text-black hover:text-red-600 duration-300 xl:ml-24 ml-8'>
-                              {/* {allSvgs.closeBtnCp} */}
-
-                              <div className="flex justify-center">
-                                {userData?.role === 'admin' ? (
-                                  <Tippy content="Cancel">
-                                    <button onClick={() => deleteAddons(addon)} className={`rounded p-1 text-white`}>
-                                      <span className="badge text-black hover:text-danger duration-300">{allSvgs.closeBtnCp}</span>
-                                    </button>
-                                  </Tippy>
-                                ) : (
-                                  <Tippy content="You don't have permission to remove cp">
-                                    <button onClick={() => deleteAddons(addon)} className={`rounded p-1`}>
-                                      <span className="badge text-danger">{allSvgs.closeBtnCp}</span>
-                                    </button>
-                                  </Tippy>
-                                )}
-                              </div>
+                      <ul className='list-disc list-inside pl-5 flex flex-col'>
+                        {shootDetailsData?.addOns?.map((addon: addonTypes, key: number) => (
+                          <li key={key} className="flex items-center h-8 gap-10">
+                            <span>
+                              {addon?.title ?? ''} for {addon?.hours} hours
                             </span>
-                          </ul>
-                        ))
-                      }
+                            <span className='flex items-center'>
+                              {userData?.role === 'admin' ? (
+                                <Tippy content="Cancel">
+                                  <button onClick={() => handleDeleteAddon(addon?._id)} className={`rounded p-1 text-white`}>
+                                    <span className="badge text-black hover:text-danger duration-300">{allSvgs.closeBtnCp}</span>
+                                  </button>
+                                </Tippy>
+                              ) : ("")}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-
                   )}
                 </div>
+
               </div>
             </div>
 
@@ -535,7 +629,7 @@ const ShootDetails = () => {
                   )}
                 </div>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                  {data?.cp_ids?.length > 0 && (
+                  {shootDetailsData?.cp_ids?.length > 0 && (
                     <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded border border-slate-100">
                       <table className="w-full table-auto">
                         <thead>
@@ -552,7 +646,7 @@ const ShootDetails = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {data?.cp_ids?.map((cp: CpDataTypes, key: any) => (
+                          {shootDetailsData?.cp_ids?.map((cp: CpDataTypes, key: any) => (
                             <tr key={key}>
                               <td className="border-b px-4 py-2 font-bold">
                                 <div className="flex items-center justify-center">
@@ -712,85 +806,95 @@ const ShootDetails = () => {
           <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
               <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                <Dialog.Panel as="div" className="panel my-24 w-5/6 space-x-0 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:space-x-6">
+                <Dialog.Panel as="div" className="panel my-24 w-7/12 space-x-0 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:space-x-6">
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
-                    <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Assign CP's </div>
+                    <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Add Addons </div>
                     <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
                       {allSvgs.closeModalSvg}
                     </button>
                   </div>
                   <div className="basis-[45%]  md:pe-5 py-2">
-                    <div className="mb-2 flex justify-end">
-                      <input
-                        onChange={(event) => setQuery(event.target.value)}
-                        type="search"
-                        value={query}
-                        className=" w-full rounded-lg border border-solid border-[#ACA686] px-3 py-2 lg:w-[20%]"
-                        placeholder="Search"
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 gap-6 md:grid md:grid-cols-2 lg:grid lg:grid-cols-3 2xl:grid-cols-4">
-                      {allAddonsData?.length > 0 ? (
-                        allAddonsData?.map((addon: any) => {
-                          // const isSelected = addon.some((item: any) => item?.id === addon?._id);
-                          
-                          return (
-                            <div key={addon?._id} className="rounded-lg border border-solid border-[#ACA686] p-3 shadow">
-                              <div className="grid h-[150px] grid-cols-3 items-start justify-start md:h-[140px]">
-                                {/* <div className="media relative h-14 w-14 rounded-full">
-                                  <img src={`${addon?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="mr-3 h-full w-full rounded-full object-cover" alt="img" />
-                                  <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
-                                </div> */}
 
-                                <div className="content col-span-2 ms-2 min-h-[115px]">
-                                  <h4 className="font-sans text-[16px] capitalize leading-none text-black">Title: {addon?.title}</h4>
-                                  {/* <span className="profession text-[12px] capitalize leading-none text-[#838383]"> <span>Rate</span> {addon?.rate}</span> */}
-                                  <div className="mt-2 flex items-center justify-start">
-                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">Rate {addon?.rate}</span>
-                                  </div>
+                    {/* inplement new */}
+                    <>
+                      <div className="panel mb-8 basis-[49%] rounded-[10px] px-7 py-5">
+                        <label className="ml-2 mr-2 sm:ml-0 sm:w-1/4">Select Addons</label>
+                        <div className="flex flex-col sm:flex-row w-full">
+                          <div className="flex-1">
+                            <div className="table-responsive ">
+                              <table className="w-full">
+                                <thead>
+                                  <tr className="bg-gray-200 dark:bg-gray-800">
+                                    <th className="min-w-[20px] px-1 py-2 font-mono">Select</th>
+                                    <th className="min-w-[120px] px-1 py-2 font-mono">Title</th>
+                                    <th className="min-w-[20px] py-2 font-mono">Extend Rate Type</th>
+                                    <th className="min-w-[20px] py-2 font-mono">Extra Hour</th>
+                                    <th className="min-w-[120px] px-1 py-2 font-mono">Rate</th>
+                                  </tr>
+                                </thead>
 
-                                  <div className="mt-2 flex items-center justify-start">
-                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">Extend Rate {addon?.ExtendRate}</span>
-                                  </div>
-                                  <div>
-                                    <p className="flex flex-col items-start ">
-                                      {addon?.status >= 1 ? (
-                                        <span className="badge w-12 bg-success text-center text-[10px]">Active</span>
-                                      ) : (
-                                        <span className="badge w-12 bg-warning text-center text-[10px]">Inactive</span>
-                                      )}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="mt-3 flex">
-                                {/* <p
-                                  onClick={() => handleSelectProducer(addon)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
-                                    } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
-                                >
-                                  {isSelected ? 'Remove' : 'Select'}
-                                </p> */}
-                              </div>
+                                <tbody>
+                                  {filteredAddonsData?.map((addon: addonTypes, index) => (
+                                    <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                      <td className="min-w-[20px] px-4 py-2">
+                                        <input type="checkbox" className="form-checkbox"
+                                          id={`addon_${index}`} onChange={() => handleCheckboxChange(addon)} />
+                                      </td>
+                                      <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
+
+                                      <td className="min-w-[120px] px-4 py-2">{addon?.ExtendRateType ? addon?.ExtendRateType : 'N/A'}</td>
+                                      <td className="min-w-[120px] px-4 py-2">
+                                        {addon.ExtendRateType ? (
+                                          <input
+                                            name="hour"
+                                            type="number"
+                                            className="ms-12 h-9 w-12 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-16"
+                                            defaultValue={addonExtraHours[addon?._id] || 1}
+                                            min="0"
+                                            onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
+                                          />
+                                        ) : (
+                                          'N/A'
+                                        )}
+                                      </td>
+                                      <td className="min-w-[120px] px-4 py-2">{computedRates[addon?._id] || addon?.rate}</td>
+                                    </tr>
+                                  ))}
+
+                                  {/* Horizontal border */}
+                                  <tr>
+                                    <td colSpan={6} className=" w-full border-t border-gray-500 "></td>
+                                  </tr>
+                                  <tr className="mt-[-10px] w-full border border-gray-600 bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                    <td className="min-w-[20px] px-4 py-2"></td>
+                                    <td className="min-w-[120px] px-4 py-2">
+                                      <h2 className="text-[16px] font-semibold">Total Addons Cost</h2>
+                                    </td>
+                                    <td className="min-w-[120px] px-4 py-2"></td>
+                                    <td className="min-w-[120px] px-4 py-2"></td>
+                                    <td className="min-w-[120px] px-4 py-2">{allAddonRates} </td>
+                                  </tr>
+                                </tbody>
+                              </table>
                             </div>
-                          );
-                        })
-                      ) : (
-                        <>
-                          <div className="flex items-center justify-center">
-                            <h3 className="text-center font-semibold">No Data Found</h3>
                           </div>
-                        </>
-                      )}
-                    </div>
+                        </div>
+                        <div className="flex justify-end">
+                          <DefaultButton
+                            onClick={updateAddons}
+                            disabled={false} css="mt-5">
+                            Submit update
+                          </DefaultButton>
+                        </div>
+                      </div>
+                    </>
 
-                    <div className="flex justify-end">
-                      <DefaultButton onClick={updateCps} disabled={false} css="my-5">
-                        Submit
-                      </DefaultButton>
-                    </div>
-                    <div className="my-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                      <ResponsivePagination current={currentPage} total={allCp?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
+                    {/* inplement new */}
+
+
+
+                    <div className="my-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-4">
+                      <ResponsivePagination current={currentPage} total={allAddonsData?.totalPages / 3 || 1} onPageChange={handlePageChange} maxWidth={400} />
                     </div>
                   </div>
                 </Dialog.Panel>

@@ -47,7 +47,22 @@ const userApi = baseApi.injectEndpoints({
         }
       }
     }),
+
+    // 
+    registerUser: builder.mutation({
+      query: (clientCreationData) => {
+        return {
+          url: `auth/register`,
+          method: 'POST',
+          body: clientCreationData,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetAllCpQuery, useGetAllUserQuery, useLazyGetUserDetailsQuery, useLazyGetCpDetailsQuery, useUpdateCpByIdMutation } = userApi;
+export const { useGetAllCpQuery, useGetAllUserQuery, useLazyGetUserDetailsQuery, 
+  useLazyGetCpDetailsQuery, useUpdateCpByIdMutation, useRegisterUserMutation } = userApi;

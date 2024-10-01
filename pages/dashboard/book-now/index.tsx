@@ -20,7 +20,6 @@ import { useAuth } from '@/contexts/authContext';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
-import { API_ENDPOINT } from '@/config';
 import { useLazyGetAlgoCpQuery, usePostOrderMutation, useUpdateOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
@@ -30,6 +29,7 @@ import { useRouter } from 'next/router';
 import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 import AccessDenied from '@/components/errors/AccessDenied';
+import useCalculateAddons from '@/hooks/useCalculateAddons';
 
 interface FormData {
   content_type: string;
@@ -64,7 +64,7 @@ const BookNow = () => {
   const isHavePermission = authPermissions?.includes('booking_page');
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<any>(1);
+  const [activeTab, setActiveTab] = useState<any>(1); 
   const [currentPage, setCurrentPage] = useState<any>(1);
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
@@ -73,15 +73,28 @@ const BookNow = () => {
   const [getTotalDuration, setTotalDuration] = useState<any>();
   const [client_id, setClient_id] = useState(userData?.role === 'user' ? userData?.id : '');
   const [clientName, setClientName] = useState('');
-  const [filteredAddonsData, setFilteredAddonsData] = useState([]);
-  const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
-  const [allAddonRates, setAllAddonRates] = useState(0);
-  const [allRates, setAllRates] = useState(0);
-  const [computedRates, setComputedRates] = useState<any>({});
-  const [addonExtraHours, setAddonExtraHours] = useState<any>({});
+  // const [filteredAddonsData, setFilteredAddonsData] = useState([]);
+  // const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
+  // const { selectedFilteredAddons, addonExtraHours, handleHoursOnChange, handleCheckboxChange } = useCalculateAddons();
+  const {
+    selectedFilteredAddons,
+    addonExtraHours,
+    filteredAddonsData,
+    formDataPageOne,
+    computedRates,
+    allAddonRates,
+    setFormDataPageOne,
+    handleHoursOnChange,
+    handleCheckboxChange,
+    handleShowAddonsData,
+  } = useCalculateAddons();
+
+  // const [allAddonRates, setAllAddonRates] = useState(0); //--
+  const [allRates, setAllRates] = useState(0); 
+  // const [computedRates, setComputedRates] = useState<any>({}); //--
+  // const [addonExtraHours, setAddonExtraHours] = useState<any>({});
   const [geo_location, setGeo_location] = useState({ coordinates: [], type: 'Point' });
   const [shootCosts, setShootCosts] = useState<number>(0);
-  const [formDataPageOne, setFormDataPageOne] = useState<any>({});
   const [cp_ids, setCp_ids] = useState([]);
   const [search, setSearch] = useState(false);
   const [clients, setClients] = useState([]);
@@ -135,39 +148,11 @@ const BookNow = () => {
     if (activeTab === 3) {
       const totalShootCost = shootCostCalculation(getTotalDuration, formDataPageOne?.content_type, cp_ids, formDataPageOne?.content_vertical, pricingData?.results);
       setShootCosts(totalShootCost);
+      setAllRates(allAddonRates + shootCosts);
     }
-  }, [activeTab]);
+  }, [activeTab, allAddonRates]);
 
-  useEffect(() => {
-    const calculateUpdatedRate = (addon: addonTypes) => {
-      if (addon.ExtendRateType !== undefined || addonExtraHours[addon._id] !== undefined) {
-        const addonHours = addonExtraHours[addon?._id] || 0;
-        const newRate = addon?.rate + addonHours * addon.ExtendRate;
-        return newRate;
-      } else {
-        return addon?.rate;
-      }
-    };
-
-    const updatedComputedRates = filteredAddonsData?.reduce((prevAddon: any, addon: addonTypes) => {
-      prevAddon[addon?._id] = calculateUpdatedRate(addon);
-      return prevAddon;
-    }, {});
-
-    setComputedRates(updatedComputedRates);
-
-    const updatedTotalAddonRates: UpdatedAddonRates = selectedFilteredAddons.reduce((previousAddon: any, addon: addonTypes) => {
-      previousAddon[addon?._id] = calculateUpdatedRate(addon);
-      return previousAddon;
-    }, {} as UpdatedAddonRates);
-
-    const totalRate = Object.values(updatedTotalAddonRates).reduce((acc, currentValue) => acc + currentValue, 0);
-    setAllAddonRates(totalRate);
-
-    setAllRates(totalRate + shootCosts);
-  }, [selectedFilteredAddons, filteredAddonsData, addonExtraHours]);
-
-  const startDateTimeRef = useRef(null);
+   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
 
   const handleBack = () => {
@@ -302,8 +287,8 @@ const BookNow = () => {
     return Math.ceil(durationHours);
   };
 
-  const logTotalDuration = (dateTimesArray) => {
-    const totalDuration = dateTimesArray.reduce((acc, dateTime) => {
+  const logTotalDuration = (dateTimesArray:any) => {
+    const totalDuration = dateTimesArray.reduce((acc:any, dateTime:any) => {
       const duration = calculateDuration(dateTime.start_date_time, dateTime.end_date_time);
       return acc + duration;
     }, 0);
@@ -320,111 +305,7 @@ const BookNow = () => {
     setCurrentPage(page);
   };
 
-  const handleShowAddonsData = () => {
-    let shoot_type = formDataPageOne?.content_vertical;
-    const photography = formDataPageOne?.content_type?.includes('photo');
-    const videography = formDataPageOne?.content_type?.includes('video');
-    const photoAndVideoShootType = formDataPageOne?.content_type?.includes('photo') && formDataPageOne?.content_type?.includes('video');
-
-    let categories: any = [];
-    if (shoot_type === 'Wedding') {
-      if (photography && !photoAndVideoShootType) {
-        categories = ['Wedding Photography'];
-      } else if (videography && !photoAndVideoShootType) {
-        categories = ['Wedding Videography'];
-      } else if (photoAndVideoShootType) {
-        categories = ['Wedding Photography', 'Wedding Videography'];
-      }
-    } else if (shoot_type === 'Commercial') {
-      if (photography && !photoAndVideoShootType) {
-        categories = ['Commercial Photo'];
-      } else if (videography && !photoAndVideoShootType) {
-        categories = ['Commercial Video'];
-      } else if (photoAndVideoShootType) {
-        categories = ['Commercial Photo', 'Commercial Video'];
-      }
-    } else if (shoot_type === 'Corporate') {
-      if (photography && !photoAndVideoShootType) {
-        categories = ['Corporate Photography'];
-      } else if (videography && !photoAndVideoShootType) {
-        categories = ['Corporate Event Videography'];
-      } else if (photoAndVideoShootType) {
-        categories = ['Corporate Photography', 'Corporate Event Videography'];
-      }
-    } else if (shoot_type === 'Private') {
-      if (photography && !photoAndVideoShootType) {
-        categories = ['Private Photography'];
-      } else if (videography && !photoAndVideoShootType) {
-        categories = ['Private Videography'];
-      } else if (photoAndVideoShootType) {
-        categories = ['Private Photography', 'Private Videography'];
-      }
-    } else if (shoot_type === 'Music') {
-      if (photography && !photoAndVideoShootType) {
-        categories = ['Music Photography'];
-      } else if (videography && !photoAndVideoShootType) {
-        categories = ['Music Video'];
-      } else if (photoAndVideoShootType) {
-        categories = ['Music Photography', 'Music Video'];
-      }
-    } else if (shoot_type === 'Other') {
-      if (photography && !photoAndVideoShootType) {
-        categories = ['Other Photography'];
-      } else if (videography && !photoAndVideoShootType) {
-        categories = ['Other Videography'];
-      } else if (photoAndVideoShootType) {
-        categories = ['Other Photography', 'Other Videography'];
-      }
-    }
-    if (categories.length > 0) {
-      const seen = new Set();
-      const uniqueAddOns = addonsData?.filter((addOn: any) => {
-        const isInCategory = categories.includes(addOn?.category);
-        const key = `${addOn.title}-${addOn.rate}`;
-        if (isInCategory && !seen.has(key)) {
-          seen.add(key);
-          return true;
-        }
-        return false;
-      });
-      setFilteredAddonsData(uniqueAddOns);
-    }
-  };
-
-  const handleHoursOnChange = (addonId: string, hoursInput: number) => {
-    const updatedAddons: any = selectedFilteredAddons.map((addon: any) => {
-      if (addon._id === addonId) {
-        return { ...addon, hours: hoursInput };
-      }
-      return addon;
-    });
-    setSelectedFilteredAddons(updatedAddons);
-
-    if (hoursInput >= 0) {
-      setAddonExtraHours((prevHours: number) => ({ ...prevHours, [addonId]: Number(hoursInput) }));
-    } else {
-      return;
-    }
-  };
-
-  const handleCheckboxChange = (addon: addonTypes) => {
-    const isAddonSelected = selectedFilteredAddons.some((selectedAddon: addonTypes) => selectedAddon?._id === addon?._id);
-    if (!isAddonSelected) {
-      const updatedAddon = {
-        _id: addon?._id,
-        title: addon?.title,
-        rate: addon?.rate,
-        ExtendRate: addon?.ExtendRate,
-        status: addon?.status,
-        hours: addonExtraHours[addon?._id] || 1,
-      };
-
-      setSelectedFilteredAddons([...selectedFilteredAddons, updatedAddon]);
-    } else {
-      setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon: addonTypes) => selectedAddon?._id !== addon?._id));
-    }
-  };
-
+  
   const handleSelectProducer = (cp: any) => {
     const newCp = {
       id: cp?.userId?._id,
@@ -492,7 +373,7 @@ const BookNow = () => {
     { name: 'Corporate', budget: { min: 1500, max: 10000 } },
     { name: 'Music', budget: { min: 1500, max: 10000 } },
     { name: 'Private', budget: { min: 1500, max: 10000 } },
-    { name: 'Weeding', budget: { min: 1000, max: 1500 } },
+    { name: 'Wedding', budget: { min: 1000, max: 1500 } },
     { name: 'Other', budget: { min: 1000, max: 10000 } },
   ];
 
@@ -620,7 +501,7 @@ const BookNow = () => {
     setIsClientLoading(false);
   };
 
-  const handleClientChange = (client) => {
+  const handleClientChange = (client:any) => {
     setClient_id(client?.id);
     setClientName(client?.name);
     setShowClientDropdown(false);
@@ -645,7 +526,7 @@ const BookNow = () => {
   };
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(event:any) {
       if (dropdownRef.current && !dropdownRef?.current?.contains(event.target)) {
         setShowClientDropdown(false);
       }
@@ -771,7 +652,7 @@ const BookNow = () => {
                                     <>
                                       {clients && clients.length > 0 ? (
                                         <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
-                                          {clients?.map((client) => (
+                                          {clients?.map((client:any) => (
                                             <li
                                               key={client?.id}
                                               onClick={() => handleClientChange(client)}
@@ -957,7 +838,7 @@ const BookNow = () => {
                               <input type="hidden" {...register('meeting_time')} />
 
                               <span className="-translate-y-1/6 pointer-events-none absolute right-[14px] top-[21%]  transform">🗓️</span>
-                              {errors.meeting_time && <p className="text-danger">{errors.meeting_time.message}</p>}
+                              {errors?.meeting_time && <p className="text-danger">{errors?.meeting_time.message}</p>}
                             </div>
                           </div>
                         )}
@@ -995,7 +876,7 @@ const BookNow = () => {
                       {/* Showing all cps */}
                       <div className="grid grid-cols-1 gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                         {allAlgoCp?.results?.length > 0 ? (
-                          allAlgoCp?.results?.map((cp) => {
+                          allAlgoCp?.results?.map((cp: any) => {
                             const isSelected = cp_ids.some((item: any) => item?.id === cp?.userId?._id);
                             return (
                               <div key={cp?.userId?._id} className="single-match  basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
@@ -1078,7 +959,9 @@ const BookNow = () => {
                                     {filteredAddonsData?.map((addon: addonTypes, index) => (
                                       <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                         <td className="min-w-[20px] px-4 py-2">
-                                          <input type="checkbox" className="form-checkbox" defaultValue={addon} id={`addon_${index}`} onChange={() => handleCheckboxChange(addon)} />
+                                          <input type="checkbox" className="form-checkbox"
+                                            //  defaultValue={addon} 
+                                            id={`addon_${index}`} onChange={() => handleCheckboxChange(addon)} />
                                         </td>
                                         <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
 
@@ -1160,13 +1043,13 @@ const BookNow = () => {
                                     <tbody>
                                       {selectedFilteredAddons?.map((addon: addonTypes, index) => {
                                         return (
-                                          <>
+                                          <div key={addon?._id}>
                                             <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                               <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
                                               <td>{addon?.ExtendRate ? `${addon?.hours} hours` : ''}</td>
                                               <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
                                             </tr>
-                                          </>
+                                          </div>
                                         );
                                       })}
                                       <tr className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
