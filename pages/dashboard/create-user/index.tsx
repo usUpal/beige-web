@@ -5,9 +5,9 @@ import 'tippy.js/dist/tippy.css';
 import Map from '@/components/Map';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
-import { API_ENDPOINT } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import AccessDenied from '@/components/errors/AccessDenied';
+import { useRegisterUserMutation } from '@/Redux/features/user/userApi';
 
 const CreateUser = () => {
     const [geoLocation, setGeoLocation] = useState('');
@@ -25,6 +25,7 @@ const CreateUser = () => {
 
     const { userData, authPermissions } = useAuth();
     const isHavePermission = authPermissions?.includes('client_page');
+    const [registerUser, { isLoading }] = useRegisterUserMutation();
 
 
 
@@ -74,23 +75,13 @@ const CreateUser = () => {
         }
 
         if (filteredUserData) {
-
+            
             try {
-                const response = await fetch(`${API_ENDPOINT}auth/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(filteredUserData),
-                });
+                const result = await registerUser(filteredUserData).unwrap();
 
-                const result = await response.json();
-
-                if (response.ok) {
-                    // console.log('Success:', result);
-                    toast.success('Registration successful!');
+                if (result?.user) {
+                    toast.success('User Registration successful!');
                     reset();
-
                 } else {
                     if (result.code === 400) {
                         toast.error(`${result.message}`);
@@ -100,7 +91,6 @@ const CreateUser = () => {
                     }
                 }
             } catch (error) {
-                console.error('Network error:', error);
                 toast.error('An error occurred. Please try again later.');
             }
         }

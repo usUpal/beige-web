@@ -21,7 +21,6 @@ const userApi = baseApi.injectEndpoints({
       },
     }),
 
-
     getUserDetails: builder.query({
       query: (data) => {
         return {
@@ -48,7 +47,6 @@ const userApi = baseApi.injectEndpoints({
       }
     }),
 
-    // 
     registerUser: builder.mutation({
       query: (clientCreationData) => {
         return {
@@ -61,8 +59,22 @@ const userApi = baseApi.injectEndpoints({
         };
       },
     }),
+
+    registerCp: builder.mutation({
+      query: (cpData) => {
+        return {
+          url: `cp`,
+          method: 'POST',
+          body: cpData,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+    }),
   }),
 });
 
 export const { useGetAllCpQuery, useGetAllUserQuery, useLazyGetUserDetailsQuery, 
-  useLazyGetCpDetailsQuery, useUpdateCpByIdMutation, useRegisterUserMutation } = userApi;
+  useLazyGetCpDetailsQuery, useUpdateCpByIdMutation,
+   useRegisterUserMutation, useRegisterCpMutation } = userApi;

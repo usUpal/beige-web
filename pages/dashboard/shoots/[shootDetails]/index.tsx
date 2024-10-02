@@ -21,13 +21,12 @@ import 'tippy.js/dist/tippy.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
 
-import { useAddAddonsMutation, useAssignCpMutation, useDeleteAddonMutation, useDeleteOrderMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
+import { useAddAddonsMutation, useAssignCpMutation, useDeleteOrderMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';
 import { shootStatusMessage, allStatus } from '@/utils/shootUtils/shootDetails';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import AccessDenied from '@/components/errors/AccessDenied';
-import { formatDatetime } from '@/FileManager/util/fileutil';
 import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
 import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 import useCalculateAddons from '@/hooks/useCalculateAddons';
@@ -47,7 +46,6 @@ const ShootDetails = () => {
   const [status, setStatus] = useState<string>('');
   const [metingDate, setMetingDate] = useState<string>('');
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
-
 
   const {
     data: shootDetailsData,
@@ -76,12 +74,7 @@ const ShootDetails = () => {
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
   const [updateOrder, { isLoading: isUpdateOrderLoading, isSuccess }] = useUpdateOrderMutation();
-  const [deleteOrder] = useDeleteOrderMutation();
   const [addAddons, { isLoading: isAddAddonsLoading }] = useAddAddonsMutation();
-  const [deleteAddon, { isLoading: deleteAddonLoading }] = useDeleteAddonMutation();
-
-  console.log(shootDetailsData);
-
 
   const queryParams = useMemo(
     () => ({
@@ -99,6 +92,7 @@ const ShootDetails = () => {
   } = useGetAllCpQuery(queryParams, {
     refetchOnMountOrArgChange: true,
   });
+
   // allAddons
   const { data: allAddonsData, refetch: allAddonsRefetch } = useGetAllAddonsQuery(undefined, {
     refetchOnMountOrArgChange: true,
@@ -158,11 +152,9 @@ const ShootDetails = () => {
         setMeetingBox(false);
         toast.success('Meeting create success.');
       } else {
-        // console.log("Don't create the meeting");
         toast.error('Something want wrong...!');
       }
     } else {
-      // console.log("Don't create the meeting link");
       toast.error('Something want wrong...!');
     }
   };
@@ -185,6 +177,7 @@ const ShootDetails = () => {
     }
   };
 
+  // handle Select Producer
   const handleSelectProducer = (cp: any) => {
     const newCp = {
       id: cp?.userId?._id,
@@ -205,6 +198,7 @@ const ShootDetails = () => {
     setCurrentPage(page);
   }, []);
 
+  // updateCps or add cp
   const updateCps = async () => {
     if (!cp_ids.length) {
       toast.error('Please select Cp...!');
@@ -223,69 +217,7 @@ const ShootDetails = () => {
     }
   };
 
-
-  const updateAddons = async () => {
-    if (!selectedFilteredAddons.length) {
-      toast.error('Please select addons...!');
-      return;
-    }
-
-    const data = {
-      // addOns: [ ...shootDetailsData?.addOns, selectedFilteredAddons],
-      addOns: selectedFilteredAddons,
-      id: shootDetailsData?.id,
-    };
-
-    try {
-      const result = await addAddons(data).unwrap();
-      if (result?.data) {
-        refetch();
-        toast.success('Addons added successfully...!');
-        setAddonsModal(false);
-
-      }
-    } catch (error) {
-      toast.error('Failed to add addons: ' + error.message);
-    }
-  };
-
-  // delete Addons
-  // const handleDeleteAddon = async (addonId:string) => {
-  //   try {
-  //     await deleteAddon(addonId); 
-  //     toast.success("Addon deleted successfully.");
-  //   } catch (error) {
-  //     console.error("Failed to delete addon:", error);
-  //     toast.error("An error occurred while deleting the addon.");
-  //   }
-  // };
-
-  const handleDeleteAddon = async (addonId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this addon?");
-    if (!confirmDelete) return;
-
-    try {
-      await deleteAddon({ orderId: shootDetailsData.id, addonId }).unwrap();
-      refetch();
-      toast.success("Addon deleted successfully.");
-    } catch (error) {
-      // console.error("Failed to delete addon:", error);
-      toast.error("An error occurred while deleting the addon.");
-    }
-  };
-
-  // const handleAddAddons = async () => {
-  //   try {
-  //     await addAddons({ orderId, addOns }).unwrap();
-  //     alert('Addons added successfully!');
-  //     // Optionally, reset the form or fetch updated data
-  //     // setAddOns([]);
-  //   } catch (err) {
-  //     console.error("Failed to add addons:", err);
-  //     alert("An error occurred while adding addons.");
-  //   }
-  // };
-
+  // delete cp
   const cancelCp = async (cp: any) => {
     if (!cp || !cp._id) {
       return swalToast('danger', 'Invalid CP data.');
@@ -302,36 +234,62 @@ const ShootDetails = () => {
         },
         id: shootId,
       });
-      // setCp_ids((prevCpIds) => prevCpIds.filter((cpItem) => cpItem._id !== cp._id));
       refetch();
     } catch (error) {
-      console.error('Error occurred while sending PATCH request:', error);
+      toast.error('Error occurred while sending PATCH request');
     }
   };
 
-  // ############################
   useEffect(() => {
     if (formDataPageOne?.content_type?.length !== 0 && formDataPageOne?.content_vertical !== '') {
       handleShowAddonsData();
     }
   }, [formDataPageOne?.content_type?.length]);
 
-  //deleteAddons
-  const deleteAddons = async (addon: addonTypes) => {
-    // console.log(addon);
-
-    if (!addon || !addon._id) {
-      return swalToast('danger', 'Invalid Addons.');
+  // addons_add
+  const handleAddAddon = async () => {
+    const existingAddons = shootDetailsData?.addOns;
+    const allSelectedAddons = [...existingAddons, ...selectedFilteredAddons];
+    const data = {
+      addOns: allSelectedAddons,
+      id: shootId
     }
-    return toast.warning("This page is under development.")
     try {
-      await deleteOrder({ _id: addon._id }).unwrap();
-      console.log("deleteing.....");
+      const result = await addAddons(data);
+      if (result?.data) {
+        refetch();
+        toast.success('Addons Added successfully.');
+        setCpModal(false);
+        setAddonsModal(false);
+      }
+    }
+    catch {
+      toast.error("Failed to add addon.")
+    }
+  }
 
-      // setCp_ids((prevCpIds) => prevCpIds.filter((cpItem) => cpItem._id !== cp._id));
+  //  addons_cancel
+  const handleDelAddon = async (addon: addonTypes) => {
+    if (!addon) {
+      return swalToast('danger', 'Invalid Addon  Cancel.');
+    }
+    const restAddons = shootDetailsData?.addOns.filter((restAddon: addonTypes) => restAddon._id !== addon._id);
+   
+    try {
+      const updateRes = await updateOrder({
+        requestData: {
+          addOns: restAddons,
+        },
+        id: shootId,
+      });
+
+      if (!updateRes.data) {
+        toast("Error while Updating.")
+      }
+
       refetch();
     } catch (error) {
-      console.error('Error occurred while sending PATCH request:', error);
+      toast.error('Failed to delete addon.');
     }
   };
 
@@ -513,7 +471,7 @@ const ShootDetails = () => {
                             <span className='flex items-center'>
                               {userData?.role === 'admin' ? (
                                 <Tippy content="Cancel">
-                                  <button onClick={() => handleDeleteAddon(addon?._id)} className={`rounded p-1 text-white`}>
+                                  <button onClick={() => handleDelAddon(addon)} className={`rounded p-1 text-white`}>
                                     <span className="badge text-black hover:text-danger duration-300">{allSvgs.closeBtnCp}</span>
                                   </button>
                                 </Tippy>
@@ -553,7 +511,7 @@ const ShootDetails = () => {
                             time_24hr: false,
                             minDate: 'today',
                           }}
-                          onChange={(date) => setMetingDate(date[0])}
+                          onChange={(date: Date[]) => setMetingDate(date[0])}
                         />
                         <button
                           disabled={isNewMeetingLoading === true ? true : false}
@@ -585,14 +543,6 @@ const ShootDetails = () => {
                             </option>
                           ))}
                         </select>
-
-                        {/* <DefaultLayout onClick={handelUpdateStatus} css={"flex items-center justify-center"} disabled={isStatusLoading === true ? true : false}>{isStatusLoading === true ? (
-                          <Loader />
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                          </svg>
-                        )}</DefaultLayout> */}
 
                         <button
                           disabled={isStatusLoading === true ? true : false}
@@ -801,7 +751,7 @@ const ShootDetails = () => {
             </div>
           </div>
         </div>
-        {/* ############################### */}
+
         <Transition appear show={addonsModal} as={Fragment}>
           <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
@@ -814,8 +764,6 @@ const ShootDetails = () => {
                     </button>
                   </div>
                   <div className="basis-[45%]  md:pe-5 py-2">
-
-                    {/* inplement new */}
                     <>
                       <div className="panel mb-8 basis-[49%] rounded-[10px] px-7 py-5">
                         <label className="ml-2 mr-2 sm:ml-0 sm:w-1/4">Select Addons</label>
@@ -832,38 +780,46 @@ const ShootDetails = () => {
                                     <th className="min-w-[120px] px-1 py-2 font-mono">Rate</th>
                                   </tr>
                                 </thead>
-
                                 <tbody>
-                                  {filteredAddonsData?.map((addon: addonTypes, index) => (
-                                    <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
-                                      <td className="min-w-[20px] px-4 py-2">
-                                        <input type="checkbox" className="form-checkbox"
-                                          id={`addon_${index}`} onChange={() => handleCheckboxChange(addon)} />
-                                      </td>
-                                      <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
+                                  {filteredAddonsData?.map((addon: addonTypes, index) => {
+                                    const isSelected = shootDetailsData?.addOns?.some((detailAddon: addonTypes) => detailAddon._id === addon._id);
 
-                                      <td className="min-w-[120px] px-4 py-2">{addon?.ExtendRateType ? addon?.ExtendRateType : 'N/A'}</td>
-                                      <td className="min-w-[120px] px-4 py-2">
-                                        {addon.ExtendRateType ? (
+                                    return (
+                                      <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                        <td className="min-w-[20px] px-4 py-2">
                                           <input
-                                            name="hour"
-                                            type="number"
-                                            className="ms-12 h-9 w-12 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-16"
-                                            defaultValue={addonExtraHours[addon?._id] || 1}
-                                            min="0"
-                                            onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
+                                            type="checkbox"
+                                            className="form-checkbox"
+                                            id={`addon_${index}`}
+                                            // checked={isSelected ? isSelected : ""} 
+                                            onChange={() => handleCheckboxChange(addon)}
+                                            disabled={isSelected}
                                           />
-                                        ) : (
-                                          'N/A'
-                                        )}
-                                      </td>
-                                      <td className="min-w-[120px] px-4 py-2">{computedRates[addon?._id] || addon?.rate}</td>
-                                    </tr>
-                                  ))}
+                                        </td>
+                                        <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
+                                        <td className="min-w-[120px] px-4 py-2">{addon?.ExtendRateType ? addon?.ExtendRateType : 'N/A'}</td>
+                                        <td className="min-w-[120px] px-4 py-2">
+                                          {addon.ExtendRateType ? (
+                                            <input
+                                              name="hour"
+                                              type="number"
+                                              className="ms-12 h-9 w-12 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-16"
+                                              defaultValue={addonExtraHours[addon?._id] || 1}
+                                              min="0"
+                                              onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
+                                            />
+                                          ) : (
+                                            'N/A'
+                                          )}
+                                        </td>
+                                        <td className="min-w-[120px] px-4 py-2">{computedRates[addon?._id] || addon?.rate}</td>
+                                      </tr>
+                                    );
+                                  })}
 
                                   {/* Horizontal border */}
                                   <tr>
-                                    <td colSpan={6} className=" w-full border-t border-gray-500 "></td>
+                                    <td colSpan={6} className="w-full border-t border-gray-500"></td>
                                   </tr>
                                   <tr className="mt-[-10px] w-full border border-gray-600 bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                     <td className="min-w-[20px] px-4 py-2"></td>
@@ -872,7 +828,7 @@ const ShootDetails = () => {
                                     </td>
                                     <td className="min-w-[120px] px-4 py-2"></td>
                                     <td className="min-w-[120px] px-4 py-2"></td>
-                                    <td className="min-w-[120px] px-4 py-2">{allAddonRates} </td>
+                                    <td className="min-w-[120px] px-4 py-2">{allAddonRates}</td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -881,18 +837,13 @@ const ShootDetails = () => {
                         </div>
                         <div className="flex justify-end">
                           <DefaultButton
-                            onClick={updateAddons}
+                            onClick={handleAddAddon}
                             disabled={false} css="mt-5">
                             Submit update
                           </DefaultButton>
                         </div>
                       </div>
                     </>
-
-                    {/* inplement new */}
-
-
-
                     <div className="my-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-4">
                       <ResponsivePagination current={currentPage} total={allAddonsData?.totalPages / 3 || 1} onPageChange={handlePageChange} maxWidth={400} />
                     </div>
@@ -902,8 +853,6 @@ const ShootDetails = () => {
             </div>
           </Dialog>
         </Transition>
-
-        {/* ############################## */}
 
         <Transition appear show={cpModal} as={Fragment}>
           <Dialog as="div" open={cpModal} onClose={() => setCpModal(false)}>

@@ -8,7 +8,6 @@ const useCalculateAddons = () => {
   const [formDataPageOne, setFormDataPageOne] = useState<any>({});
   const [computedRates, setComputedRates] = useState<any>({});
   const [allAddonRates, setAllAddonRates] = useState(0);
-//   const [totalRate, setTotalRate] = useState(0);
 
   const { data: addonsData } = useGetAllAddonsQuery(undefined, {
     refetchOnMountOrArgChange: true,
@@ -46,7 +45,8 @@ const useCalculateAddons = () => {
       setSelectedFilteredAddons(selectedFilteredAddons.filter((selectedAddon: addonTypes) => selectedAddon._id !== addon._id));
     }
   };
-//   content_vertical
+
+
   const handleShowAddonsData = () => {
     let shoot_type = formDataPageOne?.content_vertical;
     const photography = formDataPageOne?.content_type?.includes('photo');

@@ -1,6 +1,6 @@
 import { useForm, Controller } from 'react-hook-form';
 import Link from 'next/link';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import 'tippy.js/dist/tippy.css';
 import Map from '@/components/Map';
 import TimezoneSelect from 'react-timezone-select';
@@ -10,9 +10,9 @@ import Select from 'react-select';
 import Loader from '@/components/SharedComponent/Loader';
 import { trim } from 'lodash';
 import { useAuth } from '@/contexts/authContext';
-import { API_ENDPOINT } from '@/config';
 import AccessDenied from '@/components/errors/AccessDenied';
 import { CpInputData } from '@/utils/CpInputData/CpInputData';
+import { useRegisterCpMutation, useRegisterUserMutation } from '@/Redux/features/user/userApi';
 
 interface propertyData {
     value: string,
@@ -27,7 +27,7 @@ const CreateNewCp = () => {
     const [timezone, setTimezone] = useState(null);
     const [formFlipped, setFormFlipped] = useState(false);
     const { register, control, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm();
-    
+
     const [formDataPageOne, setFormDataPageOne] = useState({});
     const { userData, authPermissions } = useAuth();
     const isHavePermission = authPermissions?.includes('client_page');
@@ -35,6 +35,9 @@ const CreateNewCp = () => {
 
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+    const [registerUser, { isLoading: registerUserIsLoading }] = useRegisterUserMutation();
+    const [registerCp, { isLoading: registerCpIsLoading }] = useRegisterCpMutation();
 
     const [newuserId, setNewUserId] = useState('');
 
@@ -149,28 +152,46 @@ const CreateNewCp = () => {
             ...tabOneData, ...tabTwoData, ...tabThreeData
         };
 
+
+
         if (Object.keys(clientCreationData).length > 0) {
             setIsLoading(true);
             setFormDataPageOne(data);
 
-            if (Object.keys(clientCreationData).length > 0) {
-                setIsLoading(true);
-                setFormDataPageOne(data);
+            if (activeTab === 1) {
+                try {
+                    const result = await registerUser(clientCreationData).unwrap();
 
-                if (activeTab === 1) {
+                    if (result?.user) {
+                        setNewUserId(result.user.id);
+                        toast.success('User Registration successful!');
+                    } else {
+                        if (result.code === 400) {
+                            toast.error(`${result.message}`);
+                        }
+                        else {
+                            toast.error(`Something went wrong, Please try again!`);
+                        }
+                    }
+                } catch (error) {
+                    toast.error('An error occurred. Please try again later.');
+                }
+
+                setFormFlipped(true);
+                setActiveTab(2);
+
+            } else if (activeTab === 2 || activeTab === 3) {
+                setFormFlipped(true);
+
+                if (activeTab === 2) {
+                    setActiveTab(3);
+                } else {
                     try {
-                        const response = await fetch(`${API_ENDPOINT}auth/register`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(clientCreationData),
-                        });
-                        const result = await response.json();
-                        if (response.ok) {
-                            // console.log('Success:', result.user.id);
-                            setNewUserId(result.user.id);
-                            toast.success('User Registration successful!');
+                        const result = await registerCp(allCpFormInputData).unwrap();
+                 
+                        if (result) {
+                            toast.success('Cp Registred successfuly!');
+                            reset();
                         } else {
                             if (result.code === 400) {
                                 toast.error(`${result.message}`);
@@ -179,73 +200,32 @@ const CreateNewCp = () => {
                                 toast.error(`Something went wrong, Please try again!`);
                             }
                         }
+
                     } catch (error) {
-                        // console.error('Network error:', error);
                         toast.error('An error occurred. Please try again later.');
                     }
-
-                    setFormFlipped(true);
-                    setActiveTab(2);
-
-                } else if (activeTab === 2 || activeTab === 3) {
-                    setFormFlipped(true);
-
-                    if (activeTab === 2) {
-                        setActiveTab(3);
-                    } else {
-                        try {
-                            const response = await fetch(`${API_ENDPOINT}cp`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(allCpFormInputData),
-                            });
-
-                            const result = await response.json();
-
-                            if (response.ok) {
-                                toast.success('Cp Registred successfuly!');
-                                reset();
-                            } else {
-                                if (result.code === 400) {
-                                    toast.error(`${result.message}`);
-                                }
-                                else {
-                                    toast.error(`Something went wrong, Please try again!`);
-                                }
-                            }
-
-                        } catch (error) {
-                            // console.error('Network error:', error);
-                            toast.error('An error occurred. Please try again later.');
-                        }
-                    }
                 }
-
-                setIsLoading(false);
-            } else {
-                toast.error("Client creation data is empty or invalid");
             }
+
+            setIsLoading(false);
+        } else {
+            toast.error("Client creation data is empty or invalid");
         }
+
     };
 
     const handleToStringData = (property: propertyData[]) => property?.map((p: propertyData) => p.value);
 
-   
-
     const handleBack = () => {
         setActiveTab((activeTab) => (activeTab === 3 ? 2 : 1));
     }
-
-   
 
     if (!isHavePermission) {
         return (
             <AccessDenied />
         );
     }
-    
+
     return (
         <div className='panel'>
             <div>

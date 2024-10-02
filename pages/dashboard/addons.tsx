@@ -10,7 +10,6 @@ import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAddNewAddOnMutation, useDeleteSingleAddonMutation, useGetAllAddonsQuery, useLazyGetAddonsDetailsQuery, useUpdateAddonMutation } from '@/Redux/features/addons/addonsApi';
 import { toast } from 'react-toastify';
-// import Swal from 'sweetalert2';
 import { useRouter } from 'next/router';
 import AccessDenied from '@/components/errors/AccessDenied';
 const Addons = () => {
@@ -156,13 +155,11 @@ const Addons = () => {
 
   const handleDelete = async (addon: any) => {
     try {
-      // console.log('🚀 ~ deletePermission ~ id:', addon?._id);
       await deleteSingleAddon(addon?._id);
       refetch();
       toast.success('Addon deleted successfully');
     } catch (error) {
       toast.error('Failed to delete addon');
-      console.error('Delete error:', error);
     }
   };
 

@@ -73,9 +73,6 @@ const BookNow = () => {
   const [getTotalDuration, setTotalDuration] = useState<any>();
   const [client_id, setClient_id] = useState(userData?.role === 'user' ? userData?.id : '');
   const [clientName, setClientName] = useState('');
-  // const [filteredAddonsData, setFilteredAddonsData] = useState([]);
-  // const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
-  // const { selectedFilteredAddons, addonExtraHours, handleHoursOnChange, handleCheckboxChange } = useCalculateAddons();
   const {
     selectedFilteredAddons,
     addonExtraHours,
@@ -89,10 +86,7 @@ const BookNow = () => {
     handleShowAddonsData,
   } = useCalculateAddons();
 
-  // const [allAddonRates, setAllAddonRates] = useState(0); //--
-  const [allRates, setAllRates] = useState(0); 
-  // const [computedRates, setComputedRates] = useState<any>({}); //--
-  // const [addonExtraHours, setAddonExtraHours] = useState<any>({});
+    const [allRates, setAllRates] = useState(0); 
   const [geo_location, setGeo_location] = useState({ coordinates: [], type: 'Point' });
   const [shootCosts, setShootCosts] = useState<number>(0);
   const [cp_ids, setCp_ids] = useState([]);
@@ -217,7 +211,7 @@ const BookNow = () => {
     }
   }, []);
 
-  const handleChangeStartDateTime = (dateStr) => {
+  const handleChangeStartDateTime = (dateStr:any) => {
     try {
       const s_time = parseISO(dateStr);
       if (!isValid(s_time)) {
@@ -228,7 +222,7 @@ const BookNow = () => {
     } catch (error) { }
   };
 
-  const handleChangeEndDateTime = (dateStr) => {
+  const handleChangeEndDateTime = (dateStr:any) => {
     try {
       const e_time = parseISO(dateStr);
       if (!isValid(e_time)) {

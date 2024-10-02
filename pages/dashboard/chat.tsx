@@ -162,8 +162,6 @@ const Chat = () => {
   };
 
   const selectUser = (chat: any) => {
-    console.log('Chat', chat);
-
     setSelectedChatRoom(chat);
     scrollToBottom();
     setIsShowChatMenu(false);
