@@ -47,6 +47,9 @@ const ShootDetails = () => {
   const [metingDate, setMetingDate] = useState<string>('');
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
+  // 
+  const [confirmationDelAddonModal, setConfirmationDelAddonModal] = useState(false);
+
   const {
     data: shootDetailsData,
     error: shootDetailsError,
@@ -63,6 +66,8 @@ const ShootDetails = () => {
     formDataPageOne,
     computedRates,
     allAddonRates,
+    setSelectedFilteredAddons,
+    setExistingShootAddons,
     setFormDataPageOne,
     handleHoursOnChange,
     handleCheckboxChange,
@@ -103,6 +108,7 @@ const ShootDetails = () => {
   // shoot cost depending on duaration
   useEffect(() => {
     setAllRates(shootDetailsData?.shoot_duration + allAddonRates);
+    setExistingShootAddons(shootDetailsData?.addOns);
 
     if (shootDetailsData) {
       setFormDataPageOne({
@@ -249,7 +255,7 @@ const ShootDetails = () => {
   // addons_add
   const handleAddAddon = async () => {
     const existingAddons = shootDetailsData?.addOns;
-    const allSelectedAddons = [...existingAddons, ...selectedFilteredAddons];
+    const allSelectedAddons = selectedFilteredAddons;
     const data = {
       addOns: allSelectedAddons,
       id: shootId
@@ -261,6 +267,7 @@ const ShootDetails = () => {
         toast.success('Addons Added successfully.');
         setCpModal(false);
         setAddonsModal(false);
+        
       }
     }
     catch {
@@ -268,13 +275,22 @@ const ShootDetails = () => {
     }
   }
 
+
+  const [delAddonsConfirmation, setDelAddonsConfirmation] = useState(false);
+
+
+
   //  addons_cancel
   const handleDelAddon = async (addon: addonTypes) => {
+    setConfirmationDelAddonModal(true);
     if (!addon) {
       return swalToast('danger', 'Invalid Addon  Cancel.');
     }
+
+    if (!delAddonsConfirmation && !confirmationDelAddonModal) {
+      setConfirmationDelAddonModal(false);
+    }
     const restAddons = shootDetailsData?.addOns.filter((restAddon: addonTypes) => restAddon._id !== addon._id);
-   
     try {
       const updateRes = await updateOrder({
         requestData: {
@@ -284,13 +300,17 @@ const ShootDetails = () => {
       });
 
       if (!updateRes.data) {
-        toast("Error while Updating.")
+        toast.error("Error while Updating.")
       }
 
+      toast.success("Addons Deleted Successfully.")
       refetch();
+
     } catch (error) {
       toast.error('Failed to delete addon.');
     }
+
+
   };
 
   if (!isHavePermission) {
@@ -449,33 +469,35 @@ const ShootDetails = () => {
                   <label className="mb-0 font-sans text-[14px] capitalize">AddOns List</label>
                   {userData?.role === 'admin' && (
                     <div className="flex gap-3">
-                      <button onClick={() => setAddonsModal(!addonsModal)} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
+                      <button onClick={() => {setAddonsModal(!addonsModal), setSelectedFilteredAddons(shootDetailsData?.addOns)}} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
-                        <span>Add AddOns</span>
+                        <span>Add More</span>
                       </button>
                     </div>
                   )}
                 </div>
-                <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
+                <div className="ml-0 md:ml-10 mt-1 2xl:flex-1 md:mt-0 w-full">
                   {shootDetailsData?.addOns?.length > 0 && (
-                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded ">
-
-                      <ul className='list-disc list-inside pl-5 flex flex-col'>
+                    <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded">
+                      <ul className='md:pl-5 pl-0'>
                         {shootDetailsData?.addOns?.map((addon: addonTypes, key: number) => (
-                          <li key={key} className="flex items-center h-8 gap-10">
-                            <span>
+                          <li key={key} className="h-12 md:h-8 gap-4 flex items-center list-none justify-start">
+                            <div className='h-2 w-2 bg-black rounded-full'></div>
+                            <span className="flex-1">
                               {addon?.title ?? ''} for {addon?.hours} hours
                             </span>
-                            <span className='flex items-center'>
+                            <span className='flex items-center xl:mr-10'>
                               {userData?.role === 'admin' ? (
                                 <Tippy content="Cancel">
-                                  <button onClick={() => handleDelAddon(addon)} className={`rounded p-1 text-white`}>
-                                    <span className="badge text-black hover:text-danger duration-300">{allSvgs.closeBtnCp}</span>
+                                  <button
+                                    onClick={() => handleDelAddon(addon)}
+                                    className={`rounded p-1 text-white`}>
+                                    <span className="badge text-dark hover:text-danger duration-300">{allSvgs.closeBtnCp}</span>
                                   </button>
                                 </Tippy>
-                              ) : ("")}
+                              ) : null}
                             </span>
                           </li>
                         ))}
@@ -483,7 +505,6 @@ const ShootDetails = () => {
                     </div>
                   )}
                 </div>
-
               </div>
             </div>
 
@@ -573,7 +594,7 @@ const ShootDetails = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
-                        <span>Add CP</span>
+                        <span>Add More</span>
                       </button>
                     </div>
                   )}
@@ -752,6 +773,63 @@ const ShootDetails = () => {
           </div>
         </div>
 
+        {/* modal for addons delete confirmation  */}
+        <div>
+          <Transition appear show={confirmationDelAddonModal} as={Fragment}>
+            <Dialog as="div" open={confirmationDelAddonModal} onClose={() => setConfirmationDelAddonModal(false)}>
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="fixed inset-0" />
+              </Transition.Child>
+              <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
+                <div className="flex items-start justify-center min-h-screen px-4">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden  w-full max-w-sm lg:my-8 xl:my-32 text-black dark:text-white-dark">
+                      <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
+                        <h5 className="font-bold text-lg">Modal Title</h5>
+                        <button onClick={() => setConfirmationDelAddonModal(false)} type="button" className="text-white-dark hover:text-dark">
+                          x
+                        </button>
+                      </div>
+                      <div className="p-5">
+                        <div className="dark:text-white-dark/70 text-base font-medium text-[#1f2937]">
+                          <p>
+                            Are you sure want to delete this addon?
+                          </p>
+                        </div>
+                        <div className="flex justify-end items-center mt-8">
+                          <button onClick={() => setConfirmationDelAddonModal(false)} type="button" className="btn btn-outline-danger">
+                            No
+                          </button>
+                          <button onClick={() => setDelAddonsConfirmation(!delAddonsConfirmation)} type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4">
+                            Yes
+                          </button>
+                        </div>
+                      </div>
+                    </Dialog.Panel>
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition>
+        </div>
+
+
         <Transition appear show={addonsModal} as={Fragment}>
           <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
@@ -782,7 +860,7 @@ const ShootDetails = () => {
                                 </thead>
                                 <tbody>
                                   {filteredAddonsData?.map((addon: addonTypes, index) => {
-                                    const isSelected = shootDetailsData?.addOns?.some((detailAddon: addonTypes) => detailAddon._id === addon._id);
+                                    const isSelected = selectedFilteredAddons?.some((detailAddon: addonTypes) => detailAddon._id === addon._id);
 
                                     return (
                                       <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
@@ -791,9 +869,9 @@ const ShootDetails = () => {
                                             type="checkbox"
                                             className="form-checkbox"
                                             id={`addon_${index}`}
-                                            // checked={isSelected ? isSelected : ""} 
+                                            checked={isSelected}
                                             onChange={() => handleCheckboxChange(addon)}
-                                            disabled={isSelected}
+                                            // disabled={isSelected}
                                           />
                                         </td>
                                         <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
@@ -839,7 +917,7 @@ const ShootDetails = () => {
                           <DefaultButton
                             onClick={handleAddAddon}
                             disabled={false} css="mt-5">
-                            Submit update
+                            Add Addons
                           </DefaultButton>
                         </div>
                       </div>

@@ -2,12 +2,16 @@ import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 import React, { useEffect, useState } from 'react';
 
 const useCalculateAddons = () => {
-  const [selectedFilteredAddons, setSelectedFilteredAddons] = useState([]);
+  const [selectedFilteredAddons, setSelectedFilteredAddons] = useState<addonTypes[]>([]);
   const [addonExtraHours, setAddonExtraHours] = useState<any>({});
   const [filteredAddonsData, setFilteredAddonsData] = useState([]);
   const [formDataPageOne, setFormDataPageOne] = useState<any>({});
   const [computedRates, setComputedRates] = useState<any>({});
   const [allAddonRates, setAllAddonRates] = useState(0);
+  const [existingShootAddons, setExistingShootAddons] = useState([]);
+
+  console.log(existingShootAddons);
+  
 
   const { data: addonsData } = useGetAllAddonsQuery(undefined, {
     refetchOnMountOrArgChange: true,
@@ -29,6 +33,7 @@ const useCalculateAddons = () => {
   };
 
   const handleCheckboxChange = (addon: addonTypes) => {
+
     const isAddonSelected = selectedFilteredAddons.some((selectedAddon: addonTypes) => selectedAddon?._id === addon?._id);
     if (!isAddonSelected) {
       const updatedAddon = {
@@ -39,6 +44,8 @@ const useCalculateAddons = () => {
         status: addon.status,
         hours: addonExtraHours[addon._id] || 1,
       };
+
+      
 
       setSelectedFilteredAddons([...selectedFilteredAddons, updatedAddon]);
     } else {
@@ -149,6 +156,7 @@ const useCalculateAddons = () => {
   }, [selectedFilteredAddons, filteredAddonsData, addonExtraHours]);
 
   return {
+    setExistingShootAddons,
     selectedFilteredAddons,
     setSelectedFilteredAddons,
     addonExtraHours,
