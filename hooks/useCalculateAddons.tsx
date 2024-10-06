@@ -10,9 +10,6 @@ const useCalculateAddons = () => {
   const [allAddonRates, setAllAddonRates] = useState(0);
   const [existingShootAddons, setExistingShootAddons] = useState([]);
 
-  console.log(existingShootAddons);
-  
-
   const { data: addonsData } = useGetAllAddonsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });

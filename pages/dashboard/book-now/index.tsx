@@ -64,7 +64,7 @@ const BookNow = () => {
   const isHavePermission = authPermissions?.includes('booking_page');
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<any>(1); 
+  const [activeTab, setActiveTab] = useState<any>(1);
   const [currentPage, setCurrentPage] = useState<any>(1);
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
@@ -86,7 +86,7 @@ const BookNow = () => {
     handleShowAddonsData,
   } = useCalculateAddons();
 
-    const [allRates, setAllRates] = useState(0); 
+  const [allRates, setAllRates] = useState(0);
   const [geo_location, setGeo_location] = useState({ coordinates: [], type: 'Point' });
   const [shootCosts, setShootCosts] = useState<number>(0);
   const [cp_ids, setCp_ids] = useState([]);
@@ -146,7 +146,7 @@ const BookNow = () => {
     }
   }, [activeTab, allAddonRates]);
 
-   const startDateTimeRef = useRef(null);
+  const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
 
   const handleBack = () => {
@@ -211,7 +211,7 @@ const BookNow = () => {
     }
   }, []);
 
-  const handleChangeStartDateTime = (dateStr:any) => {
+  const handleChangeStartDateTime = (dateStr: any) => {
     try {
       const s_time = parseISO(dateStr);
       if (!isValid(s_time)) {
@@ -222,7 +222,7 @@ const BookNow = () => {
     } catch (error) { }
   };
 
-  const handleChangeEndDateTime = (dateStr:any) => {
+  const handleChangeEndDateTime = (dateStr: any) => {
     try {
       const e_time = parseISO(dateStr);
       if (!isValid(e_time)) {
@@ -281,8 +281,8 @@ const BookNow = () => {
     return Math.ceil(durationHours);
   };
 
-  const logTotalDuration = (dateTimesArray:any) => {
-    const totalDuration = dateTimesArray.reduce((acc:any, dateTime:any) => {
+  const logTotalDuration = (dateTimesArray: any) => {
+    const totalDuration = dateTimesArray.reduce((acc: any, dateTime: any) => {
       const duration = calculateDuration(dateTime.start_date_time, dateTime.end_date_time);
       return acc + duration;
     }, 0);
@@ -299,7 +299,7 @@ const BookNow = () => {
     setCurrentPage(page);
   };
 
-  
+
   const handleSelectProducer = (cp: any) => {
     const newCp = {
       id: cp?.userId?._id,
@@ -495,7 +495,7 @@ const BookNow = () => {
     setIsClientLoading(false);
   };
 
-  const handleClientChange = (client:any) => {
+  const handleClientChange = (client: any) => {
     setClient_id(client?.id);
     setClientName(client?.name);
     setShowClientDropdown(false);
@@ -520,7 +520,7 @@ const BookNow = () => {
   };
 
   useEffect(() => {
-    function handleClickOutside(event:any) {
+    function handleClickOutside(event: any) {
       if (dropdownRef.current && !dropdownRef?.current?.contains(event.target)) {
         setShowClientDropdown(false);
       }
@@ -646,7 +646,7 @@ const BookNow = () => {
                                     <>
                                       {clients && clients.length > 0 ? (
                                         <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
-                                          {clients?.map((client:any) => (
+                                          {clients?.map((client: any) => (
                                             <li
                                               key={client?.id}
                                               onClick={() => handleClientChange(client)}
@@ -1037,13 +1037,11 @@ const BookNow = () => {
                                     <tbody>
                                       {selectedFilteredAddons?.map((addon: addonTypes, index) => {
                                         return (
-                                          <div key={addon?._id}>
-                                            <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
-                                              <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
-                                              <td>{addon?.ExtendRate ? `${addon?.hours} hours` : ''}</td>
-                                              <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
-                                            </tr>
-                                          </div>
+                                          <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                            <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
+                                            <td>{addon?.ExtendRate ? `${addon?.hours} hours` : ''}</td>
+                                            <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
+                                          </tr>
                                         );
                                       })}
                                       <tr className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">

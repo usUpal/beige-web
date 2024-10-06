@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { API_ENDPOINT, SOCKET_URL } from '@/config';
+import { SOCKET_URL } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import transformMessages from '@/utils/transformMessage';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
@@ -16,18 +16,21 @@ import { useGetAllChatQuery, useLazyGetChatDetailsQuery } from '@/Redux/features
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePaginationComponent from 'react-responsive-pagination';
-import { dropEllipsis } from 'react-responsive-pagination/narrowBehaviour';
+// import { dropEllipsis } from 'react-responsive-pagination/narrowBehaviour';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 import AccessDenied from '@/components/errors/AccessDenied';
-import PreLoader from '@/components/ProfileImage/PreLoader';
-import Loader from '@/components/SharedComponent/Loader';
+// import PreLoader from '@/components/ProfileImage/PreLoader';
+// import Loader from '@/components/SharedComponent/Loader';
 // types
 
 const Chat = () => {
   const { userData, authPermissions } = useAuth() as any;
+
+  // console.log("userData:", userData);
+
   const isHavePermission = authPermissions?.includes('chat_page');
 
   const dispatch = useDispatch();
@@ -92,8 +95,12 @@ const Chat = () => {
     refetchOnMountOrArgChange: true,
   });
 
+
+
   // show old msg
   const [getChatDetails, { data: chatDetails, isLoading: isChatDetailsLoading }] = useLazyGetChatDetailsQuery();
+
+  // console.log("getChatDetails", chatDetails);
 
   // updatedAt
   const updatedAtDateTime = useDateFormat(selectedChatRoom?.updatedAt);
@@ -101,10 +108,11 @@ const Chat = () => {
 
   useEffect(() => {
     if (selectedChatRoom) {
-      getChatDetails({ roomId: selectedChatRoom?.id, page: 1 }).then(({ data }) => {
-        if (data) {
-          setTotalPagesCount(data?.totalPages > 0 ? data?.totalPages : 1);
-          const outputMessages = transformMessages(data?.results);
+      getChatDetails({ roomId: selectedChatRoom?.id, page: 1 }).then(({ data: chatDetailsData }) => {
+        if (chatDetailsData) {
+          console.log("##", chatDetailsData);
+          setTotalPagesCount(chatDetailsData?.totalPages > 0 ? chatDetailsData?.totalPages : 1);
+          const outputMessages = transformMessages(chatDetailsData?.results);
           setNewMessages(outputMessages.reverse());
           scrollToBottom();
         }
@@ -161,10 +169,14 @@ const Chat = () => {
     };
   };
 
+  const [userWithProfilePicture, setUserWithProfilePicture] = useState('');
+
   const selectUser = (chat: any) => {
     setSelectedChatRoom(chat);
     scrollToBottom();
     setIsShowChatMenu(false);
+    // const userWithProfilePicture = chatDetails?.result?.find((detailChatPp:any) => detailChatPp?.sendBy?.profile_picture);
+    setUserWithProfilePicture(userWithProfilePicture);
   };
   const sendMessage = (text: string) => {
     socket.current.emit('message', {
@@ -220,11 +232,11 @@ const Chat = () => {
       }
       : null,
 
-    ...(selectedChatRoom?.cp_ids || []).map((cp) => ({
+    ...(selectedChatRoom?.cp_ids || []).map((cp: CpDataTypes) => ({
       ...cp,
       type: 'cp',
     })),
-    ...(selectedChatRoom?.manager_ids || []).map((manager) => ({
+    ...(selectedChatRoom?.manager_ids || []).map((manager: any) => ({
       ...manager,
       type: 'manager',
     })),
@@ -238,6 +250,7 @@ const Chat = () => {
     refetchOnMountOrArgChange: true,
     skip: userData?.role === 'cp' || userData?.role === 'user',
   });
+
   const getAllClients = async () => {
     setIsClientLoading(true);
     setClients(clientsData?.results || []);
@@ -258,7 +271,7 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(event: any) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowClientDropdown(false);
       }
@@ -312,10 +325,9 @@ const Chat = () => {
           )}
         </div>
         <div className="mt-1 xl:h-[83%] 2xl:h-[87%]">
-
           {isAllDataFetchLoading &&
             <>
-              <div className="flex items-center justify-center min-h-screen p-5 bg-white min-w-screen">
+              <div className="flex items-start justify-center mt-24 min-h-screen p-5 bg-white min-w-screen">
                 <div className="flex space-x-2 animate-pulse">
                   <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
                   <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
@@ -386,7 +398,7 @@ const Chat = () => {
       <div className={`absolute  z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
       <div className={`panel flex-1 p-0 ${threeDotSidebar && 'hidden lg:block'}`}>
         {!isShowUserChat && (
-          <div className={`relative flex h-full items-center justify-center p-4  `}>
+          <div className={`relative flex h-full items-center justify-center p-4 `}>
             <button type="button" onClick={() => setIsShowChatMenu(!isShowChatMenu)} className="absolute top-4 hover:text-primary ltr:left-4 rtl:right-4 xl:hidden">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 7L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -515,7 +527,7 @@ const Chat = () => {
           <div className="relative h-full">
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                <button type="button" className="hover:text-primary " onClick={() => setIsShowChatMenu(!isShowChatMenu)}>
+                <button type="button" className="hover:text-primary lg:hidden " onClick={() => setIsShowChatMenu(!isShowChatMenu)}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M20 7L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                     <path opacity="0.5" d="M20 12L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -602,7 +614,7 @@ const Chat = () => {
                                           <>
                                             {clients && clients.length > 0 ? (
                                               <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
-                                                {clients?.map((client) => (
+                                                {clients?.map((client: any) => (
                                                   // search result
                                                   <li
                                                     key={client.id}
@@ -672,19 +684,30 @@ const Chat = () => {
                 {newMessages?.length ? (
                   <>
                     {newMessages?.map((message: any, index: any) => {
+                      (console.log(message, "mesg"))
                       return (
                         <div key={index}>
                           <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
                             <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
-                              {message?.senderId === userData.id ? (userRole == 'admin' ? createImageByName('A') : userRole == 'cp' ? createImageByName('CP') : createImageByName('User')) : ''}
-                              {message?.senderId !== userData.id
-                                ? message?.senderName == 'Admin User'
-                                  ? createImageByName('MA')
-                                  : message?.senderName == 'User'
-                                    ? createImageByName('A')
-                                    : createImageByName('CP')
-                                : ''}
+                              {
+                                message?.senderId === userData.id ? (
+                                  userData?.profile_picture ? (
+                                    <img src={userData.profile_picture} className='w-10 h-10 rounded-full' alt="own_profile_photo" />
+                                  ) : (
+                                    ""
+                                  )
+                                ) : (
+                                  message?.profile_picture ? (
+                                    <img src={message.profile_picture} className='w-10 h-10 rounded-full' alt="profile_photo" />
+                                  ) : (
+                                    message.senderName === 'Admin User' ? createImageByName('MA') :
+                                      message.senderName === 'User' ? createImageByName('A') :
+                                        createImageByName('CP')
+                                  )
+                                )
+                              }
                             </div>
+
                             <div className="">
                               <div className="flex items-center gap-3">
                                 <div
@@ -803,11 +826,11 @@ const Chat = () => {
                           </li>
 
                           {[
-                            ...selectedChatRoom?.cp_ids.map((cp) => ({
+                            ...selectedChatRoom?.cp_ids.map((cp: CpDataTypes) => ({
                               ...cp,
                               type: 'cp',
                             })),
-                            ...selectedChatRoom?.manager_ids.map((manager) => ({
+                            ...selectedChatRoom?.manager_ids.map((manager: any) => ({
                               ...manager,
                               type: 'admin',
                             })),
@@ -912,11 +935,11 @@ const Chat = () => {
                             </div>
                           </li>
                           {[
-                            ...selectedChatRoom?.cp_ids.map((cp) => ({
+                            ...selectedChatRoom?.cp_ids.map((cp: CpDataTypes) => ({
                               ...cp,
                               type: 'cp',
                             })),
-                            ...selectedChatRoom?.manager_ids.map((manager) => ({
+                            ...selectedChatRoom?.manager_ids.map((manager: any) => ({
                               ...manager,
                               type: 'admin',
                             })),

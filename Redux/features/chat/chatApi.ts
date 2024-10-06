@@ -13,8 +13,6 @@ const chatApi = baseApi.injectEndpoints({
 
     getChatDetails: builder.query({
       query: ({ roomId, page = 1 }) => {
-        console.log(roomId);
-
         return {
           url: `chats/${roomId}?limit=20&page=${page}`,
           method: 'GET',

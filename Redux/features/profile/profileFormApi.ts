@@ -16,33 +16,31 @@ const profileUpdate = baseApi.injectEndpoints({
         body: JSON.stringify(userData?.data),
       }),
     }),
-    getCpReview : builder.query({
+    getCpReview: builder.query({
       query: (data) => {
         return {
-          url : `review?cp_id=${data}&populate=client_id`,
-          method:'GET'
+          url: `review?cp_id=${data}&populate=client_id`,
+          method: 'GET'
         }
       }
     }),
-    getCpUploadedImage : builder.query({
-      query:(data) => {
-        console.log("🚀 ~ data:", data)
+    getCpUploadedImage: builder.query({
+      query: (data) => {
         return {
-          url : `/gcp/get-content/${data}/images`,
-          method:'GET',
+          url: `/gcp/get-content/${data}/images`,
+          method: 'GET',
         }
       }
     }),
-    getCpUploadedVideo : builder.query({
-      query:(data) => {
-        console.log("🚀 ~ data:", data)
+    getCpUploadedVideo: builder.query({
+      query: (data) => {
         return {
-          url :`/gcp/get-content/${data}/videos`,
-          method:'GET',
+          url: `/gcp/get-content/${data}/videos`,
+          method: 'GET',
         }
       }
     })
   }),
 });
 
-export const { useUpdateUserInfoMutation, useUpdateCpDataForLocationMutation ,useGetCpReviewQuery,useGetCpUploadedImageQuery,useGetCpUploadedVideoQuery} = profileUpdate;
+export const { useUpdateUserInfoMutation, useUpdateCpDataForLocationMutation, useGetCpReviewQuery, useGetCpUploadedImageQuery, useGetCpUploadedVideoQuery } = profileUpdate;

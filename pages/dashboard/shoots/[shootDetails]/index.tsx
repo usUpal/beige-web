@@ -266,8 +266,7 @@ const ShootDetails = () => {
         refetch();
         toast.success('Addons Added successfully.');
         setCpModal(false);
-        setAddonsModal(false);
-        
+        setAddonsModal(false);        
       }
     }
     catch {
