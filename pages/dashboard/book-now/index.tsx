@@ -71,6 +71,8 @@ const BookNow = () => {
   const [dateTimes, setDateTimes] = useState<FormData[]>([]);
   const [showDateTimes, setShowDateTimes] = useState<any>();
   const [getTotalDuration, setTotalDuration] = useState<any>();
+  const [meetingTime, setMeetingTime] = useState<any>();
+
   const [client_id, setClient_id] = useState(userData?.role === 'user' ? userData?.id : '');
   const [clientName, setClientName] = useState('');
   const {
@@ -857,7 +859,7 @@ const BookNow = () => {
                                   minDate: 'today',
                                 }}
                                 onChange={(date) => {
-                                  // setMeetingTime(date[0]);
+                                  setMeetingTime(date[0]);
                                   setValue('meeting_time', date[0]);
                                 }}
                               />
