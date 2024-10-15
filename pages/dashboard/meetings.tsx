@@ -16,6 +16,7 @@ import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import AccessDenied from '@/components/errors/AccessDenied';
 import flatpickr from 'flatpickr';
 import { format, isValid, parseISO } from 'date-fns';
+import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -25,7 +26,11 @@ const Meeting = () => {
   const isHavePermission = authPermissions?.includes('meeting_page');
   const dispatch = useDispatch();
   const myInputDate = meetingInfo?.meeting_date_time;
-  const myFormattedDateTime = useDateFormat(myInputDate);
+
+    // formatted date times
+    const myFormattedDateTime = formatDateAndTime(myInputDate);
+
+  // const myFormattedDateTime = useDateFormat(myInputDate);
   const [query, setQuery] = useState('');
   const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
 
@@ -193,53 +198,57 @@ const Meeting = () => {
                 </>
               ) : (
                 <>
-                  {allMeetings?.results && allMeetings?.results?.length > 0 ? (
-                    allMeetings?.results?.map((meeting: any) => (
-                      <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                        <td className=" min-w-[150px] text-black dark:text-white">
-                          <div className="flex items-center">
-                            <p className="">{truncateLongText(meeting?.order?.name, 30)}</p>
-                          </div>
-                        </td>
+                  {allMeetings?.results && allMeetings.results.length > 0 ? (
+                    allMeetings.results.map((meeting:any) => {
+                      const { date, time } = formatDateAndTime(meeting?.meeting_date_time) || { date: '', time: '' };
 
-                        <td>
-                          <span className="">{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
-                          <span className=""> {makeDateFormat(meeting?.meeting_date_time)?.time}</span>
-                        </td>
-
-                        <td>
-                          <p className="">
-                            {meeting?.client?.name} with
-                            <span className="ps-1">
-                              {' '}
-                              {truncateLongText(meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name, 40)}
-                              {/* {meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}12345678901234567890 */}
-                            </span>
-                          </p>
-                        </td>
-
-                        <td>
-                          <div>
-                            <StatusBg>{meeting?.meeting_status}</StatusBg>
-                          </div>
-                        </td>
-                        {authPermissions?.includes('meeting_details') && (
-                          <td>
-                            <button type="button" className="p-0" onClick={() => handelMeetingDetails(meeting?.id)}>
-                              <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                            </button>
+                      return (
+                        <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                          <td className="min-w-[150px] text-black dark:text-white">
+                            <div className="flex items-center">
+                              <p>{truncateLongText(meeting?.order?.name, 30)}</p>
+                            </div>
                           </td>
-                        )}
-                      </tr>
-                    ))
+
+                          <td>
+                            {date}
+                            <span> at {time}</span>
+                          </td>
+
+                          <td>
+                            <p>
+                              {meeting?.client?.name} with
+                              <span className="ps-1">
+                                {truncateLongText(meeting?.cps[1]?.name || meeting?.cps[0]?.name, 40)}
+                              </span>
+                            </p>
+                          </td>
+
+                          <td>
+                            <div>
+                              <StatusBg>{meeting?.meeting_status}</StatusBg>
+                            </div>
+                          </td>
+
+                          {authPermissions?.includes('meeting_details') && (
+                            <td>
+                              <button type="button" className="p-0" onClick={() => handelMeetingDetails(meeting?.id)}>
+                                <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                              </button>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr>
                       <td colSpan={50} className="text-center">
-                        <span className="flex justify-center font-semibold text-[red]"> No meetings found </span>
+                        <span className="flex justify-center font-semibold text-[red]">No meetings found</span>
                       </td>
                     </tr>
                   )}
                 </>
+
               )}
             </tbody>
           </table>

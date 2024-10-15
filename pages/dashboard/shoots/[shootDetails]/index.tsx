@@ -31,6 +31,7 @@ import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
 import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 import useCalculateAddons from '@/hooks/useCalculateAddons';
 import { format, isValid, parseISO } from 'date-fns';
+import flatpickr from 'flatpickr';
 
 const ShootDetails = () => {
   const { userData, authPermissions } = useAuth();
@@ -45,12 +46,16 @@ const ShootDetails = () => {
   const [cp_ids, setCp_ids] = useState<number[]>([]);
   const [statusBox, setStatusBox] = useState<boolean>(false);
   const [status, setStatus] = useState<string>('');
-  const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
-
+  const [metingDate, setMetingDate] = useState<string>('');
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
-  //
+  // 
   const [confirmationDelAddonModal, setConfirmationDelAddonModal] = useState(false);
+  const [delAddonsConfirmation, setDelAddonsConfirmation] = useState(false);
+
+  // 
+  const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
+
 
   const {
     data: shootDetailsData,
@@ -79,7 +84,7 @@ const ShootDetails = () => {
   const [updateStatus, { isLoading: isStatusLoading }] = useUpdateStatusMutation();
   const [assignCp, { isLoading: isAssignCpLoading }] = useAssignCpMutation();
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
-  const [newMeeting, { data: meetingData, isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
+  const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
   const [updateOrder, { isLoading: isUpdateOrderLoading, isSuccess }] = useUpdateOrderMutation();
   const [addAddons, { isLoading: isAddAddonsLoading }] = useAddAddonsMutation();
 
@@ -118,7 +123,7 @@ const ShootDetails = () => {
         content_vertical: shootDetailsData.content_vertical,
       });
     }
-  }, [shootDetailsData, setFormDataPageOne]);
+  }, [shootDetailsData, setFormDataPageOne])
 
   const coordinates = shootDetailsData?.geo_location?.coordinates;
   const isLocationAvailable = coordinates && coordinates.length === 2;
@@ -139,7 +144,7 @@ const ShootDetails = () => {
       requestData: {
         summary: shootDetailsData?.order_name ? shootDetailsData?.order_name : 'Beige Meeting',
         location: 'Online',
-        description: `Meeting to discuss ${data?.order_name ? data?.order_name : 'Beige'} order.`,
+        description: `Meeting to discuss ${shootDetailsData?.order_name ? shootDetailsData?.order_name : 'Beige'} order.`,
         startDateTime: formattedMeetingTime,
         endDateTime: formattedMeetingTime,
         orderId: shootId,
@@ -158,7 +163,7 @@ const ShootDetails = () => {
       const result = await newMeeting(requestBody);
       if (result?.data) {
         setMeetingBox(false);
-        toast.success('Meeting successfully created.');
+        toast.success('Meeting create success.');
       } else {
         toast.error('Something want wrong...!');
       }
@@ -203,7 +208,8 @@ const ShootDetails = () => {
   };
 
   const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
+    setCurrentPage(page)
+      ;
   }, []);
 
   // updateCps or add cp
@@ -244,41 +250,15 @@ const ShootDetails = () => {
       });
       refetch();
     } catch (error) {
-      console.error('Error occurred while sending PATCH request:', error);
+      toast.error('Error occurred while sending PATCH request');
     }
   };
-  //
+
+  // meeting Date time ref
   const meetingDateTimeRef = useRef(null);
   let flatpickrInstance = useRef(null);
 
-  useEffect(() => {
-    if (meetingDateTimeRef.current) {
-      // Initialize flatpickr and store the instance
-      flatpickrInstance.current = flatpickr(meetingDateTimeRef.current, {
-        altInput: true,
-        altFormat: 'F j, Y h:i K',
-        dateFormat: 'Y-m-d H:i',
-        enableTime: true,
-        time_24hr: false,
-        minDate: 'today',
-        onClose: (selectedDates, dateStr) => {
-          handleOnMeetingDateTimeChange(dateStr);
-        },
-      });
-
-      // Debug to ensure flatpickr is initialized
-      // console.log('Flatpickr initialized:', flatpickrInstance.current);
-    }
-
-    // Cleanup function to destroy flatpickr instance
-    return () => {
-      if (flatpickrInstance.current) {
-        flatpickrInstance.current.destroy();
-      }
-    };
-  }, [meetingBox]);
-
-  const handleOnMeetingDateTimeChange = (dateStr) => {
+  const handleOnMeetingDateTimeChange = (dateStr: any) => {
     try {
       const e_time = parseISO(dateStr);
       if (!isValid(e_time)) {
@@ -290,7 +270,88 @@ const ShootDetails = () => {
       console.error('Date parsing error', error);
     }
   };
-  // ========
+
+  useEffect(() => {
+    if (meetingDateTimeRef.current) {
+      flatpickrInstance.current = flatpickr(meetingDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onClose: (selectedDates, dateStr: any) => {
+          handleOnMeetingDateTimeChange(dateStr);
+        },
+      });
+    }
+    return () => {
+      if (flatpickrInstance.current) {
+        flatpickrInstance.current.destroy();
+      }
+    };
+  }, [meetingBox]);
+
+
+  useEffect(() => {
+    if (formDataPageOne?.content_type?.length !== 0 && formDataPageOne?.content_vertical !== '') {
+      handleShowAddonsData();
+    }
+  }, [formDataPageOne?.content_type?.length]);
+
+  // addons_add
+  const handleAddAddon = async () => {
+    const existingAddons = shootDetailsData?.addOns;
+    const allSelectedAddons = selectedFilteredAddons;
+    const data = {
+      addOns: allSelectedAddons,
+      id: shootId
+    }
+    try {
+      const result = await addAddons(data);
+      if (result?.data) {
+        refetch();
+        toast.success('Addons Added successfully.');
+        setCpModal(false);
+        setAddonsModal(false);
+      }
+    }
+    catch {
+      toast.error("Failed to add addon.")
+    }
+  }
+
+  //  addons_cancel
+  const handleDelAddon = async (addon: addonTypes) => {
+    setConfirmationDelAddonModal(true);
+    if (!addon) {
+      return swalToast('danger', 'Invalid Addon  Cancel.');
+    }
+
+    if (!delAddonsConfirmation && !confirmationDelAddonModal) {
+      setConfirmationDelAddonModal(false);
+    }
+    const restAddons = shootDetailsData?.addOns.filter((restAddon: addonTypes) => restAddon._id !== addon._id);
+    try {
+      const updateRes = await updateOrder({
+        requestData: {
+          addOns: restAddons,
+        },
+        id: shootId,
+      });
+
+      if (!updateRes.data) {
+        toast.error("Error while Updating.")
+      }
+
+      toast.success("Addons Deleted Successfully.")
+      refetch();
+
+    } catch (error) {
+      toast.error('Failed to delete addon.');
+    }
+  };
+
   if (!isHavePermission) {
     return <AccessDenied />;
   }
@@ -355,17 +416,24 @@ const ShootDetails = () => {
               <div className="mb-4 basis-[45%] flex-row space-y-5">
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Date & Time</label>
-                  {shootDetailsData?.shoot_datetimes && (
+
+                  {shootDetailsData?.shoot_datetimes.length > 0 && (
                     <div className="flex-row">
-                      {shootDetailsData?.shoot_datetimes?.map((time: any, key: number) => (
-                        <div key={key} className="space-x-4">
-                          <span className="font-sans text-black">{formatDateAndTime(time?.start_date_time)} </span>
-                          <span className="font-sans font-semibold capitalize text-black">to</span>
-                          <span className="font-sans text-black">{formatDateAndTime(time?.end_date_time)} </span>
-                        </div>
-                      ))}
+                      {shootDetailsData.shoot_datetimes.map((dateTime: any, key: number) => {
+                        const { date: startDate, time: startTime } = formatDateAndTime(dateTime.start_date_time) || { date: '', time: '' };
+                        const { date: endDate, time: endTime } = formatDateAndTime(dateTime.end_date_time) || { date: '', time: '' };
+
+                        return (
+                          <div key={key} className="space-x-4">
+                            <span className="font-sans text-black">{startDate} at {startTime}</span>
+                            <span className="font-sans font-semibold capitalize text-black">to</span>
+                            <span className="font-sans text-black">{endDate} at {endTime}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
+
                 </div>
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
@@ -701,9 +769,8 @@ const ShootDetails = () => {
                             aria-hidden="true"
                           ></span>
                           <div
-                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
-                              status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
-                            } transition-all duration-200`}
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
+                              } transition-all duration-200`}
                           >
                             {status === 'Cancelled' ? (
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -827,7 +894,7 @@ const ShootDetails = () => {
                                             id={`addon_${index}`}
                                             checked={isSelected}
                                             onChange={() => handleCheckboxChange(addon)}
-                                            // disabled={isSelected}
+                                          // disabled={isSelected}
                                           />
                                         </td>
                                         <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
@@ -935,9 +1002,8 @@ const ShootDetails = () => {
                               <div className="mt-3 flex">
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
-                                    isSelected ? 'bg-red-500' : 'bg-black'
-                                  } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
+                                    } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
                                 </p>

@@ -46,7 +46,7 @@ function ReadySearchBox({ onSelectAddress, defaultValue }: ISearchBoxProps) {
       const results = await getGeocode({ address });
       const { lat, lng } = await getLatLng(results[0]);
       onSelectAddress(address, lat, lng);
-      
+
     } catch (error) {
       console.error(error);
     }
