@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, Fragment, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
 import Link from 'next/link';
@@ -14,14 +14,19 @@ import { Dialog, Transition } from '@headlessui/react';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { useGetCpReviewQuery, useGetCpUploadedImageQuery, useGetCpUploadedVideoQuery } from '@/Redux/features/profile/profileFormApi';
+import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 SwiperCore.use([Navigation, Pagination, Autoplay]);
+import { Tab } from '@headlessui/react';
+import Loader from '@/components/SharedComponent/Loader';
+
+
 
 interface ImageModalProps {
   src?: string | null;
-  onClose: () => void; 
+  onClose: () => void;
 }
 
-const ImageModal:React.FC<ImageModalProps> = ({ src, onClose }) => {
+const ImageModal: React.FC<ImageModalProps> = ({ src, onClose }) => {
   if (!src) return null;
 
   return (
@@ -67,7 +72,7 @@ const ImageModal:React.FC<ImageModalProps> = ({ src, onClose }) => {
 };
 
 const Profile = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { userData } = useAuth();
   const userRole = userData?.role === 'user' ? 'client' : userData?.role;
 
@@ -78,9 +83,11 @@ const Profile = () => {
   const [showImage, setShowImage] = useState(true);
   // const [isLoading, setIsLoading] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<string>('image');
+  // const [activeTab, setActiveTab] = useState<string>('image');
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const profileDesignation = (role:any) => {
+
+  const profileDesignation = (role: any) => {
     switch (role) {
       case 'user':
         return 'Beige User';
@@ -110,20 +117,10 @@ const Profile = () => {
 
   const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
-  const handleImageClick = () => {
-    setShowImage(true);
-    // toast.warning("This page is under Development.");
-  };
-
-  const handleVideoClick = () => {
-    setShowImage(false);
-    // toast.warning("This page is under Development.");
-  };
-
   const [profilePicture, setProfilePicture] = useState(userData?.profile_picture || '');
   // const [name, setName] = useState(userData?.name || '');
 
-  const handleImageUpload = (event:any) => {
+  const handleImageUpload = (event: any) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -133,6 +130,7 @@ const Profile = () => {
       reader.readAsDataURL(file);
     }
   };
+
 
   return (
     <div>
@@ -185,14 +183,14 @@ const Profile = () => {
                 }} className="mySwiper">
                 {allCpReview?.results && allCpReview?.results?.length > 0 ? (
                   <>
-                    {allCpReview?.results?.map((review:any, index:any) => (
+                    {allCpReview?.results?.map((review: any, index: any) => (
                       <SwiperSlide key={index}>
                         <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
                           <div className="flex gap-4">
                             {!review?.client_id?.profile_picture ? (
                               <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : ""}</MakeProfileImage>
                             ) : (
-                              <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="User profile picture" />
+                              <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="profile img" />
                             )}
 
                             <div className="w-full">
@@ -210,7 +208,25 @@ const Profile = () => {
                                   </div>
                                 </div>
                               </div>
-                              <p className="mt-3 text-left text-[14px]">{review?.reviewText}</p>
+                              <p className="mt-3 text-left text-[14px]">
+                                {isExpanded ? review?.reviewText : truncateLongText(review?.reviewText, 50)}
+                                {review?.reviewText.length > 50 && !isExpanded && (
+                                  <span
+                                    onClick={() => setIsExpanded(true)}
+                                    className=' cursor-pointer text-blue-500'
+                                  >
+                                    see more
+                                  </span>
+                                )}
+                                {isExpanded && (
+                                  <span
+                                    onClick={() => setIsExpanded(false)}
+                                    className=' cursor-pointer text-blue-500 ml-3px'
+                                  >
+                                    see less
+                                  </span>
+                                )}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -226,117 +242,155 @@ const Profile = () => {
         )}
 
         <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
-        {userRole === 'cp' && (
-          <div className="panel mt-5">
-            <div className="flex flex-wrap items-center gap-2">
 
-              <DefaultButton onClick={() => setActiveTab('image')} css=''>Image</DefaultButton>
-              <DefaultButton onClick={() => setActiveTab('video')} css=''>Vedio</DefaultButton>
+        <div>
+          <Tab.Group>
+            <Tab.List className="mt-3 flex flex-wrap border-b border-white-light dark:border-[#191e3a]">
+              <Tab as={Fragment}>
+                {({ selected }) => (
+                  <button
+                    className={`${selected ? '!border-white-light !border-b-white text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black' : ''}
+                dark:hover:border-b-black -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary`}
+                  >
+                    Image
+                  </button>
+                )}
+              </Tab>
+              <Tab as={Fragment}>
+                {({ selected }) => (
+                  <button
+                    className={`${selected ? '!border-white-light !border-b-white text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black' : ''}
+                dark:hover:border-b-black -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary`}
+                  >
+                    Videos
+                  </button>
+                )}
+              </Tab>
+            </Tab.List>
 
+            <Tab.Panels>
+              <Tab.Panel>
+                <div>
+                  {
+                    isGetAllCpImageLoading ?
+                      <div className='box-border my-10 text-center'>
+                        <span className="animate-spin border-4 border-primary border-l-transparent rounded-full w-10 h-10 inline-block align-middle m-auto mb-10"></span>
+                      </div>
+                      : <>
 
-              {/* {showImage &&
-                    <button
-                      className="py-1 px-4 flex items-center gap-2 justify-center bg-[#007aff] text-white text-[13px] font-bold rounded-md">
-                      Add Image <span className='text-white text-[20px] font-bold '>+</span>
-                    </button>
+                        {allCpImage?.contents?.Corporate?.length === 0 &&
+                          allCpImage?.contents?.Wedding?.length === 0 &&
+                          allCpImage?.contents?.Other?.length === 0 ?
+                          (<div className='text-xl text-danger box-border my-10 text-center'>No Data Found</div>)
+                          :
+                          <>
+                            {allCpImage?.contents?.Corporate?.length > 0 && (
+                              <>
+                                <h2 className="mb-0 mt-6 text-left text-[20px] font-bold">Corporate Images</h2>
+                                <div className="image-sec mt-4 flex flex-wrap items-center gap-4">
+                                  {allCpImage?.contents?.Corporate?.map((src: any, index: number) => (
+                                    <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                                      <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+
+                            {allCpImage?.contents?.Wedding?.length > 0 && (
+                              <>
+                                <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Images</h2>
+                                <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
+                                  {allCpImage?.contents?.Wedding?.map((src: any, index: any) => (
+                                    <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                                      <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+
+                            {allCpImage?.contents?.Other?.length > 0 && (
+                              <>
+                                <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Images</h2>
+                                <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
+                                  {allCpImage?.contents?.Other?.map((src: any, index: any) => (
+                                    <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                                      <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </>
+                        }
+                      </>
                   }
-                  {!showImage &&
-                    <button
-                      className="py-1 px-4 flex items-center gap-2 justify-center bg-[#007aff] text-white text-[13px] font-bold rounded-md">
-                      Add  Video <span className='text-white text-[20px] font-bold '>+</span>
-                    </button>
-                  } */}
-            </div>
+                </div>
+              </Tab.Panel>
 
-            {activeTab === 'image' && (
-              <>
-                {allCpImage?.contents?.Corporate && allCpImage?.contents?.Corporate?.length > 0 && (
-                  <>
-                    <h2 className="mb-0 mt-6 text-left text-[20px] font-bold">Corporate Images</h2>
-                    <div className="image-sec mt-4 flex flex-wrap items-center gap-4">
-                      {allCpImage?.contents?.Corporate?.map((src: any, index: number) => (
-                        <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                          <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
-                        </div>
-                      ))}
+              <Tab.Panel>
+                {
+                  isGetAllCpVideoLoading ?
+                    <div className='box-border my-10 text-center'>
+                      <span className="animate-spin border-4 border-primary border-l-transparent rounded-full w-10 h-10 inline-block align-middle m-auto mb-10"></span>
                     </div>
-                  </>
-                )}
+                    :
+                    <>
+                      {
+                        allCpVideo?.contents?.Corporate?.length === 0 &&
+                          allCpVideo?.contents?.Wedding?.length === 0 &&
+                          allCpVideo?.contents?.Other?.length === 0 ?
+                          (<div className='text-xl text-danger box-border my-10 text-center'>No Data Found</div>)
+                          : (
+                            <>
+                              {allCpVideo?.contents?.Corporate?.length > 0 && (
+                                <>
+                                  <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Corporate Videos</h2>
+                                  <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                                    {allCpVideo?.contents?.Corporate?.map((src: any, index: any) => (
+                                      <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
+                                        <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
 
-                {allCpImage?.contents?.Wedding?.length > 0 && (
-                  <>
-                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Images</h2>
-                    <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                      {allCpImage?.contents?.Wedding?.map((src:any, index:any) => (
-                        <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                          <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
+                              {allCpVideo?.contents?.Wedding?.length > 0 && (
+                                <>
+                                  <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Videos</h2>
+                                  <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                                    {allCpVideo?.contents?.Wedding?.map((src: any, index: any) => (
+                                      <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
+                                        <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
 
-                {allCpImage?.contents?.Other?.length > 0 && (
-                  <>
-                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Images</h2>
-                    <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                      {allCpImage?.contents?.Other?.map((src:any, index:any) => (
-                        <div key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                          <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-
-            <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
-
-            {activeTab === 'video' && (
-              <>
-                {allCpVideo?.contents?.Corporate?.length > 0 && (
-                  <>
-                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Corporate Videos</h2>
-                    <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {allCpVideo?.contents?.Corporate?.map((src:any, index:any) => (
-                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
-                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-
-                {allCpVideo?.contents?.Wedding?.length > 0 && (
-                  <>
-                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Videos</h2>
-                    <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {allCpVideo?.contents?.Wedding?.map((src:any, index:any) => (
-                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
-                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-
-                {allCpVideo?.contents?.Other?.length > 0 && (
-                  <>
-                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Videos</h2>
-                    <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                      {allCpVideo?.contents?.Other?.map((src:any, index:any) => (
-                        <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
-                          <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-          </div>
-        )}
+                              {allCpVideo?.contents?.Other?.length > 0 && (
+                                <>
+                                  <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Videos</h2>
+                                  <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                                    {allCpVideo?.contents?.Other?.map((src: any, index: any) => (
+                                      <div className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
+                                        <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+                            </>
+                          )
+                      }
+                    </>
+                }
+              </Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        </div>
       </div>
     </div>
   );
