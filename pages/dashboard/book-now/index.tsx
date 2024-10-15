@@ -51,8 +51,8 @@ interface FormData {
 interface CategoryListData {
   name: string;
   budget: {
-    max: BudgetData;
-    min: BudgetData;
+    max: number;
+    min: number;
   };
 }
 
@@ -96,8 +96,9 @@ const BookNow = () => {
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const [isClientLoading, setIsClientLoading] = useState(false);
-  const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
-  const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
+  const [myMaxBud, setMyMaxBud] = useState(0);
+  const [myMinBud, setMyMinBud] = useState(0);
+
   const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
 
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
@@ -257,16 +258,7 @@ const BookNow = () => {
       setEndDateTime(ending_date);
     } catch (error) {}
   };
-  const handelOnMeetingDateTimeChange = (dateStr) => {
-    try {
-      const e_time = parseISO(dateStr);
-      if (!isValid(e_time)) {
-        return;
-      }
-      const formattedTime = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-      setFormattedMeetingTime(formattedTime);
-    } catch (error) {}
-  };
+
   const handelOnMeetingDateTimeChange = (dateStr) => {
     try {
       const e_time = parseISO(dateStr);
@@ -402,9 +394,6 @@ const BookNow = () => {
     }
   };
 
-  const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
-  const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
-
   // set category data for the ui
   const categoryList: CategoryListData[] = [
     { name: 'Commercial', budget: { min: 1500, max: 10000 } },
@@ -415,7 +404,7 @@ const BookNow = () => {
     { name: 'Other', budget: { min: 1000, max: 10000 } },
   ];
 
-  const handleChangeCategoryWithBudget = (event: ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeCategoryWithBudget = (event: any) => {
     const selectedCategory = event.target.value;
     const category = categoryList.find((cat) => cat.name === selectedCategory);
 
@@ -868,7 +857,7 @@ const BookNow = () => {
                                   minDate: 'today',
                                 }}
                                 onChange={(date) => {
-                                  setMeetingTime(date[0]);
+                                  // setMeetingTime(date[0]);
                                   setValue('meeting_time', date[0]);
                                 }}
                               />
