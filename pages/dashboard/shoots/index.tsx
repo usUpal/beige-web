@@ -49,9 +49,7 @@ const Shoots = () => {
   }, []);
 
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
 
   return (
@@ -59,7 +57,7 @@ const Shoots = () => {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
         {/* Recent Shoots */}
         <div className="panel h-full w-full">
-          <div className="mb-5 md:flex items-center justify-between my-5 md:my-0 md:mb-4">
+          <div className="my-5 mb-5 items-center justify-between md:my-0 md:mb-4 md:flex">
             <h5 className="text-xl font-bold dark:text-white-light">Recent Shoots</h5>
             <input
               type="text"
@@ -100,16 +98,12 @@ const Shoots = () => {
                         </div>
                       </td>
 
-                      <td className='min-w-[140px]'>
-                        <p className='break-all '>
-                          {shoot?.id}
-                        </p>
+                      <td className="min-w-[140px]">
+                        <p className="break-all ">{shoot?.id}</p>
                       </td>
 
                       <td>
-                        <p>
-                          ${shoot.shoot_cost}
-                        </p>
+                        <p>${shoot.shoot_cost}</p>
                       </td>
 
                       {authPermissions?.includes('shoot_download') && (
@@ -124,14 +118,7 @@ const Shoots = () => {
                               Download
                             </span>
                           ) : (
-                            <span
-                              onClick={async () => {
-                                await api.downloadFolder(`${shoot.file_path.dir_name}`);
-                              }}
-                              className="badge text-md w-12 bg-gray-200 text-center text-gray-500"
-                            >
-                              Unavailable
-                            </span>
+                            <span className="badge text-md w-12 bg-gray-200 text-center text-gray-500">Unavailable</span>
                           )}
                         </td>
                       )}

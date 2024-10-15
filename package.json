@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "PORT=3050 next start",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -63,7 +63,6 @@
     "react-countup": "^6.4.1",
     "react-dom": "18.2.0",
     "react-export-table-to-excel": "^1.0.6",
-    "react-flatpickr": "^3.10.13",
     "react-hook-form": "^7.52.2",
     "react-i18next": "^12.1.5",
     "react-images-uploading": "^3.1.7",
@@ -97,7 +96,6 @@
     "@tailwindcss/typography": "^0.5.8",
     "@types/lodash": "^4.14.191",
     "@types/react-copy-to-clipboard": "^5.0.4",
-    "@types/react-flatpickr": "^3.8.8",
     "@types/react-text-mask": "^5.4.11",
     "@types/sortablejs": "^1.15.0",
     "autoprefixer": "^10.4.13",

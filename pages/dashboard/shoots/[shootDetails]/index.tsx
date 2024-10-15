@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, Fragment, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, Fragment, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import StatusBg from '@/components/Status/StatusBg';
 import { useRouter } from 'next/router';
@@ -30,6 +30,7 @@ import AccessDenied from '@/components/errors/AccessDenied';
 import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
 import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 import useCalculateAddons from '@/hooks/useCalculateAddons';
+import { format, isValid, parseISO } from 'date-fns';
 
 const ShootDetails = () => {
   const { userData, authPermissions } = useAuth();
@@ -44,10 +45,11 @@ const ShootDetails = () => {
   const [cp_ids, setCp_ids] = useState<number[]>([]);
   const [statusBox, setStatusBox] = useState<boolean>(false);
   const [status, setStatus] = useState<string>('');
-  const [metingDate, setMetingDate] = useState<string>('');
+  const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
+
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
-  // 
+  //
   const [confirmationDelAddonModal, setConfirmationDelAddonModal] = useState(false);
 
   const {
@@ -77,7 +79,7 @@ const ShootDetails = () => {
   const [updateStatus, { isLoading: isStatusLoading }] = useUpdateStatusMutation();
   const [assignCp, { isLoading: isAssignCpLoading }] = useAssignCpMutation();
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
-  const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
+  const [newMeeting, { data: meetingData, isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
   const [updateOrder, { isLoading: isUpdateOrderLoading, isSuccess }] = useUpdateOrderMutation();
   const [addAddons, { isLoading: isAddAddonsLoading }] = useAddAddonsMutation();
 
@@ -116,7 +118,7 @@ const ShootDetails = () => {
         content_vertical: shootDetailsData.content_vertical,
       });
     }
-  }, [shootDetailsData, setFormDataPageOne])
+  }, [shootDetailsData, setFormDataPageOne]);
 
   const coordinates = shootDetailsData?.geo_location?.coordinates;
   const isLocationAvailable = coordinates && coordinates.length === 2;
@@ -127,7 +129,7 @@ const ShootDetails = () => {
   const cancelIndex = rejectStatus.findIndex((status) => status.toLowerCase() === lowerCaseOrderStatus);
 
   const submitNewMeting = async () => {
-    if (!metingDate) {
+    if (!formattedMeetingTime) {
       toast.error('Input a meeting date...!');
       return;
     }
@@ -137,9 +139,9 @@ const ShootDetails = () => {
       requestData: {
         summary: shootDetailsData?.order_name ? shootDetailsData?.order_name : 'Beige Meeting',
         location: 'Online',
-        description: `Meeting to discuss ${shootDetailsData?.order_name ? shootDetailsData?.order_name : 'Beige'} order.`,
-        startDateTime: metingDate,
-        endDateTime: metingDate,
+        description: `Meeting to discuss ${data?.order_name ? data?.order_name : 'Beige'} order.`,
+        startDateTime: formattedMeetingTime,
+        endDateTime: formattedMeetingTime,
         orderId: shootId,
       },
     };
@@ -147,7 +149,7 @@ const ShootDetails = () => {
     const response = await newMeetLink(requestBody);
     if (response?.data) {
       const requestBody = {
-        meeting_date_time: metingDate,
+        meeting_date_time: formattedMeetingTime,
         meeting_status: 'pending',
         meeting_type: 'pre_production',
         order_id: shootId,
@@ -156,7 +158,7 @@ const ShootDetails = () => {
       const result = await newMeeting(requestBody);
       if (result?.data) {
         setMeetingBox(false);
-        toast.success('Meeting create success.');
+        toast.success('Meeting successfully created.');
       } else {
         toast.error('Something want wrong...!');
       }
@@ -242,80 +244,55 @@ const ShootDetails = () => {
       });
       refetch();
     } catch (error) {
-      toast.error('Error occurred while sending PATCH request');
+      console.error('Error occurred while sending PATCH request:', error);
     }
   };
+  //
+  const meetingDateTimeRef = useRef(null);
+  let flatpickrInstance = useRef(null);
 
   useEffect(() => {
-    if (formDataPageOne?.content_type?.length !== 0 && formDataPageOne?.content_vertical !== '') {
-      handleShowAddonsData();
-    }
-  }, [formDataPageOne?.content_type?.length]);
-
-  // addons_add
-  const handleAddAddon = async () => {
-    const existingAddons = shootDetailsData?.addOns;
-    const allSelectedAddons = selectedFilteredAddons;
-    const data = {
-      addOns: allSelectedAddons,
-      id: shootId
-    }
-    try {
-      const result = await addAddons(data);
-      if (result?.data) {
-        refetch();
-        toast.success('Addons Added successfully.');
-        setCpModal(false);
-        setAddonsModal(false);        
-      }
-    }
-    catch {
-      toast.error("Failed to add addon.")
-    }
-  }
-
-
-  const [delAddonsConfirmation, setDelAddonsConfirmation] = useState(false);
-
-
-
-  //  addons_cancel
-  const handleDelAddon = async (addon: addonTypes) => {
-    setConfirmationDelAddonModal(true);
-    if (!addon) {
-      return swalToast('danger', 'Invalid Addon  Cancel.');
-    }
-
-    if (!delAddonsConfirmation && !confirmationDelAddonModal) {
-      setConfirmationDelAddonModal(false);
-    }
-    const restAddons = shootDetailsData?.addOns.filter((restAddon: addonTypes) => restAddon._id !== addon._id);
-    try {
-      const updateRes = await updateOrder({
-        requestData: {
-          addOns: restAddons,
+    if (meetingDateTimeRef.current) {
+      // Initialize flatpickr and store the instance
+      flatpickrInstance.current = flatpickr(meetingDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onClose: (selectedDates, dateStr) => {
+          handleOnMeetingDateTimeChange(dateStr);
         },
-        id: shootId,
       });
 
-      if (!updateRes.data) {
-        toast.error("Error while Updating.")
-      }
-
-      toast.success("Addons Deleted Successfully.")
-      refetch();
-
-    } catch (error) {
-      toast.error('Failed to delete addon.');
+      // Debug to ensure flatpickr is initialized
+      // console.log('Flatpickr initialized:', flatpickrInstance.current);
     }
 
+    // Cleanup function to destroy flatpickr instance
+    return () => {
+      if (flatpickrInstance.current) {
+        flatpickrInstance.current.destroy();
+      }
+    };
+  }, [meetingBox]);
 
+  const handleOnMeetingDateTimeChange = (dateStr) => {
+    try {
+      const e_time = parseISO(dateStr);
+      if (!isValid(e_time)) {
+        return;
+      }
+      const formattedTime = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      setFormattedMeetingTime(formattedTime);
+    } catch (error) {
+      console.error('Date parsing error', error);
+    }
   };
-
+  // ========
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
 
   return (
@@ -376,7 +353,6 @@ const ShootDetails = () => {
 
             <div className="items-center justify-between md:mb-4 md:flex">
               <div className="mb-4 basis-[45%] flex-row space-y-5">
-
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Date & Time</label>
                   {shootDetailsData?.shoot_datetimes && (
@@ -384,7 +360,7 @@ const ShootDetails = () => {
                       {shootDetailsData?.shoot_datetimes?.map((time: any, key: number) => (
                         <div key={key} className="space-x-4">
                           <span className="font-sans text-black">{formatDateAndTime(time?.start_date_time)} </span>
-                          <span className="font-sans text-black capitalize font-semibold">to</span>
+                          <span className="font-sans font-semibold capitalize text-black">to</span>
                           <span className="font-sans text-black">{formatDateAndTime(time?.end_date_time)} </span>
                         </div>
                       ))}
@@ -402,13 +378,8 @@ const ShootDetails = () => {
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Shoot Cost</label>
-                  {shootDetailsData?.payment?.payment_status && (
-                    <div className="ml-12 mt-1 flex-1 md:ml-3 md:mt-0">
-                      ${shootDetailsData?.shoot_cost ?? ''}
-                    </div>
-                  )}
+                  {shootDetailsData?.payment?.payment_status && <div className="ml-12 mt-1 flex-1 md:ml-3 md:mt-0">${shootDetailsData?.shoot_cost ?? ''}</div>}
                 </div>
-
               </div>
               <div className="mb-4 basis-[45%]">
                 <div style={{ height: '200px', width: '100%' }}>
@@ -434,7 +405,6 @@ const ShootDetails = () => {
 
             <div className="items-center justify-between md:mb-4 md:flex">
               <div className="mb-4 basis-[45%] flex-row space-y-5">
-
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
                   <label className="mb-3 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 md:mb-0">Payment Status</label>
                   {shootDetailsData?.payment?.payment_status && (
@@ -459,7 +429,6 @@ const ShootDetails = () => {
                     <span className="font-sans capitalize text-black">{shootDetailsData?.description ?? ''}</span>
                   </div>
                 </div>
-
               </div>
 
               {/* Select Addons */}
@@ -468,7 +437,12 @@ const ShootDetails = () => {
                   <label className="mb-0 font-sans text-[14px] capitalize">AddOns List</label>
                   {userData?.role === 'admin' && (
                     <div className="flex gap-3">
-                      <button onClick={() => {setAddonsModal(!addonsModal), setSelectedFilteredAddons(shootDetailsData?.addOns)}} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
+                      <button
+                        onClick={() => {
+                          setAddonsModal(!addonsModal), setSelectedFilteredAddons(shootDetailsData?.addOns);
+                        }}
+                        className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white"
+                      >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
@@ -477,23 +451,21 @@ const ShootDetails = () => {
                     </div>
                   )}
                 </div>
-                <div className="ml-0 md:ml-10 mt-1 2xl:flex-1 md:mt-0 w-full">
+                <div className="ml-0 mt-1 w-full md:ml-10 md:mt-0 2xl:flex-1">
                   {shootDetailsData?.addOns?.length > 0 && (
                     <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded">
-                      <ul className='md:pl-5 pl-0'>
+                      <ul className="pl-0 md:pl-5">
                         {shootDetailsData?.addOns?.map((addon: addonTypes, key: number) => (
-                          <li key={key} className="h-12 md:h-8 gap-4 flex items-center list-none justify-start">
-                            <div className='h-2 w-2 bg-black rounded-full'></div>
+                          <li key={key} className="flex h-12 list-none items-center justify-start gap-4 md:h-8">
+                            <div className="h-2 w-2 rounded-full bg-black"></div>
                             <span className="flex-1">
                               {addon?.title ?? ''} for {addon?.hours} hours
                             </span>
-                            <span className='flex items-center xl:mr-10'>
+                            <span className="flex items-center xl:mr-10">
                               {userData?.role === 'admin' ? (
                                 <Tippy content="Cancel">
-                                  <button
-                                    onClick={() => handleDelAddon(addon)}
-                                    className={`rounded p-1 text-white`}>
-                                    <span className="badge text-dark hover:text-danger duration-300">{allSvgs.closeBtnCp}</span>
+                                  <button onClick={() => handleDelAddon(addon)} className={`rounded p-1 text-white`}>
+                                    <span className="badge text-dark duration-300 hover:text-danger">{allSvgs.closeBtnCp}</span>
                                   </button>
                                 </Tippy>
                               ) : null}
@@ -511,34 +483,27 @@ const ShootDetails = () => {
               {/* Schedule Meeting */}
 
               <div className="mb-4 basis-[45%] flex-row space-y-5">
-                {userData?.role === 'user' || userData?.role === "admin" && (
+                {(userData?.role === 'user' || 'admin') && (
                   <div className="flex space-x-3">
-                    <button className="rounded-lg bg-black py-2 font-sans font-semibold text-white px-4 text-[14px]" onClick={() => setMeetingBox(!meetingBox)}>
+                    <button className="rounded-lg bg-black px-4 py-2 font-sans text-[14px] font-semibold text-white" onClick={() => setMeetingBox(!meetingBox)}>
                       Schedule Meeting
                     </button>
                     {meetingBox && (
                       <div className="flex space-x-2">
-                        <Flatpickr
-                          id="meeting_time"
-                          className={`cursor-pointer rounded-sm border border-black px-2 lg:w-[240px]`}
-                          value={metingDate}
-                          placeholder="Meeting time ..."
-                          options={{
-                            altInput: true,
-                            altFormat: 'F j, Y h:i K',
-                            dateFormat: 'Y-m-d H:i',
-                            enableTime: true,
-                            time_24hr: false,
-                            minDate: 'today',
-                          }}
-                          onChange={(date: Date[]) => setMetingDate(date[0])}
+                        <input
+                          type="text"
+                          id="meeting_time_shoot_details"
+                          ref={meetingDateTimeRef}
+                          className="cursor-pointer rounded-sm border border-black px-2 lg:w-[240px]"
+                          placeholder="Meeting time"
+                          required={formattedMeetingTime}
                         />
                         <button
-                          disabled={isNewMeetingLoading === true ? true : false}
+                          disabled={isNewMeetingLoading || isNewMeetLinkLoading}
                           onClick={submitNewMeting}
                           className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                         >
-                          {isNewMeetingLoading === true ? (
+                          {isNewMeetingLoading || isNewMeetLinkLoading ? (
                             <Loader />
                           ) : (
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -553,7 +518,9 @@ const ShootDetails = () => {
 
                 {userData?.role === 'admin' && (
                   <div className="flex space-x-3">
-                    <DefaultButton onClick={() => setStatusBox(!statusBox)} css='font-semibold'>Change Status</DefaultButton>
+                    <DefaultButton onClick={() => setStatusBox(!statusBox)} css="font-semibold">
+                      Change Status
+                    </DefaultButton>
                     {statusBox && (
                       <div className="flex space-x-2">
                         <select name="" id="" onChange={(event) => setStatus(event?.target?.value)} className="rounded-sm border border-black px-2 lg:w-[240px]">
@@ -734,8 +701,9 @@ const ShootDetails = () => {
                             aria-hidden="true"
                           ></span>
                           <div
-                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
-                              } transition-all duration-200`}
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
+                              status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
+                            } transition-all duration-200`}
                           >
                             {status === 'Cancelled' ? (
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -776,19 +744,11 @@ const ShootDetails = () => {
         <div>
           <Transition appear show={confirmationDelAddonModal} as={Fragment}>
             <Dialog as="div" open={confirmationDelAddonModal} onClose={() => setConfirmationDelAddonModal(false)}>
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
+              <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
                 <div className="fixed inset-0" />
               </Transition.Child>
-              <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto">
-                <div className="flex items-start justify-center min-h-screen px-4">
+              <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                <div className="flex min-h-screen items-start justify-center px-4">
                   <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -798,20 +758,18 @@ const ShootDetails = () => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden  w-full max-w-sm lg:my-8 xl:my-32 text-black dark:text-white-dark">
-                      <div className="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
-                        <h5 className="font-bold text-lg">Modal Title</h5>
+                    <Dialog.Panel className="panel w-full max-w-sm overflow-hidden rounded-lg  border-0 p-0 text-black dark:text-white-dark lg:my-8 xl:my-32">
+                      <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
+                        <h5 className="text-lg font-bold">Modal Title</h5>
                         <button onClick={() => setConfirmationDelAddonModal(false)} type="button" className="text-white-dark hover:text-dark">
                           x
                         </button>
                       </div>
                       <div className="p-5">
-                        <div className="dark:text-white-dark/70 text-base font-medium text-[#1f2937]">
-                          <p>
-                            Are you sure want to delete this addon?
-                          </p>
+                        <div className="text-base font-medium text-[#1f2937] dark:text-white-dark/70">
+                          <p>Are you sure want to delete this addon?</p>
                         </div>
-                        <div className="flex justify-end items-center mt-8">
+                        <div className="mt-8 flex items-center justify-end">
                           <button onClick={() => setConfirmationDelAddonModal(false)} type="button" className="btn btn-outline-danger">
                             No
                           </button>
@@ -828,7 +786,6 @@ const ShootDetails = () => {
           </Transition>
         </div>
 
-
         <Transition appear show={addonsModal} as={Fragment}>
           <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
@@ -840,11 +797,11 @@ const ShootDetails = () => {
                       {allSvgs.closeModalSvg}
                     </button>
                   </div>
-                  <div className="basis-[45%]  md:pe-5 py-2">
+                  <div className="basis-[45%]  py-2 md:pe-5">
                     <>
                       <div className="panel mb-8 basis-[49%] rounded-[10px] px-7 py-5">
                         <label className="ml-2 mr-2 sm:ml-0 sm:w-1/4">Select Addons</label>
-                        <div className="flex flex-col sm:flex-row w-full">
+                        <div className="flex w-full flex-col sm:flex-row">
                           <div className="flex-1">
                             <div className="table-responsive ">
                               <table className="w-full">
@@ -913,9 +870,7 @@ const ShootDetails = () => {
                           </div>
                         </div>
                         <div className="flex justify-end">
-                          <DefaultButton
-                            onClick={handleAddAddon}
-                            disabled={false} css="mt-5">
+                          <DefaultButton onClick={handleAddAddon} disabled={false} css="mt-5">
                             Add Addons
                           </DefaultButton>
                         </div>
@@ -942,7 +897,7 @@ const ShootDetails = () => {
                       {allSvgs.closeModalSvg}
                     </button>
                   </div>
-                  <div className="basis-[45%]  md:pe-5 py-2">
+                  <div className="basis-[45%]  py-2 md:pe-5">
                     <div className="mb-2 flex justify-end">
                       <input
                         onChange={(event) => setQuery(event.target.value)}
@@ -980,8 +935,9 @@ const ShootDetails = () => {
                               <div className="mt-3 flex">
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
-                                    } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
+                                    isSelected ? 'bg-red-500' : 'bg-black'
+                                  } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
                                 </p>

@@ -2,15 +2,42 @@
 import axiosLib from 'axios';
 import config from '../../config';
 import { toast } from 'react-toastify';
+import Cookies from 'js-cookie';
+
 const axios = axiosLib.create({
   baseURL: config.APIEndpoint,
 });
+let refreshToken;
+let reqConfig;
 
-const reqConfig = (obj) => ({
-  headers: {
-    Authorization: `Bearer ${obj.idToken}`,
-  },
-});
+try {
+  const refreshTokenCookie = Cookies.get('refreshToken');
+  if (refreshTokenCookie) {
+    refreshToken = JSON.parse(refreshTokenCookie);
+    reqConfig = () => ({
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${refreshToken.token}`,
+      },
+    });
+  } else {
+    console.warn('No refresh token found in cookies');
+    refreshToken = null;
+    reqConfig = () => ({
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+} catch (error) {
+  console.error('Error parsing refresh token:', error);
+  refreshToken = null;
+  reqConfig = () => ({
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
 
 export default {
   idToken: null,
@@ -129,7 +156,6 @@ export default {
     }
   },
   postFile(uploadPolicy, file, progressCb) {
-    console.log('🚀 ~ postFile ~ file:', file);
     try {
       const data = new FormData();
       for (const [key, value] of Object.entries(uploadPolicy.fields)) {
@@ -199,21 +225,42 @@ export default {
   //   }
   // },
   async downloadFolder(folderpath) {
-    const toastId = toast.loading('Downloading...');
+    const toastId = toast.loading('Preparing download...');
+    let totalSize;
+    let progress;
+    let isCompleted = false;
 
     try {
-      const res = await axios.get(`/download-folder?folderpath=${encodeURIComponent(folderpath)}`, {
-        responseType: 'blob', // Important for downloading files
+      // Step 1: Fetch the file metadata (specifically, the total size)
+      const headResponse = await axios.head(`/download-folder?folderpath=${encodeURIComponent(folderpath)}`);
+      totalSize = parseInt(headResponse.headers['x-total-size'], 10);
+      const totalMB = (totalSize / (1024 * 1024)).toFixed(2); // Convert to MB
+      toast.update(toastId, { render: `Starting download...` });
+
+      // Step 2: Fetch the file data and track progress
+      const response = await axios.get(`/download-folder?folderpath=${encodeURIComponent(folderpath)}`, {
+        responseType: 'blob',
         onDownloadProgress: (progressEvent) => {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          if (isCompleted) return; // Skip progress updates if download is already marked as complete
+
+          const downloadedSize = progressEvent.loaded;
+          const downloadedMB = (downloadedSize / (1024 * 1024)).toFixed(2); // Convert to MB
+          progress = Math.min(0.99, Math.round((downloadedSize * 100) / totalSize) / 100);
+
           toast.update(toastId, {
-            render: `Downloading...`,
-            progress: progress / 100,
+            // render: `Downloading... ${downloadedMB} MB / ${totalMB} MB (${(progress * 100).toFixed(2)}%)`,
+            render: `Downloading... ${downloadedMB}/${totalMB} MB `,
+            type: 'info',
+            progress: progress,
           });
         },
       });
 
-      const blob = new Blob([res.data], { type: 'application/zip' });
+      // Mark download as complete
+      isCompleted = true;
+
+      // Step 3: Create a blob URL and trigger the download
+      const blob = new Blob([response.data], { type: 'application/zip' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.style.display = 'none';
@@ -221,21 +268,24 @@ export default {
       a.download = `${folderpath.split('/').pop()}.zip`;
       document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-
+      // Update toast to 100% after download is complete
+      progress = 1;
       toast.update(toastId, {
-        render: 'Download completed!',
+        render: `Download completed! File size:${totalMB}MB`,
         type: 'success',
         isLoading: false,
-        autoClose: 5000,
+        autoClose: 3000,
+        progress: progress,
       });
     } catch (error) {
       console.error(`Error in downloadFolder for ${folderpath}:`, error);
       toast.update(toastId, {
-        render: 'Download failed!',
+        render: `Download failed!`,
         type: 'error',
         isLoading: false,
-        autoClose: 5000,
+        autoClose: 3000,
       });
       throw error;
     }

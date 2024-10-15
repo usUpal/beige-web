@@ -8,7 +8,6 @@ import { swalToast } from '@/utils/Toast/SwalToast';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format, isValid, parseISO } from 'date-fns';
-import 'flatpickr/dist/flatpickr.css';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -20,6 +19,7 @@ import { useAuth } from '@/contexts/authContext';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Flatpickr from 'react-flatpickr';
+import { API_ENDPOINT } from '@/config';
 import { useLazyGetAlgoCpQuery, usePostOrderMutation, useUpdateOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';
 import { useNewMeetLinkMutation, useNewMeetingMutation } from '@/Redux/features/meeting/meetingApi';
@@ -96,6 +96,9 @@ const BookNow = () => {
   const [showClientDropdown, setShowClientDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const [isClientLoading, setIsClientLoading] = useState(false);
+  const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
+  const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
+  const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
 
   const [newMeetLink, { isLoading: isNewMeetLinkLoading }] = useNewMeetLinkMutation();
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
@@ -148,12 +151,14 @@ const BookNow = () => {
 
   const startDateTimeRef = useRef(null);
   const endDateTimeRef = useRef(null);
+  const meetingDateTimeRef = useRef(null);
+  let flatpickrInstance = useRef(null);
 
   const handleBack = () => {
     setActiveTab((prev) => (prev === 3 ? 2 : 1));
     setTimeout(() => {
       if (startDateTimeRef.current) {
-        flatpickr(startDateTimeRef.current, {
+        flatpickrInstance.current = flatpickr(startDateTimeRef.current, {
           altInput: true,
           altFormat: 'F j, Y h:i K',
           dateFormat: 'Y-m-d H:i',
@@ -167,7 +172,7 @@ const BookNow = () => {
       }
 
       if (endDateTimeRef.current) {
-        flatpickr(endDateTimeRef.current, {
+        flatpickrInstance.current = flatpickr(endDateTimeRef.current, {
           altInput: true,
           altFormat: 'F j, Y h:i K',
           dateFormat: 'Y-m-d H:i',
@@ -184,7 +189,7 @@ const BookNow = () => {
 
   useEffect(() => {
     if (startDateTimeRef.current) {
-      flatpickr(startDateTimeRef.current, {
+      flatpickrInstance.current = flatpickr(startDateTimeRef.current, {
         altInput: true,
         altFormat: 'F j, Y h:i K',
         dateFormat: 'Y-m-d H:i',
@@ -209,6 +214,26 @@ const BookNow = () => {
         },
       });
     }
+    if (meetingDateTimeRef.current) {
+      flatpickr(meetingDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onChange: (selectedDates, dateStr) => {
+          handelOnMeetingDateTimeChange(dateStr);
+        },
+      });
+    }
+
+    // Cleanup function to destroy flatpickr instance
+    return () => {
+      if (flatpickrInstance.current) {
+        flatpickrInstance.current.destroy();
+      }
+    };
   }, []);
 
   const handleChangeStartDateTime = (dateStr: any) => {
@@ -219,7 +244,7 @@ const BookNow = () => {
       }
       const starting_date = format(s_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setStartDateTime(starting_date);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const handleChangeEndDateTime = (dateStr: any) => {
@@ -230,7 +255,27 @@ const BookNow = () => {
       }
       const ending_date = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setEndDateTime(ending_date);
-    } catch (error) { }
+    } catch (error) {}
+  };
+  const handelOnMeetingDateTimeChange = (dateStr) => {
+    try {
+      const e_time = parseISO(dateStr);
+      if (!isValid(e_time)) {
+        return;
+      }
+      const formattedTime = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      setFormattedMeetingTime(formattedTime);
+    } catch (error) {}
+  };
+  const handelOnMeetingDateTimeChange = (dateStr) => {
+    try {
+      const e_time = parseISO(dateStr);
+      if (!isValid(e_time)) {
+        return;
+      }
+      const formattedTime = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      setFormattedMeetingTime(formattedTime);
+    } catch (error) {}
   };
 
   const addDateTime = () => {
@@ -299,7 +344,6 @@ const BookNow = () => {
     setCurrentPage(page);
   };
 
-
   const handleSelectProducer = (cp: any) => {
     const newCp = {
       id: cp?.userId?._id,
@@ -319,7 +363,6 @@ const BookNow = () => {
     }
   };
 
-  const [meetingTime, setMeetingTime] = useState(null);
   const convertToISO = (datetime: any) => {
     const date = new Date(datetime);
     const isoDate = date.toISOString();
@@ -362,6 +405,7 @@ const BookNow = () => {
   const [myMaxBud, setMyMaxBud] = useState<BudgetData>(0);
   const [myMinBud, setMyMinBud] = useState<BudgetData>(0);
 
+  // set category data for the ui
   const categoryList: CategoryListData[] = [
     { name: 'Commercial', budget: { min: 1500, max: 10000 } },
     { name: 'Corporate', budget: { min: 1500, max: 10000 } },
@@ -417,7 +461,6 @@ const BookNow = () => {
           addOns_cost: allAddonRates,
           shoot_cost: selectedFilteredAddons.length > 0 ? allRates : shootCosts,
         };
-
         if (Object.keys(formattedData).length > 0) {
           setIsLoading(true);
           setFormDataPageOne(formattedData);
@@ -459,9 +502,9 @@ const BookNow = () => {
 
           if (updateRes?.data) {
             toast.success('Shoot has been created successfully');
-            if (data.meeting_time) {
-              const meeting_time = convertToISO(data.meeting_time);
-              const meetingInfo = await getMeetingLink(updateRes?.data, meeting_time);
+            if (formattedMeetingTime) {
+              // const meeting_time = convertToISO(formattedMeetingTime);
+              const meetingInfo = await getMeetingLink(updateRes?.data, formattedMeetingTime);
               if (meetingInfo) {
                 toast.success('Meeting has been created successfully!');
               }
@@ -711,7 +754,7 @@ const BookNow = () => {
                       </div>
 
                       {/* Shoot Timings */}
-                      <div className="mt-5 mb-0 lg:mb-6">
+                      <div className="mb-0 mt-5 lg:mb-6">
                         <div className="mb-8 w-full items-center justify-between md:flex">
                           {/* Starting Date and Time */}
                           <div className="flex w-full flex-col sm:flex-row md:mb-0">
@@ -799,11 +842,11 @@ const BookNow = () => {
                       {/* {userData?.role === 'admin' && ( */}
                       <div className={` ${userData?.role === 'admin' ? 'mt-4' : ''} w-full flex-col items-center justify-between md:mt-0 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32`}>
                         {/* Special Note */}
-                        <div className={`flex flex-col sm:flex-row ${userData?.role === 'admin' ? 'w-full' : '2xl:w-[45%]  md:w-[50%]'}`}>
-                          <label htmlFor="description" className="mb-0 2xl:w-[160px] xl:w-[105px] md:w-[100px] rtl:ml-2 sm:ltr:mr-2">
+                        <div className={`flex flex-col sm:flex-row ${userData?.role === 'admin' ? 'w-full' : 'md:w-[50%]  2xl:w-[45%]'}`}>
+                          <label htmlFor="description" className="mb-0 rtl:ml-2 sm:ltr:mr-2 md:w-[100px] xl:w-[105px] 2xl:w-[160px]">
                             Special Note
                           </label>
-                          <textarea id="description" rows={1} className="form-textarea 2xl:ml-5 xl:ml-2" placeholder="Type your note here..." {...register('description')}></textarea>
+                          <textarea id="description" rows={1} className="form-textarea xl:ml-2 2xl:ml-5" placeholder="Type your note here..." {...register('description')}></textarea>
                         </div>
                         {userData?.role === 'admin' && (
                           <div className="mb-3 mt-3  flex w-full flex-col sm:mt-0 sm:flex-row md:mb-0">
@@ -902,8 +945,9 @@ const BookNow = () => {
                                   </Link>
                                   <p
                                     onClick={() => handleSelectProducer(cp)}
-                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
-                                      } px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none md:px-[20px] md:py-[12px]`}
+                                    className={` inline-block cursor-pointer rounded-[10px] border border-solid ${
+                                      isSelected ? 'border-[#eb5656] bg-white text-red-500' : 'border-[#C4C4C4] bg-white text-black'
+                                    } px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none md:px-[20px] md:py-[12px]`}
                                   >
                                     {isSelected ? 'Remove' : 'Select'}
                                   </p>
@@ -921,7 +965,7 @@ const BookNow = () => {
                       </div>
 
                       {/* pagination */}
-                      <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                      <div className="mt-4 flex justify-center md:justify-end ">
                         <ResponsivePagination current={currentPage} total={allAlgoCp?.results?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
                       </div>
                     </div>
@@ -953,9 +997,13 @@ const BookNow = () => {
                                     {filteredAddonsData?.map((addon: addonTypes, index) => (
                                       <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                                         <td className="min-w-[20px] px-4 py-2">
-                                          <input type="checkbox" className="form-checkbox"
-                                            //  defaultValue={addon} 
-                                            id={`addon_${index}`} onChange={() => handleCheckboxChange(addon)} />
+                                          <input
+                                            type="checkbox"
+                                            className="form-checkbox"
+                                            //  defaultValue={addon}
+                                            id={`addon_${index}`}
+                                            onChange={() => handleCheckboxChange(addon)}
+                                          />
                                         </td>
                                         <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
 
@@ -969,7 +1017,7 @@ const BookNow = () => {
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
-                                            // disabled={disableInput}
+                                              // disabled={disableInput}
                                             />
                                           ) : (
                                             'N/A'
@@ -1073,21 +1121,18 @@ const BookNow = () => {
 
                 {/* page end buttons */}
                 <div className="flex justify-between">
-                  <button
-                    type="button"
-                    className={`btn flex flex-col items-center justify-center rounded-lg
-                    bg-black text-[14px] font-bold capitalize text-white outline-none ${activeTab === 1 ? 'hidden' : ''}`}
-                    onClick={() => handleBack()}
-                  >
-                    Back
-                  </button>
-
-                  {/* <DefaultButton
-                    onClick={() => handleBack()}
-                    css={`btn flex flex-col items-center justify-center ${activeTab === 1 ? 'hidden' : ''}`}
-                  >
-                    Backk
-                  </DefaultButton> */}
+                  {activeTab === 1 || activeTab === 2 ? (
+                    <p></p>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`btn flex flex-col items-center justify-center rounded-lg
+                    bg-black text-[14px] font-bold capitalize text-white outline-none`}
+                      onClick={() => handleBack()}
+                    >
+                      Back
+                    </button>
+                  )}
 
                   {activeTab === 2 && (
                     <DefaultButton css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`} disabled={isLoading}>

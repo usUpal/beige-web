@@ -19,6 +19,7 @@ const Auth = () => {
 
   useEffect(() => {
     dispatch(setPageTitle('Login'));
+    router.push('/');
   });
 
   const router = useRouter();
