@@ -1,4 +1,4 @@
-function formatDateAndTime(isoString) {
+function formatDateAndTime(isoString:any) {
   const date = new Date(isoString);
 
   if (isNaN(date)) {

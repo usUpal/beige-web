@@ -187,6 +187,7 @@ const ShootDetails = () => {
     if (result?.data) {
       refetch();
       toast.success('Shoot status updated');
+      setStatusBox(false);
     }
   };
 

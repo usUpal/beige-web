@@ -340,27 +340,30 @@ const Chat = () => {
             {data?.results?.map((chat: any) => {
               return (
                 <div key={chat?.id} className="">
-                  <button
-                    type="button"
-                    className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
-                      }`}
-                    onClick={() => selectUser(chat)}
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-start">
-                        <div className="relative flex-shrink-0">
-                          <MakeProfileImage>{chat.order_id?.order_name}</MakeProfileImage>
-                        </div>
-                        <div className="mx-3 ltr:text-left rtl:text-right">
-                          <p className="mb-1 font-semibold">{truncateLongText(chat?.order_id?.order_name, 20)}</p>
-                          <p className="max-w-[185px] truncate text-xs text-white-dark">{chat.last_message ? chat.last_message?.message : ''}</p>
+                  {
+                    chat?.order_id?.order_name &&
+                    <button
+                      type="button"
+                      className={`flex w-full items-center justify-between rounded-md p-2 hover:bg-gray-100 hover:text-primary dark:hover:bg-[#050b14] dark:hover:text-primary ${selectedChatRoom && selectedChatRoom?.id === chat.id ? 'bg-gray-100 text-primary dark:bg-[#050b14] dark:text-primary' : ''
+                        }`}
+                      onClick={() => selectUser(chat)}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-start">
+                          <div className="relative flex-shrink-0">
+                            <MakeProfileImage>{chat.order_id?.order_name}</MakeProfileImage>
+                          </div>
+                          <div className="mx-3 ltr:text-left rtl:text-right">
+                            <p className="mb-1 font-semibold">{truncateLongText(chat?.order_id?.order_name, 20)}</p>
+                            <p className="max-w-[185px] truncate text-xs text-white-dark">{chat.last_message ? chat.last_message?.message : 'No messages'}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="whitespace-nowrap text-xs font-semibold">
-                      <p>00:00</p>
-                    </div>
-                  </button>
+                      <div className="whitespace-nowrap text-xs font-semibold">
+                        <p>00:00</p>
+                      </div>
+                    </button>
+                  }
                 </div>
               );
             })}
