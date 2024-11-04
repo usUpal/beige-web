@@ -164,7 +164,7 @@ const Disputes = () => {
                   <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Dispute Details </h2>
 
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setDisputeModal(false)}>
-                    {allSvgs.closeModalSvg}
+                    {allSvgs.closeIconSvg}
                   </button>
                 </div>
 
@@ -199,45 +199,37 @@ const Disputes = () => {
                       </p>
 
                       <div className="flex flex-col md:mt-0">
-                        {userRole === "admin" ?
-                          (
-                            <>
-                              <span className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">Status</span>
-                              <select
-                                ref={statusRef}
-                                className=" h-9 w-auto rounded  border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
-                                name="status"
-                                defaultValue={disputeInfo?.status}
-                              >
-                                <option value={'pending'}>Pending</option>
-                                <option value={'approved'}>Approved</option>
-                                <option value={'rejected'}>Rejected</option>
-                              </select>
-                            </>
-                          ) :
-                          (
-                            <>
-                              <span className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">Status:</span>
-                              <StatusBg>{disputeInfo?.status}</StatusBg>
-                            </>
-                          )
-                        }
+                        {userRole === 'admin' ? (
+                          <>
+                            <span className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">Status</span>
+                            <select
+                              ref={statusRef}
+                              className=" h-9 w-auto rounded  border border-gray-300 bg-gray-50 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-72"
+                              name="status"
+                              defaultValue={disputeInfo?.status}
+                            >
+                              <option value={'pending'}>Pending</option>
+                              <option value={'approved'}>Approved</option>
+                              <option value={'rejected'}>Rejected</option>
+                            </select>
+                          </>
+                        ) : (
+                          <>
+                            <span className="my-[5px] block text-[16px] font-bold leading-[18.2px] text-[#000000]">Status:</span>
+                            <StatusBg>{disputeInfo?.status}</StatusBg>
+                          </>
+                        )}
                       </div>
-
-
-
                     </div>
                   </div>
                 </div>
 
-                <div className="mr-0 md:mr-5 mt-8 flex justify-center md:justify-end">
-
-                  {userRole === 'admin' &&
+                <div className="mr-0 mt-8 flex justify-center md:mr-5 md:justify-end">
+                  {userRole === 'admin' && (
                     <DefaultButton onClick={() => handleUpdateStatusSubmit(disputeInfo?.id)} css="" type="submit">
                       Update
                     </DefaultButton>
-                  }
-
+                  )}
                 </div>
               </Dialog.Panel>
             </div>

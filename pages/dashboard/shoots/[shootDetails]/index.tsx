@@ -49,13 +49,12 @@ const ShootDetails = () => {
   const [metingDate, setMetingDate] = useState<string>('');
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
-  // 
+  //
   const [confirmationDelAddonModal, setConfirmationDelAddonModal] = useState(false);
   const [delAddonsConfirmation, setDelAddonsConfirmation] = useState(false);
 
-  // 
+  //
   const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
-
 
   const {
     data: shootDetailsData,
@@ -123,7 +122,7 @@ const ShootDetails = () => {
         content_vertical: shootDetailsData.content_vertical,
       });
     }
-  }, [shootDetailsData, setFormDataPageOne])
+  }, [shootDetailsData, setFormDataPageOne]);
 
   const coordinates = shootDetailsData?.geo_location?.coordinates;
   const isLocationAvailable = coordinates && coordinates.length === 2;
@@ -209,8 +208,7 @@ const ShootDetails = () => {
   };
 
   const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page)
-      ;
+    setCurrentPage(page);
   }, []);
 
   // updateCps or add cp
@@ -293,7 +291,6 @@ const ShootDetails = () => {
     };
   }, [meetingBox]);
 
-
   useEffect(() => {
     if (formDataPageOne?.content_type?.length !== 0 && formDataPageOne?.content_vertical !== '') {
       handleShowAddonsData();
@@ -306,8 +303,8 @@ const ShootDetails = () => {
     const allSelectedAddons = selectedFilteredAddons;
     const data = {
       addOns: allSelectedAddons,
-      id: shootId
-    }
+      id: shootId,
+    };
     try {
       const result = await addAddons(data);
       if (result?.data) {
@@ -316,11 +313,10 @@ const ShootDetails = () => {
         setCpModal(false);
         setAddonsModal(false);
       }
+    } catch {
+      toast.error('Failed to add addon.');
     }
-    catch {
-      toast.error("Failed to add addon.")
-    }
-  }
+  };
 
   //  addons_cancel
   const handleDelAddon = async (addon: addonTypes) => {
@@ -342,12 +338,11 @@ const ShootDetails = () => {
       });
 
       if (!updateRes.data) {
-        toast.error("Error while Updating.")
+        toast.error('Error while Updating.');
       }
 
-      toast.success("Addons Deleted Successfully.")
+      toast.success('Addons Deleted Successfully.');
       refetch();
-
     } catch (error) {
       toast.error('Failed to delete addon.');
     }
@@ -426,15 +421,18 @@ const ShootDetails = () => {
 
                         return (
                           <div key={key} className="space-x-4">
-                            <span className="font-sans text-black">{startDate} at {startTime}</span>
+                            <span className="font-sans text-black">
+                              {startDate} at {startTime}
+                            </span>
                             <span className="font-sans font-semibold capitalize text-black">to</span>
-                            <span className="font-sans text-black">{endDate} at {endTime}</span>
+                            <span className="font-sans text-black">
+                              {endDate} at {endTime}
+                            </span>
                           </div>
                         );
                       })}
                     </div>
                   )}
-
                 </div>
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
@@ -770,8 +768,9 @@ const ShootDetails = () => {
                             aria-hidden="true"
                           ></span>
                           <div
-                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
-                              } transition-all duration-200`}
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 text-white ${
+                              status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
+                            } transition-all duration-200`}
                           >
                             {status === 'Cancelled' ? (
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
@@ -862,7 +861,7 @@ const ShootDetails = () => {
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                     <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Add Addons </div>
                     <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
-                      {allSvgs.closeModalSvg}
+                      {allSvgs.closeIconSvg}
                     </button>
                   </div>
                   <div className="basis-[45%]  py-2 md:pe-5">
@@ -895,7 +894,7 @@ const ShootDetails = () => {
                                             id={`addon_${index}`}
                                             checked={isSelected}
                                             onChange={() => handleCheckboxChange(addon)}
-                                          // disabled={isSelected}
+                                            // disabled={isSelected}
                                           />
                                         </td>
                                         <td className="min-w-[120px] px-4 py-2">{addon?.title}</td>
@@ -962,7 +961,7 @@ const ShootDetails = () => {
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                     <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Assign CP's </div>
                     <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setCpModal(false)}>
-                      {allSvgs.closeModalSvg}
+                      {allSvgs.closeIconSvg}
                     </button>
                   </div>
                   <div className="basis-[45%]  py-2 md:pe-5">
@@ -1003,8 +1002,9 @@ const ShootDetails = () => {
                               <div className="mt-3 flex">
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${isSelected ? 'bg-red-500' : 'bg-black'
-                                    } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
+                                    isSelected ? 'bg-red-500' : 'bg-black'
+                                  } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
                                 </p>

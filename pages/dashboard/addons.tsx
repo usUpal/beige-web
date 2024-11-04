@@ -81,7 +81,6 @@ const Addons = () => {
   };
 
   const handleUpdateAddOns = async (data: any) => {
-
     const updatedAddonDetails = {
       title: addonsInfo?.title || data?.title,
       rate: addonsInfo?.rate || data?.rate,
@@ -90,7 +89,7 @@ const Addons = () => {
       status: addonsInfo?.status || data?.status || false,
     };
     if (updatedAddonDetails.rate < 0) {
-      return toast.error("Rate Must be a positive value.")
+      return toast.error('Rate Must be a positive value.');
     }
 
     const requestBody: any = {
@@ -209,8 +208,9 @@ const Addons = () => {
                       <Tab as={Fragment} key={index}>
                         {({ selected }) => (
                           <button
-                            className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${selected ? 'bg-success text-white outline-none' : ''
-                              }`}
+                            className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${
+                              selected ? 'bg-success text-white outline-none' : ''
+                            }`}
                             title={category}
                           >
                             {category}
@@ -304,19 +304,19 @@ const Addons = () => {
               </Tab.Group>
             </div>
           </div>
-        </div >
+        </div>
 
         {/* modal for update  button starts */}
         <Transition appear show={addonsModal} as={Fragment}>
           <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
               <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                <Dialog.Panel as="div" className="panel my-24   w-[80%] overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-3/5 lg:w-3/6 2xl:w-2/5 md:px-0">
+                <Dialog.Panel as="div" className="panel my-24   w-[80%] overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-3/5 md:px-0 lg:w-3/6 2xl:w-2/5">
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
                     <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
 
                     <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
-                      {allSvgs.closeModalSvg}
+                      {allSvgs.closeIconSvg}
                     </button>
                   </div>
 
@@ -355,7 +355,7 @@ const Addons = () => {
                               <input
                                 type="number"
                                 {...register('ExtendRate', {
-                                  min: 0
+                                  min: 0,
                                 })}
                                 onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
                                 value={addonsInfo?.ExtendRate || 0}
@@ -429,7 +429,7 @@ const Addons = () => {
                     <h2 className="text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Add Addons </h2>
 
                     <button type="button" className=" text-white-dark hover:text-dark" onClick={() => setAddonsAddBtnModal(false)}>
-                      {allSvgs.closeModalSvg}
+                      {allSvgs.closeIconSvg}
                     </button>
                   </div>
 
@@ -600,9 +600,9 @@ const Addons = () => {
               </div>
             </div>
           </Dialog>
-        </Transition >
+        </Transition>
         {/* add addons modal ends */}
-      </div >
+      </div>
     </>
   );
 };

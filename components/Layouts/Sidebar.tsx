@@ -9,6 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/authContext';
 import dynamic from 'next/dynamic';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
 const Sidebar = () => {
   const scrollContainerRef = useRef(null);
@@ -20,16 +21,11 @@ const Sidebar = () => {
 
   const { userData } = useAuth();
 
-
-
-
-
   const toggleMenu = (value: string) => {
     setCurrentMenu((oldValue) => {
       return oldValue === value ? '' : value;
     });
   };
-
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -42,8 +38,6 @@ const Sidebar = () => {
       };
     }
   }, []);
-
-
 
   useEffect(() => {
     const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
@@ -83,51 +77,29 @@ const Sidebar = () => {
   const { t } = useTranslation();
 
   const SidebarWrapper = () => {
-
-    // let SidebarComponent;
-
-    // switch (userData?.role) {
-    //   case 'cp':
-    //     SidebarComponent = dynamic(() => import('./Sidebars/SidebarCP'));
-    //     break;
-    //   case 'user':
-    //     SidebarComponent = dynamic(() => import('./Sidebars/SidebarClient'));
-    //     break;
-    //   default:
-    //     SidebarComponent = dynamic(() => import('./Sidebars/SidebarManager'));
-    // }
-    const SidebarComponent = dynamic(()=>import('./Sidebars'))
-
+    const SidebarComponent = dynamic(() => import('./Sidebars'));
     return <SidebarComponent currentMenu={currentMenu} toggleMenu={toggleMenu} />;
   };
 
   return (
     <div className={semidark ? 'dark' : ''}>
-      <nav
-        className={`sidebar fixed top-0 bottom-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300 ${semidark ? 'text-white-dark' : ''}`}
-      >
-        <div className='h-full bg-white dark:bg-black'>
-          <div className='flex items-center justify-between px-4 py-3'>
-            <Link href='/' className='main-logo'>
-              <img className='ml-[5px] flex-none' src='/assets/images/beige-logo.svg' alt='logo' />
+      <nav className={`sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300 ${semidark ? 'text-white-dark' : ''}`}>
+        <div className="h-full bg-white dark:bg-black">
+          <div className="flex items-center justify-between px-4 py-3">
+            <Link href="/" className="main-logo">
+              <img className="ml-[5px] flex-none" src="/assets/images/beige-logo.svg" alt="logo" />
             </Link>
 
             <button
-              type='button'
-              className='collapse-icon flex h-8 w-8 items-center rounded-full transition duration-300 hover:bg-gray-500/10 rtl:rotate-180 dark:text-white-light dark:hover:bg-dark-light/10'
+              type="button"
+              className="collapse-icon flex h-8 w-8 items-center rounded-full transition duration-300 hover:bg-gray-500/10 rtl:rotate-180 dark:text-white-light dark:hover:bg-dark-light/10"
               onClick={() => dispatch(toggleSidebar())}
             >
-              <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'
-                   className='m-auto h-5 w-5'>
-                <path d='M13 19L7 12L13 5' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round'
-                      strokeLinejoin='round' />
-                <path opacity='0.5' d='M16.9998 19L10.9998 12L16.9998 5' stroke='currentColor' strokeWidth='1.5'
-                      strokeLinecap='round' strokeLinejoin='round' />
-              </svg>
+              {allSvgs.lessThanArrowIconDoubleLine}
             </button>
           </div>
-          <PerfectScrollbar className='relative h-[calc(100vh-80px)]' ref={scrollContainerRef}>
-            <SidebarWrapper/>
+          <PerfectScrollbar className="relative h-[calc(100vh-80px)]" ref={scrollContainerRef}>
+            <SidebarWrapper />
           </PerfectScrollbar>
         </div>
       </nav>

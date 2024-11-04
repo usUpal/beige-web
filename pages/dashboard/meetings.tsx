@@ -27,8 +27,8 @@ const Meeting = () => {
   const dispatch = useDispatch();
   const myInputDate = meetingInfo?.meeting_date_time;
 
-    // formatted date times
-    const myFormattedDateTime = formatDateAndTime(myInputDate);
+  // formatted date times
+  const myFormattedDateTime = formatDateAndTime(myInputDate);
 
   // const myFormattedDateTime = useDateFormat(myInputDate);
   const [query, setQuery] = useState('');
@@ -199,7 +199,7 @@ const Meeting = () => {
               ) : (
                 <>
                   {allMeetings?.results && allMeetings.results.length > 0 ? (
-                    allMeetings.results.map((meeting:any) => {
+                    allMeetings.results.map((meeting: any) => {
                       const { date, time } = formatDateAndTime(meeting?.meeting_date_time) || { date: '', time: '' };
 
                       return (
@@ -218,9 +218,7 @@ const Meeting = () => {
                           <td>
                             <p>
                               {meeting?.client?.name} with
-                              <span className="ps-1">
-                                {truncateLongText(meeting?.cps[1]?.name || meeting?.cps[0]?.name, 40)}
-                              </span>
+                              <span className="ps-1">{truncateLongText(meeting?.cps[1]?.name || meeting?.cps[0]?.name, 40)}</span>
                             </p>
                           </td>
 
@@ -248,7 +246,6 @@ const Meeting = () => {
                     </tr>
                   )}
                 </>
-
               )}
             </tbody>
           </table>
@@ -266,7 +263,7 @@ const Meeting = () => {
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
                   <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
                   <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setMeetingModal(false)}>
-                    {allSvgs.closeModalSvg}
+                    {allSvgs.closeIconSvg}
                   </button>
                 </div>
 

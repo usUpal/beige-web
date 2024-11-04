@@ -289,12 +289,7 @@ const Chat = () => {
       >
         <div className="relative">
           <input type="text" className="peer form-input ltr:pr-9 rtl:pl-9" placeholder="Searching..." value={searchUser} onChange={(event) => getSearchResultByQuery(event, 'searchChat')} />
-          <div className="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-2 rtl:left-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5"></circle>
-              <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
-            </svg>
-          </div>
+          <div className="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-2 rtl:left-2">{allSvgs.searchIcon}</div>
         </div>
 
         <div className="block text-start md:hidden">
@@ -380,11 +375,7 @@ const Chat = () => {
         {!isShowUserChat && (
           <div className={`relative flex h-full items-center justify-center p-4 `}>
             <button type="button" onClick={() => setIsShowChatMenu(!isShowChatMenu)} className="absolute top-4 hover:text-primary ltr:left-4 rtl:right-4 xl:hidden">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 7L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path opacity="0.5" d="M20 12L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M20 17L4 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
+              {allSvgs.sidebarMenuIcon}
             </button>
 
             <div className="flex flex-col items-center justify-center py-8">
@@ -503,11 +494,7 @@ const Chat = () => {
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center space-x-2 rtl:space-x-reverse">
                 <button type="button" className="hover:text-primary lg:hidden " onClick={() => setIsShowChatMenu(!isShowChatMenu)}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 7L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    <path opacity="0.5" d="M20 12L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    <path d="M20 17L4 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
+                  {allSvgs.sidebarMenuIcon}
                 </button>
                 <div className="relative flex-none">
                   <MakeProfileImage>{selectedChatRoom?.order_id?.order_name}</MakeProfileImage>
@@ -566,10 +553,7 @@ const Chat = () => {
                                       className="absolute top-1/2 -translate-y-1/2  cursor-pointer ltr:right-2 rtl:left-2"
                                       // onClick={handleSearchParticipants}
                                     >
-                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" strokeWidth="1.5" opacity="0.5"></circle>
-                                        <path d="M18.5 18.5L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
-                                      </svg>
+                                      {allSvgs.searchIcon}
                                     </div>
                                   )}
 
@@ -749,16 +733,7 @@ const Chat = () => {
                 <h2>Details</h2>
               </div>
               <button className="my-4 me-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
-                <div className="ml-2 mt-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="#000000" width="26" height="26">
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
-                      fill="currentColor"
-                    ></path>
-                  </svg>
-                </div>
+                <div className="ml-2 mt-1">{allSvgs.closeIconSvg}</div>
               </button>
             </div>
             <div className="h-px w-full border-b border-white-light pt-1 dark:border-[#1b2e4b]"></div>
@@ -864,16 +839,7 @@ const Chat = () => {
                 <h2>Details</h2>
               </div>
               <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b] " onClick={toggleThreeDotSidebar}>
-                <div className="ml-2 mt-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="#000000" width="26" height="26">
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
-                      fill="currentColor"
-                    ></path>
-                  </svg>
-                </div>
+                <div className="ml-2 mt-1.5">{allSvgs.closeIconSvg}</div>
               </button>
             </div>
             <div className="h-px w-full border-b border-white-light pt-1 dark:border-[#1b2e4b]"></div>

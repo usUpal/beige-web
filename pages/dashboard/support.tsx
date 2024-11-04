@@ -39,12 +39,12 @@ const support = () => {
   }, [currentPage]);
 
   const query = {
-    user:userData,
-    page: currentPage
-  }
+    user: userData,
+    page: currentPage,
+  };
 
   const { data: allSupports, isLoading: isAllSupportLoading } = useGetAllSupportsQuery(query);
-  console.log("🚀 ~ support ~ allSupports:", allSupports)
+  console.log('🚀 ~ support ~ allSupports:', allSupports);
 
   // All Supports - user base and here need to implement the support api
   const getAllSupports = async () => {
@@ -158,7 +158,6 @@ const support = () => {
             <div className="mt-4 flex justify-end md:justify-between lg:mr-5 2xl:mr-16">
               <ResponsivePagination current={currentPage} total={allSupports?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
             </div>
-
           </div>
         ) : (
           <div className="text-center">
@@ -193,7 +192,7 @@ const support = () => {
                       <h2 className=" ps-2 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Create Support Token </h2>
 
                       <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setCreateSupport(false)}>
-                        {allSvgs.closeModalSvg}
+                        {allSvgs.closeIconSvg}
                       </button>
                     </div>
 

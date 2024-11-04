@@ -26,7 +26,6 @@ const Users = () => {
     refetchOnMountOrArgChange: true,
   });
 
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setPageTitle('User Management'));
@@ -38,9 +37,7 @@ const Users = () => {
   };
 
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
 
   return (
@@ -133,7 +130,7 @@ const Users = () => {
                             <div className="my-2 flex items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
                               <div className="ms-3 text-[22px] font-bold capitalize leading-none text-[#000000]">Client </div>
                               <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModalClient(false)}>
-                                {allSvgs.closeModalSvg}
+                                {allSvgs.closeIconSvg}
                               </button>
                             </div>
 

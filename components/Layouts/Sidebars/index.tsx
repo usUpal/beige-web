@@ -18,11 +18,7 @@ const SidebarManager = (props: any) => {
               <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Dashboard</span>
             </div>
 
-            <div className={currentMenu === 'dashboard' ? 'rotate-90' : 'rtl:rotate-180'}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
+            <div className={currentMenu === 'dashboard' ? 'rotate-90' : 'rtl:rotate-180'}>{allSvgs.greaterThanArrowSvg}</div>
           </button>
 
           <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
@@ -134,11 +130,7 @@ const SidebarManager = (props: any) => {
                   <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Settings</span>
                 </div>
 
-                <div className={currentMenu === 'settings' ? 'rotate-90' : 'rtl:rotate-180'}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
+                <div className={currentMenu === 'settings' ? 'rotate-90' : 'rtl:rotate-180'}>{allSvgs.greaterThanArrowSvg}</div>
               </button>
 
               <AnimateHeight duration={300} height={currentMenu === 'settings' ? 'auto' : 0}>
@@ -166,11 +158,7 @@ const SidebarManager = (props: any) => {
                   <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Users</span>
                 </div>
 
-                <div className={currentMenu === 'users' ? 'rotate-90' : 'rtl:rotate-180'}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
+                <div className={currentMenu === 'users' ? 'rotate-90' : 'rtl:rotate-180'}>{allSvgs.greaterThanArrowSvg}</div>
               </button>
 
               <AnimateHeight duration={300} height={currentMenu === 'users' ? 'auto' : 0}>
@@ -183,7 +171,6 @@ const SidebarManager = (props: any) => {
                     </li>
                   )}
 
-                  {/* <Link href="/manager/allUsers">All Users</Link> */}
                   {authPermissions?.includes('content_provider') && (
                     <li>
                       <Link href="/dashboard/cp">Content Provider</Link>

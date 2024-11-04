@@ -1,8 +1,7 @@
-import { useEffect, useState, Fragment, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState, Fragment, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { IRootState } from '../../store';
 import Link from 'next/link';
-import { setPageTitle } from '../../store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useAuth } from '@/contexts/authContext';
 import ProfileForm from '@/components/SharedComponent/ProfileForm';
@@ -12,14 +11,10 @@ import SwiperCore, { Navigation, Pagination, Autoplay } from 'swiper';
 import 'swiper/swiper-bundle.css';
 import { Dialog, Transition } from '@headlessui/react';
 import MakeProfileImage from '@/components/ProfileImage/MakeProfileImage';
-import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { useGetCpReviewQuery, useGetCpUploadedImageQuery, useGetCpUploadedVideoQuery } from '@/Redux/features/profile/profileFormApi';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 import { Tab } from '@headlessui/react';
-import Loader from '@/components/SharedComponent/Loader';
-
-
 
 interface ImageModalProps {
   src?: string | null;
@@ -86,7 +81,6 @@ const Profile = () => {
   // const [activeTab, setActiveTab] = useState<string>('image');
   const [isExpanded, setIsExpanded] = useState(false);
 
-
   const profileDesignation = (role: any) => {
     switch (role) {
       case 'user':
@@ -106,14 +100,14 @@ const Profile = () => {
 
   const { data: allCpReview, isLoading: isGetAllCpReviewLoading } = useGetCpReviewQuery(userData?.id, {
     refetchOnMountOrArgChange: true,
-  })
+  });
   const { data: allCpImage, isLoading: isGetAllCpImageLoading } = useGetCpUploadedImageQuery(userData?.id, {
     refetchOnMountOrArgChange: true,
-  })
+  });
 
   const { data: allCpVideo, isLoading: isGetAllCpVideoLoading } = useGetCpUploadedVideoQuery(userData?.id, {
     refetchOnMountOrArgChange: true,
-  })
+  });
 
   const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
@@ -130,7 +124,6 @@ const Profile = () => {
       reader.readAsDataURL(file);
     }
   };
-
 
   return (
     <div>
@@ -169,7 +162,11 @@ const Profile = () => {
           <div className="grid grid-cols-1 gap-5">
             <div className="panel">
               <div className="mb-7 font-bold">All Reviews</div>
-              <Swiper spaceBetween={30} slidesPerView={3} navigation={true} pagination={{ clickable: true }}
+              <Swiper
+                spaceBetween={30}
+                slidesPerView={3}
+                navigation={true}
+                pagination={{ clickable: true }}
                 breakpoints={{
                   320: {
                     slidesPerView: 1,
@@ -180,7 +177,9 @@ const Profile = () => {
                   1024: {
                     slidesPerView: 3,
                   },
-                }} className="mySwiper">
+                }}
+                className="mySwiper"
+              >
                 {allCpReview?.results && allCpReview?.results?.length > 0 ? (
                   <>
                     {allCpReview?.results?.map((review: any, index: any) => (
@@ -188,7 +187,7 @@ const Profile = () => {
                         <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
                           <div className="flex gap-4">
                             {!review?.client_id?.profile_picture ? (
-                              <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : ""}</MakeProfileImage>
+                              <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : ''}</MakeProfileImage>
                             ) : (
                               <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="profile img" />
                             )}
@@ -211,18 +210,12 @@ const Profile = () => {
                               <p className="mt-3 text-left text-[14px]">
                                 {isExpanded ? review?.reviewText : truncateLongText(review?.reviewText, 50)}
                                 {review?.reviewText.length > 50 && !isExpanded && (
-                                  <span
-                                    onClick={() => setIsExpanded(true)}
-                                    className=' cursor-pointer text-blue-500'
-                                  >
+                                  <span onClick={() => setIsExpanded(true)} className=" cursor-pointer text-blue-500">
                                     see more
                                   </span>
                                 )}
                                 {isExpanded && (
-                                  <span
-                                    onClick={() => setIsExpanded(false)}
-                                    className=' cursor-pointer text-blue-500 ml-3px'
-                                  >
+                                  <span onClick={() => setIsExpanded(false)} className=" ml-3px cursor-pointer text-blue-500">
                                     see less
                                   </span>
                                 )}
@@ -243,8 +236,7 @@ const Profile = () => {
 
         <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
 
-        {
-          userRole === 'cp' &&
+        {userRole === 'cp' && (
           <div>
             <Tab.Group>
               <Tab.List className="mt-3 flex flex-wrap border-b border-white-light dark:border-[#191e3a]">
@@ -252,7 +244,7 @@ const Profile = () => {
                   {({ selected }) => (
                     <button
                       className={`${selected ? '!border-white-light !border-b-white text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black' : ''}
-                dark:hover:border-b-black -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary`}
+                -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary dark:hover:border-b-black`}
                     >
                       Image
                     </button>
@@ -262,7 +254,7 @@ const Profile = () => {
                   {({ selected }) => (
                     <button
                       className={`${selected ? '!border-white-light !border-b-white text-primary !outline-none dark:!border-[#191e3a] dark:!border-b-black' : ''}
-                dark:hover:border-b-black -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary`}
+                -mb-[1px] block border border-transparent p-3.5 py-2 hover:text-primary dark:hover:border-b-black`}
                     >
                       Videos
                     </button>
@@ -273,217 +265,251 @@ const Profile = () => {
               <Tab.Panels>
                 <Tab.Panel>
                   <div>
-                    {
-                      isGetAllCpImageLoading ?
-                        <div className='box-border my-10 text-center'>
-                          <span className="animate-spin border-4 border-primary border-l-transparent rounded-full w-10 h-10 inline-block align-middle m-auto mb-10"></span>
-                        </div>
-                        : <>
+                    {isGetAllCpImageLoading ? (
+                      <div className="my-10 box-border text-center">
+                        <span className="m-auto mb-10 inline-block h-10 w-10 animate-spin rounded-full border-4 border-primary border-l-transparent align-middle"></span>
+                      </div>
+                    ) : (
+                      <>
+                        {allCpImage?.contents?.Corporate?.length === 0 && allCpImage?.contents?.Wedding?.length === 0 && allCpImage?.contents?.Other?.length === 0 ? (
+                          <div className="my-10 box-border text-center text-xl text-danger">No Data Found</div>
+                        ) : (
+                          <>
+                            {allCpImage?.contents?.Corporate?.length > 0 && (
+                              <>
+                                <h2 className="mb-0 mt-6 text-left text-[20px] font-bold">Corporate Images</h2>
+                                <Swiper
+                                  spaceBetween={30}
+                                  slidesPerView={3}
+                                  navigation={true}
+                                  pagination={{ clickable: true }}
+                                  breakpoints={{
+                                    320: {
+                                      slidesPerView: 1,
+                                    },
+                                    640: {
+                                      slidesPerView: 2,
+                                    },
+                                    1024: {
+                                      slidesPerView: 3,
+                                    },
+                                  }}
+                                  className="mySwiper"
+                                >
+                                  <div className="image-sec mt-4 flex flex-wrap items-center gap-4">
+                                    {allCpImage?.contents?.Corporate?.map((src: any, index: number) => (
+                                      <SwiperSlide key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                                        <img
+                                          src={src}
+                                          className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover"
+                                          alt="User profile picture"
+                                          onClick={() => setSelectedImage(src)}
+                                        />
+                                      </SwiperSlide>
+                                    ))}
+                                  </div>
+                                </Swiper>
+                              </>
+                            )}
 
-                          {allCpImage?.contents?.Corporate?.length === 0 &&
-                            allCpImage?.contents?.Wedding?.length === 0 &&
-                            allCpImage?.contents?.Other?.length === 0 ?
-                            (<div className='text-xl text-danger box-border my-10 text-center'>No Data Found</div>)
-                            :
-                            <>
-                              {allCpImage?.contents?.Corporate?.length > 0 && (
-                                <>
-                                  <h2 className="mb-0 mt-6 text-left text-[20px] font-bold">Corporate Images</h2>
-                                  <Swiper spaceBetween={30} slidesPerView={3} navigation={true} pagination={{ clickable: true }}
-                                    breakpoints={{
-                                      320: {
-                                        slidesPerView: 1,
-                                      },
-                                      640: {
-                                        slidesPerView: 2,
-                                      },
-                                      1024: {
-                                        slidesPerView: 3,
-                                      },
-                                    }} className="mySwiper">
+                            {allCpImage?.contents?.Wedding?.length > 0 && (
+                              <>
+                                <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Images</h2>
+                                <Swiper
+                                  spaceBetween={30}
+                                  slidesPerView={3}
+                                  navigation={true}
+                                  pagination={{ clickable: true }}
+                                  breakpoints={{
+                                    320: {
+                                      slidesPerView: 1,
+                                    },
+                                    640: {
+                                      slidesPerView: 2,
+                                    },
+                                    1024: {
+                                      slidesPerView: 3,
+                                    },
+                                  }}
+                                  className="mySwiper"
+                                >
+                                  <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
+                                    {allCpImage?.contents?.Wedding?.map((src: any, index: any) => (
+                                      <SwiperSlide key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                                        <img
+                                          src={src}
+                                          className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover"
+                                          alt="User profile picture"
+                                          onClick={() => setSelectedImage(src)}
+                                        />
+                                      </SwiperSlide>
+                                    ))}
+                                  </div>
+                                </Swiper>
+                              </>
+                            )}
 
-                                    <div className="image-sec mt-4 flex flex-wrap items-center gap-4">
-                                      {allCpImage?.contents?.Corporate?.map((src: any, index: number) => (
-                                        <SwiperSlide key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                                          <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
-                                        </SwiperSlide>                                       
-                                      ))}
-                                    </div>
-                                  </Swiper>
-                                </>
-                              )}
+                            {allCpImage?.contents?.Other?.length > 0 && (
+                              <>
+                                <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Images</h2>
 
-                              {allCpImage?.contents?.Wedding?.length > 0 && (
-                                <>
-                                  <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Images</h2>
-                                  <Swiper spaceBetween={30} slidesPerView={3} navigation={true} pagination={{ clickable: true }}
-                                    breakpoints={{
-                                      320: {
-                                        slidesPerView: 1,
-                                      },
-                                      640: {
-                                        slidesPerView: 2,
-                                      },
-                                      1024: {
-                                        slidesPerView: 3,
-                                      },
-                                    }} className="mySwiper">
-
-                                    <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                                      {allCpImage?.contents?.Wedding?.map((src: any, index: any) => (
-                                       <SwiperSlide key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                                          <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
-                                        </SwiperSlide>
-                                      ))}
-                                    </div>
-                                  </Swiper>
-                                </>
-                              )}
-
-                              {allCpImage?.contents?.Other?.length > 0 && (
-                                <>
-                                  <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Images</h2>
-
-                                  <Swiper spaceBetween={30} slidesPerView={3} navigation={true} pagination={{ clickable: true }}
-                                    breakpoints={{
-                                      320: {
-                                        slidesPerView: 1,
-                                      },
-                                      640: {
-                                        slidesPerView: 2,
-                                      },
-                                      1024: {
-                                        slidesPerView: 3,
-                                      },
-                                    }} className="mySwiper">
-
-                                    <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
-                                      {allCpImage?.contents?.Other?.map((src: any, index: any) => (
-                                        <SwiperSlide key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                                          <img src={src} className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover" alt="User profile picture" onClick={() => setSelectedImage(src)} />
-                                        </SwiperSlide>
-                                      ))}
-                                    </div>
-                                  </Swiper>
-
-                                </>
-                              )}
-                            </>
-                          }
-                        </>
-                    }
+                                <Swiper
+                                  spaceBetween={30}
+                                  slidesPerView={3}
+                                  navigation={true}
+                                  pagination={{ clickable: true }}
+                                  breakpoints={{
+                                    320: {
+                                      slidesPerView: 1,
+                                    },
+                                    640: {
+                                      slidesPerView: 2,
+                                    },
+                                    1024: {
+                                      slidesPerView: 3,
+                                    },
+                                  }}
+                                  className="mySwiper"
+                                >
+                                  <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
+                                    {allCpImage?.contents?.Other?.map((src: any, index: any) => (
+                                      <SwiperSlide key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
+                                        <img
+                                          src={src}
+                                          className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover"
+                                          alt="User profile picture"
+                                          onClick={() => setSelectedImage(src)}
+                                        />
+                                      </SwiperSlide>
+                                    ))}
+                                  </div>
+                                </Swiper>
+                              </>
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
                   </div>
                 </Tab.Panel>
 
                 <Tab.Panel>
-                  {
-                    isGetAllCpVideoLoading ?
-                      <div className='box-border my-10 text-center'>
-                        <span className="animate-spin border-4 border-primary border-l-transparent rounded-full w-10 h-10 inline-block align-middle m-auto mb-10"></span>
-                      </div>
-                      :
-                      <>
-                        {
-                          allCpVideo?.contents?.Corporate?.length === 0 &&
-                            allCpVideo?.contents?.Wedding?.length === 0 &&
-                            allCpVideo?.contents?.Other?.length === 0 ?
-                            (<div className='text-xl text-danger box-border my-10 text-center'>No Data Found</div>)
-                            : (
-                              <>
-                                {allCpVideo?.contents?.Corporate?.length > 0 && (
-                                  <>
-                                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Corporate Videos</h2>
+                  {isGetAllCpVideoLoading ? (
+                    <div className="my-10 box-border text-center">
+                      <span className="m-auto mb-10 inline-block h-10 w-10 animate-spin rounded-full border-4 border-primary border-l-transparent align-middle"></span>
+                    </div>
+                  ) : (
+                    <>
+                      {allCpVideo?.contents?.Corporate?.length === 0 && allCpVideo?.contents?.Wedding?.length === 0 && allCpVideo?.contents?.Other?.length === 0 ? (
+                        <div className="my-10 box-border text-center text-xl text-danger">No Data Found</div>
+                      ) : (
+                        <>
+                          {allCpVideo?.contents?.Corporate?.length > 0 && (
+                            <>
+                              <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Corporate Videos</h2>
 
-                                    <Swiper spaceBetween={30} slidesPerView={3} navigation={true} pagination={{ clickable: true }}
-                                      breakpoints={{
-                                        320: {
-                                          slidesPerView: 1,
-                                        },
-                                        640: {
-                                          slidesPerView: 2,
-                                        },
-                                        1024: {
-                                          slidesPerView: 3,
-                                        },
-                                      }} className="mySwiper">
+                              <Swiper
+                                spaceBetween={30}
+                                slidesPerView={3}
+                                navigation={true}
+                                pagination={{ clickable: true }}
+                                breakpoints={{
+                                  320: {
+                                    slidesPerView: 1,
+                                  },
+                                  640: {
+                                    slidesPerView: 2,
+                                  },
+                                  1024: {
+                                    slidesPerView: 3,
+                                  },
+                                }}
+                                className="mySwiper"
+                              >
+                                <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                                  {allCpVideo?.contents?.Corporate?.map((src: any, index: any) => (
+                                    <SwiperSlide className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
+                                      <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                                    </SwiperSlide>
+                                  ))}
+                                </div>
+                              </Swiper>
+                            </>
+                          )}
 
-                                      <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                                        {allCpVideo?.contents?.Corporate?.map((src: any, index: any) => (
-                                          <SwiperSlide className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
-                                            <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
-                                          </SwiperSlide>
-                                        ))}
-                                      </div>
-                                    </Swiper>
+                          {allCpVideo?.contents?.Wedding?.length > 0 && (
+                            <>
+                              <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Videos</h2>
 
-                                  </>
-                                )}
+                              <Swiper
+                                spaceBetween={30}
+                                slidesPerView={3}
+                                navigation={true}
+                                pagination={{ clickable: true }}
+                                breakpoints={{
+                                  320: {
+                                    slidesPerView: 1,
+                                  },
+                                  640: {
+                                    slidesPerView: 2,
+                                  },
+                                  1024: {
+                                    slidesPerView: 3,
+                                  },
+                                }}
+                                className="mySwiper"
+                              >
+                                <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                                  {allCpVideo?.contents?.Wedding?.map((src: any, index: any) => (
+                                    <SwiperSlide className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
+                                      <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                                    </SwiperSlide>
+                                  ))}
+                                </div>
+                              </Swiper>
+                            </>
+                          )}
 
-                                {allCpVideo?.contents?.Wedding?.length > 0 && (
-                                  <>
-                                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Wedding Videos</h2>
-
-                                    <Swiper spaceBetween={30} slidesPerView={3} navigation={true} pagination={{ clickable: true }}
-                                      breakpoints={{
-                                        320: {
-                                          slidesPerView: 1,
-                                        },
-                                        640: {
-                                          slidesPerView: 2,
-                                        },
-                                        1024: {
-                                          slidesPerView: 3,
-                                        },
-                                      }} className="mySwiper">
-
-                                      <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                                        {allCpVideo?.contents?.Wedding?.map((src: any, index: any) => (
-                                          <SwiperSlide className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
-                                            <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
-                                          </SwiperSlide>
-                                        ))}
-                                      </div>
-                                    </Swiper>
-
-                                  </>
-                                )}
-
-                                {allCpVideo?.contents?.Other?.length > 0 && (
-                                  <>
-                                    <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Videos</h2>
-                                    <Swiper spaceBetween={30} slidesPerView={3} navigation={true} pagination={{ clickable: true }}
-                                      breakpoints={{
-                                        320: {
-                                          slidesPerView: 1,
-                                        },
-                                        640: {
-                                          slidesPerView: 2,
-                                        },
-                                        1024: {
-                                          slidesPerView: 3,
-                                        },
-                                      }} className="mySwiper">
-
-                                      <div className="video-section mt-4 flex flex-wrap items-center gap-2">
-                                        {allCpVideo?.contents?.Other?.map((src: any, index: any) => (
-                                          <SwiperSlide className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
-                                            <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
-                                          </SwiperSlide>
-                                        ))}
-                                      </div>
-                                    </Swiper>
-                                  </>
-                                )}
-                              </>
-                            )
-                        }
-                      </>
-                  }
+                          {allCpVideo?.contents?.Other?.length > 0 && (
+                            <>
+                              <h2 className="mb-0 mt-8 text-left text-[20px] font-bold">Other Videos</h2>
+                              <Swiper
+                                spaceBetween={30}
+                                slidesPerView={3}
+                                navigation={true}
+                                pagination={{ clickable: true }}
+                                breakpoints={{
+                                  320: {
+                                    slidesPerView: 1,
+                                  },
+                                  640: {
+                                    slidesPerView: 2,
+                                  },
+                                  1024: {
+                                    slidesPerView: 3,
+                                  },
+                                }}
+                                className="mySwiper"
+                              >
+                                <div className="video-section mt-4 flex flex-wrap items-center gap-2">
+                                  {allCpVideo?.contents?.Other?.map((src: any, index: any) => (
+                                    <SwiperSlide className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" key={index}>
+                                      <video className="mb-5 h-[250px] w-full max-w-[304px] rounded-md object-cover" src={src} controls loop />
+                                    </SwiperSlide>
+                                  ))}
+                                </div>
+                              </Swiper>
+                            </>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
                 </Tab.Panel>
               </Tab.Panels>
             </Tab.Group>
           </div>
-        }
+        )}
       </div>
     </div>
   );

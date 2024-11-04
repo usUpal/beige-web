@@ -70,7 +70,7 @@ const SettingsModal = ({ open, closeModal }) => {
                           closeModal();
                         }}
                       >
-                        {allSvgs.closeModalSvg}
+                        {allSvgs.closeIconSvg}
                       </button>
                     </div>
 
@@ -80,10 +80,7 @@ const SettingsModal = ({ open, closeModal }) => {
                         <label>Default File Privacy</label>
 
                         <p className="flex items-center">
-                          <label
-                            className="relative h-6 w-12"
-                            onClick={() => setSettings({ ...settings, defaultPublicFiles: !settings.defaultPublicFiles })}
-                          >
+                          <label className="relative h-6 w-12" onClick={() => setSettings({ ...settings, defaultPublicFiles: !settings.defaultPublicFiles })}>
                             <input
                               type="checkbox"
                               className="custom_switch peer absolute z-10 h-full w-full cursor-pointer opacity-0"
@@ -131,8 +128,7 @@ const SettingsModal = ({ open, closeModal }) => {
                             textAlign: 'right',
                             marginRight: '30px',
                           }}
-                        >
-                        </p>
+                        ></p>
 
                         <div className="">
                           <input

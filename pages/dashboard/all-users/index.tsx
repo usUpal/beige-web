@@ -167,7 +167,7 @@ const Users = () => {
                             <div className="my-2 flex items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
                               <div className="ms-3 text-[22px] font-bold capitalize leading-none text-[#000000]"> users details </div>
                               <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModal(false)}>
-                                {allSvgs.closeModalSvg}
+                                {allSvgs.closeIconSvg}
                               </button>
                             </div>
                             <div className="">

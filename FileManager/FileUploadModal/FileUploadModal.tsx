@@ -193,7 +193,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             closeModal();
                           }}
                         >
-                          {allSvgs.closeModalSvg}
+                          {allSvgs.closeIconSvg}
                         </button>
                       </div>
 

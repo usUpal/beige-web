@@ -267,7 +267,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   const handleCancelRename = () => {
     setFileToRename({});
     setRenameInputValue('');
-  }
+  };
 
   return (
     <div>
@@ -275,7 +275,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         <p className="my-8 text-2xl">Files</p>
       </div>
 
-      <div className="flex items-center  justify-between lg:justify-start gap-4">
+      <div className="flex items-center  justify-between gap-4 lg:justify-start">
         {/* <label className="flex cursor-pointer items-center">
           <input
             type="checkbox"
@@ -287,26 +287,25 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         </label> */}
 
         <div className="mb-0 flex cursor-pointer items-center gap-3 text-lg " onClick={getFiles}>
-
           <div className={`hidden md:block`}>
             <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
           </div>
-          <span className='flex gap-2 items-center border border-[#ddd] px-6 py-1 rounded-md ' style={{ backgroundColor: '#93c5fd' }}>
+          <span className="flex items-center gap-2 rounded-md border border-[#ddd] px-6 py-1 " style={{ backgroundColor: '#93c5fd' }}>
             <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
             Refresh
           </span>
         </div>
 
         {/* Menu for mobile devices */}
-        <div className='block lg:hidden'>
-          <span className={`block md:hidden`} onClick={() => setShowMenus(!showMenus)}>{allSvgs.threeDotMenuIcon}</span>
+        <div className="block lg:hidden">
+          <span className={`block md:hidden`} onClick={() => setShowMenus(!showMenus)}>
+            {allSvgs.threeDotMenuIcon}
+          </span>
         </div>
       </div>
 
-      <div className={`md:hidden flex mt-3 md:mt-0`}>
-        {showMenus &&
-          <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
-        }
+      <div className={`mt-3 flex md:mt-0 md:hidden`}>
+        {showMenus && <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />}
       </div>
 
       {/* Folder breadcrumbs */}
@@ -440,7 +439,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                             setDeletionState({ ...deletionState, open: false, error: false, saving: false });
                           }}
                         >
-                          {allSvgs.closeModalSvg}
+                          {allSvgs.closeIconSvg}
                         </button>
                       </div>
                       <div className="p-5 ">
@@ -522,15 +521,13 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                     </p>
 
                     <div className="mt-8 flex items-center justify-end">
-                      <button
-                        type="button"
-                        className="btn btn-danger text-[16px]"
-                        onClick={handleCancelRename}
-                      >
+                      <button type="button" className="btn btn-danger text-[16px]" onClick={handleCancelRename}>
                         Cancel
                       </button>
 
-                      <DefaultButton onClick={renameFile} css='ltr:ml-4 rtl:mr-4'>Rename</DefaultButton>
+                      <DefaultButton onClick={renameFile} css="ltr:ml-4 rtl:mr-4">
+                        Rename
+                      </DefaultButton>
                     </div>
                   </div>
                 </Dialog.Panel>
