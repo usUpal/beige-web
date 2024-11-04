@@ -19,7 +19,6 @@ import 'tippy.js/dist/tippy.css';
 
 // import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import Flatpickr from 'react-flatpickr';
 
 import { useAddAddonsMutation, useAssignCpMutation, useDeleteOrderMutation, useGetShootDetailsQuery, useUpdateOrderMutation, useUpdateStatusMutation } from '@/Redux/features/shoot/shootApi';
 import { useGetAllCpQuery } from '@/Redux/features/user/userApi';

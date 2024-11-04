@@ -667,7 +667,7 @@ const Chat = () => {
                             <div className="">
                               <div className="flex items-center gap-3">
                                 <div
-                                  className={`rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 ${
+                                  className={`w-full max-w-[250px] overflow-hidden break-words rounded-md bg-black/10 p-4 py-1 dark:bg-gray-800 md:max-w-[350px] ${
                                     message?.senderId === userData.id ? '!bg-primary text-white ltr:rounded-br-none rtl:rounded-bl-none' : 'ltr:rounded-bl-none rtl:rounded-br-none'
                                   }`}
                                 >
@@ -733,7 +733,7 @@ const Chat = () => {
                 <h2>Details</h2>
               </div>
               <button className="my-4 me-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
-                <div className="ml-2 mt-1">{allSvgs.closeIconSvg}</div>
+                <div className="">{allSvgs.closeIconSvg}</div>
               </button>
             </div>
             <div className="h-px w-full border-b border-white-light pt-1 dark:border-[#1b2e4b]"></div>
@@ -839,7 +839,7 @@ const Chat = () => {
                 <h2>Details</h2>
               </div>
               <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b] " onClick={toggleThreeDotSidebar}>
-                <div className="ml-2 mt-1.5">{allSvgs.closeIconSvg}</div>
+                <div className="">{allSvgs.closeIconSvg}</div>
               </button>
             </div>
             <div className="h-px w-full border-b border-white-light pt-1 dark:border-[#1b2e4b]"></div>

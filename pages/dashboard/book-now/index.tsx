@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { useAuth } from '@/contexts/authContext';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import Flatpickr from 'react-flatpickr';
+// import Flatpickr from 'react-flatpickr';
 import { API_ENDPOINT } from '@/config';
 import { useLazyGetAlgoCpQuery, usePostOrderMutation, useUpdateOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';

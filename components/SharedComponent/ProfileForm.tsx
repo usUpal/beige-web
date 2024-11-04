@@ -32,8 +32,8 @@ const ProfileForm = () => {
     },
   });
 
-  const [updateUserInfo, { }] = useUpdateUserInfoMutation();
-  const [updateCpDataForLocation, { }] = useUpdateCpDataForLocationMutation();
+  const [updateUserInfo, {}] = useUpdateUserInfoMutation();
+  const [updateCpDataForLocation, {}] = useUpdateCpDataForLocationMutation();
 
   useEffect(() => {
     setValue('geo_location', geo_location);
@@ -78,7 +78,7 @@ const ProfileForm = () => {
         const updatedCpData: any = await updateCpDataForLocation({ id: userData?.id, data: cpData }).unwrap();
       }
     } catch (error) {
-      // console.error('Patch error:', error);
+      console.error('Patch error:', error);
     } finally {
       setIsLoading(false);
     }

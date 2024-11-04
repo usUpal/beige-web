@@ -123,12 +123,8 @@ const ProfileImageForm = () => {
           <span className="flex h-32 w-32 items-center justify-center rounded-full bg-slate-400 object-cover text-2xl font-bold capitalize text-white">{name[0] ?? 'BE'}</span>
         )}
 
-        {/*  2xl:right-[32%] xl:right-[16%] md:right-[1px] opacity-0 */}
-        <form onSubmit={handleSubmit(onSubmit)} className="group rounded-md bg-white p-2 dark:border-[#191e3a] dark:bg-black">
-          <div
-            className="absolute bottom-0 left-[88px] top-0 hidden h-32 w-32 flex-col items-center justify-center gap-0 rounded-full bg-[#02020281] transition-opacity duration-300  ease-out
-           hover:opacity-100 group-hover:block md:left-[41.5%] xl:left-[30px] 2xl:left-[31.5%]"
-          >
+        <form onSubmit={handleSubmit(onSubmit)} className="relative rounded-md bg-white p-2 dark:border-[#191e3a] dark:bg-black">
+          <div className="absolute bottom-0 left-[-55px] right-0 top-[-143px] m-auto flex h-32 w-32 flex-col  items-center justify-center gap-0 rounded-full bg-[#02020281] opacity-0 transition-opacity duration-300 ease-out hover:opacity-100">
             <label className="cursor-pointer">
               <input type="file" accept="image/*" className="hidden" {...register('profile_picture')} onChange={handleImageUpload} />
               <svg className="absolute bottom-0 left-0 right-0 top-0 m-auto h-[24px] w-[24px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
