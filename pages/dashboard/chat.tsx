@@ -110,7 +110,6 @@ const Chat = () => {
     if (selectedChatRoom) {
       getChatDetails({ roomId: selectedChatRoom?.id, page: 1 }).then(({ data: chatDetailsData }) => {
         if (chatDetailsData) {
-          console.log("##", chatDetailsData);
           setTotalPagesCount(chatDetailsData?.totalPages > 0 ? chatDetailsData?.totalPages : 1);
           const outputMessages = transformMessages(chatDetailsData?.results);
           setNewMessages(outputMessages.reverse());
@@ -300,7 +299,7 @@ const Chat = () => {
   return (
     <div className={`relative flex h-full gap-0 sm:h-[calc(100vh_-_150px)]  sm:min-h-0 md:gap-5 ${isShowChatMenu ? 'min-h-[999px]' : ''}`}>
       <div
-        className={`panel h-10/12 absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 md:h-full md:w-80 lg:w-full xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''
+        className={`panel h-10/12 absolute z-10 hidden w-full max-w-xs flex-none space-y-4 overflow-hidden p-4 md:h-full md:w-80 lg:w-full xl:w-84 2xl:w-full xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''
           }`}
       >
         <div className="relative">
@@ -399,7 +398,7 @@ const Chat = () => {
         </>
       </div>
       <div className={`absolute  z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
-      <div className={`panel flex-1 p-0 ${threeDotSidebar && 'hidden lg:block'}`}>
+      <div className={`panel flex-1 p-0 ${threeDotSidebar && 'hidden xl:block'}`}>
         {!isShowUserChat && (
           <div className={`relative flex h-full items-center justify-center p-4 `}>
             <button type="button" onClick={() => setIsShowChatMenu(!isShowChatMenu)} className="absolute top-4 hover:text-primary ltr:left-4 rtl:right-4 xl:hidden">
@@ -687,7 +686,6 @@ const Chat = () => {
                 {newMessages?.length ? (
                   <>
                     {newMessages?.map((message: any, index: any) => {
-                      (console.log(message, "mesg"))
                       return (
                         <div key={index}>
                           <div className={`flex items-start gap-3 ${message?.senderId === userData.id ? 'justify-end' : ''}`}>
@@ -772,10 +770,10 @@ const Chat = () => {
       {/* starts details menu */}
 
       {threeDotSidebar && (
-        <div className={`panel block flex-1 p-0 lg:hidden`}>
+        <div className={`panel block flex-1 p-0 xl:hidden`}>
           <div className="relative h-full">
             <div className="mt-1 flex w-full justify-between gap-3 sm:gap-5">
-              <div className="my-4 ms-4 text-[20px] font-semibold">Details</div>
+              <div className="my-4 ms-4 text-[20px] font-semibold"><h2>Details</h2></div>
               <button className="my-4 me-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
                 <div className="ml-2 mt-1">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="#000000" width="26" height="26">
@@ -790,7 +788,6 @@ const Chat = () => {
               </button>
             </div>
             <div className="h-px w-full border-b border-white-light pt-1 dark:border-[#1b2e4b]"></div>
-
             <div>
               <ul className="flex flex-wrap border-b border-gray-200 text-center text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
                 <li className="me-2">
@@ -883,10 +880,11 @@ const Chat = () => {
       )}
 
       {/* for lg details menu sidebar */}
-      <div className="hidden lg:block">
+      <div className="hidden xl:block">
         {threeDotSidebar && (
-          <div className={`panel z-5  absolute h-96 w-96 max-w-xs flex-none overflow-hidden p-4 md:h-full md:space-y-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
-            <div className="mt-1 flex w-full justify-end gap-3 sm:gap-5">
+          <div className={`panel z-5 absolute h-96 w-64 2xl:w-96 max-w-xs flex-none overflow-hidden p-4 md:h-full md:space-y-4 xl:relative xl:block xl:h-full ${isShowChatMenu ? '!block' : ''}`}>
+            <div className="mt-1 flex w-full justify-between items-center gap-3 sm:gap-5">
+              <div className=" ms-4 text-[20px] font-semibold"><h2>Details</h2></div>
               <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b] " onClick={toggleThreeDotSidebar}>
                 <div className="ml-2 mt-1">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="#000000" width="26" height="26">
@@ -924,7 +922,6 @@ const Chat = () => {
               </ul>
 
               <div>
-                {/* {perticipants} */}
                 {activeTab === '1' && (
                   <div className="">
                     <div className="mt-1">

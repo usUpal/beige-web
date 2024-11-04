@@ -57,11 +57,11 @@ const Auth = () => {
         setRefreshToken(refreshToken?.token);
         //Store user data to the cookie storage
         Cookies.set('userData', JSON.stringify(userData), {
-          expires: 7,
+          expires: new Date(refreshToken?.expires),
         });
 
         Cookies.set('authPermissions', JSON.stringify(authPermissions), {
-          expires: 7,
+          expires: new Date(refreshToken?.expires),
         });
 
         //Store access token to the cookie storage
@@ -73,6 +73,10 @@ const Auth = () => {
         Cookies.set('refreshToken', JSON.stringify(refreshToken), {
           expires: new Date(refreshToken?.expires),
         });
+
+        console.log("refreshToken", refreshToken);
+        console.log("accessToken", accessToken);
+        
 
         //Redirect user to the dashboard
         //await router.push('/');
