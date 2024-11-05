@@ -1,4 +1,4 @@
-export { };
+export {};
 declare global {
   interface ChatRoomTypes {
     order_id: OrderID;
@@ -236,7 +236,7 @@ declare global {
   interface TQueryParam {
     name: string;
     value: boolean | React.Key;
-  };
+  }
 
   interface CpDataTypes {
     id: {
@@ -251,7 +251,7 @@ declare global {
     customer_service_skills_experience?: string;
     trust_score?: number;
 
-    successful_beige_shoots?: number,
+    successful_beige_shoots?: number;
     average_rating?: number;
     total_earnings?: number;
     avg_response_time?: number;
@@ -261,7 +261,7 @@ declare global {
     date_of_birth?: Date;
     review_status?: string;
 
-    reference:? string;
+    reference: ?string;
     rate?: number;
     handle_co_worker_conflicts?: string;
     initiative?: string;
@@ -280,5 +280,55 @@ declare global {
     portfolio?: string[];
     content_verticals?: string[];
     content_type?: string[];
+  }
+
+  interface FilePath {
+    status: boolean;
+    url?: string;
+    dir_name?: string;
+  }
+
+  interface ShootDatetime {
+    start: string;
+    end: string;
+  }
+
+  interface shootsData {
+    addOns: any[];
+    budget: {
+      min: number;
+      max: number;
+    };
+    chat_room_id: string;
+    client_id: string;
+    content_type: string[];
+    content_vertical: string;
+    cp_ids: string[];
+    createdAt: string;
+    description: string;
+    file_path: FilePath;
+    geo_location: {
+      type: 'Point';
+      coordinates: [number, number];
+    };
+    id: string;
+    location: string;
+    meeting_date_times: any[];
+    order_name: string;
+    order_status: 'pending' | 'completed' | 'in_progress' | 'canceled';
+    payment: {
+      payment_type: 'full' | 'partial';
+      payment_status: 'pending' | 'completed' | 'failed';
+      amount_paid: number;
+      payment_ids: string[];
+    };
+    references: string;
+    review_status: boolean;
+    shoot_cost: number;
+    shoot_datetimes: ShootDatetime[];
+    shoot_duration: number;
+    shoot_type: string;
+    updatedAt: string;
+    vst: any[];
   }
 }

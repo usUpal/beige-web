@@ -13,6 +13,7 @@ import 'tippy.js/dist/tippy.css';
 import api from '../../../FileManager/api/storage';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import AccessDenied from '@/components/errors/AccessDenied';
+import Image from 'next/image';
 
 const Shoots = () => {
   const dispatch = useDispatch();
@@ -84,11 +85,13 @@ const Shoots = () => {
                 {isLoading ? (
                   <PreLoader />
                 ) : data?.results?.length > 0 ? (
-                  data.results.map((shoot) => (
+                  data.results.map((shoot: shootsData) => (
                     <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                       <td className="min-w-[150px] text-black dark:text-white">
                         <div className="flex items-center">
-                          <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
+                          {/* <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" /> */}
+
+                          <Image className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" width={32} height={32} />
                           <p className="">
                             {/* whitespace-nowrap */}
                             {/* {shoot.order_name} */}
@@ -130,7 +133,7 @@ const Shoots = () => {
                         <td>
                           <Link href={`shoots/${shoot.id}`}>
                             <button type="button" className="p-0">
-                              <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                              <Image className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" width={24} height={24} />
                             </button>
                           </Link>
                         </td>

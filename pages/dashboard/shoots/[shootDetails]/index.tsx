@@ -31,6 +31,7 @@ import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 import useCalculateAddons from '@/hooks/useCalculateAddons';
 import { format, isValid, parseISO } from 'date-fns';
 import flatpickr from 'flatpickr';
+import Image from 'next/image';
 
 const ShootDetails = () => {
   const { userData, authPermissions } = useAuth();
@@ -459,7 +460,8 @@ const ShootDetails = () => {
                       defaultZoom={11}
                     >
                       <div>
-                        <img src="/assets/images/marker-icon.png" alt="Marker Icon" style={{ height: '25px', width: '20px' }} />
+                        {/* <img src="/assets/images/marker-icon.png" alt="Marker Icon" style={{ height: '25px', width: '20px' }} /> */}
+                        {/* <Image src="/assets/images/marker-icon.png" alt="Marker Icon" style={{ height: '25px', width: '20px' }} width={20} height={25} /> */}
                       </div>
                     </GoogleMapReact>
                   ) : (
@@ -638,7 +640,7 @@ const ShootDetails = () => {
                               <td className="border-b px-4 py-2 font-bold">
                                 <div className="flex items-center justify-center">
                                   <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
-                                    <img src={'/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                    <Image src="/assets/images/favicon.png" alt="Favicon" className="h-full w-full rounded-full" width={64} height={64} />
                                   </div>
                                   <div>{cp?.id?.name ?? ''}</div>
                                 </div>
@@ -949,7 +951,13 @@ const ShootDetails = () => {
                             <div key={cp?.userId?._id} className="rounded-lg border border-solid border-[#ACA686] p-3 shadow">
                               <div className="grid h-[150px] grid-cols-3 items-start justify-start md:h-[140px]">
                                 <div className="media relative h-14 w-14 rounded-full">
-                                  <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="mr-3 h-full w-full rounded-full object-cover" alt="img" />
+                                  <Image
+                                    src={cp?.userId?.profile_picture || '/assets/images/favicon.png'}
+                                    alt="Profile Picture"
+                                    className="mr-3 h-full w-full rounded-full object-cover"
+                                    width={64}
+                                    height={64}
+                                  />
                                   <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
                                 </div>
 

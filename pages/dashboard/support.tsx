@@ -14,6 +14,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { useGetAllSupportsQuery } from '@/Redux/features/support/supportApi';
+import Image from 'next/image';
 
 interface supportsType {
   title: string;
@@ -120,11 +121,12 @@ const support = () => {
                 ) : (
                   <>
                     {allSupports?.results && allSupports?.results.length > 0 ? (
-                      allSupports?.results?.map((support) => (
+                      allSupports?.results?.map((support: any) => (
                         <tr key={support?.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                           <td className="min-w-[150px] text-black dark:text-white">
                             <div className="flex items-center">
-                              <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" />
+                              {/* <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" /> */}
+                              <Image className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" width={32} height={32} />
                               <p className="whitespace-nowrap">
                                 {/* {support?.title} */}
                                 {support?.order_name}
