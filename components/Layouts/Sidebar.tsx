@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/authContext';
 import dynamic from 'next/dynamic';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import Image from 'next/image';
 
 const Sidebar = () => {
   const scrollContainerRef = useRef(null);
@@ -87,7 +88,8 @@ const Sidebar = () => {
         <div className="h-full bg-white dark:bg-black">
           <div className="flex items-center justify-between px-4 py-3">
             <Link href="/" className="main-logo">
-              <img className="ml-[5px] flex-none" src="/assets/images/beige-logo.svg" alt="logo" />
+              {/* <img className="ml-[5px] flex-none" src="/assets/images/beige-logo.svg" alt="logo" /> */}
+              <Image width={144} height={144} className="ml-[5px] flex-none" src="/assets/images/beige-logo.svg" alt="logo" />
             </Link>
 
             <button

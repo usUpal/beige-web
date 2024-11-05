@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { useAuth } from '@/contexts/authContext';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-// import Flatpickr from 'react-flatpickr';
+import Flatpickr from 'react-flatpickr';
 import { API_ENDPOINT } from '@/config';
 import { useLazyGetAlgoCpQuery, usePostOrderMutation, useUpdateOrderMutation } from '@/Redux/features/shoot/shootApi';
 import { toast } from 'react-toastify';
@@ -30,6 +30,7 @@ import { useGetAllAddonsQuery } from '@/Redux/features/addons/addonsApi';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 import AccessDenied from '@/components/errors/AccessDenied';
 import useCalculateAddons from '@/hooks/useCalculateAddons';
+import Image from 'next/image';
 
 interface FormData {
   content_type: string;
@@ -261,7 +262,7 @@ const BookNow = () => {
     } catch (error) {}
   };
 
-  const handelOnMeetingDateTimeChange = (dateStr) => {
+  const handelOnMeetingDateTimeChange = (dateStr: any) => {
     try {
       const e_time = parseISO(dateStr);
       if (!isValid(e_time)) {
@@ -648,7 +649,7 @@ const BookNow = () => {
                       <div className="my-5 flex-col items-center justify-between gap-4 md:mb-10 md:flex md:flex-row md:gap-9 xl:gap-5">
                         {userData?.role === 'admin' && (
                           <div className="relative flex  w-full flex-col sm:flex-row ">
-                            <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                            <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 md:w-[90px] xl:w-[110px]">
                               Client
                             </label>
                             <input
@@ -687,7 +688,13 @@ const BookNow = () => {
                                               className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
                                             >
                                               <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                                <img src={client?.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                                <Image
+                                                  src={client?.profile_picture || '/assets/images/favicon.png'}
+                                                  className="h-full w-full rounded-full"
+                                                  alt="Profile Picture"
+                                                  width={100}
+                                                  height={100}
+                                                />
                                               </div>
                                               <a href="#">{client?.name}</a>
                                             </li>
@@ -910,7 +917,14 @@ const BookNow = () => {
                               <div key={cp?.userId?._id} className="single-match  basis-[49%] rounded-[10px] border border-solid border-[#ACA686] px-6 py-4">
                                 <div className="grid grid-cols-3 md:h-32">
                                   <div className="media relative h-14 w-14">
-                                    <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} style={{ width: '100%', height: '100%' }} className="mr-3 rounded-full" alt="img" />
+                                    <Image
+                                      src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`}
+                                      style={{ width: '100%', height: '100%' }}
+                                      className="mr-3 rounded-full"
+                                      alt="img"
+                                      width={100}
+                                      height={100}
+                                    />
                                     <span className="absolute bottom-0 right-1 block h-3 w-3 rounded-full border border-solid border-white bg-success"></span>
                                   </div>
 
@@ -1049,7 +1063,15 @@ const BookNow = () => {
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center justify-start">
                                       <div className="relative h-14 w-14">
-                                        <img src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`} className="h-full w-full rounded-full object-cover" alt="img" />
+                                        <Image
+                                          src={`${cp?.userId?.profile_picture || '/assets/images/favicon.png'}`}
+                                          style={{ width: '100%', height: '100%' }}
+                                          className="mr-3 rounded-full"
+                                          alt="img"
+                                          width={100}
+                                          height={100}
+                                        />
+
                                         <span className="absolute bottom-0 right-0 block h-4 w-4 rounded-full border border-solid border-white bg-success"></span>
                                       </div>
 

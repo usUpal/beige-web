@@ -983,14 +983,6 @@ const folderIconForFile = (
 );
 
 const threeDotMenuIcon = (
-  // <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 h-6 w-6">
-  //   <path
-  //     strokeLinecap="round"
-  //     strokeLinejoin="round"
-  //     d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
-  //   />
-  // </svg>
-
   <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="#000000" className="bi bi-three-dots-vertical ml-2 mt-1">
     <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
     <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
@@ -1625,6 +1617,83 @@ const rattingStarIcon = (
   </svg>
 );
 
+const delIconDefault = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path opacity="0.5" d="M9.17065 4C9.58249 2.83481 10.6937 2 11.9999 2C13.3062 2 14.4174 2.83481 14.8292 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M20.5001 6H3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path
+      d="M18.8334 8.5L18.3735 15.3991C18.1965 18.054 18.108 19.3815 17.243 20.1907C16.378 21 15.0476 21 12.3868 21H11.6134C8.9526 21 7.6222 21 6.75719 20.1907C5.89218 19.3815 5.80368 18.054 5.62669 15.3991L5.16675 8.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+    <path opacity="0.5" d="M9.5 11L10 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path opacity="0.5" d="M14.5 11L14 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const htmlCodeIcon = (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ltr:mr-2 rtl:ml-2">
+    <path
+      d="M17 7.82959L18.6965 9.35641C20.239 10.7447 21.0103 11.4389 21.0103 12.3296C21.0103 13.2203 20.239 13.9145 18.6965 15.3028L17 16.8296"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+    <path opacity="0.5" d="M13.9868 5L10.0132 19.8297" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path
+      d="M7.00005 7.82959L5.30358 9.35641C3.76102 10.7447 2.98975 11.4389 2.98975 12.3296C2.98975 13.2203 3.76102 13.9145 5.30358 15.3028L7.00005 16.8296"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const uploadUpArrow = (
+  <svg className="absolute bottom-0 left-0 right-0 top-0 m-auto h-10 w-10 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <path
+      className="text-[15px]"
+      fill="white"
+      d="M288 109.3L288 352c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-242.7-73.4 73.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l128-128c12.5-12.5 32.8-12.5 45.3 0l128 128c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L288 109.3zM64 352l128 0c0 35.3 28.7 64 64 64s64-28.7 64-64l128 0c35.3 0 64 28.7 64 64l0 32c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64l0-32c0-35.3 28.7-64 64-64zM432 456a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"
+    />
+  </svg>
+);
+
+const addMorePlusIconSm = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="white" className="h-3 w-3">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+  </svg>
+);
+
+const beigeLogoIcon = (
+  <svg width="141" height="24" viewBox="0 0 141 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M6.95439 0.0350845C3.11517 0.350874 0.901559 2.87719 1.10908 6.5614C1.17826 8.38596 1.93919 9.82456 3.32269 10.807L3.66857 11.0526L3.18434 11.2982C1.21285 12.3158 0.244395 13.7544 0.0368691 16C-0.309007 19.7544 1.80084 22.8772 5.43254 23.7193C6.6431 24 6.74687 24 12.7997 24H18.057L17.642 23.7193C16.6389 23.0175 15.7396 22.0702 15.1171 21.0526L14.9095 20.7368H11.4508C8.02661 20.7368 7.40403 20.7368 6.81604 20.5965C4.80996 20.2105 3.66857 18.8421 3.66857 16.7368C3.66857 14.6316 4.80996 13.5439 7.23109 13.1579C7.57697 13.1228 8.02661 13.0877 10.0673 13.0877H12.4538L12.4192 12.386C12.3846 11.7193 12.4538 10.386 12.4884 10.0702L12.523 9.92982H10.8974C8.40707 9.92982 7.57697 9.85965 6.81604 9.61403C5.5363 9.15789 4.84454 8.24561 4.80996 6.77193C4.74078 5.05263 5.46712 3.92982 6.95439 3.50877C7.74991 3.29825 7.74991 3.29824 11.2778 3.26315H14.4945V7.85965C14.4945 12.386 14.4945 13.193 14.5983 14.2456C15.0825 18.5614 16.8464 21.5088 19.8902 23.0877C20.1323 23.2281 20.3744 23.2982 20.3744 23.2982C20.4436 23.2632 22 20.5965 22 20.421C22 20.421 21.8271 20.2807 21.6887 20.2105C20.0631 19.4386 18.7142 17.5439 18.2991 15.5088C18.0224 14.0702 18.0224 13.614 18.0224 6.38596V0H12.6613C9.68681 0 7.12733 0.0350845 6.95439 0.0350845Z"
+      fill="#ACA686"
+    />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M97.6473 0.0643862C95.167 0.336209 92.9924 1.28759 91.0896 2.88455C86.6045 6.65609 85.6871 14.0293 89.0849 19.058C92.9924 24.9022 102.03 25.6837 108.316 20.7569L108.758 20.3831V10.6655H98.8705V14.1312L104.783 14.1992L104.851 18.5483L104.477 18.7862C99.1084 22.2859 92.5167 19.6356 91.4973 13.5876C90.1722 5.73869 98.3269 0.8119 104.681 5.67073L105.394 6.21438L106.651 4.68538C107.365 3.83593 107.909 3.15637 107.909 3.12239C107.909 2.91853 105.7 1.49146 104.681 1.04975C102.812 0.268256 99.8219 -0.173459 97.6473 0.0643862ZM37.9482 23.611H55.2769V19.9414L42.0256 19.8735L41.9576 4.03979H55.141V0.30223H37.9482V23.611ZM69.072 23.679H73.2173V0.37019H69.072V23.679ZM122.723 23.611H140.052V19.9414L126.8 19.8735L126.732 4.03979H139.916V0.30223H122.723V23.611ZM43.9623 13.7914H53.68V10.0539H43.9623V13.7914ZM128.771 13.7914H138.489V10.0539H128.771V13.7914Z"
+      fill="#333434"
+    />
+  </svg>
+);
+
+export const correctionTikIcon = (classes: any) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={classes}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+  </svg>
+);
+export const customizeCrossIcon = (classes: any) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={classes}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+  </svg>
+);
+
 export const allSvgs = {
   toggleThemeIcon,
   moonIconForDarkTheme,
@@ -1742,4 +1811,9 @@ export const allSvgs = {
   searchIcon,
   sidebarMenuIcon,
   rattingStarIcon,
+  delIconDefault,
+  htmlCodeIcon,
+  uploadUpArrow,
+  addMorePlusIconSm,
+  beigeLogoIcon,
 };

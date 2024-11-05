@@ -10,6 +10,7 @@ import Cookies from 'js-cookie';
 import Loader from './SharedComponent/Loader';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import Swal from 'sweetalert2';
+import Image from 'next/image';
 
 const Auth = () => {
   const dispatch = useDispatch();
@@ -74,9 +75,8 @@ const Auth = () => {
           expires: new Date(refreshToken?.expires),
         });
 
-        console.log("refreshToken", refreshToken);
-        console.log("accessToken", accessToken);
-        
+        console.log('refreshToken', refreshToken);
+        console.log('accessToken', accessToken);
 
         //Redirect user to the dashboard
         //await router.push('/');
@@ -132,7 +132,8 @@ const Auth = () => {
   return (
     <div>
       <div className="absolute inset-0">
-        <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" />
+        {/* <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" /> */}
+        <Image src="/assets/images/auth/bg-gradient.png" alt="image" layout="fill" className="object-cover" />
       </div>
 
       <div className="relative flex min-h-screen items-center justify-center bg-[url(/assets/images/auth/map.png)] bg-cover bg-center bg-no-repeat px-6 py-10 dark:bg-[#060818] sm:px-16">

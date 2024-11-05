@@ -8,7 +8,7 @@ import { MAPAPIKEY } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import { swalToast } from '@/utils/Toast/SwalToast';
 import { toast } from 'react-toastify';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { allSvgs, correctionTikIcon, customizeCrossIcon } from '@/utils/allsvgs/allSvgs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import ResponsivePagination from 'react-responsive-pagination';
@@ -509,9 +509,7 @@ const ShootDetails = () => {
                         }}
                         className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
+                        {allSvgs.addMorePlusIconSm}
                         <span>Add More</span>
                       </button>
                     </div>
@@ -569,13 +567,7 @@ const ShootDetails = () => {
                           onClick={submitNewMeting}
                           className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                         >
-                          {isNewMeetingLoading || isNewMeetLinkLoading ? (
-                            <Loader />
-                          ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                            </svg>
-                          )}
+                          {isNewMeetingLoading || isNewMeetLinkLoading ? <Loader /> : correctionTikIcon('w-5 h-5')}
                         </button>
                       </div>
                     )}
@@ -602,13 +594,7 @@ const ShootDetails = () => {
                           onClick={handelUpdateStatus}
                           className="flex items-center justify-center rounded-lg border border-black bg-black px-1 text-white"
                         >
-                          {isStatusLoading === true ? (
-                            <Loader />
-                          ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                            </svg>
-                          )}
+                          {isStatusLoading === true ? <Loader /> : correctionTikIcon('w-5 h-5')}
                         </button>
                       </div>
                     )}
@@ -623,9 +609,7 @@ const ShootDetails = () => {
                   {userData?.role === 'admin' && (
                     <div className="flex gap-3">
                       <button onClick={() => setCpModal(!cpModal)} className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="h-3 w-3 text-white">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
+                        {allSvgs.addMorePlusIconSm}
                         <span>Add More</span>
                       </button>
                     </div>
@@ -703,9 +687,7 @@ const ShootDetails = () => {
                           aria-hidden="true"
                         ></span>
                         <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full  border border-gray-300 bg-green-500 text-white transition-all duration-200">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                          </svg>
+                          {correctionTikIcon('w-4 h-4')}
                         </div>
                       </>
                     )}
@@ -717,9 +699,7 @@ const ShootDetails = () => {
                           aria-hidden="true"
                         ></span>
                         <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-green-500 text-white transition-all duration-200 ">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                          </svg>
+                          {correctionTikIcon('w-4 h-4')}
                         </div>
                       </>
                     )}
@@ -751,11 +731,7 @@ const ShootDetails = () => {
                             aria-hidden="true"
                           ></span>
                           <div className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-gray-50 transition-all duration-200">
-                            {status === 'Cancelled' ? (
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                              </svg>
-                            ) : null}
+                            {status === 'Cancelled' ? customizeCrossIcon('h-4 w-4') : null}
                           </div>
                         </>
                       )}
@@ -771,15 +747,7 @@ const ShootDetails = () => {
                               status === 'Cancelled' ? 'bg-red-500' : 'bg-green-500'
                             } transition-all duration-200`}
                           >
-                            {status === 'Cancelled' ? (
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                              </svg>
-                            ) : (
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                              </svg>
-                            )}
+                            {status === 'Cancelled' ? customizeCrossIcon('w-4 h-4') : correctionTikIcon('w-4 h-4')}
                           </div>
                         </>
                       )}

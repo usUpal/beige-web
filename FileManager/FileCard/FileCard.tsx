@@ -152,7 +152,7 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
               </div>
 
               <div className="threeDot" onClick={() => { handleDropDown(id) }}>
-                {allSvgs.threeDotMenuIcon}
+                {/* {allSvgs.threeDotMenuIcon} */}
                 {/* dropdown */}
                 <div className="dropdown">
                   <div className="relative">

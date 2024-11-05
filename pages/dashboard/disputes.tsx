@@ -16,6 +16,7 @@ import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery, useUpdateDisputeStatusMutation } from '@/Redux/features/dispute/disputeApi';
 import { toast } from 'react-toastify';
 import AccessDenied from '@/components/errors/AccessDenied';
+import Image from 'next/image';
 const Disputes = () => {
   const [disputeModal, setDisputeModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -129,7 +130,7 @@ const Disputes = () => {
                               dispute?.id ? getSingleDesputeDetails(dispute?.id) : getSingleDesputeDetails(dispute?._id);
                             }}
                           >
-                            <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                            <Image className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" width={24} height={24} />
                           </button>
                         </td>
                       </tr>

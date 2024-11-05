@@ -11,6 +11,7 @@ import { useAuth } from '../../contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition, Tab } from '@headlessui/react';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import Image from 'next/image';
 
 const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
   const { userData } = useAuth();
@@ -291,7 +292,8 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
             <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
           </div>
           <span className="flex items-center gap-2 rounded-md border border-[#ddd] px-6 py-1 " style={{ backgroundColor: '#93c5fd' }}>
-            <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
+            {/* <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" /> */}
+            <Image src="/allSvg/refresh.svg" alt="refresh" className="size-6" width={24} height={24} />
             Refresh
           </span>
         </div>

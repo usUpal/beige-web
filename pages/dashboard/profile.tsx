@@ -15,6 +15,7 @@ import { useGetCpReviewQuery, useGetCpUploadedImageQuery, useGetCpUploadedVideoQ
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 import { Tab } from '@headlessui/react';
+import Image from 'next/image';
 
 interface ImageModalProps {
   src?: string | null;
@@ -51,7 +52,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ src, onClose }) => {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-transparent p-6 text-left align-middle transition-all">
-                <img src={src} alt="Full size" className="h-auto w-full" />
+                <Image src={src} alt="Full size" className="h-auto w-full" width={500} height={500} />
                 <button className="absolute right-0 top-0 text-gray-500 hover:text-gray-700" onClick={onClose}>
                   {allSvgs.closeIconSvg}
                 </button>
@@ -185,14 +186,14 @@ const Profile = () => {
                         <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
                           <div className="flex gap-4">
                             {!review?.client_id?.profile_picture ? (
-                              <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : ''}</MakeProfileImage>
+                              <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : 'Un'}</MakeProfileImage>
                             ) : (
-                              <img src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="profile img" />
+                              <Image src={review?.client_id?.profile_picture} className="mb-5 h-16 w-16 rounded-full object-cover" alt="profile img" width={64} height={64} />
                             )}
 
                             <div className="w-full">
                               <div className="flex w-full items-center justify-between">
-                                <div>
+                                <div className="h-20">
                                   <h2 className="text-left text-[20px] font-bold leading-5">{review?.client_id?.name}</h2>
                                   <p className="mt-1 text-left text-[14px] font-medium text-[#928989]">{review?.client_id?.location}</p>
                                 </div>
@@ -203,7 +204,7 @@ const Profile = () => {
                                   </div>
                                 </div>
                               </div>
-                              <p className="mt-3 text-left text-[14px]">
+                              <p className="mt-3 h-8 text-left text-[14px]">
                                 {isExpanded ? review?.reviewText : truncateLongText(review?.reviewText, 50)}
                                 {review?.reviewText.length > 50 && !isExpanded && (
                                   <span onClick={() => setIsExpanded(true)} className=" cursor-pointer text-blue-500">
@@ -295,11 +296,13 @@ const Profile = () => {
                                   <div className="image-sec mt-4 flex flex-wrap items-center gap-4">
                                     {allCpImage?.contents?.Corporate?.map((src: any, index: number) => (
                                       <SwiperSlide key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                                        <img
+                                        <Image
                                           src={src}
                                           className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover"
                                           alt="User profile picture"
                                           onClick={() => setSelectedImage(src)}
+                                          width={250}
+                                          height={250}
                                         />
                                       </SwiperSlide>
                                     ))}
@@ -332,11 +335,13 @@ const Profile = () => {
                                   <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
                                     {allCpImage?.contents?.Wedding?.map((src: any, index: any) => (
                                       <SwiperSlide key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                                        <img
+                                        <Image
                                           src={src}
                                           className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover"
                                           alt="User profile picture"
                                           onClick={() => setSelectedImage(src)}
+                                          width={250}
+                                          height={250}
                                         />
                                       </SwiperSlide>
                                     ))}
@@ -370,10 +375,12 @@ const Profile = () => {
                                   <div className="image-sec mt-6 flex flex-wrap items-center gap-4">
                                     {allCpImage?.contents?.Other?.map((src: any, index: any) => (
                                       <SwiperSlide key={index} className="mb-5 h-[250px] w-full max-w-[250px] rounded-md object-cover">
-                                        <img
+                                        <Image
                                           src={src}
                                           className="mb-5 h-[250px] w-full max-w-[250px] cursor-pointer rounded-md object-cover"
                                           alt="User profile picture"
+                                          width={250}
+                                          height={250}
                                           onClick={() => setSelectedImage(src)}
                                         />
                                       </SwiperSlide>

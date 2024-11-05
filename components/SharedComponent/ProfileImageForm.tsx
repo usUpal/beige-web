@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import Image from 'next/image';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
 // interface FormData {
 //   profile_picture: FileList;
@@ -118,7 +120,7 @@ const ProfileImageForm = () => {
     <div>
       <div className="group relative flex flex-col items-center justify-center">
         {profilePicture ? (
-          <img src={profilePicture as string} className="h-32 w-32 rounded-full object-cover" alt="User profile picture" />
+          <Image src={profilePicture as string} alt="User profile picture" width={128} height={128} className="h-32 w-32 rounded-full object-cover" />
         ) : (
           <span className="flex h-32 w-32 items-center justify-center rounded-full bg-slate-400 object-cover text-2xl font-bold capitalize text-white">{name[0] ?? 'BE'}</span>
         )}
@@ -127,13 +129,7 @@ const ProfileImageForm = () => {
           <div className="absolute bottom-0 left-[-55px] right-0 top-[-143px] m-auto flex h-32 w-32 flex-col  items-center justify-center gap-0 rounded-full bg-[#02020281] opacity-0 transition-opacity duration-300 ease-out hover:opacity-100">
             <label className="cursor-pointer">
               <input type="file" accept="image/*" className="hidden" {...register('profile_picture')} onChange={handleImageUpload} />
-              <svg className="absolute bottom-0 left-0 right-0 top-0 m-auto h-[24px] w-[24px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <path
-                  className="text-[15px]"
-                  fill="white"
-                  d="M288 109.3L288 352c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-242.7-73.4 73.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l128-128c12.5-12.5 32.8-12.5 45.3 0l128 128c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L288 109.3zM64 352l128 0c0 35.3 28.7 64 64 64s64-28.7 64-64l128 0c35.3 0 64 28.7 64 64l0 32c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64l0-32c0-35.3 28.7-64 64-64zM432 456a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"
-                />
-              </svg>
+              {allSvgs.uploadUpArrow}
             </label>
             {/* <button type="submit" className="bg-blue-600 my-4 flex justify-center m-auto text-sm text-white rounded-md py-1 px-1 absolute bottom-[-10px]" disabled={isLoading}>
               {isLoading ? 'Updating...' : 'Update'}

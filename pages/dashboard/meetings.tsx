@@ -17,6 +17,7 @@ import AccessDenied from '@/components/errors/AccessDenied';
 import flatpickr from 'flatpickr';
 import { format, isValid, parseISO } from 'date-fns';
 import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
+import Image from 'next/image';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -231,7 +232,7 @@ const Meeting = () => {
                           {authPermissions?.includes('meeting_details') && (
                             <td>
                               <button type="button" className="p-0" onClick={() => handelMeetingDetails(meeting?.id)}>
-                                <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
+                                <Image className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" width={24} height={24} />
                               </button>
                             </td>
                           )}

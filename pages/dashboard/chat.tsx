@@ -22,6 +22,7 @@ import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 import AccessDenied from '@/components/errors/AccessDenied';
+import Image from 'next/image';
 // import PreLoader from '@/components/ProfileImage/PreLoader';
 // import Loader from '@/components/SharedComponent/Loader';
 // types
@@ -581,7 +582,13 @@ const Chat = () => {
                                                     className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
                                                   >
                                                     <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                                      <img src={client?.profile_picture || '/assets/images/favicon.png'} className="h-full w-full rounded-full" />
+                                                      <Image
+                                                        src={client?.profile_picture || '/assets/images/favicon.png'}
+                                                        alt="Profile Picture"
+                                                        className="h-full w-full rounded-full"
+                                                        width={48}
+                                                        height={48}
+                                                      />
                                                     </div>
                                                     <a href="#">{client?.name}</a>
                                                   </li>
@@ -649,12 +656,12 @@ const Chat = () => {
                             <div className={`flex-none ${message?.senderId === userData.id ? 'order-2' : ''}`}>
                               {message?.senderId === userData.id ? (
                                 userData?.profile_picture ? (
-                                  <img src={userData.profile_picture} className="h-10 w-10 rounded-full" alt="own_profile_photo" />
+                                  <Image src={userData.profile_picture} className="h-10 w-10 rounded-full" alt="own_profile_photo" width={40} height={40} />
                                 ) : (
                                   ''
                                 )
                               ) : message?.profile_picture ? (
-                                <img src={message.profile_picture} className="h-10 w-10 rounded-full" alt="profile_photo" />
+                                <Image src={message.profile_picture} className="h-10 w-10 rounded-full" alt="profile_photo" width={40} height={40} />
                               ) : message.senderName === 'Admin User' ? (
                                 createImageByName('MA')
                               ) : message.senderName === 'User' ? (
@@ -725,6 +732,7 @@ const Chat = () => {
 
       {/* starts details menu */}
 
+      {/* for below md devices  */}
       {threeDotSidebar && (
         <div className={`panel block flex-1 p-0 xl:hidden`}>
           <div className="relative h-full">
@@ -807,19 +815,19 @@ const Chat = () => {
                     <h2 className="text-lg font-medium">Image files</h2>
                     <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-5">
                       <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 1" className="h-32 w-32 rounded-lg shadow-md" />
+                        <Image src="https://via.placeholder.com/300" alt="Demo 1" className="h-32 w-32 rounded-lg shadow-md" width={10} height={10} />
                       </div>
                       <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 2" className="h-32 w-32  rounded-lg shadow-md" />
+                        <Image src="https://via.placeholder.com/300" alt="Demo 1" className="h-32 w-32 rounded-lg shadow-md" width={10} height={10} />
                       </div>
                       <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 3" className="h-32 w-32  rounded-lg shadow-md" />
+                        <Image src="https://via.placeholder.com/300" alt="Demo 1" className="h-32 w-32 rounded-lg shadow-md" width={10} height={10} />
                       </div>
                       <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 3" className="h-32 w-32 rounded-lg shadow-md" />
+                        <Image src="https://via.placeholder.com/300" alt="Demo 1" className="h-32 w-32 rounded-lg shadow-md" width={10} height={10} />
                       </div>
                       <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 3" className="h-32 w-32 rounded-lg shadow-md" />
+                        <Image src="https://via.placeholder.com/300" alt="Demo 1" className="h-32 w-32 rounded-lg shadow-md" width={10} height={10} />
                       </div>
                     </div>
                   </div>
@@ -911,13 +919,13 @@ const Chat = () => {
                     <h2 className="text-lg font-medium">Image files</h2>
                     <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                       <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 1" className="h-auto w-full rounded-lg shadow-md" />
+                        <Image src="https://via.placeholder.com/300" alt="Demo 1" className="h-auto w-full rounded-lg shadow-md" width={10} height={10} />
                       </div>
                       <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 2" className="h-auto w-full rounded-lg shadow-md" />
+                        <Image src="https://via.placeholder.com/300" alt="Demo 1" className="h-auto w-full rounded-lg shadow-md" width={10} height={10} />
                       </div>
                       <div className="relative">
-                        <img src="https://via.placeholder.com/300" alt="Demo 3" className="h-auto w-full rounded-lg shadow-md" />
+                        <Image src="https://via.placeholder.com/300" alt="Demo 1" className="h-auto w-full rounded-lg shadow-md" width={10} height={10} />
                       </div>
                     </div>
                   </div>
