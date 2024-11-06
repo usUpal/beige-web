@@ -6,7 +6,6 @@ const useDateFormat = (inputDate: any) => {
   useEffect(() => {
     const makeDateFormat = (inputDate: any) => {
       const date = new Date(inputDate);
-      //console.log("🚀 ~ makeDateFormat ~ date:", date);
 
       const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       const month = months[date.getMonth()];

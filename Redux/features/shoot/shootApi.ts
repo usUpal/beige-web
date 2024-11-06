@@ -84,9 +84,7 @@ const shootApi = baseApi.injectEndpoints({
     }),
     // 
     addAddons: builder.mutation({
-      query: ( data ) => {
-        console.log(data, "data");
-        
+      query: ( data ) => {        
         return {
           url: `orders/${data?.id}`,
           method: 'PATCH',

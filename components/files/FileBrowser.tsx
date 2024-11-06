@@ -87,7 +87,7 @@ const FileBrowser = (props: any) => {
                 setIsFilesLoading(false);
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             toast.error('error ' + fetchErrorMessage, {
                 position: toast.POSITION.TOP_RIGHT,
             });
@@ -122,7 +122,7 @@ const FileBrowser = (props: any) => {
             const filePath = '/' + currentPath + '/' + name;
             setFileInfoData(itemObject);
             setFileDetailsModal(true);
-            console.log(itemObject);
+            // console.log(itemObject);
         };
 
         if (type === 'directory') {

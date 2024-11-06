@@ -109,7 +109,7 @@ const ProfileImageForm = () => {
 
       coloredToast('success', 'Profile picture updated successfully');
     } catch (error) {
-      console.error('Error updating profile picture:', error);
+      // console.error('Error updating profile picture:', error);
       coloredToast('error', 'Failed to update profile picture');
     } finally {
       setIsLoading(false);

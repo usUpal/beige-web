@@ -308,10 +308,15 @@ const ShootDetails = () => {
     try {
       const result = await addAddons(data);
       if (result?.data) {
-        refetch();
-        toast.success('Addons Added successfully.');
-        setCpModal(false);
-        setAddonsModal(false);
+        if (result?.data.addOns.length === 0) {
+          toast.warning('No Addons Added.');
+          setAddonsModal(false);
+        } else {
+          toast.success('Addons Added successfully.');
+          setCpModal(false);
+          refetch();
+          setAddonsModal(false);
+        }
       }
     } catch {
       toast.error('Failed to add addon.');
@@ -550,8 +555,8 @@ const ShootDetails = () => {
 
               <div className="mb-4 basis-[45%] flex-row space-y-5">
                 {(userData?.role === 'user' || 'admin') && (
-                  <div className="flex space-x-3">
-                    <button className="rounded-lg bg-black px-4 py-2 font-sans text-[14px] font-semibold text-white" onClick={() => setMeetingBox(!meetingBox)}>
+                  <div className="flex space-x-3 2xl:space-x-[50px]">
+                    <button className="rounded-lg bg-black p-2 font-sans text-[14px] font-semibold text-white" onClick={() => setMeetingBox(!meetingBox)}>
                       Schedule Meeting
                     </button>
                     {meetingBox && (
@@ -577,7 +582,7 @@ const ShootDetails = () => {
                 )}
 
                 {userData?.role === 'admin' && (
-                  <div className="flex space-x-3">
+                  <div className="flex space-x-[28px] 2xl:space-x-[65px]">
                     <DefaultButton onClick={() => setStatusBox(!statusBox)} css="font-semibold">
                       Change Status
                     </DefaultButton>

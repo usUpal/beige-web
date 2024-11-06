@@ -115,9 +115,6 @@ const Meeting = () => {
           handleOnMeetingDateTimeChange(dateStr);
         },
       });
-
-      // Debug to ensure flatpickr is initialized
-      // console.log('Flatpickr initialized:', flatpickrInstance.current);
     }
 
     // Cleanup function to destroy flatpickr instance
@@ -137,7 +134,7 @@ const Meeting = () => {
       const formattedTime = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
       setFormattedMeetingTime(formattedTime);
     } catch (error) {
-      console.error('Date parsing error', error);
+      // console.error('Date parsing error', error);
     }
   };
   // ========

@@ -48,7 +48,7 @@ function ReadySearchBox({ onSelectAddress, defaultValue }: ISearchBoxProps) {
       onSelectAddress(address, lat, lng);
 
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 

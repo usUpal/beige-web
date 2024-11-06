@@ -648,7 +648,7 @@ const BookNow = () => {
 
                       <div className="my-5 flex-col items-center justify-between gap-4 md:mb-10 md:flex md:flex-row md:gap-9 xl:gap-5">
                         {userData?.role === 'admin' && (
-                          <div className="relative flex  w-full flex-col sm:flex-row ">
+                          <div className="relative flex  w-full flex-col space-x-0 sm:mb-4 sm:flex-row sm:space-x-[0px] xl:space-x-0 2xl:space-x-16 ">
                             <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 md:w-[90px] xl:w-[110px]">
                               Client
                             </label>
@@ -714,7 +714,7 @@ const BookNow = () => {
                         )}
 
                         {/* Location */}
-                        <div className={`mt-2 flex w-full flex-col sm:flex-row md:mt-0  ${userData?.role !== 'admin' ? 'md:w-[49.5%] ' : '2xl:ml-32'}`}>
+                        <div className={`mt-2 flex w-full flex-col sm:flex-row sm:space-x-[52px] md:mt-0 lg:space-x-[8px] xl:space-x-0 ${userData?.role !== 'admin' ? 'md:w-[49.5%] ' : '2xl:ml-32'}`}>
                           <label htmlFor="location" className={`mb-0 capitalize xl:w-24 2xl:w-36 `}>
                             {/* ${userData?.role !== "admin" && "lg:w-40 "} */}
                             Location
@@ -724,9 +724,9 @@ const BookNow = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="mt-5 w-full flex-col items-start justify-between md:mb-10 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32">
+                      <div className="mt-5 w-full flex-col items-start justify-between md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32">
                         {/* Shoot Name */}
-                        <div className="flex w-full  flex-col sm:flex-row">
+                        <div className="flex w-full flex-col space-x-0 sm:mb-4 sm:flex-row sm:space-x-[5px] xl:space-x-[20px] 2xl:space-x-[30px]">
                           <label htmlFor="order_name" className="mb-0  sm:w-1/4 md:w-24 lg:w-24 2xl:w-40 ">
                             Shoot Name
                           </label>
@@ -743,7 +743,7 @@ const BookNow = () => {
                         </div>
 
                         {/* references */}
-                        <div className="mt-2 flex w-full flex-col sm:flex-row md:mt-0 2xl:ml-5">
+                        <div className="mt-2 flex w-full flex-col space-x-0 sm:flex-row sm:space-x-[33px] md:mt-0 lg:space-x-2 2xl:ml-5 2xl:space-x-16">
                           <label htmlFor="references" className="mb-0  ">
                             References
                           </label>
@@ -752,11 +752,11 @@ const BookNow = () => {
                       </div>
 
                       {/* Shoot Timings */}
-                      <div className="mb-0 mt-5 lg:mb-6">
-                        <div className="mb-8 w-full items-center justify-between md:flex">
+                      <div className="mb-0 mt-5 lg:mb-10 ">
+                        <div className="w-full items-center justify-between md:flex">
                           {/* Starting Date and Time */}
                           <div className="flex w-full flex-col sm:flex-row md:mb-0">
-                            <label htmlFor="start_date_time" className="mb-3 mt-4 md:ml-2 md:w-16 lg:ml-0 xl:w-24 2xl:w-40">
+                            <label htmlFor="start_date_time" className=" mb-3 mt-4 md:ml-2 md:w-16 lg:ml-0 xl:w-24 2xl:w-[154px]">
                               Shoot Time
                             </label>
 
@@ -805,7 +805,7 @@ const BookNow = () => {
                         <div className="table-responsive">
                           {/* DateTime Output show Table */}
                           {dateTimes?.length !== 0 && (
-                            <div className="mb-8">
+                            <div className=" float-right mt-4 2xl:w-[90%]">
                               <table className="table-auto">
                                 <thead>
                                   <tr>
@@ -840,8 +840,8 @@ const BookNow = () => {
                       {/* {userData?.role === 'admin' && ( */}
                       <div className={` ${userData?.role === 'admin' ? 'mt-4' : ''} w-full flex-col items-center justify-between md:mt-0 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32`}>
                         {/* Special Note */}
-                        <div className={`flex flex-col sm:flex-row ${userData?.role === 'admin' ? 'w-full' : 'md:w-[50%]  2xl:w-[45%]'}`}>
-                          <label htmlFor="description" className="mb-0 rtl:ml-2 sm:ltr:mr-2 md:w-[100px] xl:w-[105px] 2xl:w-[160px]">
+                        <div className={`flex flex-col sm:mb-5 sm:flex-row ${userData?.role === 'admin' ? 'w-full' : 'md:w-[50%]  2xl:w-[45%]'}`}>
+                          <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-[120px] sm:ltr:mr-2 md:w-[100px] lg:w-[70px] xl:w-[105px] 2xl:w-[160px]">
                             Special Note
                           </label>
                           <textarea id="description" rows={1} className="form-textarea xl:ml-2 2xl:ml-5" placeholder="Type your note here..." {...register('description')}></textarea>

@@ -117,7 +117,7 @@ export default {
         reqConfig(this)
       );
     } catch (error) {
-      console.error(`Error in deleteFile for ${filepath}:`, error);
+      // console.error(`Error in deleteFile for ${filepath}:`, error);
       throw error;
     }
   },
@@ -134,7 +134,7 @@ export default {
       );
       return res.data;
     } catch (error) {
-      console.error(`Error in moveFile for ${filepath} to ${destination}:`, error);
+      // console.error(`Error in moveFile for ${filepath} to ${destination}:`, error);
       throw error;
     }
   },
@@ -151,7 +151,7 @@ export default {
       );
       return res.data;
     } catch (error) {
-      console.error(`Error in getNewUploadPolicy for ${filepath}:`, error);
+      // console.error(`Error in getNewUploadPolicy for ${filepath}:`, error);
       throw error;
     }
   },
@@ -173,7 +173,7 @@ export default {
 
       return [uploadPromise, () => cancelTokenSource.cancel()];
     } catch (error) {
-      console.error('Error in postFile:', error);
+      // console.error('Error in postFile:', error);
       throw error;
     }
   },
@@ -183,7 +183,7 @@ export default {
       const res = await axios.get('/get-settings', reqConfig(this));
       return res.data.settings;
     } catch (error) {
-      console.error('Error in getSettings:', error);
+      // console.error('Error in getSettings:', error);
       throw error;
     }
   },
@@ -198,7 +198,7 @@ export default {
       );
       return res.data;
     } catch (error) {
-      console.error('Error in saveSettings:', error);
+      // console.error('Error in saveSettings:', error);
       throw error;
     }
   },
@@ -280,7 +280,7 @@ export default {
         progress: progress,
       });
     } catch (error) {
-      console.error(`Error in downloadFolder for ${folderpath}:`, error);
+      // console.error(`Error in downloadFolder for ${folderpath}:`, error);
       toast.update(toastId, {
         render: `Download failed!`,
         type: 'error',

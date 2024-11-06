@@ -39,7 +39,7 @@ function uploadStateReducer(state: any, action: any) {
     case 'setStatus':
       return { ...state, status: action.status };
     case 'uploadError':
-      console.error(action.error);
+      // console.error(action.error);
       return {
         ...state,
         error: true,

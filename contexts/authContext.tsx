@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               break;
           }
         } catch (error) {
-          console.error(`Error parsing ${cookie} cookie:`, error);
+          // console.error(`Error parsing ${cookie} cookie:`, error);
         }
       }
     });

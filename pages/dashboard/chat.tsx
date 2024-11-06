@@ -16,24 +16,17 @@ import { useGetAllChatQuery, useLazyGetChatDetailsQuery } from '@/Redux/features
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import useDateFormat from '@/hooks/useDateFormat';
 import ResponsivePaginationComponent from 'react-responsive-pagination';
-// import { dropEllipsis } from 'react-responsive-pagination/narrowBehaviour';
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
-// import PreLoader from '@/components/ProfileImage/PreLoader';
-// import Loader from '@/components/SharedComponent/Loader';
-// types
+
 
 const Chat = () => {
   const { userData, authPermissions } = useAuth() as any;
-
-  // console.log("userData:", userData);
-
   const isHavePermission = authPermissions?.includes('chat_page');
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setPageTitle('Chat'));
@@ -103,8 +96,6 @@ const Chat = () => {
 
   // show old msg
   const [getChatDetails, { data: chatDetails, isLoading: isChatDetailsLoading }] = useLazyGetChatDetailsQuery();
-
-  // console.log("getChatDetails", chatDetails);
 
   // updatedAt
   const updatedAtDateTime = useDateFormat(selectedChatRoom?.updatedAt);

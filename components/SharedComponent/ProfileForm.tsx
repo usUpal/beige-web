@@ -78,7 +78,7 @@ const ProfileForm = () => {
         const updatedCpData: any = await updateCpDataForLocation({ id: userData?.id, data: cpData }).unwrap();
       }
     } catch (error) {
-      console.error('Patch error:', error);
+      // console.error('Patch error:', error);
     } finally {
       setIsLoading(false);
     }

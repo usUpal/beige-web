@@ -45,7 +45,6 @@ const support = () => {
   };
 
   const { data: allSupports, isLoading: isAllSupportLoading } = useGetAllSupportsQuery(query);
-  console.log('🚀 ~ support ~ allSupports:', allSupports);
 
   // All Supports - user base and here need to implement the support api
   const getAllSupports = async () => {
@@ -88,7 +87,6 @@ const support = () => {
       userId: userData?.id,
     };
 
-    console.log('newSupport', newSupport);
     reset();
   };
 

@@ -80,8 +80,6 @@ const SearchingParams = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // You can perform actions with the form data here
-    console.log('Form submitted with data:', tableData);
-
     const res = await updateSearchingParams(tableData);
     toast.success('Info Updated Successfully', {
       position: toast.POSITION.TOP_RIGHT,

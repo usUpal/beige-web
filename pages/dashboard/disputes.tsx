@@ -69,7 +69,7 @@ const Disputes = () => {
       refetch();
     } catch (error) {
       toast.error('Something went wrong!');
-      console.error('Patch error:', error);
+      // console.error('Patch error:', error);
     }
   };
 

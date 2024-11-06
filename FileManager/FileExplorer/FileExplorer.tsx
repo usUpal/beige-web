@@ -215,12 +215,11 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
               try {
                 await api.downloadFolder(file.path);
               } catch (error) {
-                console.error('There was an error downloading the folder:', error);
+                // console.error('There was an error downloading the folder:', error);
               }
             } else {
               // If it's a file, get the sharable URL and open it
               const { url } = await api.getSharableUrl(file.path, true);
-              console.log('🚀 ~ onDownload={ ~ url:', url);
               window.open(url, '_blank');
             }
           }

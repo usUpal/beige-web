@@ -75,9 +75,6 @@ const Auth = () => {
           expires: new Date(refreshToken?.expires),
         });
 
-        console.log('refreshToken', refreshToken);
-        console.log('accessToken', accessToken);
-
         //Redirect user to the dashboard
         //await router.push('/');
         //await router.push(`${userData?.role === 'cp' ? 'dashboard/shoots' : '/'}`);
@@ -92,9 +89,7 @@ const Auth = () => {
         coloredToast('danger', data.message);
         setIsLoading(false);
       }
-      // console.log(data);
     } catch (error) {
-      // console.error('Login error:', error);
       setIsLoading(false);
     }
   };
