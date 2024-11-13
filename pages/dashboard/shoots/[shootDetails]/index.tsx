@@ -46,7 +46,6 @@ const ShootDetails = () => {
   const [cp_ids, setCp_ids] = useState<number[]>([]);
   const [statusBox, setStatusBox] = useState<boolean>(false);
   const [status, setStatus] = useState<string>('');
-  const [metingDate, setMetingDate] = useState<string>('');
   const [meetingBox, setMeetingBox] = useState<boolean>(false);
 
   //

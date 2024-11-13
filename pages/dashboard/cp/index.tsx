@@ -10,6 +10,7 @@ import { setPageTitle } from '../../../store/themeConfigSlice';
 import { useRouter } from 'next/router';
 import AccessDenied from '@/components/errors/AccessDenied';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
+import SixRowSingleLineSkeleton from '@/components/SharedComponent/Skeletons/TransactionSkeleton';
 const CpUsers = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const { authPermissions } = useAuth();
@@ -20,7 +21,7 @@ const CpUsers = () => {
     page: currentPage,
     role: 'cp',
   };
-  const { data: allCpUsers } = useGetAllUserQuery(query, {
+  const { data: allCpUsers, isLoading: allCpIsLoading } = useGetAllUserQuery(query, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -35,17 +36,13 @@ const CpUsers = () => {
     setCurrentPage(page);
   };
 
-
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
-
 
   return (
     <>
-      <div>
+      <div className="h-[90vh]">
         <ul className="flex space-x-2 rtl:space-x-reverse">
           <li>
             <Link href="/" className="text-warning hover:underline">
@@ -78,36 +75,44 @@ const CpUsers = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {allCpUsers?.results?.map((cpUser: any) => (
-                          <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                            <td className="min-w-[150px] font-sans text-black dark:text-white">
-                              <div className="flex items-center break-all ">{cpUser?.id}</div>
-                            </td>
-                            <td> {truncateLongText(cpUser?.name, 30)}</td>
-                            <td className="min-w-[150px] break-all">{truncateLongText(cpUser?.email, 40)}</td>
-                            <td className="font-sans text-success">{cpUser?.role}</td>
-
-                            <td>
-                              <span className={`badge text-md w-12 ${!cpUser?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
-                                {cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}
-                              </span>
-                            </td>
-
-                            {authPermissions?.includes('edit_content_provider') && (
-                              <td>
-                                <Link href={`cp/${cpUser?.id}`}>
-                                  <button type="button" className="p-0">
-                                    {allSvgs.editPen}
-                                  </button>
-                                </Link>
+                        {allCpIsLoading ? (
+                          <>
+                            {Array.from({ length: 8 }).map((_, index) => (
+                              <SixRowSingleLineSkeleton key={index} />
+                            ))}
+                          </>
+                        ) : (
+                          allCpUsers?.results?.map((cpUser: any) => (
+                            <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                              <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                <div className="flex items-center break-all ">{cpUser?.id}</div>
                               </td>
-                            )}
-                          </tr>
-                        ))}
+                              <td> {truncateLongText(cpUser?.name, 30)}</td>
+                              <td className="min-w-[150px] break-all">{truncateLongText(cpUser?.email, 40)}</td>
+                              <td className="font-sans text-success">{cpUser?.role}</td>
+
+                              <td>
+                                <span className={`badge text-md w-12 ${!cpUser?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
+                                  {cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}
+                                </span>
+                              </td>
+
+                              {authPermissions?.includes('edit_content_provider') && (
+                                <td>
+                                  <Link href={`cp/${cpUser?.id}`}>
+                                    <button type="button" className="p-0">
+                                      {allSvgs.editPen}
+                                    </button>
+                                  </Link>
+                                </td>
+                              )}
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
 
-                    <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                    <div className="mt-8 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
                       <ResponsivePagination current={currentPage} total={allCpUsers?.totalPages} onPageChange={handlePageChange} maxWidth={400} />
                     </div>
                   </div>

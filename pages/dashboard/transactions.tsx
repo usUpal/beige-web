@@ -16,6 +16,8 @@ import { useGetAllTransactionQuery, useUpdateTransactionStatusMutation } from '@
 import { toast } from 'react-toastify';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import AccessDenied from '@/components/errors/AccessDenied';
+import ShootSkeleton from '@/components/SharedComponent/Skeletons/MeetingSkeleton';
+import SixRowSingleLineSkeleton from '@/components/SharedComponent/Skeletons/TransactionSkeleton';
 
 const Transactions = () => {
   const dispatch = useDispatch();
@@ -25,11 +27,8 @@ const Transactions = () => {
   const [query, setQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [payoutModal, setPayoutModal] = useState(false);
-  const [payoutInfo, setPayoutInfo] = useState<any>({});
   const [selectedPayoutInfo, setSelectedPayoutInfo] = useState<Payouts | null>(null);
   const statusRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [codeArr, setCodeArr] = useState<string[]>([]);
 
   useEffect(() => {
     dispatch(setPageTitle('Transactions'));
@@ -91,14 +90,14 @@ const Transactions = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 xl:grid-cols-1">
+    <div className="grid h-[90vh] grid-cols-1 gap-6 xl:grid-cols-1">
       {/* Simple */}
       <div className="panel">
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-lg font-semibold dark:text-white-light">Transactions Table</h5>
         </div>
-        <div className="table-responsive mb-5">
-          <table>
+        <div className="table-responsive mb-5 h-[75vh]">
+          <table className="">
             <thead>
               <tr>
                 <th>Account / Card Number</th>
@@ -110,10 +109,13 @@ const Transactions = () => {
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="">
               {isAllPaymentLoading ? (
                 <>
-                  <PreLoader></PreLoader>
+                  {/* <PreLoader></PreLoader> */}
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <SixRowSingleLineSkeleton key={index} />
+                  ))}
                 </>
               ) : (
                 <>
@@ -152,10 +154,9 @@ const Transactions = () => {
               )}
             </tbody>
           </table>
-
-          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-            <ResponsivePagination current={currentPage} total={allPayments?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-          </div>
+        </div>
+        <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+          <ResponsivePagination current={currentPage} total={allPayments?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
         </div>
         {/* show code part  starts */}
       </div>

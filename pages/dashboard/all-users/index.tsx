@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import AccessDenied from '@/components/errors/AccessDenied';
+import SixRowSingleLineSkeleton from '@/components/SharedComponent/Skeletons/TransactionSkeleton';
 
 const Users = () => {
   const [userModal, setUserModal] = useState(false);
@@ -26,7 +27,11 @@ const Users = () => {
   const query = {
     page: currentPage,
   };
-  const { data: getAllUser } = useGetAllUserQuery(query, {
+  const {
+    data: getAllUser,
+    isLoading: allUserIsLoading,
+    error: allUserError,
+  } = useGetAllUserQuery(query, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -69,7 +74,7 @@ const Users = () => {
 
   return (
     <>
-      <div>
+      <div className="h-[90vh]">
         <ul className="flex space-x-2 rtl:space-x-reverse">
           <li>
             <Link href="/" className="text-warning hover:underline">
@@ -112,42 +117,50 @@ const Users = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {getAllUser?.results?.map((user: any) => (
-                          <tr key={user.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                            <td className="min-w-[150px] font-sans text-black dark:text-white">
-                              <p className="flex items-center break-all">{user?.id}</p>
-                            </td>
-                            <td>{user?.name}</td>
-                            <td className="min-w-[150px] break-all">{user?.email}</td>
-                            <td className="font-sans text-success">{user?.role}</td>
-                            <td className="hidden md:block">
-                              <div className="font-sans ">
-                                {/* <StatusBg>{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg> */}
-                                <span className={`badge text-md w-12 ${!user?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
-                                  {user?.isEmailVerified === true ? 'Verified' : 'Unverified'}
-                                </span>
-                              </div>
-                            </td>
-                            {authPermissions?.includes('edit_all_users') && (
-                              <td>
-                                <button
-                                  onClick={() => {
-                                    if (user?.role === 'cp') {
-                                      router.push(`/dashboard/cp/${user?.id}`);
-                                    } else {
-                                      setUserInfo(user);
-                                      setUserModal(true);
-                                    }
-                                  }}
-                                  type="button"
-                                  className="p-0"
-                                >
-                                  {allSvgs.details}
-                                </button>
+                        {allUserIsLoading ? (
+                          <>
+                            {Array.from({ length: 8 }).map((_, index) => (
+                              <SixRowSingleLineSkeleton key={index} />
+                            ))}
+                          </>
+                        ) : (
+                          getAllUser?.results?.map((user: any) => (
+                            <tr key={user.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                              <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                <p className="flex items-center break-all">{user?.id}</p>
                               </td>
-                            )}
-                          </tr>
-                        ))}
+                              <td>{user?.name}</td>
+                              <td className="min-w-[150px] break-all">{user?.email}</td>
+                              <td className="font-sans text-success">{user?.role}</td>
+                              <td className="hidden md:block">
+                                <div className="font-sans ">
+                                  {/* <StatusBg>{user?.isEmailVerified === true ? 'Verified' : 'Unverified'}</StatusBg> */}
+                                  <span className={`badge text-md w-12 ${!user?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
+                                    {user?.isEmailVerified === true ? 'Verified' : 'Unverified'}
+                                  </span>
+                                </div>
+                              </td>
+                              {authPermissions?.includes('edit_all_users') && (
+                                <td>
+                                  <button
+                                    onClick={() => {
+                                      if (user?.role === 'cp') {
+                                        router.push(`/dashboard/cp/${user?.id}`);
+                                      } else {
+                                        setUserInfo(user);
+                                        setUserModal(true);
+                                      }
+                                    }}
+                                    type="button"
+                                    className="p-0"
+                                  >
+                                    {allSvgs.details}
+                                  </button>
+                                </td>
+                              )}
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
                     {/*  */}

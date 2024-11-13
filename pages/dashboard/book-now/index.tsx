@@ -582,7 +582,7 @@ const BookNow = () => {
           <span>Shoot Booking</span>
         </li>
       </ul>
-      <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
+      <div className="mt-5 grid h-[80vh] grid-cols-1 lg:grid-cols-1">
         {/* icon only */}
         <div className="panel">
           <div className="">

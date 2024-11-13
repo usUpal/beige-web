@@ -17,6 +17,7 @@ import { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery, useUpdateDisput
 import { toast } from 'react-toastify';
 import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
+import DisputeSkeleton from '@/components/SharedComponent/Skeletons/DisputeSkeleton';
 const Disputes = () => {
   const [disputeModal, setDisputeModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -82,7 +83,7 @@ const Disputes = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
+    <div className="grid h-[90vh] grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
@@ -98,10 +99,12 @@ const Disputes = () => {
                 <th className="text-[16px] font-semibold">View</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="min-h-screen">
               {getAllDisputesLoading ? (
                 <>
-                  <PreLoader></PreLoader>
+                  {Array.from({ length: 2 }).map((_, index) => (
+                    <DisputeSkeleton key={index} />
+                  ))}
                 </>
               ) : (
                 <>

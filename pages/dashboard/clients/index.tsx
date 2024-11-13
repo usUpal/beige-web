@@ -11,6 +11,7 @@ import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import AccessDenied from '@/components/errors/AccessDenied';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
+import SixRowSingleLineSkeleton from '@/components/SharedComponent/Skeletons/TransactionSkeleton';
 const Users = () => {
   const [userModalClient, setUserModalClient] = useState(false);
   const { authPermissions } = useAuth();
@@ -22,7 +23,7 @@ const Users = () => {
     page: currentPage,
     role: 'user',
   };
-  const { data: allClients } = useGetAllUserQuery(query, {
+  const { data: allClients, isLoading: isLoadingClient } = useGetAllUserQuery(query, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -42,7 +43,7 @@ const Users = () => {
 
   return (
     <>
-      <div>
+      <div className="h-[90vh]">
         <ul className="flex space-x-2 rtl:space-x-reverse">
           <li>
             <Link href="/" className="text-warning hover:underline">
@@ -54,7 +55,7 @@ const Users = () => {
           </li>
         </ul>
 
-        <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
+        <div className=" mt-5 grid grid-cols-1 lg:grid-cols-1">
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">
               <h5 className="text-lg font-semibold dark:text-white-light">Clients</h5>
@@ -75,49 +76,57 @@ const Users = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {allClients?.results
-                          ?.filter((user: any) => {
-                            return user.role === 'user';
-                          })
-                          ?.map((userClient: any) => (
-                            <tr key={userClient.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                              <td className="min-w-[150px] font-sans text-black dark:text-white">
-                                <div className="flex items-center">
-                                  {/* whitespace-nowrap */}
-                                  <p className="break-all">{userClient?.id}</p>
-                                </div>
-                              </td>
-
-                              <td title={userClient?.name}>{truncateLongText(userClient?.name, 30)}</td>
-                              <td className="min-w-[150px] break-all">{userClient?.email}</td>
-
-                              <td className="font-sans text-success">{userClient?.role}</td>
-
-                              <td>
-                                <span className={`badge text-md w-12 ${!userClient?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
-                                  {userClient?.isEmailVerified === true ? 'Verified' : 'Unverified'}
-                                </span>
-                              </td>
-                              {authPermissions?.includes('client_edit') && (
-                                <td>
-                                  <button
-                                    type="button"
-                                    className="p-0"
-                                    onClick={() => {
-                                      setClientUserInfo(userClient);
-                                      setUserModalClient(true);
-                                    }}
-                                  >
-                                    {/* {allSvgs.editPen} */}
-                                    {allSvgs.details}
-                                  </button>
+                        {isLoadingClient ? (
+                          <>
+                            {Array.from({ length: 8 }).map((_, index) => (
+                              <SixRowSingleLineSkeleton key={index} />
+                            ))}
+                          </>
+                        ) : (
+                          allClients?.results
+                            ?.filter((user: any) => {
+                              return user.role === 'user';
+                            })
+                            ?.map((userClient: any) => (
+                              <tr key={userClient.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                                <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                  <div className="flex items-center">
+                                    {/* whitespace-nowrap */}
+                                    <p className="break-all">{userClient?.id}</p>
+                                  </div>
                                 </td>
-                              )}
-                            </tr>
-                          ))}
+
+                                <td title={userClient?.name}>{truncateLongText(userClient?.name, 30)}</td>
+                                <td className="min-w-[150px] break-all">{userClient?.email}</td>
+
+                                <td className="font-sans text-success">{userClient?.role}</td>
+
+                                <td>
+                                  <span className={`badge text-md w-12 ${!userClient?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
+                                    {userClient?.isEmailVerified === true ? 'Verified' : 'Unverified'}
+                                  </span>
+                                </td>
+                                {authPermissions?.includes('client_edit') && (
+                                  <td>
+                                    <button
+                                      type="button"
+                                      className="p-0"
+                                      onClick={() => {
+                                        setClientUserInfo(userClient);
+                                        setUserModalClient(true);
+                                      }}
+                                    >
+                                      {/* {allSvgs.editPen} */}
+                                      {allSvgs.details}
+                                    </button>
+                                  </td>
+                                )}
+                              </tr>
+                            ))
+                        )}
                       </tbody>
                     </table>
-                    <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                    <div className="mt-8 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
                       <ResponsivePagination current={currentPage} total={allClients?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
                     </div>
                   </div>

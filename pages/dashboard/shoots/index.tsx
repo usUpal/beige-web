@@ -14,6 +14,7 @@ import api from '../../../FileManager/api/storage';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
+import ShootSkeleton from '@/components/SharedComponent/Skeletons/ShootSkeleton';
 
 const Shoots = () => {
   const dispatch = useDispatch();
@@ -55,7 +56,7 @@ const Shoots = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
+      <div className="grid h-[90vh] grid-cols-1 gap-6 lg:grid-cols-1">
         {/* Recent Shoots */}
         <div className="panel h-full w-full">
           <div className="my-5 mb-5 items-center justify-between md:my-0 md:mb-4 md:flex">
@@ -83,18 +84,18 @@ const Shoots = () => {
               </thead>
               <tbody>
                 {isLoading ? (
-                  <PreLoader />
+                  <>
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <ShootSkeleton key={index} />
+                    ))}
+                  </>
                 ) : data?.results?.length > 0 ? (
                   data.results.map((shoot: shootsData) => (
                     <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
                       <td className="min-w-[150px] text-black dark:text-white">
                         <div className="flex items-center">
-                          {/* <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" /> */}
-
                           <Image className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" width={32} height={32} />
-                          <p className="">
-                            {/* whitespace-nowrap */}
-                            {/* {shoot.order_name} */}
+                          <p>
                             {truncateLongText(shoot?.order_name, 33)}
                             <span className="block text-xs text-[#888EA8]">{new Date(shoot.shoot_datetimes[0]?.start_date_time).toDateString()}</span>
                           </p>
@@ -102,7 +103,7 @@ const Shoots = () => {
                       </td>
 
                       <td className="min-w-[140px]">
-                        <p className="break-all ">{shoot?.id}</p>
+                        <p className="break-all">{shoot?.id}</p>
                       </td>
 
                       <td>
@@ -114,9 +115,9 @@ const Shoots = () => {
                           {shoot?.file_path?.status ? (
                             <span
                               onClick={async () => {
-                                await api.downloadFolder(`${shoot?.file_path.dir_name}`);
+                                await api.downloadFolder(shoot?.file_path.dir_name);
                               }}
-                              className="badge text-md w-12 bg-success text-center"
+                              className="badge text-md w-12 cursor-pointer bg-success text-center"
                             >
                               Download
                             </span>
@@ -129,6 +130,7 @@ const Shoots = () => {
                       <td>
                         <StatusBg>{shoot.order_status}</StatusBg>
                       </td>
+
                       {authPermissions?.includes('shoot_show_details') && (
                         <td>
                           <Link href={`shoots/${shoot.id}`}>
@@ -143,14 +145,14 @@ const Shoots = () => {
                 ) : (
                   <tr>
                     <td colSpan={6} className="text-center">
-                      <span className="flex justify-center font-semibold text-[red]">No shoots found</span>
+                      <span className="flex justify-center font-semibold text-red-500">No shoots found</span>
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
 
-            <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <div className="mt-8 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
               <ResponsivePagination current={currentPage} total={data?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
             </div>
           </div>

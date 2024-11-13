@@ -18,6 +18,7 @@ import flatpickr from 'flatpickr';
 import { format, isValid, parseISO } from 'date-fns';
 import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
 import Image from 'next/image';
+import MeetingSkeleton from '@/components/SharedComponent/Skeletons/MeetingSkeleton';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -164,7 +165,7 @@ const Meeting = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
+    <div className="grid h-[90vh] grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 items-center justify-between md:flex ">
@@ -192,7 +193,10 @@ const Meeting = () => {
             <tbody>
               {getAllMeetingLoading ? (
                 <>
-                  <PreLoader></PreLoader>
+                  {/* <PreLoader></PreLoader> */}
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <MeetingSkeleton key={index} />
+                  ))}
                 </>
               ) : (
                 <>
@@ -247,7 +251,7 @@ const Meeting = () => {
               )}
             </tbody>
           </table>
-          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+          <div className="mt-8 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
             <ResponsivePagination current={currentPage} total={allMeetings?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
           </div>
         </div>

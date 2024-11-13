@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useUpdatePriceMutation } from '@/Redux/features/algo/pricesApi';
 import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
+import DisputeSkeleton from '@/components/SharedComponent/Skeletons/DisputeSkeleton';
+
 import AccessDenied from '@/components/errors/AccessDenied';
 import { useAuth } from '@/contexts/authContext';
 import { setPageTitle } from '@/store/themeConfigSlice';
@@ -20,7 +22,7 @@ const PricingCalculation = () => {
     dispatch(setPageTitle('Pricing parameters'));
   });
 
-  const { isLoading, data, error, refetch } = useGetAllPricingQuery({});
+  const { isLoading: isLoadingPricingParams, data, error, refetch } = useGetAllPricingQuery({});
   const [updatePrice, { isLoading: isPatchLoading, isSuccess, isError }] = useUpdatePriceMutation();
   useEffect(() => {
     if (isSuccess) {
@@ -62,13 +64,9 @@ const PricingCalculation = () => {
     }
   };
 
-
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
-
 
   return (
     <div>
@@ -101,26 +99,34 @@ const PricingCalculation = () => {
               </thead>
 
               <tbody>
-                {data?.results
-                  ?.filter((item) => item?.isHourly === true)
-                  .map((price, index) => {
-                    const { rate, status, title } = price;
-                    return (
-                      <tr key={index}>
-                        <td className="w-4/12 capitalize">{title}</td>
-                        <td>
-                          <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
-                        </td>
-                        <td>
-                          <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
-                        </td>
-                        <td onClick={() => handleRateEdit(price)}>
-                          {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>Edit</span> */}
-                          <button type="button">{allSvgs.editPen}</button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                {isLoadingPricingParams ? (
+                  <>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <DisputeSkeleton key={index} />
+                    ))}
+                  </>
+                ) : (
+                  data?.results
+                    ?.filter((item) => item?.isHourly === true)
+                    .map((price, index) => {
+                      const { rate, status, title } = price;
+                      return (
+                        <tr key={index}>
+                          <td className="w-4/12 capitalize">{title}</td>
+                          <td>
+                            <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
+                          </td>
+                          <td>
+                            <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
+                          </td>
+                          <td onClick={() => handleRateEdit(price)}>
+                            {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>Edit</span> */}
+                            <button type="button">{allSvgs.editPen}</button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                )}
               </tbody>
             </table>
             <table>
@@ -128,34 +134,42 @@ const PricingCalculation = () => {
                 <tr>
                   <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
                   {/* <th>Extra Rate($)</th> */}
-                  <th className="whitespace-nowrap overflow-hidden text-ellipsis">Extra Rate($)</th>
+                  <th className="overflow-hidden text-ellipsis whitespace-nowrap">Extra Rate($)</th>
                   <th>Status</th>
                   <th>Edit</th>
                 </tr>
               </thead>
 
               <tbody>
-                {data?.results
-                  ?.filter((item) => item?.isHourly === false)
-                  .map((price, index) => {
-                    const { rate, status, title } = price;
-                    return (
-                      <tr key={index}>
-                        <td className="w-4/12 capitalize">{title}</td>
-                        <td>
-                          <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
-                        </td>
-                        <td>
-                          <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
-                        </td>
-                        <td onClick={() => handleRateEdit(price)}>
-                          {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>{allSvgs.editPen} </span>
-                           */}
-                          <button type="button">{allSvgs.editPen}</button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                {isPatchLoading ? (
+                  <>
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <DisputeSkeleton key={index} />
+                    ))}
+                  </>
+                ) : (
+                  data?.results
+                    ?.filter((item) => item?.isHourly === false)
+                    .map((price, index) => {
+                      const { rate, status, title } = price;
+                      return (
+                        <tr key={index}>
+                          <td className="w-4/12 capitalize">{title}</td>
+                          <td>
+                            <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
+                          </td>
+                          <td>
+                            <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
+                          </td>
+                          <td onClick={() => handleRateEdit(price)}>
+                            {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>{allSvgs.editPen} </span>
+                             */}
+                            <button type="button">{allSvgs.editPen}</button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                )}
               </tbody>
             </table>
           </div>
