@@ -14,6 +14,7 @@ import api from '../../../FileManager/api/storage';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
+import ShootSkeleton from '@/components/skeletons/shootSkeleton';
 
 const Shoots = () => {
   const dispatch = useDispatch();
@@ -83,7 +84,11 @@ const Shoots = () => {
               </thead>
               <tbody>
                 {isLoading ? (
-                  <PreLoader />
+                  <>
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <ShootSkeleton key={index} />
+                    ))}
+                  </>
                 ) : data?.results?.length > 0 ? (
                   data.results.map((shoot: shootsData) => (
                     <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
