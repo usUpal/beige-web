@@ -29,8 +29,8 @@ const StatusBg: React.FC<any> = ({ children }) => {
   }
 
   return (
-    <div className="inline rounded-lg border border-solid px-3 py-1" style={{ backgroundColor: backgroundColor }}>
-      <p className="text-md inline capitalize" style={{ color: textColor }}>
+    <div className="inline rounded-lg border border-solid px-3 py-1 text-black dark:text-white" style={{ backgroundColor: backgroundColor }}>
+      <p className="text-md inline capitalize text-black dark:text-white" style={{ color: textColor }}>
         {children}
       </p>
     </div>

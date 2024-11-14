@@ -14,6 +14,7 @@ import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
 import ShootSkeleton from '@/components/SharedComponent/Skeletons/ShootSkeleton';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
 const Shoots = () => {
   const dispatch = useDispatch();
@@ -72,15 +73,16 @@ const Shoots = () => {
           <div className="table-responsive h-[75vh]">
             <table>
               <thead>
-                <tr>
-                  <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Shoot Name</th>
-                  <th className="text-[16px] font-semibold">Shoot ID</th>
-                  <th className="text-[16px] font-semibold">Price</th>
-                  {authPermissions?.includes('shoot_download') && <th className="text-[16px] font-semibold">Files</th>}
-                  <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
-                  {authPermissions?.includes('shoot_show_details') && <th className="text-[16px] font-semibold">View</th>}
+                <tr className="bg-gray-200 dark:bg-gray-800">
+                  <th className="text-[16px] font-semibold text-black ltr:rounded-l-md rtl:rounded-r-md dark:text-white">Shoot Name</th>
+                  <th className="text-[16px] font-semibold text-black dark:text-white">Shoot ID</th>
+                  <th className="text-[16px] font-semibold text-black dark:text-white">Price</th>
+                  {authPermissions?.includes('shoot_download') && <th className="text-[16px] font-semibold text-black dark:text-white">Files</th>}
+                  <th className="text-black ltr:rounded-r-md rtl:rounded-l-md dark:text-white">Status</th>
+                  {authPermissions?.includes('shoot_show_details') && <th className="text-[16px] font-semibold text-black dark:text-white">View</th>}
                 </tr>
               </thead>
+
               <tbody>
                 {(isFetching && data) || isLoading ? (
                   <>
@@ -133,9 +135,10 @@ const Shoots = () => {
                       {authPermissions?.includes('shoot_show_details') && (
                         <td>
                           <Link href={`shoots/${shoot.id}`}>
-                            <button type="button" className="p-0">
+                            {/* <button type="button" className="p-0">
                               <Image className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" width={24} height={24} />
-                            </button>
+                            </button> */}
+                            {allSvgs.eyeIcon}
                           </Link>
                         </td>
                       )}

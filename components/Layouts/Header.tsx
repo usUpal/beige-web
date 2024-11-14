@@ -180,6 +180,17 @@ const Header = () => {
           </div>
           <div className="flex items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
             <div className="sm:ltr:mr-auto sm:rtl:ml-auto"></div>
+
+            <>
+              <div className="theme-toggle flex items-center space-x-2">
+                <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('light'))}>
+                  <span className="text-sm">🌞</span> {/* Light Icon */}
+                </button>
+                <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('dark'))}>
+                  <span className="text-sm">🌙</span> {/* Dark Icon */}
+                </button>
+              </div>
+            </>
             {/* <div className="dropdown shrink-0">
               <Dropdown
                 offset={[0, 8]}

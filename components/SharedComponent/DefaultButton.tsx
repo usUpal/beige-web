@@ -9,9 +9,8 @@ type DefaultButtonProps = {
 const DefaultButton: React.FC<DefaultButtonProps> = ({ children, onClick, css, disabled, ...res }) => {
   return (
     <button
-      className={`h-9 rounded-md bg-black px-4 py-1 font-sans capitalize text-white md:text-[14px] ${css}`}
+      className={`h-9 rounded-md bg-black px-4 py-1 font-sans capitalize text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300 md:text-[14px] ${css}`}
       onClick={onClick}
-      // type="submit"
       disabled={disabled}
       {...res}
     >
