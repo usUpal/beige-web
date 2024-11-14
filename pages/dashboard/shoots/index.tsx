@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-import PreLoader from '@/components/ProfileImage/PreLoader';
 import StatusBg from '@/components/Status/StatusBg';
 import { useAuth } from '@/contexts/authContext';
 import { useGetAllShootQuery } from '@/Redux/features/shoot/shootApi';
@@ -56,7 +55,7 @@ const Shoots = () => {
 
   return (
     <>
-      <div className="grid h-[90vh] grid-cols-1 gap-6 lg:grid-cols-1">
+      <div className="grid  grid-cols-1 gap-6 lg:grid-cols-1">
         {/* Recent Shoots */}
         <div className="panel h-full w-full">
           <div className="my-5 mb-5 items-center justify-between md:my-0 md:mb-4 md:flex">
@@ -70,7 +69,7 @@ const Shoots = () => {
             />
           </div>
 
-          <div className="table-responsive">
+          <div className="table-responsive h-[75vh]">
             <table>
               <thead>
                 <tr>
@@ -83,7 +82,7 @@ const Shoots = () => {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
+                {(isFetching && data) || isLoading ? (
                   <>
                     {Array.from({ length: 8 }).map((_, index) => (
                       <ShootSkeleton key={index} />
@@ -151,10 +150,13 @@ const Shoots = () => {
                 )}
               </tbody>
             </table>
+          </div>
+          {/* <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <ResponsivePagination current={currentPage} total={data?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
+          </div> */}
 
-            <div className="mt-8 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-              <ResponsivePagination current={currentPage} total={data?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-            </div>
+          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <ResponsivePagination current={currentPage} total={data?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
           </div>
         </div>
       </div>

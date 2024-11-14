@@ -178,7 +178,7 @@ const Meeting = () => {
             placeholder="Search..."
           />
         </div>
-        <div className="table-responsive">
+        <div className="table-responsive h-[75vh]">
           <table>
             <thead>
               <tr className="">
@@ -251,9 +251,9 @@ const Meeting = () => {
               )}
             </tbody>
           </table>
-          <div className="mt-8 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-            <ResponsivePagination current={currentPage} total={allMeetings?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-          </div>
+        </div>
+        <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+          <ResponsivePagination current={currentPage} total={allMeetings?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
         </div>
       </div>
 

@@ -89,7 +89,7 @@ const Disputes = () => {
         <div className="mb-5 flex items-center justify-between">
           <h5 className="text-xl font-bold dark:text-white-light">All Disputes</h5>
         </div>
-        <div className="table-responsive">
+        <div className=" h-[75vh]">
           <table>
             <thead>
               <tr>
@@ -149,10 +149,9 @@ const Disputes = () => {
               )}
             </tbody>
           </table>
-
-          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-            <ResponsivePagination current={currentPage} total={allDisputes?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-          </div>
+        </div>
+        <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+          <ResponsivePagination current={currentPage} total={allDisputes?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
         </div>
       </div>
 

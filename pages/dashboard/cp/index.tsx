@@ -21,7 +21,11 @@ const CpUsers = () => {
     page: currentPage,
     role: 'cp',
   };
-  const { data: allCpUsers, isLoading: allCpIsLoading } = useGetAllUserQuery(query, {
+  const {
+    data: allCpUsers,
+    isLoading: allCpIsLoading,
+    isFetching,
+  } = useGetAllUserQuery(query, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -62,7 +66,7 @@ const CpUsers = () => {
             <div className="mb-1">
               <div className="inline-block w-full">
                 <div>
-                  <div className="table-responsive">
+                  <div className="table-responsive h-[70vh]">
                     <table>
                       <thead>
                         <tr>
@@ -75,7 +79,7 @@ const CpUsers = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {allCpIsLoading ? (
+                        {allCpIsLoading || isFetching ? (
                           <>
                             {Array.from({ length: 8 }).map((_, index) => (
                               <SixRowSingleLineSkeleton key={index} />
@@ -111,10 +115,9 @@ const CpUsers = () => {
                         )}
                       </tbody>
                     </table>
-
-                    <div className="mt-8 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                      <ResponsivePagination current={currentPage} total={allCpUsers?.totalPages} onPageChange={handlePageChange} maxWidth={400} />
-                    </div>
+                  </div>
+                  <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                    <ResponsivePagination current={currentPage} total={allCpUsers?.totalPages} onPageChange={handlePageChange} maxWidth={400} />
                   </div>
                 </div>
               </div>

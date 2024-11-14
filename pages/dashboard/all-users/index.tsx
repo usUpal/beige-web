@@ -101,10 +101,10 @@ const Users = () => {
                 </Link>
               </div>
             </div>
-            <div className="mb-5">
+            <div className="">
               <div className="inline-block w-full">
-                <div>
-                  <div className="table-responsive">
+                <div className="">
+                  <div className="table-responsive h-[70vh]">
                     <table>
                       <thead>
                         <tr>
@@ -165,81 +165,81 @@ const Users = () => {
                     </table>
                     {/*  */}
                     {/* <Pagination currentPage={currentPage} totalPages={totalPagesCount} onPageChange={handlePageChange} /> */}
-
-                    <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                      <ResponsivePagination current={currentPage} total={getAllUser?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-                    </div>
                   </div>
+                  <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                    <ResponsivePagination current={currentPage} total={getAllUser?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
+                  </div>
+                </div>
 
-                  {/* modal Starts*/}
-                  <Transition appear show={userModal} as={Fragment}>
-                    <Dialog as="div" open={userModal} onClose={() => setUserModal(false)}>
-                      <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
-                        <div className="flex min-h-screen items-start justify-center md:px-4">
-                          <Dialog.Panel as="div" className="panel my-24 w-10/12 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-3/5 xl:w-3/6 2xl:w-2/6">
-                            <div className="my-2 flex items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
-                              <div className="ms-3 text-[22px] font-bold capitalize leading-none text-[#000000]"> users details </div>
-                              <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModal(false)}>
-                                {allSvgs.closeIconSvg}
-                              </button>
-                            </div>
-                            <div className="">
-                              {/* <div className='mx-6 pb-6'> */}
-                              <form onSubmit={handleSubmit(onSubmit)} className="mx-6 pb-6">
-                                <div className="mx-auto mt-2 box-border gap-5 space-y-5 pb-6 md:flex md:space-y-0 ">
-                                  <div className="left w-full  space-y-4">
-                                    <div className="mt-[5px] w-full">
-                                      <label htmlFor="id" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                        User id
-                                      </label>
-                                      <p className="focus:border-gray-400mt-1 rounded border p-3 text-gray-600 focus:outline-none">{userInfo?.id}</p>
-                                    </div>
-                                    <div className="w-full">
-                                      <label htmlFor="name" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                        Name
-                                      </label>
-                                      <p className="mt-1 rounded border p-3 text-gray-600 focus:border-gray-400  focus:outline-none">{userInfo?.name}</p>
-                                    </div>
-
-                                    <div className="w-full">
-                                      <label htmlFor="email" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                        email
-                                      </label>
-                                      <p className="mt-1 rounded border p-3 text-gray-600 focus:border-gray-400  focus:outline-none">{userInfo?.email}</p>
-                                    </div>
+                {/* modal Starts*/}
+                <Transition appear show={userModal} as={Fragment}>
+                  <Dialog as="div" open={userModal} onClose={() => setUserModal(false)}>
+                    <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                      <div className="flex min-h-screen items-start justify-center md:px-4">
+                        <Dialog.Panel as="div" className="panel my-24 w-10/12 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-3/5 xl:w-3/6 2xl:w-2/6">
+                          <div className="my-2 flex items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
+                            <div className="ms-3 text-[22px] font-bold capitalize leading-none text-[#000000]"> users details </div>
+                            <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModal(false)}>
+                              {allSvgs.closeIconSvg}
+                            </button>
+                          </div>
+                          <div className="">
+                            {/* <div className='mx-6 pb-6'> */}
+                            <form onSubmit={handleSubmit(onSubmit)} className="mx-6 pb-6">
+                              <div className="mx-auto mt-2 box-border gap-5 space-y-5 pb-6 md:flex md:space-y-0 ">
+                                <div className="left w-full  space-y-4">
+                                  <div className="mt-[5px] w-full">
+                                    <label htmlFor="id" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                      User id
+                                    </label>
+                                    <p className="focus:border-gray-400mt-1 rounded border p-3 text-gray-600 focus:outline-none">{userInfo?.id}</p>
+                                  </div>
+                                  <div className="w-full">
+                                    <label htmlFor="name" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                      Name
+                                    </label>
+                                    <p className="mt-1 rounded border p-3 text-gray-600 focus:border-gray-400  focus:outline-none">{userInfo?.name}</p>
                                   </div>
 
-                                  <div className="right w-full space-y-4">
-                                    <div className="w-full">
-                                      <label htmlFor="isEmailVerified" className="mb-0 w-1/4 font-sans text-[14px] capitalize rtl:ml-2 md:w-full">
-                                        Email Verified
-                                      </label>
-                                      <p className="mt-1 w-full rounded border  p-3 text-gray-600">{userInfo?.isEmailVerified === 'true' ? 'Yes' : 'No'}</p>
-                                    </div>
-                                    <div className="w-full">
-                                      <label htmlFor="role" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                        role
-                                      </label>
-                                      <p className="mt-1 w-full rounded border  p-3 text-gray-600">{userInfo?.role}</p>
-                                    </div>
-
-                                    <div className="w-full">
-                                      <label htmlFor="location" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                                        Address
-                                      </label>
-                                      <p className="mt-1 rounded border p-3 text-gray-600">{userInfo?.location}</p>
-                                    </div>
+                                  <div className="w-full">
+                                    <label htmlFor="email" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                      email
+                                    </label>
+                                    <p className="mt-1 rounded border p-3 text-gray-600 focus:border-gray-400  focus:outline-none">{userInfo?.email}</p>
                                   </div>
                                 </div>
-                              </form>
-                            </div>
-                          </Dialog.Panel>
-                        </div>
+
+                                <div className="right w-full space-y-4">
+                                  <div className="w-full">
+                                    <label htmlFor="isEmailVerified" className="mb-0 w-1/4 font-sans text-[14px] capitalize rtl:ml-2 md:w-full">
+                                      Email Verified
+                                    </label>
+                                    <p className="mt-1 w-full rounded border  p-3 text-gray-600">{userInfo?.isEmailVerified === 'true' ? 'Yes' : 'No'}</p>
+                                  </div>
+                                  <div className="w-full">
+                                    <label htmlFor="role" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                      role
+                                    </label>
+                                    <p className="mt-1 w-full rounded border  p-3 text-gray-600">{userInfo?.role}</p>
+                                  </div>
+
+                                  <div className="w-full">
+                                    <label htmlFor="location" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                                      Address
+                                    </label>
+                                    <p className="mt-1 rounded border p-3 text-gray-600">{userInfo?.location}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </Dialog.Panel>
                       </div>
-                    </Dialog>
-                  </Transition>
-                  {/* modal ends*/}
-                </div>
+                    </div>
+                  </Dialog>
+                </Transition>
+                {/* modal ends*/}
+                {/* </div> */}
               </div>
             </div>
           </div>

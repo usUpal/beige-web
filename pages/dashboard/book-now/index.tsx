@@ -582,7 +582,7 @@ const BookNow = () => {
           <span>Shoot Booking</span>
         </li>
       </ul>
-      <div className="mt-5 grid h-[80vh] grid-cols-1 lg:grid-cols-1">
+      <div className="mt-5 grid  grid-cols-1 lg:grid-cols-1">
         {/* icon only */}
         <div className="panel">
           <div className="">
@@ -591,294 +591,298 @@ const BookNow = () => {
                 <div>
                   {activeTab === 1 && (
                     <>
-                      <div className="flex items-center justify-between md:mb-8 md:gap-6 lg:mb-8 xl:gap-4">
-                        {/* Content Type */}
-                        <div className="flex w-full flex-col sm:flex-row">
-                          <label className="rtl:ml-2 sm:w-1/4 md:w-16 lg:w-24 2xl:w-40">Content Type</label>
-                          <div className="flex-1 md:ml-2 lg:ml-1 2xl:ml-0 ">
-                            {/* Video */}
-                            <div className="mb-2 ">
-                              <label className="flex items-center">
-                                <input
-                                  type="checkbox"
-                                  className={`form-checkbox ${errors?.content_type && 'border border-danger'}`}
-                                  value="video"
-                                  {...register('content_type', {
-                                    validate: {
-                                      required: () => contentTypes?.length > 0 || 'Select at least one content type',
-                                    },
-                                  })}
-                                />
-                                <span className="text-black">Videography</span>
-                              </label>
+                      <div className="h-[80vh]">
+                        <div className="flex items-center justify-between md:mb-8 md:gap-6 lg:mb-8 xl:gap-4">
+                          {/* Content Type */}
+                          <div className="flex w-full flex-col sm:flex-row">
+                            <label className="rtl:ml-2 sm:w-1/4 md:w-16 lg:w-24 2xl:w-40">Content Type</label>
+                            <div className="flex-1 md:ml-2 lg:ml-1 2xl:ml-0 ">
+                              {/* Video */}
+                              <div className="mb-2 ">
+                                <label className="flex items-center">
+                                  <input
+                                    type="checkbox"
+                                    className={`form-checkbox ${errors?.content_type && 'border border-danger'}`}
+                                    value="video"
+                                    {...register('content_type', {
+                                      validate: {
+                                        required: () => contentTypes?.length > 0 || 'Select at least one content type',
+                                      },
+                                    })}
+                                  />
+                                  <span className="text-black">Videography</span>
+                                </label>
+                              </div>
+                              {/* Photo */}
+                              <div className="mb-2">
+                                <label className="flex items-center">
+                                  <input type="checkbox" className={`form-checkbox ${errors?.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
+                                  <span className="text-black">Photography</span>
+                                </label>
+                              </div>
                             </div>
-                            {/* Photo */}
-                            <div className="mb-2">
-                              <label className="flex items-center">
-                                <input type="checkbox" className={`form-checkbox ${errors?.content_type && 'border border-danger'}`} value="photo" {...register('content_type')} />
-                                <span className="text-black">Photography</span>
+                          </div>
+                          {/* Category || content vertical*/}
+                          <div className="flex w-full flex-col sm:flex-row 2xl:ml-32">
+                            <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
+                              Category
+                            </label>
+                            <select
+                              className={`form-select text-black xl:ml-2 2xl:ml-0 ${errors.content_vertical ? 'border-red-500' : ''}`}
+                              id="content_vertical"
+                              defaultValue="SelectCategory"
+                              {...register('content_vertical', {
+                                required: 'Category is required',
+                                validate: (value) => value !== 'SelectCategory' || 'Please select a valid category',
+                              })}
+                              onChange={handleChangeCategoryWithBudget}
+                            >
+                              <option value="SelectCategory">Select Category</option>
+                              {categoryList.map((category) => (
+                                <option key={category?.name} value={category?.name}>
+                                  {category?.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="my-5 flex-col items-center justify-between gap-4 md:mb-10 md:flex md:flex-row md:gap-9 xl:gap-5">
+                          {userData?.role === 'admin' && (
+                            <div className="relative flex  w-full flex-col space-x-0 sm:mb-4 sm:flex-row sm:space-x-[0px] xl:space-x-0 2xl:space-x-16 ">
+                              <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 md:w-[90px] xl:w-[110px]">
+                                Client
                               </label>
+                              <input
+                                type="search"
+                                onChange={(event) => {
+                                  setClientName(event?.target?.value);
+                                  getAllClients();
+                                }}
+                                className={`form-input flex-grow bg-slate-100 2xl:ml-3`}
+                                value={clientName}
+                                placeholder="Client"
+                                required={!clientName}
+                              />
+
+                              {showClientDropdown && (
+                                <>
+                                  <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
+                                    {isClientLoading ? (
+                                      <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
+                                        {/* Render loading skeleton here */}
+                                        {[...Array(5)].map((_, i) => (
+                                          <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
+                                            <div className="h-7 w-7 rounded-full bg-slate-200"></div>
+                                            <div className="h-7 w-full rounded-sm bg-slate-200"></div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <>
+                                        {clients && clients.length > 0 ? (
+                                          <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
+                                            {clients?.map((client: any) => (
+                                              <li
+                                                key={client?.id}
+                                                onClick={() => handleClientChange(client)}
+                                                className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
+                                              >
+                                                <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
+                                                  <Image
+                                                    src={client?.profile_picture || '/assets/images/favicon.png'}
+                                                    className="h-full w-full rounded-full"
+                                                    alt="Profile Picture"
+                                                    width={100}
+                                                    height={100}
+                                                  />
+                                                </div>
+                                                <a href="#">{client?.name}</a>
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        ) : (
+                                          <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
+                                            <p className="text-center text-red-500">No client found</p>
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Location */}
+                          <div
+                            className={`mt-2 flex w-full flex-col sm:flex-row sm:space-x-[52px] md:mt-0 lg:space-x-[8px] xl:space-x-0 ${userData?.role !== 'admin' ? 'md:w-[49.5%] ' : '2xl:ml-32'}`}
+                          >
+                            <label htmlFor="location" className={`mb-0 capitalize xl:w-24 2xl:w-36 `}>
+                              {/* ${userData?.role !== "admin" && "lg:w-40 "} */}
+                              Location
+                            </label>
+                            <div className={`flex-grow md:ml-2 lg:ml-0 ${userData?.role !== 'admin' ? '2xl:ml-3 2xl:mr-16' : ''}`}>
+                              <Map setGeo_location={setGeo_location} setLocation={setLocation} />
                             </div>
                           </div>
                         </div>
-                        {/* Category || content vertical*/}
-                        <div className="flex w-full flex-col sm:flex-row 2xl:ml-32">
-                          <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
-                            Category
-                          </label>
-                          <select
-                            className={`form-select text-black xl:ml-2 2xl:ml-0 ${errors.content_vertical ? 'border-red-500' : ''}`}
-                            id="content_vertical"
-                            defaultValue="SelectCategory"
-                            {...register('content_vertical', {
-                              required: 'Category is required',
-                              validate: (value) => value !== 'SelectCategory' || 'Please select a valid category',
-                            })}
-                            onChange={handleChangeCategoryWithBudget}
-                          >
-                            <option value="SelectCategory">Select Category</option>
-                            {categoryList.map((category) => (
-                              <option key={category?.name} value={category?.name}>
-                                {category?.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="my-5 flex-col items-center justify-between gap-4 md:mb-10 md:flex md:flex-row md:gap-9 xl:gap-5">
-                        {userData?.role === 'admin' && (
-                          <div className="relative flex  w-full flex-col space-x-0 sm:mb-4 sm:flex-row sm:space-x-[0px] xl:space-x-0 2xl:space-x-16 ">
-                            <label htmlFor="content_vertical" className="mb-0 capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2 md:w-[90px] xl:w-[110px]">
-                              Client
+                        <div className="mt-5 w-full flex-col items-start justify-between md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32">
+                          {/* Shoot Name */}
+                          <div className="flex w-full flex-col space-x-0 sm:mb-4 sm:flex-row sm:space-x-[5px] xl:space-x-[20px] 2xl:space-x-[30px]">
+                            <label htmlFor="order_name" className="mb-0  sm:w-1/4 md:w-24 lg:w-24 2xl:w-40 ">
+                              Shoot Name
                             </label>
                             <input
-                              type="search"
-                              onChange={(event) => {
-                                setClientName(event?.target?.value);
-                                getAllClients();
-                              }}
-                              className={`form-input flex-grow bg-slate-100 2xl:ml-3`}
-                              value={clientName}
-                              placeholder="Client"
-                              required={!clientName}
+                              id="order_name"
+                              title="Shoot name automatically Generate based on you information"
+                              disabled
+                              value={orderName()}
+                              type="text"
+                              className="form-input h-10 flex-grow  bg-slate-100 md:ml-2 lg:ml-2 xl:ml-5 2xl:ml-8"
+                              placeholder="Shoot Name"
+                              {...register('order_name')}
                             />
-
-                            {showClientDropdown && (
-                              <>
-                                <div ref={dropdownRef} className="absolute right-0 top-[43px] z-30 w-[79%] rounded-md border-2 border-black-light bg-white p-1">
-                                  {isClientLoading ? (
-                                    <div className="scrollbar mb-2 mt-2 h-[190px] animate-pulse overflow-x-hidden overflow-y-scroll">
-                                      {/* Render loading skeleton here */}
-                                      {[...Array(5)].map((_, i) => (
-                                        <div key={i} className="flex items-center gap-3 rounded-sm bg-white px-2 py-1">
-                                          <div className="h-7 w-7 rounded-full bg-slate-200"></div>
-                                          <div className="h-7 w-full rounded-sm bg-slate-200"></div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <>
-                                      {clients && clients.length > 0 ? (
-                                        <ul className="scrollbar mb-2 mt-2 h-[300px] overflow-x-hidden overflow-y-scroll">
-                                          {clients?.map((client: any) => (
-                                            <li
-                                              key={client?.id}
-                                              onClick={() => handleClientChange(client)}
-                                              className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]"
-                                            >
-                                              <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
-                                                <Image
-                                                  src={client?.profile_picture || '/assets/images/favicon.png'}
-                                                  className="h-full w-full rounded-full"
-                                                  alt="Profile Picture"
-                                                  width={100}
-                                                  height={100}
-                                                />
-                                              </div>
-                                              <a href="#">{client?.name}</a>
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      ) : (
-                                        <div className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83]">
-                                          <p className="text-center text-red-500">No client found</p>
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
-                                </div>
-                              </>
-                            )}
                           </div>
-                        )}
 
-                        {/* Location */}
-                        <div className={`mt-2 flex w-full flex-col sm:flex-row sm:space-x-[52px] md:mt-0 lg:space-x-[8px] xl:space-x-0 ${userData?.role !== 'admin' ? 'md:w-[49.5%] ' : '2xl:ml-32'}`}>
-                          <label htmlFor="location" className={`mb-0 capitalize xl:w-24 2xl:w-36 `}>
-                            {/* ${userData?.role !== "admin" && "lg:w-40 "} */}
-                            Location
-                          </label>
-                          <div className={`flex-grow md:ml-2 lg:ml-0 ${userData?.role !== 'admin' ? '2xl:ml-3 2xl:mr-16' : ''}`}>
-                            <Map setGeo_location={setGeo_location} setLocation={setLocation} />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-5 w-full flex-col items-start justify-between md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32">
-                        {/* Shoot Name */}
-                        <div className="flex w-full flex-col space-x-0 sm:mb-4 sm:flex-row sm:space-x-[5px] xl:space-x-[20px] 2xl:space-x-[30px]">
-                          <label htmlFor="order_name" className="mb-0  sm:w-1/4 md:w-24 lg:w-24 2xl:w-40 ">
-                            Shoot Name
-                          </label>
-                          <input
-                            id="order_name"
-                            title="Shoot name automatically Generate based on you information"
-                            disabled
-                            value={orderName()}
-                            type="text"
-                            className="form-input h-10 flex-grow  bg-slate-100 md:ml-2 lg:ml-2 xl:ml-5 2xl:ml-8"
-                            placeholder="Shoot Name"
-                            {...register('order_name')}
-                          />
-                        </div>
-
-                        {/* references */}
-                        <div className="mt-2 flex w-full flex-col space-x-0 sm:flex-row sm:space-x-[33px] md:mt-0 lg:space-x-2 2xl:ml-5 2xl:space-x-16">
-                          <label htmlFor="references" className="mb-0  ">
-                            References
-                          </label>
-                          <input id="references" type="text" placeholder="https://sitename.com" className="form-input xl:ml-2 2xl:ml-16" {...register('references')} />
-                        </div>
-                      </div>
-
-                      {/* Shoot Timings */}
-                      <div className="mb-0 mt-5 lg:mb-10 ">
-                        <div className="w-full items-center justify-between md:flex">
-                          {/* Starting Date and Time */}
-                          <div className="flex w-full flex-col sm:flex-row md:mb-0">
-                            <label htmlFor="start_date_time" className=" mb-3 mt-4 md:ml-2 md:w-16 lg:ml-0 xl:w-24 2xl:w-[154px]">
-                              Shoot Time
+                          {/* references */}
+                          <div className="mt-2 flex w-full flex-col space-x-0 sm:flex-row sm:space-x-[33px] md:mt-0 lg:space-x-2 2xl:ml-5 2xl:space-x-16">
+                            <label htmlFor="references" className="mb-0  ">
+                              References
                             </label>
+                            <input id="references" type="text" placeholder="https://sitename.com" className="form-input xl:ml-2 2xl:ml-16" {...register('references')} />
+                          </div>
+                        </div>
 
-                            <div className="relative ">
-                              <p className="mb-1 text-xs font-bold sm:mb-0">Start Time</p>
-                              <input
-                                id="start_date_time"
-                                ref={startDateTimeRef}
-                                type="text"
-                                className={`form-input w-full cursor-pointer p-0 py-2 sm:w-[220px] md:w-60 xl:pl-1.5 ${errors?.start_date_time ? 'border-red-500' : ''}`}
-                                placeholder="Start time"
-                                required={startDateTime?.length === 0}
-                              />
-                              <span className="pointer-events-none absolute right-[10px] top-[55%] hidden -translate-y-1/4 transform md:block">🗓️</span>
+                        {/* Shoot Timings */}
+                        <div className="mb-0 mt-5 lg:mb-10 ">
+                          <div className="w-full items-center justify-between md:flex">
+                            {/* Starting Date and Time */}
+                            <div className="flex w-full flex-col sm:flex-row md:mb-0">
+                              <label htmlFor="start_date_time" className=" mb-3 mt-4 md:ml-2 md:w-16 lg:ml-0 xl:w-24 2xl:w-[154px]">
+                                Shoot Time
+                              </label>
 
+                              <div className="relative ">
+                                <p className="mb-1 text-xs font-bold sm:mb-0">Start Time</p>
+                                <input
+                                  id="start_date_time"
+                                  ref={startDateTimeRef}
+                                  type="text"
+                                  className={`form-input w-full cursor-pointer p-0 py-2 sm:w-[220px] md:w-60 xl:pl-1.5 ${errors?.start_date_time ? 'border-red-500' : ''}`}
+                                  placeholder="Start time"
+                                  required={startDateTime?.length === 0}
+                                />
+                                <span className="pointer-events-none absolute right-[10px] top-[55%] hidden -translate-y-1/4 transform md:block">🗓️</span>
+
+                                {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                              </div>
+
+                              <div className="relative mt-3 sm:mt-0">
+                                <p className="mb-1 ml-0 text-xs font-bold sm:mb-0 md:ml-1">End Time</p>
+                                <input
+                                  id="end_date_time"
+                                  ref={endDateTimeRef}
+                                  type="text"
+                                  className={`form-input ml-0 w-full cursor-pointer p-0 py-2 pl-1.5 sm:w-[220px] md:ml-1 md:w-60 ${errors?.end_date_time ? 'border-red-500' : ''}`}
+                                  placeholder="End time"
+                                  required={endDateTime?.length === 0}
+                                />
+
+                                <span className="md:top[40%] pointer-events-none absolute right-[10px] top-[55%] hidden -translate-y-1/4 transform md:block lg:top-[55%]">🗓️</span>
+                                {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
+                              </div>
+
+                              <div className="flex justify-end">
+                                <span
+                                  className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white"
+                                  onClick={addDateTime}
+                                >
+                                  Add
+                                </span>
+                              </div>
                               {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
+                          </div>
 
-                            <div className="relative mt-3 sm:mt-0">
-                              <p className="mb-1 ml-0 text-xs font-bold sm:mb-0 md:ml-1">End Time</p>
-                              <input
-                                id="end_date_time"
-                                ref={endDateTimeRef}
-                                type="text"
-                                className={`form-input ml-0 w-full cursor-pointer p-0 py-2 pl-1.5 sm:w-[220px] md:ml-1 md:w-60 ${errors?.end_date_time ? 'border-red-500' : ''}`}
-                                placeholder="End time"
-                                required={endDateTime?.length === 0}
-                              />
+                          <div className="table-responsive">
+                            {/* DateTime Output show Table */}
+                            {dateTimes?.length !== 0 && (
+                              <div className=" mt-4 2xl:w-[90%]">
+                                <table className="table-auto">
+                                  <thead>
+                                    <tr>
+                                      <th>#</th>
+                                      <th>Start Time</th>
+                                      <th>End Time</th>
+                                      <th>Duration</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {dateTimes?.map((dateTime: FormData, index) => (
+                                      <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{convertToEnglishDateFormat(dateTime?.start_date_time)}</td>
+                                        <td>{convertToEnglishDateFormat(dateTime?.end_date_time)} </td>
+                                        <td className="flex items-center justify-between">
+                                          <span>{calculateDuration(dateTime?.start_date_time, dateTime?.end_date_time)} Hour</span>
 
-                              <span className="md:top[40%] pointer-events-none absolute right-[10px] top-[55%] hidden -translate-y-1/4 transform md:block lg:top-[55%]">🗓️</span>
-                              {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
-                            </div>
-
-                            <div className="flex justify-end">
-                              <span
-                                className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white"
-                                onClick={addDateTime}
-                              >
-                                Add
-                              </span>
-                            </div>
-                            {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                                          <span className="text-gray-500" onClick={() => handleTimeRemove(dateTime?.start_date_time)}>
+                                            {allSvgs.closeBtnCp}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        <div className="table-responsive">
-                          {/* DateTime Output show Table */}
-                          {dateTimes?.length !== 0 && (
-                            <div className=" float-right mt-4 2xl:w-[90%]">
-                              <table className="table-auto">
-                                <thead>
-                                  <tr>
-                                    <th>#</th>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
-                                    <th>Duration</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {dateTimes?.map((dateTime: FormData, index) => (
-                                    <tr key={index}>
-                                      <td>{index + 1}</td>
-                                      <td>{convertToEnglishDateFormat(dateTime?.start_date_time)}</td>
-                                      <td>{convertToEnglishDateFormat(dateTime?.end_date_time)} </td>
-                                      <td className="flex items-center justify-between">
-                                        <span>{calculateDuration(dateTime?.start_date_time, dateTime?.end_date_time)} Hour</span>
+                        {/* {userData?.role === 'admin' && ( */}
+                        <div className={` ${userData?.role === 'admin' ? 'mt-4' : ''} w-full flex-col items-center justify-between md:mt-0 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32`}>
+                          {/* Special Note */}
+                          <div className={`flex flex-col sm:mb-5 sm:flex-row ${userData?.role === 'admin' ? 'w-full' : 'md:w-[50%]  2xl:w-[45%]'}`}>
+                            <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-[120px] sm:ltr:mr-2 md:w-[100px] lg:w-[70px] xl:w-[105px] 2xl:w-[160px]">
+                              Special Note
+                            </label>
+                            <textarea id="description" rows={1} className="form-textarea xl:ml-2 2xl:ml-5" placeholder="Type your note here..." {...register('description')}></textarea>
+                          </div>
+                          {userData?.role === 'admin' && (
+                            <div className="mb-3 mt-3  flex w-full flex-col sm:mt-0 sm:flex-row md:mb-0">
+                              <label htmlFor="meeting_time" className="mb-0  w-full rtl:ml-2 sm:ltr:mr-2 md:w-[24%] ">
+                                Meeting time
+                              </label>
+                              <div className="relative w-full ">
+                                <Flatpickr
+                                  id="meeting_time"
+                                  className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
+                                  value={meetingTime}
+                                  placeholder="Meeting time ..."
+                                  options={{
+                                    altInput: true,
+                                    altFormat: 'F j, Y h:i K',
+                                    dateFormat: 'Y-m-d H:i',
+                                    enableTime: true,
+                                    time_24hr: false,
+                                    minDate: 'today',
+                                  }}
+                                  onChange={(date) => {
+                                    setMeetingTime(date[0]);
+                                    setValue('meeting_time', date[0]);
+                                  }}
+                                />
+                                <input type="hidden" {...register('meeting_time')} />
 
-                                        <span className="text-gray-500" onClick={() => handleTimeRemove(dateTime?.start_date_time)}>
-                                          {allSvgs.closeBtnCp}
-                                        </span>
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                                <span className="-translate-y-1/6 pointer-events-none absolute right-[14px] top-[21%]  transform">🗓️</span>
+                                {errors?.meeting_time && <p className="text-danger">{errors?.meeting_time.message}</p>}
+                              </div>
                             </div>
                           )}
                         </div>
                       </div>
-
-                      {/* {userData?.role === 'admin' && ( */}
-                      <div className={` ${userData?.role === 'admin' ? 'mt-4' : ''} w-full flex-col items-center justify-between md:mt-0 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32`}>
-                        {/* Special Note */}
-                        <div className={`flex flex-col sm:mb-5 sm:flex-row ${userData?.role === 'admin' ? 'w-full' : 'md:w-[50%]  2xl:w-[45%]'}`}>
-                          <label htmlFor="description" className="mb-0 rtl:ml-2 sm:w-[120px] sm:ltr:mr-2 md:w-[100px] lg:w-[70px] xl:w-[105px] 2xl:w-[160px]">
-                            Special Note
-                          </label>
-                          <textarea id="description" rows={1} className="form-textarea xl:ml-2 2xl:ml-5" placeholder="Type your note here..." {...register('description')}></textarea>
-                        </div>
-                        {userData?.role === 'admin' && (
-                          <div className="mb-3 mt-3  flex w-full flex-col sm:mt-0 sm:flex-row md:mb-0">
-                            <label htmlFor="meeting_time" className="mb-0  w-full rtl:ml-2 sm:ltr:mr-2 md:w-[24%] ">
-                              Meeting time
-                            </label>
-                            <div className="relative w-full ">
-                              <Flatpickr
-                                id="meeting_time"
-                                className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
-                                value={meetingTime}
-                                placeholder="Meeting time ..."
-                                options={{
-                                  altInput: true,
-                                  altFormat: 'F j, Y h:i K',
-                                  dateFormat: 'Y-m-d H:i',
-                                  enableTime: true,
-                                  time_24hr: false,
-                                  minDate: 'today',
-                                }}
-                                onChange={(date) => {
-                                  setMeetingTime(date[0]);
-                                  setValue('meeting_time', date[0]);
-                                }}
-                              />
-                              <input type="hidden" {...register('meeting_time')} />
-
-                              <span className="-translate-y-1/6 pointer-events-none absolute right-[14px] top-[21%]  transform">🗓️</span>
-                              {errors?.meeting_time && <p className="text-danger">{errors?.meeting_time.message}</p>}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      <div className="mt-5 flex items-center justify-end ltr:ml-auto rtl:mr-auto">
+                      <div className="mt-8 flex items-center justify-end ltr:ml-auto rtl:mr-auto">
                         <DefaultButton css={`font-semibold text-[16px] h-9 ${isLoading && 'cursor-not-allowed'}`} disabled={isLoading}>
                           {isLoading === true ? <Loader /> : 'Next'}
                         </DefaultButton>

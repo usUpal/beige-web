@@ -60,10 +60,10 @@ const Users = () => {
             <div className="mb-5 flex items-center justify-between">
               <h5 className="text-lg font-semibold dark:text-white-light">Clients</h5>
             </div>
-            <div className="mb-5">
+            <div>
               <div className="inline-block w-full">
                 <div>
-                  <div className="table-responsive">
+                  <div className="table-responsive h-[70vh]">
                     <table>
                       <thead>
                         <tr>
@@ -126,67 +126,69 @@ const Users = () => {
                         )}
                       </tbody>
                     </table>
-                    <div className="mt-8 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                      <ResponsivePagination current={currentPage} total={allClients?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-                    </div>
                   </div>
-                  {/* modal Starts*/}
-                  <Transition appear show={userModalClient} as={Fragment}>
-                    <Dialog as="div" open={userModalClient} onClose={() => setUserModalClient(false)}>
-                      <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
-                        <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                          <Dialog.Panel as="div" className="panel my-24 w-10/12 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-3/5 xl:w-3/6 2xl:w-2/6">
-                            <div className="my-2 flex items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
-                              <div className="ms-3 text-[22px] font-bold capitalize leading-none text-[#000000]">Client </div>
-                              <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModalClient(false)}>
-                                {allSvgs.closeIconSvg}
-                              </button>
-                            </div>
+                  <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                    <ResponsivePagination current={currentPage} total={allClients?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
+                  </div>
+                </div>
 
-                            <div className="basis-[50%]">
-                              <div className="mx-6 pb-6">
-                                <div className="mx-auto mt-0 box-border flex-col gap-5 space-y-5  md:flex md:flex-row md:space-y-0 ">
-                                  <div className="left w-full space-y-4">
-                                    <span className="m-0 mt-[9px] flex flex-col text-[16px] font-bold capitalize leading-none text-[#000000]">
-                                      <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Client Id </span>
-                                      <span className="w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.id}</span>
-                                    </span>
-                                    <span className="mt-0 flex flex-col text-[16px] font-bold capitalize leading-none text-[#000000] md:mt-[12px]">
-                                      <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Name </span>
-                                      <span className="w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.name}</span>
-                                    </span>
-                                  </div>
+                {/* modal Starts*/}
+                <Transition appear show={userModalClient} as={Fragment}>
+                  <Dialog as="div" open={userModalClient} onClose={() => setUserModalClient(false)}>
+                    <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                      <div className="flex min-h-screen items-start justify-center md:px-4 ">
+                        <Dialog.Panel as="div" className="panel my-24 w-10/12 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-3/5 xl:w-3/6 2xl:w-2/6">
+                          <div className="my-2 flex items-center justify-between bg-[#fbfbfb] px-3 py-3 dark:bg-[#121c2c]">
+                            <div className="ms-3 text-[22px] font-bold capitalize leading-none text-[#000000]">Client </div>
+                            <button type="button" className="text-white-dark hover:text-dark" onClick={() => setUserModalClient(false)}>
+                              {allSvgs.closeIconSvg}
+                            </button>
+                          </div>
 
-                                  <div className="right w-full space-y-0 md:space-y-4">
-                                    <span className="m-0 mt-1 flex flex-col gap-1 text-[16px] font-bold capitalize leading-none text-[#000000]">
-                                      <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Role </span>
-                                      <span className=" w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.role}</span>
-                                    </span>
-
-                                    <span className="m-0 mt-1 flex flex-col gap-1 text-[16px] font-bold leading-none text-[#000000]">
-                                      <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Address </span>
-                                      <span className=" w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.location}</span>
-                                    </span>
-                                  </div>
+                          <div className="basis-[50%]">
+                            <div className="mx-6 pb-6">
+                              <div className="mx-auto mt-0 box-border flex-col gap-5 space-y-5  md:flex md:flex-row md:space-y-0 ">
+                                <div className="left w-full space-y-4">
+                                  <span className="m-0 mt-[9px] flex flex-col text-[16px] font-bold capitalize leading-none text-[#000000]">
+                                    <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Client Id </span>
+                                    <span className="w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.id}</span>
+                                  </span>
+                                  <span className="mt-0 flex flex-col text-[16px] font-bold capitalize leading-none text-[#000000] md:mt-[12px]">
+                                    <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Name </span>
+                                    <span className="w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.name}</span>
+                                  </span>
                                 </div>
-                                <span className="flex flex-col gap-1 text-[16px] font-bold leading-none text-[#000000]">
-                                  <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Email </span>
-                                  <span className="w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.email}</span>
-                                </span>
-                                <div className="btn-group flex justify-end">
-                                  <DefaultButton onClick={() => setUserModalClient(false)} css="font-semibold mt-10">
-                                    Close
-                                  </DefaultButton>
+
+                                <div className="right w-full space-y-0 md:space-y-4">
+                                  <span className="m-0 mt-1 flex flex-col gap-1 text-[16px] font-bold capitalize leading-none text-[#000000]">
+                                    <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Role </span>
+                                    <span className=" w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.role}</span>
+                                  </span>
+
+                                  <span className="m-0 mt-1 flex flex-col gap-1 text-[16px] font-bold leading-none text-[#000000]">
+                                    <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Address </span>
+                                    <span className=" w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.location}</span>
+                                  </span>
                                 </div>
                               </div>
+                              <span className="flex flex-col gap-1 text-[16px] font-bold leading-none text-[#000000]">
+                                <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000]"> Email </span>
+                                <span className="w-full rounded border  p-3 text-[16px] font-semibold leading-[28px]   text-gray-600">{clientUserInfo?.email}</span>
+                              </span>
+                              <div className="btn-group flex justify-end">
+                                <DefaultButton onClick={() => setUserModalClient(false)} css="font-semibold mt-10">
+                                  Close
+                                </DefaultButton>
+                              </div>
                             </div>
-                          </Dialog.Panel>
-                        </div>
+                          </div>
+                        </Dialog.Panel>
                       </div>
-                    </Dialog>
-                  </Transition>
-                  {/* modal ends*/}
-                </div>
+                    </div>
+                  </Dialog>
+                </Transition>
+                {/* modal ends*/}
+                {/* </div> */}
               </div>
             </div>
           </div>

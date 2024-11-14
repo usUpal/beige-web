@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import PreLoader from '@/components/ProfileImage/PreLoader';
 import Link from 'next/link';
 import { useDeleteRoleMutation, useGetAllRolesQuery } from '@/Redux/features/role/roleApi';
@@ -9,30 +9,37 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import Swal from 'sweetalert2';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import AccessDenied from '@/components/errors/AccessDenied';
+import RoleManagementSkeleton from '@/components/SharedComponent/Skeletons/Skeletons';
 
 const Role = () => {
   const { authPermissions } = useAuth();
   const isHavePermission = authPermissions?.includes('role_page');
 
-  const { data: allRoles, isLoading: isAllRolesLoading, isError: isAllRoleError, status: allRoleStatus, error: allRolesError, refetch } = useGetAllRolesQuery(undefined, {
+  const {
+    data: allRoles,
+    isLoading: isAllRolesLoading,
+    isError: isAllRoleError,
+    status: allRoleStatus,
+    error: allRolesError,
+    refetch,
+  } = useGetAllRolesQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
 
   const [deleteRole, { isLoading: isDeleteRoleLoading, isSuccess: isRoleDelteSuccess }] = useDeleteRoleMutation();
 
   const router = useRouter();
-  const statusCode = 404
-
+  const statusCode = 404;
 
   const deletePermission = async (id: string) => {
     const result = await Swal.fire({
-      title: "Are you sure?",
+      title: 'Are you sure?',
       text: "You won't be able to undo this!",
-      icon: "warning",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
     });
 
     if (result.isConfirmed) {
@@ -41,52 +48,48 @@ const Role = () => {
         if (deleteResult?.data) {
           refetch();
           Swal.fire({
-            title: "Deleted!",
-            text: "Your file has been deleted.",
-            icon: "success",
+            title: 'Deleted!',
+            text: 'Your file has been deleted.',
+            icon: 'success',
           });
         }
-
       } catch (error) {
-        console.log("🚀 ~ deletePermission ~ error:", error)
+        console.log('🚀 ~ deletePermission ~ error:', error);
       }
     }
-  }
-
+  };
 
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       <div className="panel h-full w-full">
-
         <div className="mb-5 flex items-center justify-between">
-            <h5 className="text-xl font-bold dark:text-white-light">Role Management</h5>
-            <Link href={'/dashboard/role/add-role'}>
-              <DefaultButton>Add New Role & Permission</DefaultButton>
-            </Link>
+          <h5 className="text-xl font-bold dark:text-white-light">Role Management</h5>
+          <Link href={'/dashboard/role/add-role'}>
+            <DefaultButton>Add New Role & Permission</DefaultButton>
+          </Link>
         </div>
 
-        <div className="table-responsive">
+        <div className="table-responsive ">
           <table>
             <thead>
               <tr>
                 <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Name</th>
                 <th>Role</th>
-                <th className="ltr:rounded-r-md rtl:rounded-l-md w-[60%]">Permissions</th>
-                {(authPermissions?.includes('edit_role') || authPermissions?.includes('delete_role')) && (
-                  <th className="text-[16px] font-semibold">Action</th>
-                )}
+                <th className="w-[60%] ltr:rounded-r-md rtl:rounded-l-md">Permissions</th>
+                {(authPermissions?.includes('edit_role') || authPermissions?.includes('delete_role')) && <th className="text-[16px] font-semibold">Action</th>}
               </tr>
             </thead>
             <tbody>
               {isAllRolesLoading ? (
                 <>
-                  <PreLoader></PreLoader>
+                  {/* <PreLoader></PreLoader> */}
+                  {Array.from({ length: 9 }).map((_, index) => (
+                    <RoleManagementSkeleton key={index} />
+                  ))}
                 </>
               ) : (
                 <>
@@ -99,37 +102,46 @@ const Role = () => {
                           </div>
                         </td>
                         <td>{role?.role}</td>
-                        <td className='flex flex-wrap gap-2 w-[60%]'>
+                        <td className="flex w-[60%] flex-wrap gap-2">
                           {role?.role === 'admin' ? (
-                            <span className='text-secondary font-semibold'>Access All Permissions</span>
+                            <span className="font-semibold text-secondary">Access All Permissions</span>
                           ) : (
                             <>
-                              {role?.permissions && role?.permissions?.length > 0 && role?.permissions?.map((permission: string, index: number) => (
-                                <div className="" key={index}>
-                                  <div className="">
-                                    <span className="badge bg-secondary shadow-md dark:group-hover:bg-transparent capitalize">{permission}</span>
+                              {role?.permissions &&
+                                role?.permissions?.length > 0 &&
+                                role?.permissions?.map((permission: string, index: number) => (
+                                  <div className="" key={index}>
+                                    <div className="">
+                                      <span className="badge bg-secondary capitalize shadow-md dark:group-hover:bg-transparent">{permission}</span>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
+                                ))}
                             </>
                           )}
                         </td>
                         {(authPermissions?.includes('edit_role') || authPermissions?.includes('delete_role')) && (
-                          <td>
-                            <div className='space-x-4'>
-                              {authPermissions?.includes('edit_role') && (
-                                <Link href={`/dashboard/role/edit-role/${role?._id}`}>
-                                  <button type="button" className="">{allSvgs.editPen}</button>
-                                </Link>
-                              )}
-
-                              {role?.is_delete && (
-                                <>
-                                  {authPermissions?.includes('delete_role') && (
-                                    <button onClick={() => deletePermission(role?._id)} type="button" className="p-0">{allSvgs.trash}</button>
-                                  )}
-                                </>
-                              )}
+                          <td className="">
+                            <div className="flex items-center space-x-4">
+                              <>
+                                {authPermissions?.includes('edit_role') && (
+                                  <Link href={`/dashboard/role/edit-role/${role?._id}`}>
+                                    <button type="button" className="">
+                                      {allSvgs.editPen}
+                                    </button>
+                                  </Link>
+                                )}
+                              </>
+                              <>
+                                {role?.is_delete && (
+                                  <>
+                                    {authPermissions?.includes('delete_role') && (
+                                      <button onClick={() => deletePermission(role?._id)} type="button" className="p-0">
+                                        {allSvgs.trash}
+                                      </button>
+                                    )}
+                                  </>
+                                )}
+                              </>
                             </div>
                           </td>
                         )}
@@ -160,7 +172,7 @@ const Role = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Role
+export default Role;
