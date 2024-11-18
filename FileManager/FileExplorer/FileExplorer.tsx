@@ -290,8 +290,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           <div className={`hidden md:block`}>
             <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
           </div>
-          <span className="flex items-center gap-2 rounded-md border border-[#ddd] px-6 py-1 " style={{ backgroundColor: '#93c5fd' }}>
-            {/* <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" /> */}
+          <span className="flex items-center gap-2 rounded-md border border-[#ddd] text-black dark:text-black px-6 py-1 " style={{ backgroundColor: '#93c5fd' }}>
             <Image src="/allSvg/refresh.svg" alt="refresh" className="size-6" width={24} height={24} />
             Refresh
           </span>
