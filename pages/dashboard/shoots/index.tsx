@@ -60,12 +60,12 @@ const Shoots = () => {
         {/* Recent Shoots */}
         <div className="panel h-full w-full">
           <div className="my-5 mb-5 items-center justify-between md:my-0 md:mb-4 md:flex">
-            <h5 className="text-xl font-bold dark:text-white-light">Recent Shoots</h5>
+            <h5 className="text-xl font-bold dark:text-slate-300">Recent Shoots</h5>
             <input
               type="text"
               onChange={(event) => setQuery(event.target.value)}
               value={query}
-              className="rounded border border-black px-3 py-1 focus:border-black focus:outline-none"
+              className="rounded border border-black px-3 py-1 focus:border-black focus:outline-slate-900 dark:bg-[#121e32]"
               placeholder="Search..."
             />
           </div>
@@ -73,13 +73,13 @@ const Shoots = () => {
           <div className="table-responsive h-[75vh]">
             <table>
               <thead>
-                <tr className="bg-gray-200 dark:bg-gray-800">
-                  <th className="text-[16px] font-semibold text-black ltr:rounded-l-md rtl:rounded-r-md dark:text-white">Shoot Name</th>
-                  <th className="text-[16px] font-semibold text-black dark:text-white">Shoot ID</th>
-                  <th className="text-[16px] font-semibold text-black dark:text-white">Price</th>
-                  {authPermissions?.includes('shoot_download') && <th className="text-[16px] font-semibold text-black dark:text-white">Files</th>}
-                  <th className="text-black ltr:rounded-r-md rtl:rounded-l-md dark:text-white">Status</th>
-                  {authPermissions?.includes('shoot_show_details') && <th className="text-[16px] font-semibold text-black dark:text-white">View</th>}
+                <tr className="text-black dark:text-slate-400">
+                  <th className=" font-semibold ltr:rounded-l-md rtl:rounded-r-md">Shoot Name</th>
+                  <th className="text-[16px] font-semibold">Shoot ID</th>
+                  <th className="text-[16px] font-semibold ">Price</th>
+                  {authPermissions?.includes('shoot_download') && <th className="text-[16px] font-semibold">Files</th>}
+                  <th className=" ltr:rounded-r-md rtl:rounded-l-md ">Status</th>
+                  {authPermissions?.includes('shoot_show_details') && <th className="text-[16px] font-semibold">View</th>}
                 </tr>
               </thead>
 
@@ -93,7 +93,7 @@ const Shoots = () => {
                 ) : data?.results?.length > 0 ? (
                   data.results.map((shoot: shootsData) => (
                     <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                      <td className="min-w-[150px] text-black dark:text-white">
+                      <td className="min-w-[150px] text-black dark:text-slate-300 group-hover:text-dark-light">
                         <div className="flex items-center">
                           <Image className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" width={32} height={32} />
                           <p>

@@ -140,7 +140,7 @@ const Profile = () => {
         <div className="mb-5 grid grid-cols-1 gap-5 lg:grid-cols-3 xl:grid-cols-4">
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">
-              <h5 className="text-lg font-semibold dark:text-white-light">Profile</h5>
+              <h5 className="text-lg font-semibold dark:text-slate-400">Profile</h5>
             </div>
             <div className="mb-5">
               <ProfileImageForm />
@@ -160,7 +160,7 @@ const Profile = () => {
         {userRole === 'cp' && (
           <div className="grid grid-cols-1 gap-5">
             <div className="panel">
-              <div className="mb-7 font-bold">All Reviews</div>
+              <div className="mb-7 font-bold text-black dark:text-slate-400">All Reviews</div>
               <Swiper
                 spaceBetween={30}
                 slidesPerView={3}
@@ -183,7 +183,7 @@ const Profile = () => {
                   <>
                     {allCpReview?.results?.map((review: any, index: any) => (
                       <SwiperSlide key={index}>
-                        <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg">
+                        <div className="m-auto mb-[50px] w-full max-w-[650px] rounded-lg border border-info-light bg-white p-5 text-center shadow-lg dark:border-slate-600 dark:bg-black">
                           <div className="flex gap-4">
                             {!review?.client_id?.profile_picture ? (
                               <MakeProfileImage>{review?.client_id?.name ? review?.client_id?.name : 'Un'}</MakeProfileImage>

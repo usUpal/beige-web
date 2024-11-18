@@ -1,7 +1,6 @@
 import React from 'react';
 import AnimateHeight from 'react-animate-height';
 import Link from 'next/link';
-import { menuData } from '@/store/menuBuilder';
 import { useAuth } from '@/contexts/authContext';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
@@ -9,13 +8,13 @@ const SidebarManager = (props: any) => {
   const { currentMenu, toggleMenu } = props;
   const { userData, authPermissions } = useAuth();
   return (
-    <ul className="relative space-y-0.5 p-4 py-0 font-semibold">
+    <ul className="relative space-y-0.5 p-4 py-0 font-semibold text-black dark:text-slate-300 hover:dark:text-red-300">
       {authPermissions?.includes('dashboard_page') && (
         <li className="menu nav-item">
           <button type="button" className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('dashboard')}>
             <div className="flex items-center">
               {allSvgs.bookNowSvg}
-              <span className="  text-black ltr:pl-3 rtl:pr-3  dark:text-white dark:group-hover:text-dark-light">Dashboard</span>
+              <span className=" ltr:pl-3 rtl:pr-3 text-black dark:text-slate-400 group-hover:dark:text-slate-300 ">Dashboard</span>
             </div>
 
             <div className={currentMenu === 'dashboard' ? 'rotate-90' : 'rtl:rotate-180'}>{allSvgs.greaterThanArrowSvg}</div>
@@ -24,7 +23,7 @@ const SidebarManager = (props: any) => {
           <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
             <ul className="sub-menu text-gray-500">
               <li>
-                <Link href="/" className="text-black  dark:text-white dark:group-hover:text-dark-light">
+                <Link href="/" className="text-black dark:text-slate-400 dark:hover:text-dark-light">
                   Overview
                 </Link>
               </li>
@@ -41,7 +40,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/book-now" className="group">
                 <div className="flex items-center">
                   {allSvgs.bookingLinkIcon}
-                  <span className=" text-black ltr:pl-3 rtl:pr-3  dark:text-white dark:group-hover:text-dark-light">Book Now</span>
+                  <span className="  ltr:pl-3 rtl:pr-3 text-black dark:text-slate-400 dark:group-hover:text-slate-300">Book Now</span>
                 </div>
               </Link>
             </li>
@@ -52,7 +51,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/shoots" className="group">
                 <div className="flex items-center">
                   {allSvgs.shootsLinkIcon}
-                  <span className="text-black ltr:pl-3 rtl:pr-3  dark:text-white dark:group-hover:text-dark-light">Shoots</span>
+                  <span className=" ltr:pl-3 rtl:pr-3 text-black dark:text-slate-400 dark:group-hover:text-slate-300">Shoots</span>
                 </div>
               </Link>
             </li>
@@ -63,7 +62,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/addons" className="group">
                 <div className="flex items-center">
                   {allSvgs.addonsSvg}
-                  <span className="text-black ltr:pl-3 rtl:pr-3  dark:text-white dark:group-hover:text-dark-light">Add-ons</span>
+                  <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300 ltr:pl-3 rtl:pr-3 ">Add-ons</span>
                 </div>
               </Link>
             </li>
@@ -74,7 +73,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/meetings" className="group">
                 <div className="flex items-center">
                   {allSvgs.mettingLinkIcon}
-                  <span className=" ltr:pl-3 rtl:pr-3 text-black  dark:text-white dark:group-hover:text-dark-light">Meetings</span>
+                  <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300 ltr:pl-3 rtl:pr-3 ">Meetings</span>
                 </div>
               </Link>
             </li>
@@ -85,7 +84,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/chat" className="group">
                 <div className="flex items-center">
                   {allSvgs.chatSvg}
-                  <span className="  ltr:pl-3 rtl:pr-3 text-black  dark:text-white dark:group-hover:text-dark-light">Chat</span>
+                  <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300 ltr:pl-3 rtl:pr-3">Chat</span>
                 </div>
               </Link>
             </li>
@@ -96,7 +95,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/fileManager" className="group">
                 <div className="flex items-center">
                   {allSvgs.filesSvg}
-                  <span className=" ltr:pl-3 rtl:pr-3 text-black  dark:text-white dark:group-hover:text-dark-light">File Manager</span>
+                  <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300 ltr:pl-3 rtl:pr-3">File Manager</span>
                 </div>
               </Link>
             </li>
@@ -107,7 +106,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/transactions" className="group">
                 <div className="flex items-center">
                   {allSvgs.transactionsSvg}
-                  <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-white dark:group-hover:text-dark-light">Transactions</span>
+                  <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300 ltr:pl-3 rtl:pr-3 ">Transactions</span>
                 </div>
               </Link>
             </li>
@@ -118,7 +117,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/disputes" className="group">
                 <div className="flex items-center">
                   {allSvgs.disputesSvg}
-                  <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-white dark:group-hover:text-dark-light">Disputes</span>
+                  <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300 ltr:pl-3 rtl:pr-3">Disputes</span>
                 </div>
               </Link>
             </li>
@@ -129,7 +128,7 @@ const SidebarManager = (props: any) => {
               <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('settings')}>
                 <div className="flex items-center">
                   {allSvgs.settingLinkIcon}
-                  <span className="ltr:pl-3 rtl:pr-3 text-black  dark:text-white dark:group-hover:text-dark-light">Settings</span>
+                  <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300 ltr:pl-3 rtl:pr-3 ">Settings</span>
                 </div>
 
                 <div className={currentMenu === 'settings' ? 'rotate-90' : 'rtl:rotate-180'}>{allSvgs.greaterThanArrowSvg}</div>
@@ -139,12 +138,16 @@ const SidebarManager = (props: any) => {
                 <ul className="sub-menu flex flex-col text-gray-500 ">
                   {authPermissions?.includes('searching_params') && (
                     <li>
-                      <Link href="/dashboard/searching-params" className='text-black  dark:text-white dark:group-hover:text-dark-light'>Set Searching Params</Link>
+                      <Link href="/dashboard/searching-params" className="text-black dark:text-slate-400 dark:group-hover:text-slate-300">
+                        Set Searching Params
+                      </Link>
                     </li>
                   )}
                   {authPermissions?.includes('pricing_params') && (
                     <li>
-                      <Link href="/dashboard/pricing-params" className='text-black  dark:text-white dark:group-hover:text-dark-light'>Set Pricing Params</Link>
+                      <Link href="/dashboard/pricing-params" className="text-black dark:text-slate-400 dark:group-hover:text-slate-300">
+                        Set Pricing Params
+                      </Link>
                     </li>
                   )}
                 </ul>
@@ -157,7 +160,7 @@ const SidebarManager = (props: any) => {
               <button type="button" className="nav-link group w-full" onClick={() => toggleMenu('users')}>
                 <div className="flex items-center">
                   {allSvgs.userLinkIcon}
-                  <span className="ltr:pl-3 rtl:pr-3 text-black  dark:text-white dark:group-hover:text-dark-light">Users</span>
+                  <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300 ltr:pl-3 rtl:pr-3">Users</span>
                 </div>
 
                 <div className={currentMenu === 'users' ? 'rotate-90' : 'rtl:rotate-180'}>{allSvgs.greaterThanArrowSvg}</div>
@@ -168,19 +171,23 @@ const SidebarManager = (props: any) => {
                   {authPermissions?.includes('all_users') && (
                     <li>
                       <Link href="/dashboard/all-users">
-                        <span className='text-black  dark:text-white dark:group-hover:text-dark-light'>All Users</span>
+                        <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300">All Users</span>
                       </Link>
                     </li>
                   )}
 
                   {authPermissions?.includes('content_provider') && (
                     <li>
-                      <Link className='text-black  dark:text-white dark:group-hover:text-dark-light' href="/dashboard/cp">Content Provider</Link>
+                      <Link className="text-black dark:text-slate-400 dark:group-hover:text-slate-300" href="/dashboard/cp">
+                        Content Provider
+                      </Link>
                     </li>
                   )}
                   {authPermissions?.includes('client_page') && (
                     <li>
-                      <Link className='text-black  dark:text-white dark:group-hover:text-dark-light' href="/dashboard/clients">Client</Link>
+                      <Link className="text-black dark:text-slate-400 dark:group-hover:text-slate-300" href="/dashboard/clients">
+                        Client
+                      </Link>
                     </li>
                   )}
                 </ul>
@@ -201,7 +208,7 @@ const SidebarManager = (props: any) => {
               <Link href="/dashboard/role" className="group">
                 <div className="flex items-center">
                   {allSvgs.mettingLinkIcon}
-                  <span className=" ltr:pl-3 rtl:pr-3 text-black  dark:text-white dark:group-hover:text-dark-light">Role Management</span>
+                  <span className="text-black dark:text-slate-400 dark:group-hover:text-slate-300 ltr:pl-3 rtl:pr-3">Role Management</span>
                 </div>
               </Link>
             </li>

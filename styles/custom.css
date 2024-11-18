@@ -67,12 +67,6 @@
   border-top: 3px solid #aca686;
 }
 
-/* .skeleton {
-  background-color: #d3d3d3;
-  border-radius: 8px;
-  display: flex;
-} */
-
 /* Media query codes here... */
 @media screen and (max-width: 575px) {
 }

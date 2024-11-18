@@ -302,8 +302,8 @@ const Dashboard = (props: any) => {
             Dashboard
           </Link>
         </li>
-        <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span className="capitalize">{userData?.role}</span>
+        <li className="text-black before:content-['/'] ltr:before:mr-2 rtl:before:ml-2 dark:text-gray-300">
+          <span className="capitalize text-black dark:text-gray-300">{userData?.role}</span>
         </li>
       </ul>
 
@@ -316,13 +316,19 @@ const Dashboard = (props: any) => {
                 <Dropdown offset={[0, 1]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} button={allSvgs.revenueDayWkMonthSortBtnSvg}>
                   <ul>
                     <li>
-                      <button type="button">Weekly</button>
+                      <button type="button" className="text-black dark:text-gray-300">
+                        Weekly
+                      </button>
                     </li>
                     <li>
-                      <button type="button">Monthly</button>
+                      <button type="button" className="text-black dark:text-gray-300">
+                        Monthly
+                      </button>
                     </li>
                     <li>
-                      <button type="button">Yearly</button>
+                      <button type="button" className="text-black dark:text-gray-300">
+                        Yearly
+                      </button>
                     </li>
                   </ul>
                 </Dropdown>

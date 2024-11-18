@@ -85,12 +85,12 @@ const PricingCalculation = () => {
         {/* icon only */}
         <div className="panel">
           <div className="mb-5 flex items-center justify-between">
-            <h5 className="text-lg font-semibold dark:text-white-light">Set Prices</h5>
+            <h5 className="leading mb-3 text-xl font-semibold dark:text-slate-400">Set Prices</h5>
           </div>
           <div className="table-responsive">
             <table>
               <thead>
-                <tr>
+                <tr className="text-black dark:text-white-dark">
                   <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
                   <th>Rate/Hour($)</th>
                   <th>Status</th>
@@ -98,7 +98,7 @@ const PricingCalculation = () => {
                 </tr>
               </thead>
 
-              <tbody>
+              <tbody className="text-black dark:text-white-dark">
                 {isLoadingPricingParams ? (
                   <>
                     {Array.from({ length: 4 }).map((_, index) => (
@@ -107,21 +107,23 @@ const PricingCalculation = () => {
                   </>
                 ) : (
                   data?.results
-                    ?.filter((item) => item?.isHourly === true)
-                    .map((price, index) => {
+                    ?.filter((item: any) => item?.isHourly === true)
+                    .map((price: any, index: any) => {
                       const { rate, status, title } = price;
                       return (
-                        <tr key={index}>
-                          <td className="w-4/12 capitalize">{title}</td>
+                        <tr key={index} className="group text-gray-600 dark:text-white-dark ">
+                          <td className="w-4/12 capitalize group-hover:text-black group-hover:dark:text-slate-300">{title}</td>
                           <td>
-                            <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
+                            <input disabled name={title} type="number" value={rate} className="form-input w-3/6 group-hover:dark:text-slate-300" />
                           </td>
                           <td>
                             <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
                           </td>
                           <td onClick={() => handleRateEdit(price)}>
                             {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>Edit</span> */}
-                            <button type="button">{allSvgs.editPen}</button>
+                            <button type="button" className="text-white-dark hover:dark:text-dark-light group-hover:dark:text-dark-light">
+                              {allSvgs.editPen}
+                            </button>
                           </td>
                         </tr>
                       );
@@ -131,7 +133,7 @@ const PricingCalculation = () => {
             </table>
             <table>
               <thead>
-                <tr>
+                <tr className=" text-black dark:text-white-dark">
                   <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
                   {/* <th>Extra Rate($)</th> */}
                   <th className="overflow-hidden text-ellipsis whitespace-nowrap">Extra Rate($)</th>
@@ -149,14 +151,14 @@ const PricingCalculation = () => {
                   </>
                 ) : (
                   data?.results
-                    ?.filter((item) => item?.isHourly === false)
-                    .map((price, index) => {
+                    ?.filter((item: any) => item?.isHourly === false)
+                    .map((price: any, index: any) => {
                       const { rate, status, title } = price;
                       return (
-                        <tr key={index}>
-                          <td className="w-4/12 capitalize">{title}</td>
+                        <tr key={index} className="group text-white-dark">
+                          <td className="w-4/12 capitalize group-hover:dark:text-slate-300">{title}</td>
                           <td>
-                            <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
+                            <input disabled name={title} type="number" value={rate} className="form-input w-3/6 group-hover:dark:text-slate-300" />
                           </td>
                           <td>
                             <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
@@ -164,7 +166,9 @@ const PricingCalculation = () => {
                           <td onClick={() => handleRateEdit(price)}>
                             {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>{allSvgs.editPen} </span>
                              */}
-                            <button type="button">{allSvgs.editPen}</button>
+                            <button type="button" className="hover:text-slate-300 group-hover:dark:text-slate-300">
+                              {allSvgs.editPen}
+                            </button>
                           </td>
                         </tr>
                       );

@@ -21,7 +21,6 @@ const CpDetails = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<any | null>(null);
 
-
   const params = useParams();
   const dob = formData?.date_of_birth;
   const formattedDateTime = useDateFormat(dob);
@@ -64,7 +63,16 @@ const CpDetails = () => {
       setIsLoading(false);
     }
   }, [isCpDataSuccess]);
-  const { register, handleSubmit, getValues, reset, formState: { errors }, setValue, setError, control } = useForm();
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { errors },
+    setValue,
+    setError,
+    control,
+  } = useForm();
 
   const handleSetNewItem = (fieldName: string) => {
     const value = getValues(fieldName);
@@ -157,11 +165,7 @@ const CpDetails = () => {
     }
   };
 
-  const handleInputChange = (
-    key: string,
-    value: any,
-    type: 'string' | 'number' | 'boolean' = 'string'
-  ) => {
+  const handleInputChange = (key: string, value: any, type: 'string' | 'number' | 'boolean' = 'string') => {
     const convertedValue = validateToPreventZero(key, value, type, setError);
     if (convertedValue === null) {
       return;
@@ -172,7 +176,6 @@ const CpDetails = () => {
       [key]: value,
     }));
   };
-
 
   const onSubmit = async (data: any) => {
     const singleUserId = Array.isArray(params.cp) ? params.cp[0] : params.cp;
@@ -242,18 +245,16 @@ const CpDetails = () => {
   };
 
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
 
   return (
     <div className="p-5">
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col rounded-md bg-white p-5 dark:border-[#191e3a] dark:bg-black">
         <div className="flex flex-wrap gap-3 md:mb-3 md:flex ">
           {/* Content Vertical */}
           <div className=" flex-col md:mb-2 md:flex ">
-            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2  md:whitespace-nowrap">Content Vertical</label>
+            <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 md:whitespace-nowrap">Content Vertical</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
                 {/* Render existing Content Vertical items */}
@@ -262,14 +263,14 @@ const CpDetails = () => {
                     <div className="mb-2" key={`${content_verticals_item}_${index}`}>
                       <ul className="group ms-5 flex w-48 list-disc items-center justify-between text-white-dark">
                         <li>
-                          <span className="font-sans capitalize text-white-dark  group-hover:text-dark">{content_verticals_item}</span>
+                          <span className="font-sans capitalize text-white-dark group-hover:text-slate-400">{content_verticals_item}</span>
                         </li>
 
                         <li className="hidden list-none">
                           <button
                             type="button"
                             className="text-white-dark group-hover:text-red-400"
-                          // onClick={() => removeEquipmentItem(content_verticals_item, 'equipment')}
+                            // onClick={() => removeEquipmentItem(content_verticals_item, 'equipment')}
                           >
                             {allSvgs.closeBtnCp}
                           </button>
@@ -282,7 +283,7 @@ const CpDetails = () => {
           </div>
           {/* Content Type */}
           <div className="flex-col md:mb-2 md:flex ">
-            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 ">Content Type</label>
+            <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400">Content Type</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
                 {/* Render existing Content Vertical items */}
@@ -291,14 +292,14 @@ const CpDetails = () => {
                     <div className="mb-2" key={`${content_type_item}_${index}`}>
                       <ul className="group ms-5 flex w-48 list-disc items-center justify-between text-white-dark">
                         <li>
-                          <span className="font-sans capitalize text-white-dark  group-hover:text-dark">{content_type_item}</span>
+                          <span className="font-sans capitalize text-white-dark  group-hover:text-slate-400">{content_type_item}</span>
                         </li>
 
                         <li className="hidden list-none">
                           <button
                             type="button"
                             className="text-white-dark group-hover:text-red-400"
-                          // onClick={() => removeEquipmentItem(content_type_item, 'equipment')}
+                            // onClick={() => removeEquipmentItem(content_type_item, 'equipment')}
                           >
                             {allSvgs.closeBtnCp}
                           </button>
@@ -313,7 +314,7 @@ const CpDetails = () => {
         <div className="flex flex-wrap justify-between  gap-3">
           {/* Successful Shoots */}
           <div className=" w-full flex-col items-center sm:w-[32%] md:flex">
-            <label htmlFor="successful_beige_shoots" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="successful_beige_shoots" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               Successful Shoots
             </label>
 
@@ -321,7 +322,7 @@ const CpDetails = () => {
               type="number"
               {...register('successful_beige_shoots')}
               defaultValue={formData?.successful_beige_shoots}
-              className="mt-1 w-full rounded border bg-gray-200 p-3 md:ms-0 "
+              className="mt-1 w-full rounded border  border-slate-600 bg-gray-200 p-3 dark:bg-[#121e32] md:ms-0 "
               disabled
               onChange={(e) => handleInputChange('successful_beige_shoots', e.target.value)}
             />
@@ -329,46 +330,42 @@ const CpDetails = () => {
 
           {/* Trust Score */}
           <div className=" w-full flex-col items-center sm:w-[32%] md:flex">
-            <label htmlFor="trust_score" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="trust_score" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               trust score
             </label>
             <input
               type="number"
-              {...register('trust_score',
-                {
-                  required: false,
-                  min: {
-                    value: 0,
-                    message: "Negative values are not allowed"
-                  }
-                }
-              )}
+              {...register('trust_score', {
+                required: false,
+                min: {
+                  value: 0,
+                  message: 'Negative values are not allowed',
+                },
+              })}
               defaultValue={formData?.trust_score}
               disabled
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0 bg-gray-200"
+              className="mt-1 w-full rounded border border-slate-600 bg-gray-200 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               onChange={(e) => handleInputChange('trust_score', e.target.value, 'number')}
             />
-            <div className='flex justify-start w-full ms-2'>
-              {errors.trust_score && <p className='text-red-500 text-sm'>{errors?.trust_score.message as string}</p>}
-            </div>
+            <div className="ms-2 flex w-full justify-start">{errors.trust_score && <p className="text-sm text-red-500">{errors?.trust_score.message as string}</p>}</div>
           </div>
 
           {/* References */}
           <div className=" w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="reference" className="mb-0 mt-2 xl:mt-0 w-full font-sans  text-[14px]">
+            <label htmlFor="reference" className="mb-0 mt-2 w-full font-sans text-[14px] text-black dark:text-slate-400 xl:mt-0">
               Reference
             </label>
             <input
               {...register('reference')}
               defaultValue={formData?.reference}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
-              onChange={(e) => handleInputChange('reference', e.target.value, "string")}
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
+              onChange={(e) => handleInputChange('reference', e.target.value, 'string')}
             />
           </div>
 
           {/* Total Earnings */}
           <div className=" w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="total_earnings" className="mb-0 w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="total_earnings" className="mb-0 w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               total earnings ($)
             </label>
             <input
@@ -376,15 +373,15 @@ const CpDetails = () => {
               {...register('total_earnings')}
               defaultValue={formData?.total_earnings}
               // className='border rounded bg-gray-200 p-3'
-              className="mt-1 w-full rounded border bg-gray-200  p-3 focus:border-gray-400 focus:outline-none md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 bg-gray-200 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               disabled
-              onChange={(e) => handleInputChange('total_earnings', e.target.value, "string")}
+              onChange={(e) => handleInputChange('total_earnings', e.target.value, 'string')}
             />
           </div>
 
           {/* rate */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="initiative" className="mb-0 w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="initiative" className="mb-0 w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               rate
             </label>
             <input
@@ -393,31 +390,29 @@ const CpDetails = () => {
                 required: false,
                 min: {
                   value: 0,
-                  message: "Negative values are not allowed"
-                }
+                  message: 'Negative values are not allowed',
+                },
               })}
               defaultValue={formData?.rate}
               // className='border rounded p-3 focus:outline-none focus:border-gray-400'
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
-              onChange={(e) => handleInputChange('rate', e.target.value, "number")}
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
+              onChange={(e) => handleInputChange('rate', e.target.value, 'number')}
             />
-            <div className='flex justify-start w-full ms-2'>
-              {errors.rate && <p className='text-red-500 text-sm'>{errors?.rate.message as string}</p>}
-            </div>
+            <div className="ms-2 flex w-full justify-start">{errors.rate && <p className="text-sm text-red-500">{errors?.rate.message as string}</p>}</div>
           </div>
 
           {/* Rate Flexibility */}
           <div className="mb:mt-0 mb-6 flex w-full  flex-col sm:w-[32%] md:mb-0">
-            <label htmlFor="rateFlexibility" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="rateFlexibility" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               rate Flexibility
             </label>
             <select
               // className="border focus:border-gray-400 rounded w-56 p-3"
-              className=" w-full rounded border p-3 focus:border-gray-400 focus:outline-none md:ms-0"
+              className="w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               id="rateFlexibility"
               defaultValue={formData?.rateFlexibility}
               {...register('rateFlexibility')}
-              onChange={(e) => handleInputChange('rateFlexibility', e.target.value, "string")}
+              onChange={(e) => handleInputChange('rateFlexibility', e.target.value, 'string')}
             >
               <option value="true">Yes</option>
               <option value="false">No</option>
@@ -428,22 +423,22 @@ const CpDetails = () => {
         <div className="mt-0 flex flex-wrap  justify-between gap-3 md:mt-5">
           {/* Avg Res Time */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="avg_response_time" className="mb-0 w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="avg_response_time" className="mb-0 w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               avg response time
             </label>
             <input
               type="number"
               {...register('avg_response_time')}
               defaultValue={formData?.avg_response_time}
-              className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 bg-gray-200 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               disabled
-              onChange={(e) => handleInputChange('avg_response_time', e.target.value, "string")}
+              onChange={(e) => handleInputChange('avg_response_time', e.target.value, 'string')}
             />
           </div>
 
           {/* average rating */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="average_rating" className="mb-0 w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="average_rating" className="mb-0 w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               {/* className="mt-2 mb-0 font-sans text-[14px] rtl:ml-2 sm:w-1/4 sm:ltr:mr-2" */}
               average rating
             </label>
@@ -451,23 +446,23 @@ const CpDetails = () => {
               type="number"
               {...register('average_rating')}
               defaultValue={formData?.average_rating}
-              className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 bg-gray-200 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               disabled
-              onChange={(e) => handleInputChange('average_rating', e.target.value, "string")}
+              onChange={(e) => handleInputChange('average_rating', e.target.value, 'string')}
             />
           </div>
 
           {/* Travel to distant */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="travel_to_distant_shoots" className=" mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="travel_to_distant_shoots" className=" mb-0 w-full font-sans text-[14px] capitalize text-black  dark:text-slate-400">
               travel to distant shoots
             </label>
             <select
-              className=" mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className=" mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               id="travel_to_distant_shoots"
               defaultValue={formData?.travel_to_distant_shoots}
               {...register('travel_to_distant_shoots')}
-              onChange={(e) => handleInputChange('travel_to_distant_shoots', e.target.value, "string")}
+              onChange={(e) => handleInputChange('travel_to_distant_shoots', e.target.value, 'string')}
             >
               <option value="true">Yes</option>
               <option value="false">No</option>
@@ -475,30 +470,30 @@ const CpDetails = () => {
           </div>
 
           {/* avg response time to new shoot inquiry */}
-          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
+          <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex ">
             {/* <label htmlFor="avg_response_time_to_new_shoot_inquiry" className="mb-0  font-sans text-[14px] capitalize  w-full line-clamp-1">
               avg response time to new shoot inquiry
             </label> */}
-            <label className="mb-0 mr-auto font-sans text-[14px]  capitalize">avg response time to new shoot inquiry</label>
+            <label className="mb-0 mr-auto font-sans text-[14px] capitalize text-black dark:text-slate-400">avg response time to new shoot inquiry</label>
 
             <input
               type="number"
               {...register('avg_response_time_to_new_shoot_inquiry')}
               defaultValue={formData?.avg_response_time_to_new_shoot_inquiry}
               // className='border rounded p-3 bg-gray-200'
-              className="mt-1 w-full rounded border p-3 bg-gray-200 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 bg-gray-200 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               disabled
-              onChange={(e) => handleInputChange('avg_response_time_to_new_shoot_inquiry', e.target.value, "string")}
+              onChange={(e) => handleInputChange('avg_response_time_to_new_shoot_inquiry', e.target.value, 'string')}
             />
           </div>
 
           {/* Experience with Post Production */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="experience_with_post_production_edit" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="experience_with_post_production_edit" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               experience with post production
             </label>
             <select
-              className=" mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className=" mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               id="experience_with_post_production_edit"
               defaultValue={formData?.experience_with_post_production_edit}
               {...register('experience_with_post_production_edit')}
@@ -511,11 +506,11 @@ const CpDetails = () => {
 
           {/* Customer Service Skills Experience */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="customer_service_skills_experience" className="mb-0  w-full font-sans text-[14px]  capitalize ">
+            <label htmlFor="customer_service_skills_experience" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400 ">
               customer service skills experience
             </label>
             <select
-              className=" mt-1  w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className=" mt-1  w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               id="customer_service_skills_experience"
               defaultValue={formData?.customer_service_skills_experience}
               {...register('customer_service_skills_experience')}
@@ -530,11 +525,11 @@ const CpDetails = () => {
         <div className="mt-0 flex flex-wrap  justify-between gap-3 md:mt-5">
           {/* Team Player */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="team_player" className=" mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="team_player" className=" mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               team player
             </label>
             <select
-              className=" mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className=" mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               id="team_player"
               defaultValue={formData?.team_player}
               {...register('team_player')}
@@ -548,27 +543,27 @@ const CpDetails = () => {
 
           {/* Handle co worker conflicts */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="avg_response_time_to_new_shoot_inquiry" className=" mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="avg_response_time_to_new_shoot_inquiry" className=" mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               Handle Co Worker Conflicts
             </label>
             <input
               {...register('handle_co_worker_conflicts')}
               defaultValue={formData?.handle_co_worker_conflicts}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               onChange={(e) => handleInputChange('handle_co_worker_conflicts', e.target.value)}
             />
           </div>
 
           {/* Num Declined Shoots */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="num_declined_shoots" className=" mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="num_declined_shoots" className=" mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400 ">
               declined shoots
             </label>
             <input
               type="number"
               {...register('num_declined_shoots')}
               defaultValue={formData?.num_declined_shoots}
-              className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 bg-gray-200 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               disabled
               onChange={(e) => handleInputChange('num_declined_shoots', e.target.value)}
             />
@@ -576,14 +571,14 @@ const CpDetails = () => {
 
           {/* Num accepted Shoots */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="num_accepted_shoots" className=" mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="num_accepted_shoots" className=" mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               accepted shoots
             </label>
             <input
               type="number"
               {...register('num_accepted_shoots')}
               defaultValue={formData?.num_accepted_shoots}
-              className="mt-1 w-full rounded border bg-gray-200 p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 bg-gray-200 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               disabled
               onChange={(e) => handleInputChange('num_accepted_shoots', e.target.value)}
             />
@@ -591,25 +586,25 @@ const CpDetails = () => {
 
           {/* initiative */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="initiative" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="initiative" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               initiative
             </label>
             <input
               {...register('initiative')}
               defaultValue={formData?.initiative}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               onChange={(e) => handleInputChange('initiative', e.target.value)}
             />
           </div>
 
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="additional_info" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="additional_info" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               additional info
             </label>
             <input
               {...register('additional_info')}
               defaultValue={formData?.additional_info}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               onChange={(e) => handleInputChange('additional_info', e.target.value)}
             />
           </div>
@@ -618,24 +613,24 @@ const CpDetails = () => {
         <div className="mt-0 flex flex-wrap  justify-between gap-3 md:mt-5">
           {/* Timezone */}
           <div className="mb-6 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="timezone" className=" mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="timezone" className=" mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               timezone
             </label>
             <input
               {...register('timezone')}
               defaultValue={formData?.timezone}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               onChange={(e) => handleInputChange('timezone', e.target.value)}
             />
           </div>
 
           {/* own transportation method */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="own_transportation_method" className=" mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="own_transportation_method" className=" mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               own transportation method
             </label>
             <select
-              className=" mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className=" mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               id="own_transportation_method"
               defaultValue={formData?.own_transportation_method}
               {...register('own_transportation_method')}
@@ -648,25 +643,25 @@ const CpDetails = () => {
 
           {/* City */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="city" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="city" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               city
             </label>
             <input
               {...register('city')}
               defaultValue={formData?.city}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               onChange={(e) => handleInputChange('city', e.target.value)}
             />
           </div>
 
           {/* Neighbourhood */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="neighborhood" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="neighborhood" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               neighborhood
             </label>
             <input
               {...register('neighborhood')}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               defaultValue={formData?.neighborhood}
               onChange={(e) => handleInputChange('neighborhood', e.target.value)}
             />
@@ -674,12 +669,12 @@ const CpDetails = () => {
 
           {/* Zip code */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="zip_code" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="zip_code" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               zip code
             </label>
             <input
               {...register('zip_code')}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               defaultValue={formData?.zip_code}
               onChange={(e) => handleInputChange('zip_code', e.target.value)}
             />
@@ -687,12 +682,12 @@ const CpDetails = () => {
 
           {/* in work pressure */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="inWorkPressure" className="mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="inWorkPressure" className="mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               In Work Pressure
             </label>
             <input
               {...register('inWorkPressure')}
-              className="mt-1 w-full rounded border p-3 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 p-3 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               defaultValue={formData?.inWorkPressure}
               onChange={(e) => handleInputChange('inWorkPressure', e.target.value)}
             />
@@ -702,13 +697,13 @@ const CpDetails = () => {
         <div className="mt-0 flex flex-wrap gap-0  md:mt-4 md:gap-10 xl:gap-5 2xl:gap-8">
           {/* DOB || AGE */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="own_transportation_method" className=" mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="own_transportation_method" className=" mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               Date Of Birth
             </label>
             <input
               {...register('date_of_birth')}
               defaultValue={formattedDateTime?.date}
-              className="mt-1 w-full rounded border bg-gray-200 p-3 capitalize focus:border-gray-400 focus:outline-none  md:ms-0"
+              className="mt-1 w-full rounded border border-slate-600 bg-gray-200 p-3 capitalize focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               disabled
               onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
             />
@@ -716,12 +711,12 @@ const CpDetails = () => {
 
           {/* Review Status */}
           <div className="mb-4 w-full flex-col items-center sm:w-[32%] md:mb-0 md:flex">
-            <label htmlFor="review_status" className=" mb-0  w-full font-sans text-[14px]  capitalize">
+            <label htmlFor="review_status" className=" mb-0  w-full font-sans text-[14px] capitalize text-black dark:text-slate-400">
               review status
             </label>
             <input
               {...register('review_status')}
-              className=" mt-1 w-full rounded border bg-gray-200 p-3 capitalize text-gray-600 focus:border-gray-400 focus:outline-none  md:ms-0"
+              className=" mt-1 w-full rounded border border-slate-600 bg-gray-200 p-3 capitalize text-gray-600 focus:border-gray-400 focus:outline-none dark:bg-[#121e32] md:ms-0"
               defaultValue={formData?.review_status}
               disabled
               onChange={(e) => handleInputChange('review_status', e.target.value)}
@@ -732,7 +727,7 @@ const CpDetails = () => {
         <div className="mt-8  w-full justify-between gap-5  md:flex md:w-full">
           {/* Equipment */}
           <div className="mb-8 w-full flex-col sm:w-[32%] md:mb-2 md:flex">
-            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 ">Equipment</label>
+            <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400">Equipment</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
                 {/* Render existing equipment items */}
@@ -740,8 +735,8 @@ const CpDetails = () => {
                   formData?.equipment?.map((equipment_item: any, index: any) => (
                     <div className="mb-2" key={`${equipment_item}_${index}`}>
                       <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark">
-                        <li>
-                          <span className="font-sans capitalize text-white-dark  group-hover:text-dark">{equipment_item}</span>
+                        <li className="text-white-dark group-hover:text-slate-400">
+                          <span className="font-sans capitalize">{equipment_item}</span>
                         </li>
 
                         <li className="list-none">
@@ -774,7 +769,7 @@ const CpDetails = () => {
 
           {/* Equipment Specific */}
           <div className="mb-8 w-full flex-col sm:w-[32%] md:mb-2 md:flex">
-            <label className="font-sans text-[14px] capitalize rtl:ml-2  sm:ltr:mr-2">Equipment Specific</label>
+            <label className="font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:ltr:mr-2">Equipment Specific</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
                 {/* Render existing specific equipment items */}
@@ -782,8 +777,8 @@ const CpDetails = () => {
                   formData?.equipment_specific?.map((equipmentSpecific_item: any, index: any) => (
                     <div className="mb-2" key={`${equipmentSpecific_item}_${index}`}>
                       <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark">
-                        <li>
-                          <span className="font-sans capitalize text-white-dark hover:text-dark group-hover:text-dark">{equipmentSpecific_item}</span>
+                        <li className="text-white-dark group-hover:text-slate-400">
+                          <span className="font-sans capitalize">{equipmentSpecific_item}</span>
                         </li>
                         <li className="list-none">
                           <button type="button" className="text-white-dark group-hover:text-red-400" onClick={() => removeEquipmentItem(equipmentSpecific_item, 'equipment_specific')}>
@@ -814,7 +809,7 @@ const CpDetails = () => {
 
           {/* backup */}
           <div className="mb-8 w-full flex-col sm:w-[32%] md:mb-2 md:flex">
-            <label className="font-sans text-[14px] capitalize rtl:ml-2  sm:ltr:mr-2">Backup Footage</label>
+            <label className="font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:ltr:mr-2">Backup Footage</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
                 {/* Render existing backup footage items */}
@@ -822,8 +817,8 @@ const CpDetails = () => {
                   formData?.backup_footage?.map((backupFootage_item: any, index: any) => (
                     <div className="mb-2" key={`${backupFootage_item}_${index}`}>
                       <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark hover:text-dark">
-                        <li>
-                          <span className="font-sans capitalize text-white-dark group-hover:text-dark">{backupFootage_item}</span>
+                        <li className="text-white-dark group-hover:text-slate-400">
+                          <span className="font-sans capitalize">{backupFootage_item}</span>
                         </li>
                         <li className="list-none">
                           <button type="button" onClick={() => removeEquipmentItem(backupFootage_item, 'backup_footage')} className="text-white-dark group-hover:text-red-400">
@@ -857,7 +852,7 @@ const CpDetails = () => {
 
           {/* VST */}
           <div className="mb-8 w-full flex-col sm:w-[32%] md:mb-2 md:flex">
-            <label className="font-sans text-[14px] capitalize rtl:ml-2 ">VST</label>
+            <label className="font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400">VST</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
                 {/* Render existing VST items */}
@@ -865,8 +860,8 @@ const CpDetails = () => {
                   formData?.vst?.map((vst_item: any, index: any) => (
                     <div className="mb-2" key={`${vst_item}_${index}`}>
                       <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark hover:text-dark">
-                        <li>
-                          <span className="font-sans capitalize text-white-dark group-hover:text-dark">{vst_item}</span>
+                        <li className="text-white-dark group-hover:text-slate-400">
+                          <span className="font-sans capitalize">{vst_item}</span>
                         </li>
                         <li className="list-none">
                           <button type="button" onClick={() => removeEquipmentItem(vst_item, 'vst')} className="text-white-dark group-hover:text-red-400">
@@ -899,7 +894,7 @@ const CpDetails = () => {
         <div className="mt-8  w-full gap-5 md:flex   md:w-full">
           {/* Shoot Availability */}
           <div className="mb-8 w-full flex-col sm:w-[24%] md:mb-2 md:flex">
-            <label className="mb-0 font-sans text-[14px] capitalize rtl:ml-2 ">Shoot Availability</label>
+            <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400">Shoot Availability</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
                 {/* Render existing shoot availability items */}
@@ -907,8 +902,8 @@ const CpDetails = () => {
                   formData?.shoot_availability?.map((shootAvailability_item: any, index: any) => (
                     <div className="mb-2" key={`${shootAvailability_item}_${index}`}>
                       <ul className="group ms-5 flex  w-[86%] list-disc items-center justify-between text-white-dark hover:text-dark">
-                        <li>
-                          <span className="font-sans capitalize text-white-dark group-hover:text-dark ">{shootAvailability_item}</span>
+                        <li className="text-white-dark group-hover:text-slate-400">
+                          <span className="font-sans capitalize">{shootAvailability_item}</span>
                         </li>
                         <li className="list-none">
                           <button type="button" onClick={() => removeEquipmentItem(shootAvailability_item, 'shoot_availability')} className="text-white-dark group-hover:text-red-400">
@@ -939,7 +934,7 @@ const CpDetails = () => {
 
           {/* Portfolio */}
           <div className="mb-8 w-full flex-col sm:w-[24%] md:mb-2 md:flex">
-            <label className="font-sans text-[14px] capitalize rtl:ml-2 ">Portfolio</label>
+            <label className="font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400">Portfolio</label>
             <div className="mt-1 flex-1 md:ml-0 md:mt-0">
               <>
                 {/* Render existing portfolio items */}
@@ -947,8 +942,8 @@ const CpDetails = () => {
                   formData?.portfolio?.map((portfolio_item: any, index: any) => (
                     <div className="mb-2" key={`${portfolio_item}_${index}`}>
                       <ul className="group ms-6 flex  w-[86%] list-disc items-center justify-between text-white-dark hover:text-dark">
-                        <li>
-                          <span className="font-sans capitalize text-white-dark group-hover:text-dark">{portfolio_item}</span>
+                        <li className="text-white-dark group-hover:text-slate-400">
+                          <span className="font-sans capitalize ">{portfolio_item}</span>
                         </li>
                         <li className="list-none">
                           <button type="button" onClick={() => removeEquipmentItem(portfolio_item, 'portfolio')} className="text-white-dark group-hover:text-red-400">
@@ -983,12 +978,15 @@ const CpDetails = () => {
         {/* array fields ends */}
         <div className="flex items-center justify-between">
           {/* <DefaultButton css='font-semibold ml-4'> */}
-          <Link className="flex items-center rounded bg-black px-4 py-1 text-white" href={`/dashboard/all-users`}>
+          <Link
+            className="flex h-9 items-center rounded-md bg-[#000000] px-4 py-1 font-sans capitalize text-white hover:bg-gray-800 dark:bg-[#1b2e4b] dark:text-slate-400 dark:hover:bg-[#2a2e3e] hover:dark:text-slate-50 md:text-[14px]"
+            href={`/dashboard/all-users`}
+          >
             Back
           </Link>
           {/* </DefaultButton> */}
 
-          <DefaultButton css="font-semibold ml-4">{isLoading ? <Loader /> : 'Save'}</DefaultButton>
+          <DefaultButton css="font-semibold h-9 ml-4">{isLoading ? <Loader /> : 'Save'}</DefaultButton>
         </div>
       </form>
     </div>

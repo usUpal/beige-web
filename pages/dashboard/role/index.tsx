@@ -67,7 +67,7 @@ const Role = () => {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
-          <h5 className="text-xl font-bold dark:text-white-light">Role Management</h5>
+          <h5 className="text-xl font-bold dark:text-slate-400">Role Management</h5>
           <Link href={'/dashboard/role/add-role'}>
             <DefaultButton>Add New Role & Permission</DefaultButton>
           </Link>
@@ -96,10 +96,8 @@ const Role = () => {
                   {allRoles && allRoles.length > 0 ? (
                     allRoles?.map((role: any, index: number) => (
                       <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                        <td className="min-w-[150px] text-black dark:text-white">
-                          <div className="">
-                            <h4>{role?.name}</h4>
-                          </div>
+                        <td className="min-w-[150px] text-black dark:text-slate-300 group-hover:dark:text-dark-light">
+                          <h4>{role?.name}</h4>
                         </td>
                         <td>{role?.role}</td>
                         <td className="flex w-[60%] flex-wrap gap-2">
@@ -112,7 +110,9 @@ const Role = () => {
                                 role?.permissions?.map((permission: string, index: number) => (
                                   <div className="" key={index}>
                                     <div className="">
-                                      <span className="badge bg-secondary capitalize shadow-md dark:group-hover:bg-transparent">{permission}</span>
+                                      <span className="badge bg-secondary capitalize text-white shadow-md dark:bg-slate-700 dark:text-slate-300 dark:group-hover:bg-slate-800 dark:group-hover:text-dark-light ">
+                                        {permission}
+                                      </span>
                                     </div>
                                   </div>
                                 ))}

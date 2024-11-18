@@ -126,7 +126,7 @@ const CreateUser = () => {
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="mb-5 rounded-md bg-white p-4 dark:border-[#191e3a] dark:bg-black">
             <div className="flex flex-col sm:flex-row">
-              <div className="grid flex-1 grid-cols-1 gap-5 sm:grid-cols-2">
+              <div className="grid flex-1 grid-cols-1 gap-5 text-black dark:text-white-dark sm:grid-cols-2">
                 <div>
                   <label htmlFor="name">Full Name</label>
                   <input id="name" placeholder="Full Name" {...register('name', { required: true })} className="form-input" />
@@ -198,7 +198,7 @@ const CreateUser = () => {
             </div>
 
             <div className="mt-3 sm:col-span-2">
-              <DefaultButton css="font-semibold">Create User</DefaultButton>
+              <DefaultButton css="font-semibold h-9">Create User</DefaultButton>
             </div>
           </form>
         </div>

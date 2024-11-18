@@ -364,38 +364,38 @@ const ShootDetails = () => {
             <div className="md:mb-4 md:flex md:items-center md:justify-between">
               {/* Shoot Name */}
               <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex">
-                <label htmlFor="reference" className="mb-0 mt-2 font-sans text-[14px] text-black rtl:ml-2 dark:text-white sm:w-1/4 sm:ltr:mr-2">
+                <label htmlFor="reference" className="mb-0 mt-2 font-sans text-[14px] text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 sm:ltr:mr-2">
                   Shoot Name
                 </label>
-                <span className="font-sans capitalize text-black dark:text-white">{shootDetailsData?.order_name ?? ''}</span>
+                <span className="font-sans capitalize text-black dark:text-white-dark">{shootDetailsData?.order_name ?? ''}</span>
               </div>
 
               {/* Content Vertical */}
               <div className="mb-6 basis-[45%] items-center md:mb-0 md:flex ">
-                <label htmlFor="total_earnings" className=" mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-white  sm:w-1/4 sm:ltr:mr-2">
+                <label htmlFor="total_earnings" className=" mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400  sm:w-1/4 sm:ltr:mr-2">
                   Content Vertical
                 </label>
-                <span className="font-sans capitalize text-black dark:text-white">{shootDetailsData?.content_vertical ?? ''}</span>
+                <span className="font-sans capitalize text-black dark:text-white-dark">{shootDetailsData?.content_vertical ?? ''}</span>
               </div>
             </div>
 
             <div className="items-center justify-between md:mb-4 md:flex">
               {/* Budget */}
               <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-                <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4 md:whitespace-nowrap">Budget</label>
+                <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 md:whitespace-nowrap">Budget</label>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
                   <>
                     <div className="mb-2">
-                      <ul className="group ms-6 w-48 list-disc flex-row items-center text-black dark:text-white">
+                      <ul className="group ms-6 w-48 list-disc flex-row items-center text-black dark:text-slate-400">
                         {shootDetailsData?.budget?.min && (
                           <li className="">
-                            <span className="font-sans capitalize text-black dark:text-white">Min : ${shootDetailsData?.budget?.min ?? ''}</span>
+                            <span className="font-sans capitalize text-black dark:text-white-dark">Min : ${shootDetailsData?.budget?.min ?? ''}</span>
                           </li>
                         )}
 
                         {shootDetailsData?.budget?.max && (
                           <li>
-                            <span className="font-sans capitalize text-black dark:text-white">Max : ${shootDetailsData?.budget?.max ?? ''}</span>
+                            <span className="font-sans capitalize text-black dark:text-white-dark">Max : ${shootDetailsData?.budget?.max ?? ''}</span>
                           </li>
                         )}
                       </ul>
@@ -405,9 +405,9 @@ const ShootDetails = () => {
               </div>
               {/* Location */}
               <div className="mb-4 basis-[45%] md:mb-2 md:flex">
-                <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4">Location</label>
+                <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4">Location</label>
                 <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0">
-                  <span className="font-sans capitalize text-black dark:text-white">{shootDetailsData?.location ?? ''}</span>
+                  <span className="font-sans capitalize text-black dark:text-white-dark">{shootDetailsData?.location ?? ''}</span>
                 </div>
               </div>
             </div>
@@ -415,7 +415,7 @@ const ShootDetails = () => {
             <div className="items-center justify-between md:mb-4 md:flex">
               <div className="mb-4 basis-[45%] flex-row space-y-5">
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4 md:mb-0">Shoot Date & Time</label>
+                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 md:mb-0">Shoot Date & Time</label>
 
                   {shootDetailsData?.shoot_datetimes.length > 0 && (
                     <div className="flex-row">
@@ -424,12 +424,12 @@ const ShootDetails = () => {
                         const { date: endDate, time: endTime } = formatDateAndTime(dateTime.end_date_time) || { date: '', time: '' };
 
                         return (
-                          <div key={key} className="space-x-4">
-                            <span className="font-sans text-black dark:text-white">
+                          <div key={key} className="font-sans font-semibold capitalize space-x-4 text-black dark:text-white-dark ms-5">
+                            <span className="">
                               {startDate} at {startTime}
                             </span>
-                            <span className="font-sans font-semibold capitalize text-black dark:text-white">to</span>
-                            <span className="font-sans text-black dark:text-white">
+                            <span>to</span>
+                            <span>
                               {endDate} at {endTime}
                             </span>
                           </div>
@@ -440,16 +440,16 @@ const ShootDetails = () => {
                 </div>
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4 md:mb-0">Shoot Duration</label>
+                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 md:mb-0">Shoot Duration</label>
 
                   <div className=" mt-1 flex-1 md:ml-0 md:mt-0">
-                    <span className="ml-0 font-sans capitalize text-black dark:text-white md:ml-0">{shootDetailsData?.shoot_duration ?? ''} Hours</span>
+                    <span className="ml-0 font-sans capitalize text-black dark:text-white-dark md:ml-0">{shootDetailsData?.shoot_duration ?? ''} Hours</span>
                   </div>
                 </div>
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4 md:mb-0">Shoot Cost</label>
-                  {shootDetailsData?.payment?.payment_status && <div className="ml-12 mt-1 flex-1 text-black dark:text-white md:ml-3 md:mt-0">${shootDetailsData?.shoot_cost ?? ''}</div>}
+                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 md:mb-0">Shoot Cost</label>
+                  {shootDetailsData?.payment?.payment_status && <div className="ml-12 mt-1 flex-1 text-black dark:text-white-dark md:ml-3 md:mt-0">${shootDetailsData?.shoot_cost ?? ''}</div>}
                 </div>
               </div>
               <div className="mb-4 basis-[45%]">
@@ -469,7 +469,7 @@ const ShootDetails = () => {
                       </div>
                     </GoogleMapReact>
                   ) : (
-                    <p className="text-black dark:text-white">Loading map...</p>
+                    <p className="text-black dark:text-white-dark">Loading map...</p>
                   )}
                 </div>
               </div>
@@ -478,7 +478,7 @@ const ShootDetails = () => {
             <div className="items-center justify-between md:mb-4 md:flex">
               <div className="mb-4 basis-[45%] flex-row space-y-5">
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4 md:mb-0">Payment Status</label>
+                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 md:mb-0">Payment Status</label>
                   {shootDetailsData?.payment?.payment_status && (
                     <div className="ml-12 mt-1 flex-1 md:ml-3 md:mt-0">
                       <StatusBg>{shootDetailsData?.payment?.payment_status}</StatusBg>
@@ -487,7 +487,7 @@ const ShootDetails = () => {
                 </div>
 
                 <div className="mb-4 space-x-3 md:mb-2 md:flex">
-                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4 md:mb-0">Current Shoot Status</label>
+                  <label className="mb-3 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 md:mb-0">Current Shoot Status</label>
                   {shootDetailsData?.order_status && (
                     <div className="ml-10 mt-1 flex-1 md:ml-0 md:mt-0 ">
                       <StatusBg>{shootDetailsData?.order_status}</StatusBg>
@@ -496,9 +496,9 @@ const ShootDetails = () => {
                 </div>
 
                 <div className="mb-4 md:mb-2 md:flex">
-                  <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4">Description</label>
+                  <label className="mb-0 font-sans text-[14px] capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4">Description</label>
                   <div className="ml-5 mt-1 flex-1 md:ml-4 md:mt-0">
-                    <span className="font-sans capitalize text-black dark:text-white">{shootDetailsData?.description ?? ''}</span>
+                    <span className="font-sans capitalize text-black dark:text-white-dark">{shootDetailsData?.description ?? ''}</span>
                   </div>
                 </div>
               </div>
@@ -506,16 +506,16 @@ const ShootDetails = () => {
               {/* Select Addons */}
               <div className="mb-4 basis-[45%]">
                 <div className="mb-1 flex w-full items-center gap-2">
-                  <label className="mb-0 font-sans text-[14px] capitalize text-black dark:text-white">AddOns List</label>
+                  <label className="mb-0 font-sans text-[14px] capitalize text-black dark:text-slate-400">AddOns List</label>
                   {userData?.role === 'admin' && (
                     <div className="flex gap-3">
                       <button
                         onClick={() => {
                           setAddonsModal(!addonsModal), setSelectedFilteredAddons(shootDetailsData?.addOns);
                         }}
-                        className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white dark:bg-white dark:text-black dark:hover:bg-gray-200"
+                        className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white dark:bg-slate-400 dark:text-black dark:hover:bg-slate-300"
                       >
-                        {allSvgs.addMorePlusIconSm}
+                        <span className="">{allSvgs.addMorePlusIconSm}</span>
                         <span>Add More</span>
                       </button>
                     </div>
@@ -524,7 +524,7 @@ const ShootDetails = () => {
                 <div className="ml-0 mt-1 w-full md:ml-10 md:mt-0 2xl:flex-1">
                   {shootDetailsData?.addOns?.length > 0 && (
                     <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded">
-                      <ul className="pl-0 md:pl-5">
+                      <ul className="mt-3 pl-0 md:pl-5">
                         {shootDetailsData?.addOns?.map((addon: addonTypes, key: number) => (
                           <li key={key} className="flex h-12 list-none items-center justify-start gap-4 md:h-8">
                             <div className="h-2 w-2 rounded-full bg-black"></div>
@@ -556,11 +556,12 @@ const ShootDetails = () => {
                 {(userData?.role === 'user' || 'admin') && (
                   <div className="flex space-x-3 2xl:space-x-[50px]">
                     <button
-                      className="rounded-lg bg-black p-2 font-sans text-[14px] font-semibold text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"
+                      className="dark rounded bg-[#000000] p-2 font-sans text-[14px] font-semibold text-dark-light hover:bg-gray-800 dark:bg-[#1a2941] dark:text-slate-300 dark:hover:bg-[#2a2e3e] hover:dark:text-slate-50"
                       onClick={() => setMeetingBox(!meetingBox)}
                     >
                       Schedule Meeting
                     </button>
+                    {/* <DefaultButton css='font-semibold' onClick={() => setMeetingBox(!meetingBox)}>Schedule Meeting</DefaultButton> */}
 
                     {meetingBox && (
                       <div className="flex space-x-2">
@@ -568,14 +569,14 @@ const ShootDetails = () => {
                           type="text"
                           id="meeting_time_shoot_details"
                           ref={meetingDateTimeRef}
-                          className="flex cursor-pointer items-center justify-center rounded-lg border border-black bg-slate-100 px-1 text-gray-700 placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 dark:focus:ring-indigo-500 lg:w-[240px]"
+                          className="- flex cursor-pointer items-center justify-center rounded border border-black bg-slate-100 px-1 text-gray-700  focus:outline-none focus:ring-2 dark:border-gray-600 dark:bg-[#121e32] dark:text-slate-400 dark:placeholder-slate-400 lg:w-[240px]"
                           placeholder="Meeting time"
                           required={formattedMeetingTime}
                         />
                         <button
                           disabled={isNewMeetingLoading || isNewMeetLinkLoading}
                           onClick={submitNewMeting}
-                          className="- flex items-center justify-center rounded-lg border border-black  bg-slate-100 px-1 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white  dark:placeholder-gray-500  dark:focus:ring-indigo-500"
+                          className="flex items-center justify-center rounded border border-black bg-slate-100 px-1 text-gray-700 focus:outline-none focus:ring-2 dark:border-gray-600 dark:bg-[#1a2941] dark:text-slate-400  dark:placeholder-gray-500 "
                         >
                           {isNewMeetingLoading || isNewMeetLinkLoading ? <Loader /> : correctionTikIcon('w-5 h-5')}
                         </button>
@@ -595,7 +596,7 @@ const ShootDetails = () => {
                           name=""
                           id=""
                           onChange={(event) => setStatus(event?.target?.value)}
-                          className="bg- - rounded-sm border border-black bg-slate-100 px-2 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 dark:focus:ring-indigo-500 lg:w-[240px]"
+                          className="bg- - rounded-sm border border-black bg-slate-100 px-2 text-gray-700 placeholder-gray-400  focus:ring-2 dark:border-gray-600 dark:bg-[#1a2941] dark:text-slate-400 dark:placeholder-gray-500 lg:w-[240px]"
                         >
                           {allStatus?.map((item, key) => (
                             <option selected={item?.key === status ? true : false} key={key} value={item?.key}>
@@ -607,7 +608,7 @@ const ShootDetails = () => {
                         <button
                           disabled={isStatusLoading === true ? true : false}
                           onClick={handelUpdateStatus}
-                          className="- flex items-center justify-center rounded-lg border border-black  bg-slate-100 px-1 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white  dark:placeholder-gray-500  dark:focus:ring-indigo-500"
+                          className="flex h-8 items-center justify-center rounded border border-black bg-slate-100 px-1 text-gray-700 focus:outline-none focus:ring-2 dark:border-gray-600 dark:bg-[#1a2941]  dark:text-slate-400 dark:placeholder-gray-500"
                         >
                           {isStatusLoading === true ? <Loader /> : correctionTikIcon('w-5 h-5')}
                         </button>
@@ -620,12 +621,12 @@ const ShootDetails = () => {
               {/* Assigned Cp's */}
               <div className="mb-4 basis-[45%]">
                 <div className="mb-3 flex w-full items-center gap-2">
-                  <label className="mb-0 font-sans text-[14px] capitalize text-black dark:text-white">Assign CP's</label>
+                  <label className="mb-0 font-sans text-[14px] capitalize text-black dark:text-slate-400">Assign CP's</label>
                   {userData?.role === 'admin' && (
                     <div className="flex gap-3">
                       <button
                         onClick={() => setCpModal(!cpModal)}
-                        className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white dark:bg-white dark:text-black dark:hover:bg-gray-200"
+                        className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white dark:bg-slate-400 dark:text-black dark:hover:bg-slate-300"
                       >
                         {allSvgs.addMorePlusIconSm}
                         <span>Add More</span>
@@ -638,15 +639,15 @@ const ShootDetails = () => {
                     <div className="scrollbar max-h-[250px] overflow-y-auto overflow-x-hidden rounded border border-slate-100">
                       <table className="w-full table-auto">
                         <thead>
-                          <tr className="bg-gray-100 dark:bg-gray-800">
+                          <tr className="bg-gray-100 text-black dark:bg-gray-800 ">
                             <th className="border-b px-4 py-2">
-                              <div className="flex justify-center text-black dark:text-white">Name</div>
+                              <div className="flex justify-center text-black dark:text-slate-400">Name</div>
                             </th>
                             <th className="border-b px-4 py-2">
-                              <div className="flex justify-center text-black dark:text-white">Decision</div>
+                              <div className="flex justify-center text-black dark:text-slate-400">Decision</div>
                             </th>
                             <th className="border-b px-4 py-2">
-                              <div className="flex justify-center text-black dark:text-white">Action</div>
+                              <div className="flex justify-center text-black dark:text-slate-400">Action</div>
                             </th>
                           </tr>
                         </thead>
@@ -659,11 +660,11 @@ const ShootDetails = () => {
                                   <div className="relative m-1 mr-2 flex h-4 w-4 items-center justify-center rounded-full text-xl text-white">
                                     <Image src="/assets/images/favicon.png" alt="Favicon" className="h-full w-full rounded-full" width={64} height={64} />
                                   </div>
-                                  <div className="text-black dark:text-white">{cp?.id?.name ?? ''}</div>
+                                  <div className="text-black dark:text-slate-400">{cp?.id?.name ?? ''}</div>
                                 </div>
                               </td>
                               <td className="border-b px-4 py-2">
-                                <div className="flex justify-center">
+                                <div className="flex justify-center dark:text-slate-400">
                                   <StatusBg>{cp?.decision ?? ''}</StatusBg>
                                 </div>
                               </td>
@@ -672,7 +673,7 @@ const ShootDetails = () => {
                                   {userData?.role === 'admin' ? (
                                     <Tippy content="Cancel">
                                       <button onClick={() => cancelCp(cp)} className={`rounded p-1 text-white`}>
-                                        <span className="badge bg-danger">Remove</span>
+                                        <span className="badge bg-danger dark:text-dark-light">Remove</span>
                                       </button>
                                     </Tippy>
                                   ) : (
@@ -696,7 +697,7 @@ const ShootDetails = () => {
           </div>
           <div>
             <div className="mx-auto">
-              <ul className="mx-auto grid grid-cols-1 gap-10 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+              <ul className="mx-auto grid grid-cols-1 gap-10 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 text-black dark:text-white-dark">
                 {orderStatusArray.map((status, index) => (
                   <li key={status} className="flex-start group relative flex lg:flex-col">
                     {index < currentIndex && (
@@ -733,9 +734,9 @@ const ShootDetails = () => {
                     )}
 
                     <div className="ml-6 lg:ml-0 lg:mt-10">
-                      <h3 className="b break-all text-xl font-bold before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500 - text-gray-700 dark:text-gray-300"> {status}</h3>
+                      <h3 className="b - break-all text-xl font-bold text-gray-700 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500 dark:text-slate-400"> {status}</h3>
 
-                      <h4 className="mt-2 text-base text-gray-700 dark:text-gray-300">{shootStatusMessage(status)}</h4>
+                      <h4 className="mt-2 text-base text-gray-700 dark:text-white-dark">{shootStatusMessage(status)}</h4>
                     </div>
                   </li>
                 ))}
@@ -782,8 +783,8 @@ const ShootDetails = () => {
                       )}
 
                       <div className="ml-6 lg:ml-0 lg:mt-10">
-                        <h3 className="text-xl font-bold  before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500 - text-gray-700 dark:text-gray-300">{status}</h3>
-                        <h4 className="mt-2 text-base text-gray-700 dark:text-gray-300">{shootStatusMessage(status)}</h4>
+                        <h3 className="- text-xl  font-bold text-gray-700 before:mb-2 before:block before:font-mono before:text-sm before:text-gray-500 dark:text-slate-400">{status}</h3>
+                        <h4 className="mt-2 text-base text-gray-700 dark:text-white-dark">{shootStatusMessage(status)}</h4>
                       </div>
                     </li>
                   </div>
@@ -845,21 +846,21 @@ const ShootDetails = () => {
               <div className="flex min-h-screen items-start justify-center md:px-4 ">
                 <Dialog.Panel as="div" className="panel my-24 w-7/12 space-x-0 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:space-x-6">
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
-                    <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Add Addons </div>
-                    <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
+                    <div className="ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000] dark:text-slate-300">Add Addons </div>
+                    <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark-light" onClick={() => setAddonsModal(false)}>
                       {allSvgs.closeIconSvg}
                     </button>
                   </div>
                   <div className="basis-[45%]  py-2 md:pe-5">
                     <>
                       <div className="panel mb-8 basis-[49%] rounded-[10px] px-7 py-5">
-                        <label className="ml-2 mr-2 sm:ml-0 sm:w-1/4">Select Addons</label>
+                        <label className="ml-2 mr-2 dark:text-slate-400 sm:ml-0 sm:w-1/4">Select Addons</label>
                         <div className="flex w-full flex-col sm:flex-row">
                           <div className="flex-1">
                             <div className="table-responsive ">
                               <table className="w-full">
                                 <thead>
-                                  <tr className="bg-gray-200 dark:bg-gray-800">
+                                  <tr className="bg-gray-200 ">
                                     <th className="min-w-[20px] px-1 py-2 font-mono">Select</th>
                                     <th className="min-w-[120px] px-1 py-2 font-mono">Title</th>
                                     <th className="min-w-[20px] py-2 font-mono">Extend Rate Type</th>
@@ -872,11 +873,11 @@ const ShootDetails = () => {
                                     const isSelected = selectedFilteredAddons?.some((detailAddon: addonTypes) => detailAddon._id === addon._id);
 
                                     return (
-                                      <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                      <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-slate-900 dark:hover:bg-slate-800">
                                         <td className="min-w-[20px] px-4 py-2">
                                           <input
                                             type="checkbox"
-                                            className="form-checkbox"
+                                            className="form-checkbox border border-slate-700 dark:bg-[#121e32]"
                                             id={`addon_${index}`}
                                             checked={isSelected}
                                             onChange={() => handleCheckboxChange(addon)}
@@ -890,7 +891,7 @@ const ShootDetails = () => {
                                             <input
                                               name="hour"
                                               type="number"
-                                              className="ms-12 h-9 w-12 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 md:w-16"
+                                              className="ms-12 h-9 w-12 rounded border border-slate-700 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none dark:bg-[#121e32] md:ms-0 md:w-16"
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
@@ -908,7 +909,7 @@ const ShootDetails = () => {
                                   <tr>
                                     <td colSpan={6} className="w-full border-t border-gray-500"></td>
                                   </tr>
-                                  <tr className="mt-[-10px] w-full border border-gray-600 bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                  <tr className="mt-[-10px] w-full border border-gray-600 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-600">
                                     <td className="min-w-[20px] px-4 py-2"></td>
                                     <td className="min-w-[120px] px-4 py-2">
                                       <h2 className="text-[16px] font-semibold">Total Addons Cost</h2>
@@ -923,7 +924,7 @@ const ShootDetails = () => {
                           </div>
                         </div>
                         <div className="flex justify-end">
-                          <DefaultButton onClick={handleAddAddon} disabled={false} css="mt-5">
+                          <DefaultButton onClick={handleAddAddon} disabled={false} css="mt-5 h-9">
                             Add Addons
                           </DefaultButton>
                         </div>
@@ -945,8 +946,8 @@ const ShootDetails = () => {
               <div className="flex min-h-screen items-start justify-center md:px-4 ">
                 <Dialog.Panel as="div" className="panel my-24 w-5/6 space-x-0 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:space-x-6">
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
-                    <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Assign CP's </div>
-                    <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setCpModal(false)}>
+                    <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000] dark:text-slate-400">Assign CP's </div>
+                    <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark-light" onClick={() => setCpModal(false)}>
                       {allSvgs.closeIconSvg}
                     </button>
                   </div>
@@ -956,7 +957,7 @@ const ShootDetails = () => {
                         onChange={(event) => setQuery(event.target.value)}
                         type="search"
                         value={query}
-                        className=" w-full rounded-lg border border-solid border-[#ACA686] px-3 py-2 lg:w-[20%]"
+                        className=" w-full rounded-lg border border-solid border-slate-700 bg-[#121e32] px-3 py-2 lg:w-[20%]"
                         placeholder="Search"
                       />
                     </div>
@@ -979,10 +980,10 @@ const ShootDetails = () => {
                                 </div>
 
                                 <div className="content col-span-2 ms-2 min-h-[115px]">
-                                  <h4 className="font-sans text-[16px] capitalize leading-none text-black">{cp?.userId?.name}</h4>
+                                  <h4 className="font-sans text-[16px] capitalize leading-none text-black dark:text-slate-400">{cp?.userId?.name}</h4>
                                   <span className="profession text-[12px] capitalize leading-none text-[#838383]">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
                                   <div className="location mt-2 flex items-center justify-start">
-                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f]">{cp?.city}</span>
+                                    <span className="text-[16px] capitalize leading-none text-[#1f1f1f] dark:text-white-dark">{cp?.city}</span>
                                   </div>
                                   <div className="ratings mt-2">
                                     {[...Array(5)].map((_, index) => (
@@ -994,8 +995,8 @@ const ShootDetails = () => {
                               <div className="mt-3 flex">
                                 <p
                                   onClick={() => handleSelectProducer(cp)}
-                                  className={`single-match-btn inline-block cursor-pointer rounded-lg ${
-                                    isSelected ? 'bg-red-500' : 'bg-black'
+                                  className={`single-match-btn inline-block cursor-pointer rounded-lg border border-slate-700  ${
+                                    isSelected ? 'dark bg-red-500 text-dark-light' : 'bg-black dark:text-slate-300'
                                   } w-full py-2.5 text-center font-sans text-sm capitalize leading-none text-white`}
                                 >
                                   {isSelected ? 'Remove' : 'Select'}
@@ -1007,14 +1008,14 @@ const ShootDetails = () => {
                       ) : (
                         <>
                           <div className="flex items-center justify-center">
-                            <h3 className="text-center font-semibold">No Data Found</h3>
+                            <h3 className="text-center font-semibold text-red-600">No Data Found</h3>
                           </div>
                         </>
                       )}
                     </div>
 
                     <div className="flex justify-end">
-                      <DefaultButton onClick={updateCps} disabled={false} css="my-5">
+                      <DefaultButton onClick={updateCps} disabled={false} css="my-5 h-9">
                         Submit
                       </DefaultButton>
                     </div>

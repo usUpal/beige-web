@@ -58,7 +58,7 @@ const PlacesAutocomplete: React.FC<{
           handleAddressChange && handleAddressChange(e.target.value);
         }}
         placeholder="Location"
-        className="form-input w-full rounded-md border border-gray-300 bg-slate-100 px-3 py-2   text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 dark:focus:ring-indigo-500"
+        className="form-input w-full rounded-md border border-gray-300 bg-slate-100 px-3 py-2   text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white-dark dark:placeholder-gray-500 dark:focus:ring-indigo-500"
       />
       {status === 'OK' && <ul className="absolute z-50 w-full rounded-lg bg-white p-5 shadow-md dark:bg-gray-800 dark:text-white">{renderSuggestions()}</ul>}
     </div>

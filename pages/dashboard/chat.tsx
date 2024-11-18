@@ -23,7 +23,6 @@ import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
 
-
 const Chat = () => {
   const { userData, authPermissions } = useAuth() as any;
   const isHavePermission = authPermissions?.includes('chat_page');
@@ -298,11 +297,11 @@ const Chat = () => {
         <div className="mt-1 xl:h-[83%] 2xl:h-[87%]">
           {isAllDataFetchLoading && (
             <>
-              <div className="min-w-screen mt-24 flex min-h-screen items-start justify-center bg-white p-5">
+              <div className="min-w-screen mt-24 flex min-h-screen items-start justify-center bg-white p-5 dark:bg-[#0e1726]">
                 <div className="flex animate-pulse space-x-2">
-                  <div className="h-3 w-3 rounded-full bg-gray-500"></div>
-                  <div className="h-3 w-3 rounded-full bg-gray-500"></div>
-                  <div className="h-3 w-3 rounded-full bg-gray-500"></div>
+                  <div className="h-3 w-3 rounded-full bg-gray-500 dark:bg-slate-300"></div>
+                  <div className="h-3 w-3 rounded-full bg-gray-500 dark:bg-slate-300"></div>
+                  <div className="h-3 w-3 rounded-full bg-gray-500 dark:bg-slate-300"></div>
                 </div>
               </div>
             </>
@@ -355,7 +354,7 @@ const Chat = () => {
                 onPageChange={handlePageChange}
                 maxWidth={260}
                 className="my-pagination mx-auto flex w-48 justify-start lg:justify-center"
-                pageLinkClassName={`w-5 border-solid bg-gray-300 px-2 py-0.5 mr-1 rounded `}
+                pageLinkClassName={`w-5 border-solid bg-gray-300 px-2 py-0.5 mr-1 rounded`}
                 // activeItemClassName="bg-black"
               />
             </div>
@@ -365,7 +364,7 @@ const Chat = () => {
       <div className={`absolute  z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
       <div className={`panel flex-1 p-0 ${threeDotSidebar && 'hidden xl:block'}`}>
         {!isShowUserChat && (
-          <div className={`relative flex h-full items-center justify-center p-4 `}>
+          <div className={`relative flex h-full items-center justify-center p-4`}>
             <button type="button" onClick={() => setIsShowChatMenu(!isShowChatMenu)} className="absolute top-4 hover:text-primary ltr:left-4 rtl:right-4 xl:hidden">
               {allSvgs.sidebarMenuIcon}
             </button>
@@ -729,9 +728,12 @@ const Chat = () => {
           <div className="relative h-full">
             <div className="mt-1 flex w-full justify-between gap-3 sm:gap-5">
               <div className="my-4 ms-4 text-[20px] font-semibold">
-                <h2>Details</h2>
+                <h2 className="text-black dark:text-white-dark">Details</h2>
               </div>
-              <button className="my-4 me-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
+              <button
+                className="my-4 me-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b] hover:dark:text-dark-light"
+                onClick={toggleThreeDotSidebar}
+              >
                 <div className="">{allSvgs.closeIconSvg}</div>
               </button>
             </div>
@@ -770,7 +772,7 @@ const Chat = () => {
                           <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                             <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
                             <div className="flex flex-col justify-start space-y-0">
-                              <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
+                              <span className="text-black dark:text-white-dark">{selectedChatRoom?.client_id?.name}</span>
                               <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
                             </div>
                           </li>
@@ -788,7 +790,7 @@ const Chat = () => {
                             <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                               <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
                               <div className="flex flex-col space-y-0">
-                                <span className="text-black dark:text-white">{item?.id?.name}</span>
+                                <span className="text-black dark:text-white-dark">{item?.id?.name}</span>
                                 <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
                                   {item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
                                 </span>
@@ -874,8 +876,8 @@ const Chat = () => {
                         <ul className="space-y-2">
                           <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                             <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
-                            <div className="flex flex-col justify-start space-y-0">
-                              <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
+                            <div className="group flex flex-col justify-start space-y-0">
+                              <span className="text-black group-hover:text-dark-light dark:text-white-dark">{selectedChatRoom?.client_id?.name}</span>
                               <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
                             </div>
                           </li>
@@ -891,8 +893,8 @@ const Chat = () => {
                           ].map((item, index) => (
                             <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                               <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
-                              <div className="flex flex-col space-y-0">
-                                <span className="text-black dark:text-white">{item?.id?.name}</span>
+                              <div className="group flex flex-col space-y-0">
+                                <span className="text-black group-hover:text-dark-light dark:text-white-dark ">{item?.id?.name}</span>
                                 <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
                                   {item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
                                 </span>

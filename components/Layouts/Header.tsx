@@ -60,6 +60,8 @@ const Header = () => {
   const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+  // console.log(themeConfig);
+
   const setLocale = (flag: string) => {
     setFlag(flag);
     if (flag.toLowerCase() === 'ae') {
@@ -183,12 +185,15 @@ const Header = () => {
 
             <>
               <div className="theme-toggle flex items-center space-x-2">
-                <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('light'))}>
-                  <span className="text-sm">🌞</span> {/* Light Icon */}
-                </button>
-                <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('dark'))}>
-                  <span className="text-sm">🌙</span> {/* Dark Icon */}
-                </button>
+                {themeConfig.isDarkMode ? (
+                  <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('light'))}>
+                    <span className="text-sm">🌞</span> {/* Light Icon */}
+                  </button>
+                ) : (
+                  <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('dark'))}>
+                    <span className="text-sm">🌙</span> {/* Dark Icon */}
+                  </button>
+                )}
               </div>
             </>
             {/* <div className="dropdown shrink-0">
@@ -327,11 +332,11 @@ const Header = () => {
                         {userProfileImage}
                         {/* <span className='w-9 h-9 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white'>{userData?.name[0] ?? 'NA'}</span> */}
                       </Link>
-                      <div className="truncate ltr:pl-4 rtl:pr-4">
-                        <Link href="/dashboard/profile" className="text-black">
+                      <div className="group truncate ltr:pl-4 rtl:pr-4">
+                        <Link href="/dashboard/profile" className="text-black dark:text-slate-300 group-hover:dark:text-dark-light">
                           <h4 className="text-base">{userData && userData?.name}</h4>
                         </Link>
-                        <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
+                        <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 group-hover:dark:text-dark-light">
                           {userData && userData?.email}
                         </button>
                       </div>

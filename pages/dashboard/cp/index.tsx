@@ -61,7 +61,7 @@ const CpUsers = () => {
         <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">
-              <h5 className="text-lg font-semibold dark:text-white-light">Content Provider</h5>
+              <h5 className="text-lg font-semibold dark:text-slate-400">Content Provider</h5>
             </div>
             <div className="mb-1">
               <div className="inline-block w-full">
@@ -88,7 +88,7 @@ const CpUsers = () => {
                         ) : (
                           allCpUsers?.results?.map((cpUser: any) => (
                             <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                              <td className="min-w-[150px] font-sans text-black dark:text-white">
+                              <td className="min-w-[150px] font-sans text-black dark:text-slate-300 group-hover:dark:text-dark-light">
                                 <div className="flex items-center break-all ">{cpUser?.id}</div>
                               </td>
                               <td> {truncateLongText(cpUser?.name, 30)}</td>
