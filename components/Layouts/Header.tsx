@@ -187,11 +187,11 @@ const Header = () => {
               <div className="theme-toggle flex items-center space-x-2">
                 {themeConfig.isDarkMode ? (
                   <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('light'))}>
-                    <span className="text-sm">🌞</span> {/* Light Icon */}
+                    {allSvgs.darkModeIcon}
                   </button>
                 ) : (
                   <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('dark'))}>
-                    <span className="text-sm">🌙</span> {/* Dark Icon */}
+                    {allSvgs.lightModeIcon}
                   </button>
                 )}
               </div>

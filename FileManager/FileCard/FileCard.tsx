@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { allSvgs, pencilIconDropdown, trash_downloadIcon, trashDownloadIcon } from '@/utils/allsvgs/allSvgs';
 import { useSelector } from 'react-redux';
 import { IRootState } from '@/store';
 
@@ -119,7 +119,7 @@ const FileCard = ({
                   onClick={() => onDownload(isPublic)}
                 >
                   <span className="">{allSvgs.cloudIcon_Dropdown}</span>
-                  <span className="ms-3 border-none bg-slate-700 text-gray-600"> Download</span>
+                  <span className="ms-3 border-none"> Download</span>
                 </a>
 
                 <a
@@ -131,29 +131,31 @@ const FileCard = ({
                   }}
                 >
                   <span className="">{allSvgs.lockIcon_Dropdown}</span>
-                  <span className="ms-3 border-none text-gray-600"> {isPublic ? 'Make private' : 'Make public'}</span>
+                  <span className="ms-3 border-none"> {isPublic ? 'Make private' : 'Make public'}</span>
                 </a>
 
                 {!isFolder && (
                   <a
                     href="#"
-                    className="flex items-center justify-start rounded-lg border-none px-4 py-2 text-sm capitalize text-gray-700 hover:bg-gray-200 hover:text-gray-800 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                    className="flex items-center justify-start rounded-lg border-none px-4 py-2 text-sm capitalize text-gray-700 hover:bg-gray-200 hover:text-gray-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
                     role="menuitem"
                     onClick={onRename}
                   >
-                    <span className="">{allSvgs.pencilIcon_dropdown}</span>
-                    <span className="ms-3 text-gray-600 "> Rename</span>
+                    {/* <span className="">{allSvgs.pencilIcon_dropdown}</span> */}
+                    <span className="">{pencilIconDropdown('#94a3b8')}</span>
+                    <span className="ms-3 "> Rename</span>
                   </a>
                 )}
 
                 <a
                   href="#"
-                  className="flex items-center justify-start rounded-lg border-none px-4 py-2 text-sm capitalize text-gray-700 hover:bg-gray-200 hover:text-gray-800 dark:bg-black dark:hover:bg-slate-800 hover:dark:bg-slate-800 dark:hover:text-slate-200"
+                  className="flex items-center justify-start rounded-lg border-none px-4 py-2 text-sm capitalize text-gray-700 hover:bg-gray-200 hover:text-gray-800 dark:bg-black dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
                   role="menuitem"
                   onClick={onDelete}
                 >
-                  <span className="">{allSvgs.trash_download}</span>
-                  <span className="ms-3 text-dark "> Delete</span>
+                  {/* <span className="">{allSvgs.trash_download}</span> */}
+                  <span className="">{themeConfig.isDarkMode ? trashDownloadIcon('#94a3b8') : trashDownloadIcon('#94a3b8')}</span>
+                  <span className="ms-3 "> Delete</span>
                 </a>
               </div>
             </div>
