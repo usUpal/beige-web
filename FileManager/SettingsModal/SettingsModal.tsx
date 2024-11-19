@@ -142,7 +142,7 @@ const SettingsModal = ({ open, closeModal }) => {
                       </div>
 
                       <div className="mt-8 flex items-center justify-end">
-                        <DefaultButton onClick={close}>Save</DefaultButton>
+                        <DefaultButton onClick={close} css='h-9'>Save</DefaultButton>
                       </div>
                     </div>
                   </Dialog.Panel>

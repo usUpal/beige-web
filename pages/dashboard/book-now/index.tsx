@@ -572,16 +572,6 @@ const BookNow = () => {
 
   return (
     <div>
-      <ul className="flex space-x-2 rtl:space-x-reverse">
-        <li>
-          <Link href="/" className="text-warning hover:underline">
-            Dashboard
-          </Link>
-        </li>
-        <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span className="text-black dark:text-gray-100">Shoot Booking</span>
-        </li>
-      </ul>
       <div className="mt-5 grid  grid-cols-1 lg:grid-cols-1">
         {/* icon only */}
         <div className="panel">
@@ -595,14 +585,14 @@ const BookNow = () => {
                         <div className="flex items-center justify-between md:mb-8 md:gap-6 lg:mb-8 xl:gap-4">
                           {/* Content Type */}
                           <div className="flex w-full flex-col sm:flex-row">
-                            <label className="text-black rtl:ml-2 dark:text-white sm:w-1/4 md:w-16 lg:w-24 2xl:w-40">Content Type</label>
+                            <label className="text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 md:w-16 lg:w-24 2xl:w-40">Content Type</label>
                             <div className="flex-1 md:ml-2 lg:ml-1 2xl:ml-0">
                               {/* Video */}
                               <div className="mb-2">
                                 <label className="flex items-center">
                                   <input
                                     type="checkbox"
-                                    className={`form-checkbox ${errors?.content_type && 'border border-danger'} bg-white text-black dark:bg-gray-800 dark:text-white`}
+                                    className={`form-checkbox ${errors?.content_type && 'border border-danger'} bg-white text-black dark:bg-slate-800 dark:text-slate-400`}
                                     value="video"
                                     {...register('content_type', {
                                       validate: {
@@ -610,7 +600,7 @@ const BookNow = () => {
                                       },
                                     })}
                                   />
-                                  <span className="text-black dark:text-white">Videography</span>
+                                  <span className="text-black dark:text-slate-400">Videography</span>
                                 </label>
                               </div>
                               {/* Photo */}
@@ -618,23 +608,23 @@ const BookNow = () => {
                                 <label className="flex items-center">
                                   <input
                                     type="checkbox"
-                                    className={`form-checkbox ${errors?.content_type && 'border border-danger'} bg-white text-black dark:bg-gray-800 dark:text-white`}
+                                    className={`form-checkbox ${errors?.content_type && 'border border-danger'} bg-white text-black dark:bg-slate-800 dark:text-slate-400`}
                                     value="photo"
                                     {...register('content_type')}
                                   />
-                                  <span className="text-black dark:text-white">Photography</span>
+                                  <span className="text-black dark:text-slate-400">Photography</span>
                                 </label>
                               </div>
                             </div>
                           </div>
 
                           {/* Category || content vertical*/}
-                          <div className="flex w-full flex-col sm:flex-row 2xl:ml-32">
-                            <label htmlFor="content_vertical" className="mb-0 capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4 sm:ltr:mr-2">
+                          <div className="flex w-full flex-col sm:flex-row 2xl:ml-32 ">
+                            <label htmlFor="content_vertical" className="mb-0 capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 sm:ltr:mr-2">
                               Category
                             </label>
                             <select
-                              className={`- form-select rounded-md border bg-slate-100 text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500  dark:focus:ring-indigo-500  xl:ml-2 2xl:ml-0 ${
+                              className={`form-select rounded-md border bg-slate-100 text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-black dark:text-slate-400 dark:placeholder-gray-500  dark:focus:ring-indigo-500  xl:ml-2 2xl:ml-0 ${
                                 errors.content_vertical ? 'border-red-500' : ''
                               }`}
                               id="content_vertical"
@@ -645,7 +635,7 @@ const BookNow = () => {
                               })}
                               onChange={handleChangeCategoryWithBudget}
                             >
-                              <option value="SelectCategory dark:bg-slate-700 ">Select Category</option>
+                              <option value="SelectCategory dark:bg-black ">Select Category</option>
                               {categoryList.map((category) => (
                                 <option key={category?.name} value={category?.name}>
                                   {category?.name}
@@ -658,7 +648,7 @@ const BookNow = () => {
                         <div className="my-5 flex-col items-center justify-between gap-4 md:mb-10 md:flex md:flex-row md:gap-9 xl:gap-5">
                           {userData?.role === 'admin' && (
                             <div className="relative flex w-full flex-col space-x-0 sm:mb-4 sm:flex-row sm:space-x-[0px] xl:space-x-0 2xl:space-x-16">
-                              <label htmlFor="content_vertical" className="mb-0 capitalize text-black rtl:ml-2 dark:text-white sm:w-1/4 sm:ltr:mr-2 md:w-[90px] xl:w-[110px]">
+                              <label htmlFor="content_vertical" className="mb-0 capitalize text-black rtl:ml-2 dark:text-slate-400 sm:w-1/4 sm:ltr:mr-2 md:w-[90px] xl:w-[110px]">
                                 Client
                               </label>
                               <input
@@ -667,7 +657,7 @@ const BookNow = () => {
                                   setClientName(event?.target?.value);
                                   getAllClients();
                                 }}
-                                className="form-input h-10 flex-grow bg-slate-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 dark:focus:ring-indigo-500 md:ml-2 lg:ml-2 xl:ml-5 2xl:ml-8"
+                                className="form-input h-10 flex-grow bg-slate-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-black dark:text-slate-400 dark:placeholder-gray-500 dark:focus:ring-indigo-500 md:ml-2 lg:ml-2 xl:ml-5 2xl:ml-8"
                                 value={clientName}
                                 placeholder="Client"
                                 required={!clientName}
@@ -692,7 +682,7 @@ const BookNow = () => {
                                             <li
                                               key={client?.id}
                                               onClick={() => handleClientChange(client)}
-                                              className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83] dark:text-white dark:hover:bg-[#333333]"
+                                              className="flex cursor-pointer items-center rounded-md px-3 py-2 text-[13px] font-medium leading-3 hover:bg-[#dfdddd83] dark:text-slate-400 dark:hover:bg-[#333333]"
                                             >
                                               <div className="relative m-1 mr-2 flex h-5 w-5 items-center justify-center rounded-full text-xl text-white">
                                                 <Image
@@ -703,7 +693,7 @@ const BookNow = () => {
                                                   height={100}
                                                 />
                                               </div>
-                                              <a href="#" className="text-black dark:text-white">
+                                              <a href="#" className="text-black dark:text-slate-400">
                                                 {client?.name}
                                               </a>
                                             </li>
@@ -725,8 +715,7 @@ const BookNow = () => {
                           <div
                             className={`mt-2 flex w-full flex-col sm:flex-row sm:space-x-[52px] md:mt-0 lg:space-x-[8px] xl:space-x-0 ${userData?.role !== 'admin' ? 'md:w-[49.5%] ' : '2xl:ml-32'}`}
                           >
-                            <label htmlFor="location" className={`mb-0 capitalize text-black dark:text-white xl:w-24 2xl:w-36`}>
-                              {/* ${userData?.role !== "admin" && "lg:w-40 "} */}
+                            <label htmlFor="location" className={`mb-0 capitalize text-black dark:text-slate-400 xl:w-24 2xl:w-36`}>
                               Location
                             </label>
                             <div className={`flex-grow md:ml-2 lg:ml-0  ${userData?.role !== 'admin' ? '2xl:ml-3 2xl:mr-16' : ''}`}>
@@ -735,9 +724,8 @@ const BookNow = () => {
                           </div>
                         </div>
                         <div className="mt-5 w-full flex-col items-start justify-between md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32">
-                          {/* Shoot Name */}
                           <div className="flex w-full flex-col space-x-0 sm:mb-4 sm:flex-row sm:space-x-[5px] xl:space-x-[20px] 2xl:space-x-[30px]">
-                            <label htmlFor="order_name" className="mb-0  text-black dark:text-white sm:w-1/4 md:w-24 lg:w-24 2xl:w-40">
+                            <label htmlFor="order_name" className="mb-0  text-black dark:text-slate-400 sm:w-1/4 md:w-24 lg:w-24 2xl:w-40">
                               Shoot Name
                             </label>
                             <input
@@ -746,7 +734,7 @@ const BookNow = () => {
                               disabled
                               value={orderName()}
                               type="text"
-                              className="form-input h-10 flex-grow bg-slate-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 dark:focus:ring-indigo-500 md:ml-2 lg:ml-2 xl:ml-5 2xl:ml-8"
+                              className="form-input h-10 flex-grow bg-slate-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-black dark:text-slate-400 dark:placeholder-gray-500 dark:focus:ring-indigo-500 md:ml-2 lg:ml-2 xl:ml-5 2xl:ml-8"
                               placeholder="Shoot Name"
                               {...register('order_name')}
                             />
@@ -754,14 +742,14 @@ const BookNow = () => {
 
                           {/* references */}
                           <div className="mt-2 flex w-full flex-col space-x-0 sm:flex-row sm:space-x-[33px] md:mt-0 lg:space-x-2 2xl:ml-5 2xl:space-x-16">
-                            <label htmlFor="references" className="mb-0 text-black dark:text-white ">
+                            <label htmlFor="references" className="mb-0 text-black dark:text-slate-400 ">
                               References
                             </label>
                             <input
                               id="references"
                               type="text"
                               placeholder="https://sitename.com"
-                              className="form-input bg-slate-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 dark:focus:ring-indigo-500 xl:ml-2 2xl:ml-16"
+                              className="form-input bg-slate-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-black dark:text-slate-400 dark:placeholder-gray-500 dark:focus:ring-indigo-500 xl:ml-2 2xl:ml-16"
                               {...register('references')}
                             />
                           </div>
@@ -772,18 +760,18 @@ const BookNow = () => {
                           <div className="w-full items-center justify-between md:flex">
                             {/* Starting Date and Time */}
                             <div className="flex w-full flex-col sm:flex-row md:mb-0">
-                              <label htmlFor="start_date_time" className="mb-3 mt-4 text-black dark:text-white md:ml-2 md:w-16 lg:ml-0 xl:w-24 2xl:w-[154px]">
+                              <label htmlFor="start_date_time" className="mb-3 mt-4 text-black dark:text-slate-400 md:ml-2 md:w-16 lg:ml-0 xl:w-24 2xl:w-[154px]">
                                 Shoot Time
                               </label>
 
                               <div className="relative ">
-                                <p className="mb-1 text-xs font-bold text-black dark:text-white sm:mb-0">Start Time</p>
+                                <p className="mb-1 text-xs font-bold text-black dark:text-slate-400 sm:mb-0">Start Time</p>
 
                                 <input
                                   id="start_date_time"
                                   ref={startDateTimeRef}
                                   type="text"
-                                  className={`form-input w-full cursor-pointer p-0 py-2 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 sm:w-[220px] md:w-60 xl:pl-1.5 ${
+                                  className={`form-input w-full cursor-pointer p-0 py-2 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-black dark:text-slate-400 dark:placeholder-gray-500 sm:w-[220px] md:w-60 xl:pl-1.5 ${
                                     errors?.start_date_time ? 'border-red-500' : ''
                                   }`}
                                   placeholder="Start time"
@@ -795,55 +783,59 @@ const BookNow = () => {
                               </div>
 
                               <div className="relative mt-3 sm:mt-0">
-                                <p className="mb-1 text-xs font-bold text-black dark:text-white sm:mb-0">End Time</p>
+                                <p className="mb-1 text-xs font-bold text-black dark:text-slate-400 sm:mb-0">End Time</p>
                                 <input
                                   id="end_date_time"
                                   ref={endDateTimeRef}
                                   type="text"
-                                  className={`form-input ml-0 w-full cursor-pointer p-0 py-2 pl-1.5 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 sm:w-[220px] md:ml-1 md:w-60 ${
+                                  className={`form-input ml-0 w-full cursor-pointer p-0 py-2 pl-1.5 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-black dark:text-slate-400 dark:placeholder-gray-500 sm:w-[220px] md:ml-1 md:w-60 ${
                                     errors?.end_date_time ? 'border-red-500' : ''
                                   }`}
                                   placeholder="End time"
                                   required={endDateTime?.length === 0}
                                 />
 
-                                {/* <span className="md:top[40%] pointer-events-none absolute right-[10px] top-[55%] hidden -translate-y-1/4 transform md:block lg:top-[55%]">🗓️</span> */}
+                                <span className="md:top[40%] pointer-events-none absolute right-[10px] top-[55%] hidden -translate-y-1/4 transform md:block lg:top-[55%]">🗓️</span>
                                 {errors?.end_date_time && <p className="text-danger">{errors?.end_date_time.message}</p>}
                               </div>
 
                               <div className="flex justify-end">
-                                <span
-                                  className="ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white hover:bg-gray-800 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
-                                  onClick={addDateTime}
-                                >
-                                  Add
-                                </span>
+                                <>
+                                  <div className="flex justify-end">
+                                    <span
+                                      className=" ml-2 mt-4 h-9 w-16 cursor-pointer rounded-md bg-black px-4 py-1 text-center font-sans text-[14px] capitalize leading-[28px] text-white dark:bg-slate-800 dark:hover:bg-slate-700"
+                                      onClick={addDateTime}
+                                    >
+                                      Add
+                                    </span>
+                                  </div>
+                                  {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
+                                </>
                               </div>
-                              {errors?.start_date_time && <p className="text-danger">{errors?.start_date_time.message}</p>}
                             </div>
                           </div>
 
                           <div className="table-responsive">
                             {/* DateTime Output show Table */}
                             {dateTimes?.length !== 0 && (
-                              <div className=" mt-4 2xl:w-[90%]">
+                              <div className=" mt-4 2xl:float-right 2xl:w-[90%]">
                                 <table className="table-auto">
                                   <thead className="bg-white dark:bg-slate-800">
                                     <tr>
-                                      <th className="text-black dark:text-white">#</th>
-                                      <th className="text-black dark:text-white">Start Time</th>
-                                      <th className="text-black dark:text-white">End Time</th>
-                                      <th className="text-black dark:text-white">Duration</th>
+                                      <th className="text-black dark:text-slate-400">#</th>
+                                      <th className="text-black dark:text-slate-400">Start Time</th>
+                                      <th className="text-black dark:text-slate-400">End Time</th>
+                                      <th className="text-black dark:text-slate-400">Duration</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     {dateTimes?.map((dateTime: FormData, index) => (
                                       <tr key={index} className="bg-white dark:bg-slate-800">
-                                        <td className="text-black dark:text-white">{index + 1}</td>
-                                        <td className="text-black dark:text-white">{convertToEnglishDateFormat(dateTime?.start_date_time)}</td>
-                                        <td className="text-black dark:text-white">{convertToEnglishDateFormat(dateTime?.end_date_time)}</td>
+                                        <td className="text-black dark:text-slate-400">{index + 1}</td>
+                                        <td className="text-black dark:text-slate-400">{convertToEnglishDateFormat(dateTime?.start_date_time)}</td>
+                                        <td className="text-black dark:text-slate-400">{convertToEnglishDateFormat(dateTime?.end_date_time)}</td>
                                         <td className="flex items-center justify-between">
-                                          <span className="text-black dark:text-white">{calculateDuration(dateTime?.start_date_time, dateTime?.end_date_time)} Hour</span>
+                                          <span className="text-black dark:text-slate-400">{calculateDuration(dateTime?.start_date_time, dateTime?.end_date_time)} Hour</span>
                                           <span className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" onClick={() => handleTimeRemove(dateTime?.start_date_time)}>
                                             {allSvgs.closeBtnCp}
                                           </span>
@@ -861,48 +853,70 @@ const BookNow = () => {
                         <div className={` ${userData?.role === 'admin' ? 'mt-4' : ''} w-full flex-col items-center justify-between md:mt-0 md:flex md:flex-row md:gap-4 xl:gap-8 2xl:gap-32`}>
                           {/* Special Note */}
                           <div className={`flex flex-col sm:mb-5 sm:flex-row ${userData?.role === 'admin' ? 'w-full' : 'md:w-[50%]  2xl:w-[45%]'}`}>
-                            <label htmlFor="description" className="mb-0 text-black rtl:ml-2 dark:text-white sm:w-[120px] sm:ltr:mr-2 md:w-[100px] lg:w-[70px] xl:w-[105px] 2xl:w-[160px]">
+                            <label htmlFor="description" className="mb-0 text-black rtl:ml-2 dark:text-slate-400 sm:w-[120px] sm:ltr:mr-2 md:w-[100px] lg:w-[70px] xl:w-[105px] 2xl:w-[160px]">
                               Special Note
                             </label>
 
                             <textarea
                               id="description"
                               rows={1}
-                              className="form-textarea bg-slate-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-blue-500 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 dark:focus:ring-indigo-500 xl:ml-2 2xl:ml-5"
+                              className="form-textarea bg-slate-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-blue-500 dark:bg-black dark:text-slate-400 dark:placeholder-gray-500 dark:focus:ring-indigo-500 xl:ml-2 2xl:ml-5"
                               placeholder="Type your note here..."
                               {...register('description')}
                             ></textarea>
                           </div>
                           {userData?.role === 'admin' && (
+                            // <div className="mb-3 mt-3 flex w-full flex-col sm:mt-0 sm:flex-row md:mb-0">
+                            //   <label htmlFor="meeting_time" className="mb-0 text-black rtl:ml-2 dark:text-slate-400 sm:w-[120px] sm:ltr:mr-2 md:w-[100px] lg:w-[70px] xl:w-[105px] 2xl:w-[160px]">
+                            //     Meeting time
+                            //   </label>
+                            //   <div className="relative w-full">
+                            //     <Flatpickr
+                            //       id="meeting_time"
+                            //       className={`form-input ml-0 w-full cursor-pointer p-0 py-2 pl-1.5 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-black dark:text-slate-400 dark:placeholder-gray-500 sm:w-[220px] md:ml-1 md:w-60 xl:w-[220px] ${
+                            //         errors?.end_date_time ? 'border-red-500' : ''
+                            //       }`}
+                            //       value={meetingTime}
+                            //       placeholder="Meeting time ..."
+                            //       options={{
+                            //         altInput: true,
+                            //         altFormat: 'F j, Y h:i K',
+                            //         dateFormat: 'Y-m-d H:i',
+                            //         enableTime: true,
+                            //         time_24hr: false,
+                            //         minDate: 'today',
+                            //       }}
+                            //       onChange={(date) => {
+                            //         setMeetingTime(date[0]);
+                            //         setValue('meeting_time', date[0]);
+                            //       }}
+                            //     />
+                            //     <input type="hidden" {...register('meeting_time')} />
+
+                            //     {/* Calendar Icon Inside the Field */}
+                            //     <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-gray-400">🗓️</span>
+
+                            //     {/* Display error message */}
+                            //     {errors?.meeting_time && <p className="text-danger">{errors?.meeting_time.message}</p>}
+                            //   </div>
+                            // </div>
+
                             <div className="mb-3 mt-3  flex w-full flex-col sm:mt-0 sm:flex-row md:mb-0">
-                              <label htmlFor="meeting_time" className="mb-0 text-black rtl:ml-2 dark:text-white sm:w-[120px] sm:ltr:mr-2 md:w-[100px] lg:w-[70px] xl:w-[105px] 2xl:w-[160px]">
+                              <label htmlFor="meeting_time" className="mb-0  w-full rtl:ml-2 sm:ltr:mr-2 md:w-[24%] ">
                                 Meeting time
                               </label>
-                              <div className="relative w-full ">
-                                <Flatpickr
-                                  id="meeting_time"
-                                  className={`form-input ml-0 w-full cursor-pointer p-0 py-2 pl-1.5 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-slate-700 dark:text-white dark:placeholder-gray-500 sm:w-[220px] md:ml-1 md:w-60${
-                                    errors.meeting_time ? 'border-red-500' : ''
-                                  }`}
-                                  value={meetingTime}
-                                  placeholder="Meeting time ..."
-                                  options={{
-                                    altInput: true,
-                                    altFormat: 'F j, Y h:i K',
-                                    dateFormat: 'Y-m-d H:i',
-                                    enableTime: true,
-                                    time_24hr: false,
-                                    minDate: 'today',
-                                  }}
-                                  onChange={(date) => {
-                                    setMeetingTime(date[0]);
-                                    setValue('meeting_time', date[0]);
-                                  }}
-                                />
-                                <input type="hidden" {...register('meeting_time')} />
 
-                                <span className="-translate-y-1/6 pointer-events-none absolute right-[14px] top-[21%] transform">🗓️</span>
-                                {errors?.meeting_time && <p className="text-danger">{errors?.meeting_time.message}</p>}
+                              <div className="relative w-full ">
+                                <input
+                                  type="text"
+                                  id="meeting_date_time"
+                                  {...register('meeting_time')}
+                                  ref={meetingDateTimeRef}
+                                  className={`form-input cursor-pointer ${errors.meeting_time ? 'border-red-500' : ''}`}
+                                  placeholder="Meeting time"
+                                  // required={formattedMeetingTime}
+                                />
+                                <span className="-translate-y-1/6 pointer-events-none absolute right-[14px] top-[21%]  transform">🗓️</span>
                               </div>
                             </div>
                           )}
@@ -923,9 +937,9 @@ const BookNow = () => {
                       <div className="flex-col items-center justify-between md:flex md:flex-row">
                         <div className="">
                           <div className="mb-[30px]">
-                            <h2 className="mb-2 font-sans text-[18px] capitalize leading-none text-black dark:text-white">Select Producer</h2>
+                            <h2 className="mb-2 font-sans text-[18px] capitalize leading-none text-black dark:text-slate-400">Select Producer</h2>
 
-                            <p className="text-[14px] capitalize leading-none text-[#838383] dark:text-[#d1d1d1]">choose your beige photographer/videographer</p>
+                            <p className="text-[14px] capitalize leading-none text-[#838383] dark:text-slate-500">choose your beige photographer/videographer</p>
                           </div>
                         </div>
                         <div className="mb-5 md:mb-0">
@@ -960,13 +974,13 @@ const BookNow = () => {
                                   </div>
 
                                   <div className="content col-span-2 ms-2">
-                                    <h4 className="font-sans text-[16px] capitalize leading-none text-black dark:text-white">{cp?.userId?.name}</h4>
+                                    <h4 className="font-sans text-[16px] capitalize leading-none text-black dark:text-slate-400">{cp?.userId?.name}</h4>
 
-                                    <span className="profession text-[12px] capitalize leading-none text-[#838383] dark:text-[#d1d1d1]">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
+                                    <span className="profession text-[12px] capitalize leading-none text-[#838383] dark:text-white-dark">{cp?.userId?.role === 'cp' && 'beige producer'}</span>
 
                                     <div className="location mt-2 flex items-center justify-start">
                                       {/* Your location icon here */}
-                                      <span className="text-[16px] capitalize leading-none text-[#1f1f1f] dark:text-[#e0e0e0]">{cp?.city}</span>
+                                      <span className="text-[16px] capitalize leading-none text-[#1f1f1f] dark:text-white-dark">{cp?.city}</span>
                                     </div>
                                     <div className="ratings mt-2">
                                       {[...Array(5)].map((_, index) => (
@@ -977,10 +991,7 @@ const BookNow = () => {
                                 </div>
                                 <div className="mt-[30px] flex justify-center  gap-3">
                                   <Link href={`cp/${cp?.userId?._id}`}>
-                                    <p
-                                      className="inline-block cursor-pointer rounded-[10px] bg-black px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none text-white hover:bg-gray-800 dark:bg-white 
-  dark:text-black dark:hover:bg-gray-200 md:px-[20px] md:py-[12px]"
-                                    >
+                                    <p className="inline-block cursor-pointer rounded-[10px] bg-black px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none text-white hover:bg-gray-800 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-gray-700 dark:hover:text-slate-300 md:px-[20px] md:py-[12px]">
                                       view profile
                                     </p>
                                   </Link>
@@ -989,8 +1000,8 @@ const BookNow = () => {
                                     className={`inline-block cursor-pointer rounded-[10px] border border-solid 
                                       ${
                                         isSelected
-                                          ? 'border-[#eb5656] bg-white text-red-500 dark:border-red-600 dark:bg-gray-700 dark:text-red-400'
-                                          : 'border-[#C4C4C4] bg-white text-black dark:border-gray-600 dark:bg-gray-800 dark:text-white'
+                                          ? 'border-[#eb5656] bg-red-100 text-red-500 dark:border-red-600 dark:bg-slate-700 dark:text-red-400'
+                                          : 'border-[#C4C4C4] bg-slate-200 text-black dark:border-gray-600 dark:bg-slate-400 dark:text-slate-800'
                                       }
                                       px-[12px] py-[8px] font-sans text-[16px] font-medium capitalize leading-none md:px-[20px] md:py-[12px]`}
                                   >
@@ -1003,7 +1014,7 @@ const BookNow = () => {
                         ) : (
                           <>
                             <div className="flex items-center justify-center">
-                              <h3 className="text-center font-semibold text-black dark:text-white">No Data Found</h3>
+                              <h3 className="text-center font-semibold text-black dark:text-slate-400">No Data Found</h3>
                             </div>
                           </>
                         )}
@@ -1023,43 +1034,43 @@ const BookNow = () => {
                     <div className="h-full">
                       <>
                         <div className="panel mb-8 basis-[49%] rounded-[10px] px-7 py-5">
-                          <label className="ml-2 mr-2 text-black dark:text-white sm:ml-0 sm:w-1/4">Select Addons</label>
+                          <label className="ml-2 mr-2 text-black dark:text-slate-400 sm:ml-0 sm:w-1/4">Select Addons</label>
 
                           <div className="flex flex-col sm:flex-row">
                             <div className="flex-1">
                               <div className="table-responsive ">
                                 <table className="w-full">
                                   <thead>
-                                    <tr className="bg-gray-200 dark:bg-gray-800">
-                                      <th className="min-w-[20px] px-1 py-2 font-mono text-black dark:text-white">Select</th>
-                                      <th className="min-w-[120px] px-1 py-2 font-mono text-black dark:text-white">Title</th>
-                                      <th className="min-w-[20px] py-2 font-mono text-black dark:text-white">Extend Rate Type</th>
-                                      <th className="min-w-[20px] py-2 font-mono text-black dark:text-white">Extra Hour</th>
-                                      <th className="min-w-[120px] px-1 py-2 font-mono text-black dark:text-white">Rate</th>
+                                    <tr className="bg-gray-200 dark:bg-black">
+                                      <th className="min-w-[20px] px-1 py-2 font-mono text-black dark:text-slate-400">Select</th>
+                                      <th className="min-w-[120px] px-1 py-2 font-mono text-black dark:text-slate-400">Title</th>
+                                      <th className="min-w-[20px] py-2 font-mono text-black dark:text-slate-400">Extend Rate Type</th>
+                                      <th className="min-w-[20px] py-2 font-mono text-black dark:text-slate-400">Extra Hour</th>
+                                      <th className="min-w-[120px] px-1 py-2 font-mono text-black dark:text-slate-400">Rate</th>
                                     </tr>
                                   </thead>
 
                                   <tbody>
                                     {filteredAddonsData?.map((addon: addonTypes, index) => (
-                                      <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                      <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-black dark:hover:bg-slate-800">
                                         <td className="min-w-[20px] px-4 py-2">
                                           <input
                                             type="checkbox"
-                                            className="form-checkbox border-gray-300 bg-white text-black focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500"
+                                            className="form-checkbox border-gray-300 bg-white text-black focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-slate-400 dark:focus:ring-indigo-500"
                                             //  defaultValue={addon}
                                             id={`addon_${index}`}
                                             onChange={() => handleCheckboxChange(addon)}
                                           />
                                         </td>
-                                        <td className="min-w-[120px] px-4 py-2 text-black dark:text-white">{addon?.title}</td>
+                                        <td className="min-w-[120px] px-4 py-2 text-black dark:text-slate-400">{addon?.title}</td>
 
-                                        <td className="min-w-[120px] px-4 py-2 text-black dark:text-white">{addon?.ExtendRateType ? addon?.ExtendRateType : 'N/A'}</td>
-                                        <td className="min-w-[120px] px-4 py-2 text-black dark:text-white">
+                                        <td className="min-w-[120px] px-4 py-2 text-black dark:text-slate-400">{addon?.ExtendRateType ? addon?.ExtendRateType : 'N/A'}</td>
+                                        <td className="min-w-[120px] px-4 py-2 text-black dark:text-slate-400">
                                           {addon.ExtendRateType ? (
                                             <input
                                               name="hour"
                                               type="number"
-                                              className="ms-12 h-9 w-12 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-500 md:ms-0 md:w-16"
+                                              className="ms-12 h-9 w-12 rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none dark:border-gray-600 dark:bg-black dark:text-slate-400 dark:focus:border-indigo-500 md:ms-0 md:w-16"
                                               defaultValue={addonExtraHours[addon?._id] || 1}
                                               min="0"
                                               onChange={(e) => handleHoursOnChange(addon._id, parseInt(e.target.value))}
@@ -1069,7 +1080,7 @@ const BookNow = () => {
                                             'N/A'
                                           )}
                                         </td>
-                                        <td className="min-w-[120px] px-4 py-2 text-black dark:text-white">{computedRates[addon?._id] || addon?.rate}</td>
+                                        <td className="min-w-[120px] px-4 py-2 text-black dark:text-slate-400">{computedRates[addon?._id] || addon?.rate}</td>
                                       </tr>
                                     ))}
 
@@ -1077,14 +1088,14 @@ const BookNow = () => {
                                     <tr>
                                       <td colSpan={6} className=" w-full border-t border-gray-500 "></td>
                                     </tr>
-                                    <tr className="mt-[-10px] w-full border border-gray-600 bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                    <tr className="mt-[-10px] w-full border border-gray-600 bg-white hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-gray-700">
                                       <td className="min-w-[20px] px-4 py-2"></td>
                                       <td className="min-w-[120px] px-4 py-2">
-                                        <h2 className="text-[16px] font-semibold text-black dark:text-white">Total Addons Cost</h2>
+                                        <h2 className="text-[16px] font-semibold text-black dark:text-slate-400">Total Addons Cost</h2>
                                       </td>
                                       <td className="min-w-[120px] px-4 py-2"></td>
                                       <td className="min-w-[120px] px-4 py-2"></td>
-                                      <td className="min-w-[120px] px-4 py-2 text-black dark:text-white">{allAddonRates} </td>
+                                      <td className="min-w-[120px] px-4 py-2 text-black dark:text-slate-400">{allAddonRates} </td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -1096,7 +1107,7 @@ const BookNow = () => {
 
                       <>
                         <div className="panel mb-8">
-                          <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black dark:text-white"> Selected {cp_ids?.length > 1 ? 'producers' : 'producer'}</h2>
+                          <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black dark:text-slate-400"> Selected {cp_ids?.length > 1 ? 'producers' : 'producer'}</h2>
                           <div className="grid grid-cols-1 gap-3 md:grid md:grid-cols-3">
                             {cp_ids?.length !== 0 &&
                               cp_ids?.map((cp: any) => (
@@ -1117,7 +1128,7 @@ const BookNow = () => {
                                       </div>
 
                                       <div className="content ms-3">
-                                        <h4 className="font-sans text-[16px] capitalize leading-none text-black dark:text-white">{cp?.name}</h4>
+                                        <h4 className="font-sans text-[16px] capitalize leading-none text-black dark:text-slate-400">{cp?.name}</h4>
                                         <span className="profession text-[12px] capitalize leading-none text-[#838383]  dark:text-gray-300">{cp?.role}</span>
                                       </div>
                                     </div>
@@ -1130,7 +1141,7 @@ const BookNow = () => {
 
                       <>
                         <div className="panel mb-5 basis-[49%] rounded-[10px] px-2 py-5">
-                          <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black dark:text-white"> Total Calculation</h2>
+                          <h2 className="mb-[20px] font-sans text-[24px] capitalize text-black dark:text-slate-400"> Total Calculation</h2>
                           <>
                             <div className="flex flex-col sm:flex-row">
                               <div className="flex-1">
@@ -1140,26 +1151,26 @@ const BookNow = () => {
                                       {selectedFilteredAddons?.map((addon: addonTypes, index) => {
                                         return (
                                           <tr key={index} className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
-                                            <td className="min-w-[120px] px-4 py-2 text-black dark:text-white">{addon?.title}</td>
-                                            <td className="text-black dark:text-white">{addon?.ExtendRate ? `${addon?.hours} hours` : ''}</td>
+                                            <td className="min-w-[120px] px-4 py-2 text-black dark:text-slate-400">{addon?.title}</td>
+                                            <td className="text-black dark:text-slate-400">{addon?.ExtendRate ? `${addon?.hours} hours` : ''}</td>
                                             <td className="font-bold">${computedRates[addon?._id] || addon?.rate}</td>
                                           </tr>
                                         );
                                       })}
                                       <tr className="bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
-                                        <td className="min-w-[120px] px-4 py-2 font-bold  text-black dark:text-white">Shoot Cost</td>
-                                        <td className="text-black dark:text-white">{getTotalDuration || 0} hours</td>
-                                        <td className="font-bold text-black dark:text-white">${shootCosts} </td>
+                                        <td className="min-w-[120px] px-4 py-2 font-bold  text-black dark:text-slate-400">Shoot Cost</td>
+                                        <td className="text-black dark:text-slate-400">{getTotalDuration || 0} hours</td>
+                                        <td className="font-bold text-black dark:text-slate-400">${shootCosts} </td>
                                       </tr>
                                       <tr>
                                         <td colSpan={6} className="w-full border-t border-gray-500"></td>
                                       </tr>
                                       <tr>
                                         <td>
-                                          <h2 className="text-[16px] font-semibold text-black dark:text-white">Total Costs</h2>
+                                          <h2 className="text-[16px] font-semibold text-black dark:text-slate-400">Total Costs</h2>
                                         </td>
                                         <td></td>
-                                        <td className="font-bold text-black dark:text-white">${selectedFilteredAddons.length > 0 ? allRates : shootCosts}</td>
+                                        <td className="font-bold text-black dark:text-slate-400">${selectedFilteredAddons.length > 0 ? allRates : shootCosts}</td>
                                       </tr>
                                     </tbody>
                                   </table>

@@ -99,7 +99,7 @@ const FolderUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             Discard
                           </button>
 
-                          <DefaultButton onClick={createFolder} type='button'>
+                          <DefaultButton onClick={createFolder} type='button' css='h-9'>
                             {saving ? 'Adding...' : 'Add Folder'}
                           </DefaultButton>
                         </div>

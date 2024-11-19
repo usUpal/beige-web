@@ -44,17 +44,6 @@ const Users = () => {
   return (
     <>
       <div className="h-[90vh]">
-        <ul className="flex space-x-2 rtl:space-x-reverse">
-          <li>
-            <Link href="/" className="text-warning hover:underline">
-              Dashboard
-            </Link>
-          </li>
-          <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-            <span>Clients</span>
-          </li>
-        </ul>
-
         <div className=" mt-5 grid grid-cols-1 lg:grid-cols-1">
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">
@@ -151,18 +140,18 @@ const Users = () => {
                                 <div className="left w-full space-y-4 ">
                                   <div className="m-0 mt-[9px] flex flex-col text-[16px] font-bold capitalize leading-none text-[#000000]">
                                     <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000] dark:text-white-dark"> Client Id </span>
-                                    <span className="w-full rounded border  p-3 border-slate-600 text-[16px] font-semibold leading-[28px] dark:text-slate-400">{clientUserInfo?.id}</span>
+                                    <span className="w-full rounded border  border-slate-600 p-3 text-[16px] font-semibold leading-[28px] dark:text-slate-400">{clientUserInfo?.id}</span>
                                   </div>
                                   <div className="mt-0 flex flex-col text-[16px] font-bold capitalize leading-none text-[#000000] md:mt-[12px] ">
                                     <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000] dark:text-white-dark"> Name </span>
-                                    <span className="w-full rounded border  p-3 text-[16px] font-semibold leading-[28px] border-slate-600 text-slate-400">{clientUserInfo?.name}</span>
+                                    <span className="w-full rounded border  border-slate-600 p-3 text-[16px] font-semibold leading-[28px] text-slate-400">{clientUserInfo?.name}</span>
                                   </div>
                                 </div>
 
                                 <div className="right w-full space-y-0 md:space-y-4">
                                   <span className="m-0 mt-1 flex flex-col gap-1 text-[16px] font-bold capitalize leading-none text-[#000000]">
                                     <span className="ps-1 text-[16px] font-bold leading-[28px] text-[#000000] dark:text-white-dark"> Role </span>
-                                    <span className=" w-full rounded border  p-3 text-[16px] font-semibold leading-[28px] border-slate-600 text-slate-400">{clientUserInfo?.role}</span>
+                                    <span className=" w-full rounded border  border-slate-600 p-3 text-[16px] font-semibold leading-[28px] text-slate-400">{clientUserInfo?.role}</span>
                                   </span>
 
                                   <span className="m-0 mt-1 flex flex-col gap-1 text-[16px] font-bold leading-none text-[#000000]">

@@ -32,6 +32,8 @@ import useCalculateAddons from '@/hooks/useCalculateAddons';
 import { format, isValid, parseISO } from 'date-fns';
 import flatpickr from 'flatpickr';
 import Image from 'next/image';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
 
 const ShootDetails = () => {
   const { userData, authPermissions } = useAuth();
@@ -85,6 +87,8 @@ const ShootDetails = () => {
   const [newMeeting, { isLoading: isNewMeetingLoading }] = useNewMeetingMutation();
   const [updateOrder, { isLoading: isUpdateOrderLoading, isSuccess }] = useUpdateOrderMutation();
   const [addAddons, { isLoading: isAddAddonsLoading }] = useAddAddonsMutation();
+
+  const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
 
   const queryParams = useMemo(
     () => ({
@@ -424,7 +428,7 @@ const ShootDetails = () => {
                         const { date: endDate, time: endTime } = formatDateAndTime(dateTime.end_date_time) || { date: '', time: '' };
 
                         return (
-                          <div key={key} className="font-sans font-semibold capitalize space-x-4 text-black dark:text-white-dark ms-5">
+                          <div key={key} className="ms-5 space-x-4 font-sans font-semibold capitalize text-black dark:text-white-dark">
                             <span className="">
                               {startDate} at {startTime}
                             </span>
@@ -513,9 +517,9 @@ const ShootDetails = () => {
                         onClick={() => {
                           setAddonsModal(!addonsModal), setSelectedFilteredAddons(shootDetailsData?.addOns);
                         }}
-                        className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white dark:bg-slate-400 dark:text-black dark:hover:bg-slate-300"
+                        className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600 dark:hover:text-slate-200"
                       >
-                        <span className="">{allSvgs.addMorePlusIconSm}</span>
+                        <span className="">{allSvgs.addMorePlusIconSmLight}</span>
                         <span>Add More</span>
                       </button>
                     </div>
@@ -626,9 +630,9 @@ const ShootDetails = () => {
                     <div className="flex gap-3">
                       <button
                         onClick={() => setCpModal(!cpModal)}
-                        className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white dark:bg-slate-400 dark:text-black dark:hover:bg-slate-300"
+                        className="flex items-center gap-1 rounded-md bg-black px-1 py-0.5 text-xs text-white dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600 dark:hover:text-slate-200"
                       >
-                        {allSvgs.addMorePlusIconSm}
+                        {allSvgs.addMorePlusIconSmLight}
                         <span>Add More</span>
                       </button>
                     </div>
@@ -697,7 +701,7 @@ const ShootDetails = () => {
           </div>
           <div>
             <div className="mx-auto">
-              <ul className="mx-auto grid grid-cols-1 gap-10 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 text-black dark:text-white-dark">
+              <ul className="mx-auto grid grid-cols-1 gap-10 text-black dark:text-white-dark sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
                 {orderStatusArray.map((status, index) => (
                   <li key={status} className="flex-start group relative flex lg:flex-col">
                     {index < currentIndex && (

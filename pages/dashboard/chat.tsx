@@ -64,6 +64,7 @@ const Chat = () => {
   const dropdownRef = useRef(null);
   const [newParticipantInfo, setNewParticipantInfo] = useState({});
   const [threeDotSidebar, setThreeDotSidebar] = useState(false);
+  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -286,7 +287,7 @@ const Chat = () => {
         <div className="block text-start md:hidden">
           {!isAddParticipant && (userRole === 'manager' || userRole === 'admin') && (
             <>
-              <div className="block md:hidden">
+              <div className="block md:hidden ">
                 <DefaultButton onClick={handleAddPerticipant} css={'px-2 py-0 md:text-[14px] text-[12px]'}>
                   Add Participant
                 </DefaultButton>
@@ -513,7 +514,7 @@ const Chat = () => {
                         {!isAddParticipant && (userRole === 'admin' || userRole === 'admin') && (
                           <>
                             <div className="hidden md:block">
-                              <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px]'}>
+                              <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px] mt-1.5'}>
                                 Add Participant
                               </DefaultButton>
                             </div>
@@ -606,13 +607,27 @@ const Chat = () => {
                           placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
                           btnClassName="bg-[#f4f4f4] dark:bg-[#1b2e4b] hover:bg-primary-light w-8 h-8 rounded-full !flex justify-center items-center mt-1"
                           button={
-                            <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="#000000" className="bi bi-three-dots-vertical ml-2 mt-1" onClick={toggleThreeDotSidebar}>
-                              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                              <g id="SVGRepo_iconCarrier">
-                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                              </g>
-                            </svg>
+                            <span onClick={toggleThreeDotSidebar}>
+                              <svg
+                                fill={!themeConfig.isDarkMode ? '#000000' : '#94a3b8'}
+                                height="15px"
+                                width="15px"
+                                version="1.1"
+                                id="Capa_1"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 32.055 32.055"
+                              >
+                                <g id="SVGRepo_iconCarrier">
+                                  <g>
+                                    <path
+                                      d="M16.028,3.968c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,3.968,16.028,3.968z 
+                    M16.028,16.028c-2.192,0-3.967,1.774-3.967,3.967s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,16.028,16.028,16.028z 
+                    M16.028,28.09c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,28.09,16.028,28.09z"
+                                    />
+                                  </g>
+                                </g>
+                              </svg>
+                            </span>
                           }
                         ></Dropdown>
                       </div>

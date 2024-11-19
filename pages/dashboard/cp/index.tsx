@@ -47,17 +47,6 @@ const CpUsers = () => {
   return (
     <>
       <div className="h-[90vh]">
-        <ul className="flex space-x-2 rtl:space-x-reverse">
-          <li>
-            <Link href="/" className="text-warning hover:underline">
-              Dashboard
-            </Link>
-          </li>
-          <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-            <span>CP</span>
-          </li>
-        </ul>
-
         <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">

@@ -75,17 +75,6 @@ const Users = () => {
   return (
     <>
       <div className="h-[90vh]">
-        <ul className="flex space-x-2 rtl:space-x-reverse">
-          <li>
-            <Link href="/" className="text-warning hover:underline">
-              Dashboard
-            </Link>
-          </li>
-          <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-            <span>All Users</span>
-          </li>
-        </ul>
-
         <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">
@@ -192,20 +181,20 @@ const Users = () => {
                                     <label htmlFor="id" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                       User id
                                     </label>
-                                    <p className="focus:border-gray-400mt-1 rounded border p-3 dark:border-gray-600 text-black focus:outline-none dark:text-slate-400 ">{userInfo?.id}</p>
+                                    <p className="focus:border-gray-400mt-1 rounded border p-3 text-black focus:outline-none dark:border-gray-600 dark:text-slate-400 ">{userInfo?.id}</p>
                                   </div>
                                   <div className="w-full">
                                     <label htmlFor="name" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                       Name
                                     </label>
-                                    <p className="mt-1 rounded border p-3 text-black focus:border-gray-400 dark:border-gray-600 focus:outline-none dark:text-slate-400">{userInfo?.name}</p>
+                                    <p className="mt-1 rounded border p-3 text-black focus:border-gray-400 focus:outline-none dark:border-gray-600 dark:text-slate-400">{userInfo?.name}</p>
                                   </div>
 
                                   <div className="w-full">
                                     <label htmlFor="email" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                       email
                                     </label>
-                                    <p className="mt-1 rounded border p-3 text-black focus:border-gray-400 dark:border-gray-600 focus:outline-none dark:text-slate-400 ">{userInfo?.email}</p>
+                                    <p className="mt-1 rounded border p-3 text-black focus:border-gray-400 focus:outline-none dark:border-gray-600 dark:text-slate-400 ">{userInfo?.email}</p>
                                   </div>
                                 </div>
 
@@ -214,13 +203,13 @@ const Users = () => {
                                     <label htmlFor="isEmailVerified" className="mb-0 w-1/4 font-sans text-[14px] capitalize rtl:ml-2 md:w-full">
                                       Email Verified
                                     </label>
-                                    <p className="mt-1 w-full rounded border dark:border-gray-600 p-3 text-black dark:text-slate-400">{userInfo?.isEmailVerified === 'true' ? 'Yes' : 'No'}</p>
+                                    <p className="mt-1 w-full rounded border p-3 text-black dark:border-gray-600 dark:text-slate-400">{userInfo?.isEmailVerified === 'true' ? 'Yes' : 'No'}</p>
                                   </div>
                                   <div className="w-full">
                                     <label htmlFor="role" className=" mb-0 font-sans text-[14px] capitalize rtl:ml-2 sm:w-1/4 sm:ltr:mr-2">
                                       role
                                     </label>
-                                    <p className="mt-1 w-full rounded border dark:border-gray-600 p-3 text-black dark:text-slate-400">{userInfo?.role}</p>
+                                    <p className="mt-1 w-full rounded border p-3 text-black dark:border-gray-600 dark:text-slate-400">{userInfo?.role}</p>
                                   </div>
 
                                   <div className="w-full">

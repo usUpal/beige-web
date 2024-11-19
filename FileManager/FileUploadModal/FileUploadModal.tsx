@@ -187,7 +187,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                         <div className="text-lg font-bold capitalize ">Upload {state.folderUpload ? 'a Folder' : 'Files'}</div>
                         <button
                           type="button"
-                          className="text-[16px] text-white-dark hover:text-dark"
+                          className="text-[16px] text-white-dark hover:text-dark-light"
                           onClick={() => {
                             dispatch({ type: 'reset' });
                             closeModal();
@@ -200,7 +200,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                       <div className="px-5">
                         <div onClick={() => dispatch({ type: 'switchFolderUpload' })} className="flex cursor-pointer items-center pt-5">
                           <input type="checkbox" className="form-checkbox border border-black" id="checkSwitchFolderUpload" checked={state.folderUpload} onChange={() => {}} />
-                          <span className="ml-2 text-black">Select {!state.folderUpload ? 'a Folder' : 'Files'}</span>
+                          <span className="ml-2 text-black dark:text-slate-400">Select {!state.folderUpload ? 'a Folder' : 'Files'}</span>
                         </div>
                         {/* <div className="">
                           <label className="relative h-6 w-12" onClick={() => dispatch({ type: 'switchFolderUpload' })}>
@@ -233,7 +233,11 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                           />
 
                           <div className="my-5 flex justify-center">
-                            <span className="border-2 px-5 py-1 text-[18px] hover:shadow" style={{ borderRadius: '5px' }} onClick={() => fileInput.current.click()} disabled={state.uploading}>
+                            <span
+                              className="rounded-lg border px-5 py-1 text-[18px] hover:shadow dark:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-dark-light"
+                              onClick={() => fileInput.current.click()}
+                              disabled={state.uploading}
+                            >
                               Select {state.folderUpload ? 'a Folder' : 'Files'}
                             </span>
 
@@ -290,7 +294,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             Cancel
                           </button> */}
 
-                          <DefaultButton onClick={startUpload} disabled={!state.files.length || state.uploading}>
+                          <DefaultButton onClick={startUpload} disabled={!state.files.length || state.uploading} css="h-9">
                             <span className="flex items-center justify-center gap-1 duration-300">
                               {allSvgs.uploadIcon}
                               {state.uploading ? 'Uploading...' : 'Start Upload'}

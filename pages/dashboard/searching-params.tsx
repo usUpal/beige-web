@@ -425,7 +425,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>team_player</span>
                   </td>
@@ -448,7 +448,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>total_earnings</span>
                   </td>
@@ -471,7 +471,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>travel_to_distant_shoots</span>
                   </td>
@@ -494,7 +494,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>vst</span>
                   </td>

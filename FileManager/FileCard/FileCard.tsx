@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
 
 const FileCard = ({
   cardType,
@@ -23,6 +25,8 @@ const FileCard = ({
 }) => {
   const [isPublic, setIsPublic] = useState(false);
   const [fileId, setFileId] = useState([]);
+
+  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
   // Function for getting icons
   const getFileIcon = (fileType: any, isFolder: any) => {
@@ -73,20 +77,40 @@ const FileCard = ({
             }}
             className="relative"
           >
-            <svg fill="#000000" height="15px" width="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32.055 32.055">
-              <g id="SVGRepo_iconCarrier">
-                <g>
-                  <path
-                    d="M16.028,3.968c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,3.968,16.028,3.968z 
+            {!themeConfig.isDarkMode ? (
+              <svg fill="#000000" height="15px" width="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32.055 32.055">
+                <g id="SVGRepo_iconCarrier">
+                  <g>
+                    <path
+                      d="M16.028,3.968c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,3.968,16.028,3.968z 
                     M16.028,16.028c-2.192,0-3.967,1.774-3.967,3.967s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,16.028,16.028,16.028z 
                     M16.028,28.09c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,28.09,16.028,28.09z"
-                  />
+                    />
+                  </g>
                 </g>
-              </g>
-            </svg>
+              </svg>
+            ) : (
+              <span>
+                <svg fill="#94a3b8" height="15px" width="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32.055 32.055">
+                  <g id="SVGRepo_iconCarrier">
+                    <g>
+                      <path
+                        d="M16.028,3.968c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,3.968,16.028,3.968z 
+                  M16.028,16.028c-2.192,0-3.967,1.774-3.967,3.967s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,16.028,16.028,16.028z 
+                  M16.028,28.09c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,28.09,16.028,28.09z"
+                      />
+                    </g>
+                  </g>
+                </svg>
+              </span>
+            )}
 
             {/* Dropdown menu */}
-            <div className={`absolute right-0 top-[-10px] z-10 mt-2 origin-top-right rounded-lg border border-slate-600 bg-white ring-1 ring-gray-500 ring-opacity-5 dark:bg-black dark:text-slate-400 ${selectFileIds.includes(id) ? 'block' : 'hidden'}`}>
+            <div
+              className={`absolute right-0 top-[-10px] z-10 mt-2 origin-top-right rounded-lg border border-slate-600 bg-white ring-1 ring-gray-500 ring-opacity-5 dark:bg-black dark:text-slate-400 ${
+                selectFileIds.includes(id) ? 'block' : 'hidden'
+              }`}
+            >
               <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                 <a
                   href="#"
@@ -124,7 +148,7 @@ const FileCard = ({
 
                 <a
                   href="#"
-                  className="flex items-center justify-start rounded-lg dark:bg-black hover:dark:bg-slate-800 border-none px-4 py-2 text-sm capitalize text-gray-700 hover:bg-gray-200 hover:text-gray-800 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                  className="flex items-center justify-start rounded-lg border-none px-4 py-2 text-sm capitalize text-gray-700 hover:bg-gray-200 hover:text-gray-800 dark:bg-black dark:hover:bg-slate-800 hover:dark:bg-slate-800 dark:hover:text-slate-200"
                   role="menuitem"
                   onClick={onDelete}
                 >

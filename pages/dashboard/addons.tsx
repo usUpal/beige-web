@@ -169,23 +169,13 @@ const Addons = () => {
   return (
     <>
       <div>
-        <div className="flex items-center justify-between">
-          <ul className="flex space-x-2 rtl:space-x-reverse">
-            <li>
-              <Link href="/" className="text-warning hover:underline">
-                Dashboard
-              </Link>
-            </li>
-            <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-              <span>Addons </span>
-            </li>
-          </ul>
-          <div>
+        <div className="flex items-center justify-end">
+          {/* <div> */}
             {/* <button className='custom-button' onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}>Add New</button> */}
-            <DefaultButton onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)} css="">
+            <DefaultButton onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)} css="h-9">
               Add New
             </DefaultButton>
-          </div>
+          {/* </div> */}
         </div>
 
         <div className="mb-5 ">
