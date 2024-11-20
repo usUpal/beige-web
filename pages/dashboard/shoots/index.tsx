@@ -15,7 +15,7 @@ import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { IRootState } from '@/store';
-import ShootSkeleton from '@/components/skeletons/ShootSkeleton';
+import ShootSkeleton from '@/components/skeletons/shootSkeleton';
 
 const Shoots = () => {
   const dispatch = useDispatch();
