@@ -1,24 +1,22 @@
-import React, { useEffect, useState, Fragment, useRef, useMemo } from 'react';
-import 'tippy.js/dist/tippy.css';
-import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
-import { Dialog, Transition } from '@headlessui/react';
-import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import CommonSkeleton from '@/components/skeletons/CommonSkeleton';
 import StatusBg from '@/components/Status/StatusBg';
+import { useAuth } from '@/contexts/authContext';
+import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
+import { IRootState } from '@/store';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import useDateFormat from '@/hooks/useDateFormat';
+import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
+import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
+import { Dialog, Transition } from '@headlessui/react';
+import { format, isValid, parseISO } from 'date-fns';
+import flatpickr from 'flatpickr';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import { toast } from 'react-toastify';
-import PreLoader from '@/components/ProfileImage/PreLoader';
-import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
-import DefaultButton from '@/components/SharedComponent/DefaultButton';
-import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
-import AccessDenied from '@/components/errors/AccessDenied';
-import flatpickr from 'flatpickr';
-import { format, isValid, parseISO } from 'date-fns';
-import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
-import Image from 'next/image';
-import MeetingSkeleton from '@/components/SharedComponent/Skeletons/MeetingSkeleton';
+import 'tippy.js/dist/tippy.css';
+import { setPageTitle } from '../../store/themeConfigSlice';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -197,7 +195,7 @@ const Meeting = () => {
                 <>
                   {/* <PreLoader></PreLoader> */}
                   {Array.from({ length: 8 }).map((_, index) => (
-                    <MeetingSkeleton key={index} />
+                    <CommonSkeleton key={index} col={4} />
                   ))}
                 </>
               ) : (

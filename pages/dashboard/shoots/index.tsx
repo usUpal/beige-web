@@ -6,15 +6,16 @@ import { useGetAllShootQuery } from '@/Redux/features/shoot/shootApi';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import Link from 'next/link';
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import api from '../../../FileManager/api/storage';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
-import ShootSkeleton from '@/components/SharedComponent/Skeletons/ShootSkeleton';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { IRootState } from '@/store';
+import ShootSkeleton from '@/components/skeletons/ShootSkeleton';
 
 const Shoots = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ const Shoots = () => {
   const [query, setQuery] = useState<string>('');
   const { userData, authPermissions } = useAuth();
   const isHavePermission = authPermissions?.includes('shoot_page');
+  const { isDarkMode } = useSelector((state: IRootState) => state.themeConfig);
 
   // Set page title
   useEffect(() => {
@@ -87,7 +89,7 @@ const Shoots = () => {
                 {(isFetching && data) || isLoading ? (
                   <>
                     {Array.from({ length: 8 }).map((_, index) => (
-                      <ShootSkeleton key={index} />
+                      <ShootSkeleton key={index} isDarkMode={isDarkMode} />
                     ))}
                   </>
                 ) : data?.results?.length > 0 ? (

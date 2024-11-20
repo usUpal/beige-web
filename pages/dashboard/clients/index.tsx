@@ -5,18 +5,18 @@ import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition } from '@headlessui/react';
 import Link from 'next/link';
 import { Fragment, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import AccessDenied from '@/components/errors/AccessDenied';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
-import SixRowSingleLineSkeleton from '@/components/SharedComponent/Skeletons/TransactionSkeleton';
+import CommonSkeleton from '@/components/skeletons/CommonSkeleton';
+import { IRootState } from '@/store';
 const Users = () => {
   const [userModalClient, setUserModalClient] = useState(false);
   const { authPermissions } = useAuth();
   const isHavePermission = authPermissions?.includes('client_page');
-
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [clientUserInfo, setClientUserInfo] = useState<any | null>(null);
   const query = {
@@ -68,7 +68,7 @@ const Users = () => {
                         {isLoadingClient ? (
                           <>
                             {Array.from({ length: 8 }).map((_, index) => (
-                              <SixRowSingleLineSkeleton key={index} />
+                              <CommonSkeleton key={index} col={5} />
                             ))}
                           </>
                         ) : (

@@ -1,23 +1,20 @@
-import 'tippy.js/dist/tippy.css';
-import { useEffect, useState, Fragment, useRef } from 'react';
-import 'tippy.js/dist/tippy.css';
-import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
-import { Dialog, Transition } from '@headlessui/react';
-import { API_ENDPOINT } from '@/config';
-import StatusBg from '@/components/Status/StatusBg';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import useDateFormat from '@/hooks/useDateFormat';
-import ResponsivePagination from 'react-responsive-pagination';
-import { useAuth } from '@/contexts/authContext';
-import PreLoader from '@/components/ProfileImage/PreLoader';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import StatusBg from '@/components/Status/StatusBg';
+import { useAuth } from '@/contexts/authContext';
+import useDateFormat from '@/hooks/useDateFormat';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import ResponsivePagination from 'react-responsive-pagination';
+import 'tippy.js/dist/tippy.css';
+import { setPageTitle } from '../../store/themeConfigSlice';
 
-import { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery, useUpdateDisputeStatusMutation } from '@/Redux/features/dispute/disputeApi';
-import { toast } from 'react-toastify';
 import AccessDenied from '@/components/errors/AccessDenied';
-import Image from 'next/image';
-import DisputeSkeleton from '@/components/SharedComponent/Skeletons/DisputeSkeleton';
+import CommonSkeleton from '@/components/skeletons/CommonSkeleton';
+import { useGetAllDisputesQuery, useLazyGetDisputesDetailsQuery, useUpdateDisputeStatusMutation } from '@/Redux/features/dispute/disputeApi';
+import { IRootState } from '@/store';
+import { toast } from 'react-toastify';
 const Disputes = () => {
   const [disputeModal, setDisputeModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -28,7 +25,6 @@ const Disputes = () => {
   const isHavePermission = authPermissions?.includes('disputes_page');
   const dispatch = useDispatch();
   const statusRef = useRef(null);
-
   useEffect(() => {
     dispatch(setPageTitle('Disputes'));
   });
@@ -102,8 +98,8 @@ const Disputes = () => {
             <tbody className="min-h-screen">
               {getAllDisputesLoading ? (
                 <>
-                  {Array.from({ length: 2 }).map((_, index) => (
-                    <DisputeSkeleton key={index} />
+                  {Array.from({ length: 7 }).map((_, index) => (
+                    <CommonSkeleton key={index} col={3} />
                   ))}
                 </>
               ) : (

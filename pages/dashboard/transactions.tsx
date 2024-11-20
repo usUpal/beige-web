@@ -1,23 +1,19 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import 'tippy.js/dist/tippy.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../../store';
-import { setPageTitle } from '../../store/themeConfigSlice';
-import { API_ENDPOINT } from '@/config';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import { Dialog, Transition } from '@headlessui/react';
-import useDateFormat from '@/hooks/useDateFormat';
+import AccessDenied from '@/components/errors/AccessDenied';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import CommonSkeleton from '@/components/skeletons/CommonSkeleton';
 import StatusBg from '@/components/Status/StatusBg';
 import { useAuth } from '@/contexts/authContext';
-import Swal from 'sweetalert2';
-import ResponsivePagination from 'react-responsive-pagination';
-import PreLoader from '@/components/ProfileImage/PreLoader';
+import useDateFormat from '@/hooks/useDateFormat';
 import { useGetAllTransactionQuery, useUpdateTransactionStatusMutation } from '@/Redux/features/transaction/transactionApi';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import ResponsivePagination from 'react-responsive-pagination';
 import { toast } from 'react-toastify';
-import DefaultButton from '@/components/SharedComponent/DefaultButton';
-import AccessDenied from '@/components/errors/AccessDenied';
-import ShootSkeleton from '@/components/SharedComponent/Skeletons/MeetingSkeleton';
-import SixRowSingleLineSkeleton from '@/components/SharedComponent/Skeletons/TransactionSkeleton';
+import 'tippy.js/dist/tippy.css';
+import { IRootState } from '../../store';
+import { setPageTitle } from '../../store/themeConfigSlice';
 
 const Transactions = () => {
   const dispatch = useDispatch();
@@ -114,7 +110,7 @@ const Transactions = () => {
                 <>
                   {/* <PreLoader></PreLoader> */}
                   {Array.from({ length: 3 }).map((_, index) => (
-                    <SixRowSingleLineSkeleton key={index} />
+                    <CommonSkeleton key={index} col={5} />
                   ))}
                 </>
               ) : (

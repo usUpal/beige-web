@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import PreLoader from '@/components/ProfileImage/PreLoader';
-import Link from 'next/link';
 import { useDeleteRoleMutation, useGetAllRolesQuery } from '@/Redux/features/role/roleApi';
-import { toast } from 'react-toastify';
-import { useRouter } from 'next/router';
-import { useAuth } from '@/contexts/authContext';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import Swal from 'sweetalert2';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import AccessDenied from '@/components/errors/AccessDenied';
-import RoleManagementSkeleton from '@/components/SharedComponent/Skeletons/Skeletons';
+import RoleManagementSkeleton from '@/components/skeletons/RoleManageSkeleton';
+import { useAuth } from '@/contexts/authContext';
+import { IRootState } from '@/store';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
 
 const Role = () => {
   const { authPermissions } = useAuth();
   const isHavePermission = authPermissions?.includes('role_page');
+  const { isDarkMode } = useSelector((state: IRootState) => state.themeConfig);
 
   const {
     data: allRoles,
@@ -88,7 +88,7 @@ const Role = () => {
                 <>
                   {/* <PreLoader></PreLoader> */}
                   {Array.from({ length: 9 }).map((_, index) => (
-                    <RoleManagementSkeleton key={index} />
+                    <RoleManagementSkeleton key={index} isDarkMode={isDarkMode} />
                   ))}
                 </>
               ) : (

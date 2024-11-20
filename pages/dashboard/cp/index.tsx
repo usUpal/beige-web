@@ -1,22 +1,19 @@
+import AccessDenied from '@/components/errors/AccessDenied';
+import CommonSkeleton from '@/components/skeletons/CommonSkeleton';
 import { useAuth } from '@/contexts/authContext';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
-import { useRouter } from 'next/router';
-import AccessDenied from '@/components/errors/AccessDenied';
-import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
-import SixRowSingleLineSkeleton from '@/components/SharedComponent/Skeletons/TransactionSkeleton';
 const CpUsers = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const { authPermissions } = useAuth();
   const isHavePermission = authPermissions?.includes('content_provider');
-
-  const router = useRouter();
   const query = {
     page: currentPage,
     role: 'cp',
@@ -71,7 +68,7 @@ const CpUsers = () => {
                         {allCpIsLoading || isFetching ? (
                           <>
                             {Array.from({ length: 8 }).map((_, index) => (
-                              <SixRowSingleLineSkeleton key={index} />
+                              <CommonSkeleton key={index} col={5} />
                             ))}
                           </>
                         ) : (

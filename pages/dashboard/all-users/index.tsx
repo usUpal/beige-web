@@ -1,26 +1,25 @@
+import AccessDenied from '@/components/errors/AccessDenied';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import CommonSkeleton from '@/components/skeletons/CommonSkeleton';
 import { useAuth } from '@/contexts/authContext';
 import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
+import { IRootState } from '@/store';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition } from '@headlessui/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ResponsivePagination from 'react-responsive-pagination';
-import { toast } from 'react-toastify';
 import 'tippy.js/dist/tippy.css';
 import { setPageTitle } from '../../../store/themeConfigSlice';
-import AccessDenied from '@/components/errors/AccessDenied';
-import SixRowSingleLineSkeleton from '@/components/SharedComponent/Skeletons/TransactionSkeleton';
 
 const Users = () => {
   const [userModal, setUserModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [userInfo, setUserInfo] = useState<any | null>(null);
   const router = useRouter();
-
   const { authPermissions, userData } = useAuth();
   const isHavePermission = authPermissions?.includes('all_users');
 
@@ -109,7 +108,7 @@ const Users = () => {
                         {allUserIsLoading ? (
                           <>
                             {Array.from({ length: 8 }).map((_, index) => (
-                              <SixRowSingleLineSkeleton key={index} />
+                              <CommonSkeleton key={index} col={5} />
                             ))}
                           </>
                         ) : (
