@@ -109,7 +109,7 @@ const Transactions = () => {
               {isAllPaymentLoading ? (
                 <>
                   {/* <PreLoader></PreLoader> */}
-                  {Array.from({ length: 3 }).map((_, index) => (
+                  {Array.from({ length: 8 }).map((_, index) => (
                     <CommonSkeleton key={index} col={5} />
                   ))}
                 </>
