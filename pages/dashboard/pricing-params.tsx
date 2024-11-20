@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useUpdatePriceMutation } from '@/Redux/features/algo/pricesApi';
 import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
-import DisputeSkeleton from '@/components/SharedComponent/Skeletons/DisputeSkeleton';
-
 import AccessDenied from '@/components/errors/AccessDenied';
+import CommonSkeleton from '@/components/skeletons/CommonSkeleton';
 import { useAuth } from '@/contexts/authContext';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
@@ -90,8 +89,8 @@ const PricingCalculation = () => {
               <tbody className="text-black dark:text-white-dark">
                 {isLoadingPricingParams ? (
                   <>
-                    {Array.from({ length: 4 }).map((_, index) => (
-                      <DisputeSkeleton key={index} />
+                    {Array.from({ length: 7 }).map((_, index) => (
+                      <CommonSkeleton key={index} col={5} />
                     ))}
                   </>
                 ) : (
@@ -135,7 +134,7 @@ const PricingCalculation = () => {
                 {isPatchLoading ? (
                   <>
                     {Array.from({ length: 8 }).map((_, index) => (
-                      <DisputeSkeleton key={index} />
+                      <CommonSkeleton key={index} col={5} />
                     ))}
                   </>
                 ) : (

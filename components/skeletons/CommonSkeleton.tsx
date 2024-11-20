@@ -3,7 +3,6 @@ import ContentLoader from 'react-content-loader';
 import { useSelector } from 'react-redux';
 
 interface SkeletonProps {
-  isDarkMode: boolean;
   col?: number;
 }
 
