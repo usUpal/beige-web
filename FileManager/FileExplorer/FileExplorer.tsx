@@ -8,10 +8,12 @@ import api from '../api/storage';
 import config from '../../config';
 import Menu from '../Menu/Menu';
 import { useAuth } from '../../contexts/authContext';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { allSvgs, folderIcon } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition, Tab } from '@headlessui/react';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 import Image from 'next/image';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
 
 const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
   const { userData } = useAuth();
@@ -28,6 +30,8 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   const [modal, setModal] = useState(false);
 
   const [ignoringFileStructure, setIgnoringFileStructure] = useState(false);
+  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+
 
   const [deletionState, setDeletionState] = useState({
     open: false,
@@ -290,8 +294,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           <div className={`hidden md:block`}>
             <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
           </div>
-          <span className="flex items-center gap-2 rounded-md border border-[#ddd] px-6 py-1 " style={{ backgroundColor: '#93c5fd' }}>
-            {/* <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" /> */}
+          <span className="flex items-center gap-2 rounded-md border border-[#ddd] text-black dark:text-black px-6 py-1 bg-[#] " style={{ backgroundColor: '#93c5fd' }}>
             <Image src="/allSvg/refresh.svg" alt="refresh" className="size-6" width={24} height={24} />
             Refresh
           </span>
@@ -314,11 +317,11 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         <nav className="flex" aria-label="Breadcrumb">
           <ol className="mb-5 mt-3 flex items-center">
             <li className="mr-2">
-              <span className="text-gray-500">{allSvgs.folderIcon}</span>
+              <span className="">{ themeConfig.isDarkMode ? folderIcon('#94a3b8') : folderIcon('#94a3b8') }</span>
             </li>
 
             <li>
-              <a href="#" className={`text-gray-500 ${!path.length ? 'font-bold' : 'hover:text-blue-600'}`} onClick={() => setPath([])}>
+              <a href="#" className={`text-slate-400 ${!path.length ? 'font-bold' : 'hover:text-blue-600'}`} onClick={() => setPath([])}>
                 {state.bucketName ? 'Beige' : ''}
               </a>
             </li>
@@ -349,7 +352,9 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           {state.loading && (
             <div className="  relative mb-10 flex items-center rounded border px-4 py-3" role="alert">
               <div className="h-12 w-20">
-                <div className="h-12 w-12">{allSvgs.roundSpinIcon}</div>
+                <div className="h-12 w-12">
+                  { themeConfig.isDarkMode ? allSvgs.roundSpinLightIcon : allSvgs.roundSpinIcon}
+                  </div>
               </div>
               <div className="mt-2">
                 <span className="block font-bold sm:inline">Please wait...</span>

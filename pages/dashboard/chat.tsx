@@ -23,7 +23,6 @@ import { useGetAllUserQuery } from '@/Redux/features/user/userApi';
 import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
 
-
 const Chat = () => {
   const { userData, authPermissions } = useAuth() as any;
   const isHavePermission = authPermissions?.includes('chat_page');
@@ -65,6 +64,7 @@ const Chat = () => {
   const dropdownRef = useRef(null);
   const [newParticipantInfo, setNewParticipantInfo] = useState({});
   const [threeDotSidebar, setThreeDotSidebar] = useState(false);
+  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -287,7 +287,7 @@ const Chat = () => {
         <div className="block text-start md:hidden">
           {!isAddParticipant && (userRole === 'manager' || userRole === 'admin') && (
             <>
-              <div className="block md:hidden">
+              <div className="block md:hidden ">
                 <DefaultButton onClick={handleAddPerticipant} css={'px-2 py-0 md:text-[14px] text-[12px]'}>
                   Add Participant
                 </DefaultButton>
@@ -298,11 +298,11 @@ const Chat = () => {
         <div className="mt-1 xl:h-[83%] 2xl:h-[87%]">
           {isAllDataFetchLoading && (
             <>
-              <div className="min-w-screen mt-24 flex min-h-screen items-start justify-center bg-white p-5">
+              <div className="min-w-screen mt-24 flex min-h-screen items-start justify-center bg-white p-5 dark:bg-[#0e1726]">
                 <div className="flex animate-pulse space-x-2">
-                  <div className="h-3 w-3 rounded-full bg-gray-500"></div>
-                  <div className="h-3 w-3 rounded-full bg-gray-500"></div>
-                  <div className="h-3 w-3 rounded-full bg-gray-500"></div>
+                  <div className="h-3 w-3 rounded-full bg-gray-500 dark:bg-slate-300"></div>
+                  <div className="h-3 w-3 rounded-full bg-gray-500 dark:bg-slate-300"></div>
+                  <div className="h-3 w-3 rounded-full bg-gray-500 dark:bg-slate-300"></div>
                 </div>
               </div>
             </>
@@ -355,7 +355,7 @@ const Chat = () => {
                 onPageChange={handlePageChange}
                 maxWidth={260}
                 className="my-pagination mx-auto flex w-48 justify-start lg:justify-center"
-                pageLinkClassName={`w-5 border-solid bg-gray-300 px-2 py-0.5 mr-1 rounded `}
+                pageLinkClassName={`w-5 border-solid bg-gray-300 px-2 py-0.5 mr-1 rounded`}
                 // activeItemClassName="bg-black"
               />
             </div>
@@ -365,7 +365,7 @@ const Chat = () => {
       <div className={`absolute  z-[5] hidden h-full w-full rounded-md bg-black/60 ${isShowChatMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowChatMenu(!isShowChatMenu)}></div>
       <div className={`panel flex-1 p-0 ${threeDotSidebar && 'hidden xl:block'}`}>
         {!isShowUserChat && (
-          <div className={`relative flex h-full items-center justify-center p-4 `}>
+          <div className={`relative flex h-full items-center justify-center p-4`}>
             <button type="button" onClick={() => setIsShowChatMenu(!isShowChatMenu)} className="absolute top-4 hover:text-primary ltr:left-4 rtl:right-4 xl:hidden">
               {allSvgs.sidebarMenuIcon}
             </button>
@@ -514,7 +514,7 @@ const Chat = () => {
                         {!isAddParticipant && (userRole === 'admin' || userRole === 'admin') && (
                           <>
                             <div className="hidden md:block">
-                              <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px]'}>
+                              <DefaultButton onClick={handleAddPerticipant} css={'px-3 py-0 text-[14px] mt-1.5'}>
                                 Add Participant
                               </DefaultButton>
                             </div>
@@ -607,13 +607,27 @@ const Chat = () => {
                           placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
                           btnClassName="bg-[#f4f4f4] dark:bg-[#1b2e4b] hover:bg-primary-light w-8 h-8 rounded-full !flex justify-center items-center mt-1"
                           button={
-                            <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="#000000" className="bi bi-three-dots-vertical ml-2 mt-1" onClick={toggleThreeDotSidebar}>
-                              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                              <g id="SVGRepo_iconCarrier">
-                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                              </g>
-                            </svg>
+                            <span onClick={toggleThreeDotSidebar}>
+                              <svg
+                                fill={!themeConfig.isDarkMode ? '#000000' : '#94a3b8'}
+                                height="15px"
+                                width="15px"
+                                version="1.1"
+                                id="Capa_1"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 32.055 32.055"
+                              >
+                                <g id="SVGRepo_iconCarrier">
+                                  <g>
+                                    <path
+                                      d="M16.028,3.968c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,3.968,16.028,3.968z 
+                    M16.028,16.028c-2.192,0-3.967,1.774-3.967,3.967s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,16.028,16.028,16.028z 
+                    M16.028,28.09c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,28.09,16.028,28.09z"
+                                    />
+                                  </g>
+                                </g>
+                              </svg>
+                            </span>
                           }
                         ></Dropdown>
                       </div>
@@ -729,9 +743,12 @@ const Chat = () => {
           <div className="relative h-full">
             <div className="mt-1 flex w-full justify-between gap-3 sm:gap-5">
               <div className="my-4 ms-4 text-[20px] font-semibold">
-                <h2>Details</h2>
+                <h2 className="text-black dark:text-white-dark">Details</h2>
               </div>
-              <button className="my-4 me-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b]" onClick={toggleThreeDotSidebar}>
+              <button
+                className="my-4 me-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#f4f4f4] hover:bg-primary-light dark:bg-[#1b2e4b] hover:dark:text-dark-light"
+                onClick={toggleThreeDotSidebar}
+              >
                 <div className="">{allSvgs.closeIconSvg}</div>
               </button>
             </div>
@@ -770,7 +787,7 @@ const Chat = () => {
                           <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                             <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
                             <div className="flex flex-col justify-start space-y-0">
-                              <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
+                              <span className="text-black dark:text-white-dark">{selectedChatRoom?.client_id?.name}</span>
                               <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
                             </div>
                           </li>
@@ -788,7 +805,7 @@ const Chat = () => {
                             <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                               <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
                               <div className="flex flex-col space-y-0">
-                                <span className="text-black dark:text-white">{item?.id?.name}</span>
+                                <span className="text-black dark:text-white-dark">{item?.id?.name}</span>
                                 <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
                                   {item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
                                 </span>
@@ -874,8 +891,8 @@ const Chat = () => {
                         <ul className="space-y-2">
                           <li className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                             <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full bg-green-500`}></span>
-                            <div className="flex flex-col justify-start space-y-0">
-                              <span className="text-black dark:text-white">{selectedChatRoom?.client_id?.name}</span>
+                            <div className="group flex flex-col justify-start space-y-0">
+                              <span className="text-black group-hover:text-dark-light dark:text-white-dark">{selectedChatRoom?.client_id?.name}</span>
                               <span className="badge w-9 p-0 text-center text-[10px] text-gray-400">{selectedChatRoom?.client_id?.role === 'user' && 'Client'}</span>
                             </div>
                           </li>
@@ -891,8 +908,8 @@ const Chat = () => {
                           ].map((item, index) => (
                             <li key={index} className="flex items-start rounded p-2 hover:bg-gray-200 dark:hover:bg-[#2c3e50]">
                               <span className={`mr-2 mt-2 h-2.5 w-2.5 rounded-full ${item?.decision === 'cancelled' ? 'bg-gray-400' : 'bg-green-500'}`}></span>
-                              <div className="flex flex-col space-y-0">
-                                <span className="text-black dark:text-white">{item?.id?.name}</span>
+                              <div className="group flex flex-col space-y-0">
+                                <span className="text-black group-hover:text-dark-light dark:text-white-dark ">{item?.id?.name}</span>
                                 <span className={`badge p-0 text-center text-[10px] text-gray-400 ${item?.id?.role === 'cp' ? 'w-5' : 'w-10'}`}>
                                   {item?.id?.role === 'admin' ? 'Admin' : item?.id?.role === 'user' ? 'Client' : 'Cp'}
                                 </span>

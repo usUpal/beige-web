@@ -39,17 +39,17 @@ const PlacesAutocomplete: React.FC<{
             onAddressSelect && onAddressSelect(description);
             localStorage.setItem('location', description);
           }}
-          className="flex items-center py-1"
+          className="flex items-center rounded-md py-1 hover:bg-[#f0f0f0] dark:hover:bg-[#444444]"
         >
-          <p className="text-sm font-bold">{main_text},</p>
-          <p className="text-sm"> {secondary_text}</p>
+          <p className="text-sm font-bold text-black dark:text-white">{main_text},</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">{secondary_text}</p>
         </li>
       );
     });
   };
 
   return (
-    <div className="block w-full relative">
+    <div className="relative block w-full">
       <input
         value={value}
         disabled={!ready}
@@ -58,9 +58,9 @@ const PlacesAutocomplete: React.FC<{
           handleAddressChange && handleAddressChange(e.target.value);
         }}
         placeholder="Location"
-        className="form-input"
+        className="form-input w-full rounded-md border border-gray-300 bg-slate-100 px-3 py-2   text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white-dark dark:placeholder-gray-500 dark:focus:ring-indigo-500"
       />
-      {status === 'OK' && <ul className='absolute w-full z-50 shadow-md p-5 rounded-lg bg-white'>{renderSuggestions()}</ul>}
+      {status === 'OK' && <ul className="absolute z-50 w-full rounded-lg bg-white p-5 shadow-md dark:bg-gray-800 dark:text-white">{renderSuggestions()}</ul>}
     </div>
   );
 };

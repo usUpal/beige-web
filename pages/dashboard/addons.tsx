@@ -169,23 +169,13 @@ const Addons = () => {
   return (
     <>
       <div>
-        <div className="flex items-center justify-between">
-          <ul className="flex space-x-2 rtl:space-x-reverse">
-            <li>
-              <Link href="/" className="text-warning hover:underline">
-                Dashboard
-              </Link>
-            </li>
-            <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-              <span>Addons </span>
-            </li>
-          </ul>
-          <div>
+        <div className="flex items-center justify-end">
+          {/* <div> */}
             {/* <button className='custom-button' onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)}>Add New</button> */}
-            <DefaultButton onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)} css="">
+            <DefaultButton onClick={() => setAddonsAddBtnModal(!addonsAddBtnModal)} css="h-9">
               Add New
             </DefaultButton>
-          </div>
+          {/* </div> */}
         </div>
 
         <div className="mb-5 ">
@@ -208,8 +198,8 @@ const Addons = () => {
                       <Tab as={Fragment} key={index}>
                         {({ selected }) => (
                           <button
-                            className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] ${
-                              selected ? 'bg-success text-white outline-none' : ''
+                            className={`hover:shadow-[0px 5px 15px 0px rgba(0,0,0,0.30)]  flex h-12 w-44 flex-col items-center justify-center rounded bg-[#f1f2f3] px-2 py-3 text-[13px] capitalize hover:bg-success hover:text-white dark:bg-[#191e3a] hover:dark:bg-success ${
+                              selected ? 'bg-success text-white outline-none dark:bg-success' : ''
                             }`}
                             title={category}
                           >
@@ -229,7 +219,7 @@ const Addons = () => {
                           <div className="table-responsive mb-5">
                             <table className="w-full">
                               <thead>
-                                <tr>
+                                <tr className="text-black dark:text-slate-400">
                                   <th className="">Title</th>
                                   <th className="">Rate</th>
                                   <th className="">Extend Rate Type</th>
@@ -244,10 +234,10 @@ const Addons = () => {
                                   ?.filter((filteredAddon: any) => filteredAddon.category === category)
                                   .map((addon: any, index: any) => (
                                     <tr key={index} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                                      <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                      <td className="min-w-[150px] font-sans text-black dark:text-slate-300 hover:dark:text-white-light/90">
                                         <p className="flex flex-col items-start">{addon.title}</p>
                                       </td>
-                                      <td className="min-w-[150px] font-sans text-black dark:text-white">
+                                      <td className="min-w-[150px] font-sans text-black dark:text-slate-300 dark:hover:text-white-light/90">
                                         <p className="flex flex-col items-start">{addon?.rate}</p>
                                       </td>
                                       <td>
@@ -311,11 +301,12 @@ const Addons = () => {
           <Dialog as="div" open={addonsModal} onClose={() => setAddonsModal(false)}>
             <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
               <div className="flex min-h-screen items-start justify-center md:px-4 ">
-                <Dialog.Panel as="div" className="panel my-24   w-[80%] overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-3/5 md:px-0 lg:w-3/6 2xl:w-2/5">
+                <Dialog.Panel as="div" className="panel my-24 w-[80%] overflow-hidden rounded-lg border-0 p-0 px-8 text-black dark:text-white-dark md:w-3/5 md:px-0 lg:w-3/6 2xl:w-2/5">
                   <div className="my-2 flex items-center justify-between bg-[#fbfbfb] py-3 dark:bg-[#121c2c]">
-                    <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Addons Details </h2>
+                    {/* <h2 className=" ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000] ">Addons Details </h2> */}
+                    <h2 className="ms-6 text-[22px] font-bold capitalize leading-[28.6px] text-[#000000] dark:text-slate-400">Addons Details</h2>
 
-                    <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setAddonsModal(false)}>
+                    <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark-light" onClick={() => setAddonsModal(false)}>
                       {allSvgs.closeIconSvg}
                     </button>
                   </div>
@@ -325,20 +316,22 @@ const Addons = () => {
                       <div className=" w-full  dark:text-white">
                         <div className="flex w-full flex-col gap-3 md:flex md:flex-row md:justify-between">
                           <p className="flex w-full flex-col">
-                            <span className="mb-2  text-[14px] font-bold capitalize leading-none text-[#000000]">Title</span>
+                            <span className="mb-2  text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-white-dark ">Title</span>
                             <input
                               {...register('title')}
                               onChange={(e) => handleInputChange('title', e.target.value)}
                               value={addonsInfo?.title || ''}
-                              className=" h-9  w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none  md:ms-0"
+                              // className=" h-9  w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none  md:ms-0"
+                              className="h-9 w-full rounded border border-slate-600 bg-gray-100 p-1 text-[13px] text-black  dark:bg-[#121e32] dark:text-slate-400"
                             />
                           </p>
 
                           <div className="mt-3 flex w-full flex-col md:mt-0">
-                            <span className="mb-2  text-[14px] font-bold capitalize leading-none text-[#000000]">Status</span>
+                            <span className="mb-2  text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-white-dark">Status</span>
                             <select
                               {...register('status')}
-                              className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
+                              // className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0"
+                              className="h-9 w-full rounded border border-slate-600 p-1 text-[13px]  text-black dark:bg-[#121e32] dark:text-slate-400"
                               value={addonsInfo?.status || ''}
                               onChange={(e) => handleInputChange('status', e.target.value)}
                             >
@@ -351,7 +344,7 @@ const Addons = () => {
                         <div className="flex w-full flex-col justify-between gap-4 md:mt-3 md:flex md:flex-row">
                           {addonsInfo?.ExtendRate && (
                             <div className="mt-3 flex w-full flex-col md:mt-0">
-                              <span className="pb-2 text-[14px] font-bold capitalize leading-none text-[#000000]">Extend Rate</span>
+                              <span className="pb-2 text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-white-dark">Extend Rate</span>
                               <input
                                 type="number"
                                 {...register('ExtendRate', {
@@ -359,17 +352,19 @@ const Addons = () => {
                                 })}
                                 onChange={(e) => handleInputChange('ExtendRate', e.target.value)}
                                 value={addonsInfo?.ExtendRate || 0}
-                                className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 "
+                                // className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 "
+                                className="h-9 w-full rounded border  border-slate-600 bg-gray-100 p-1 text-[13px] text-black dark:bg-[#121e32] dark:text-slate-400"
                               />
                             </div>
                           )}
 
                           {addonsInfo?.ExtendRateType && (
                             <p className="mt-3 flex w-full flex-col md:mt-0">
-                              <span className="pb-2 text-[14px] font-bold capitalize leading-none text-[#000000]">Extend Rate Type</span>
+                              <span className="pb-2 text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-white-dark">Extend Rate Type</span>
                               <select
                                 {...register('ExtendRateType')}
-                                className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
+                                // className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] capitalize focus:border-gray-500 focus:outline-none md:ms-0"
+                                className="h-9 w-full rounded border border-slate-600 bg-gray-100 p-1  text-[13px] text-black dark:border-[#2a2e3e] dark:bg-[#121e32] dark:text-slate-400"
                                 value={addonsInfo?.ExtendRateType || ''}
                                 onChange={(e) => handleInputChange('ExtendRateType', e.target.value)}
                               >
@@ -389,13 +384,14 @@ const Addons = () => {
 
                         <div className="mt-3 flex flex-col justify-between md:flex md:flex-row">
                           <div className="mt-3 flex w-full flex-col md:mt-0">
-                            <span className="mb-2 text-[14px] font-bold capitalize leading-none text-[#000000]">Rate</span>
+                            <span className="mb-2 text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-white-dark">Rate</span>
                             <input
                               type="number"
                               {...register('rate')}
                               onChange={(e) => handleInputChange('rate', e.target.value)}
                               value={addonsInfo?.rate || 0}
-                              className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 "
+                              // className=" h-9 w-full rounded border border-gray-300 bg-gray-100 p-1 text-[13px] focus:border-gray-500 focus:outline-none md:ms-0 "
+                              className="h-9 w-full rounded border border-slate-600 bg-gray-100 p-1 text-[13px] text-black dark:bg-[#121e32] dark:text-slate-400"
                             />
                           </div>
                         </div>
@@ -404,7 +400,7 @@ const Addons = () => {
                           <DefaultButton css='' onClick={handleUpdateTestSubmit}>Update</DefaultButton>
                         </div> */}
                         <div className="mt-8 flex justify-end md:mt-8">
-                          <DefaultButton onClick={handleUpdateAddOns} type="submit">
+                          <DefaultButton onClick={handleUpdateAddOns} type="submit" css="h-9">
                             {useUpdateAddonLoading ? 'Updating...' : 'Update'}
                           </DefaultButton>
                         </div>
@@ -426,9 +422,9 @@ const Addons = () => {
               <div className="flex min-h-screen items-start justify-center px-4">
                 <Dialog.Panel as="div" className="panel my-24 w-full overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-8/12 2xl:w-5/12">
                   <div className="my-2 box-border flex items-center justify-between bg-[#fbfbfb] px-6 py-3 dark:bg-[#121c2c]">
-                    <h2 className="text-[22px] font-bold capitalize leading-[28.6px] text-[#000000]">Add Addons </h2>
+                    <h2 className="text-[22px] font-bold capitalize leading-[28.6px] text-[#000000] dark:text-slate-300">Add Addons </h2>
 
-                    <button type="button" className=" text-white-dark hover:text-dark" onClick={() => setAddonsAddBtnModal(false)}>
+                    <button type="button" className=" text-white-dark hover:text-dark-light" onClick={() => setAddonsAddBtnModal(false)}>
                       {allSvgs.closeIconSvg}
                     </button>
                   </div>
@@ -473,7 +469,7 @@ const Addons = () => {
                     <form className="w-full space-y-2 pb-5 dark:text-white" onSubmit={handleSubmit(handlePostAddOn)}>
                       {!showDesignElement.showNewCategoryInput && (
                         <div className="rounded">
-                          <label htmlFor="category" className="mb-1 text-[#0E1726]">
+                          <label htmlFor="category" className="mb-1 text-[#0E1726] dark:text-white-dark">
                             Select Category
                           </label>
                           <select
@@ -496,7 +492,7 @@ const Addons = () => {
                       <div>
                         {showDesignElement.showNewCategoryInput && (
                           <div className="rounded-md ">
-                            <label htmlFor="new_category" className="mb-1 capitalize text-[#0E1726]">
+                            <label htmlFor="new_category" className="mb-1 capitalize text-[#0E1726] dark:text-white-dark">
                               Create New category
                             </label>
 
@@ -592,7 +588,7 @@ const Addons = () => {
                       </div>
 
                       <div className="flex justify-end">
-                        <DefaultButton css="font-semibold mt-3">{useAddNewAddOnLoading ? 'Adding...' : 'Add Addons'}</DefaultButton>
+                        <DefaultButton css="font-semibold h-9 mt-3">{useAddNewAddOnLoading ? 'Adding...' : 'Add Addons'}</DefaultButton>
                       </div>
                     </form>
                   </div>

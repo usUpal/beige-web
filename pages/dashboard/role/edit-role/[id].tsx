@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { createSlug } from '@/utils/helper';
 import { useAuth } from '@/contexts/authContext';
 import AccessDenied from '@/components/errors/AccessDenied';
+import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
 const EditRole = () => {
   const { authPermissions } = useAuth();
@@ -97,7 +98,7 @@ const EditRole = () => {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
       <div className="panel h-full w-full">
         <div className="mb-5 flex items-center justify-between">
-          <h5 className="text-xl font-bold dark:text-white-light">Update Role</h5>
+          <h5 className="text-xl font-bold dark:text-slate-400">Update Role</h5>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="">
@@ -112,7 +113,7 @@ const EditRole = () => {
                   }))
                 }
                 value={roleDetails?.name}
-                className="rounded border border-black px-3 py-1"
+                className="rounded border border-slate-600 px-3 py-2 dark:bg-[#121e32] "
               />
               <input
                 type="text"
@@ -124,11 +125,11 @@ const EditRole = () => {
                   }))
                 }
                 value={roleDetails?.details}
-                className="col-span-2 rounded border border-black px-3 py-1"
+                className="col-span-2 rounded border border-slate-600 px-3 py-2 dark:bg-[#121e32]"
               />
             </div>
 
-            <h3 className="mt-5">Permission List</h3>
+            <h3 className="mt-5 text-black dark:text-slate-400">Permission List</h3>
             <hr className="border border-dashed border-black/30" />
 
             <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -136,7 +137,7 @@ const EditRole = () => {
                 allPermissions?.map((module: any, index: number) => (
                   <div className="rounded border border-black/30 p-3 " key={index}>
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-semibold">{module?.module_name}</h4>
+                      <h4 className="text-sm font-semibold text-black dark:text-slate-400">{module?.module_name}</h4>
                     </div>
                     <div className="mt-4">
                       {module?.permissions?.length &&
@@ -152,7 +153,7 @@ const EditRole = () => {
                           const isDisabled = (roleData?.role === 'cp' || roleData?.role === 'user') && permission?.status === false;
                           return (
                             <div className="mb-1 flex items-center justify-between" key={index}>
-                              <label htmlFor={permission?.key} className="cursor-pointer">
+                              <label htmlFor={permission?.key} className="cursor-pointer text-black dark:text-white-dark">
                                 {permission?.name}
                               </label>
                               <div className="relative h-6 w-12">
@@ -190,9 +191,7 @@ const EditRole = () => {
                   <Loader />
                 </button>
               ) : (
-                <button className="rounded bg-black px-3 py-1 text-white" type="submit">
-                  Submit
-                </button>
+                <DefaultButton css="h-9">Submit</DefaultButton>
               )}
             </div>
           </div>

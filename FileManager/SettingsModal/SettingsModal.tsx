@@ -60,12 +60,12 @@ const SettingsModal = ({ open, closeModal }) => {
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <Dialog.Panel as="div" className="panel my-24 w-5/6 overflow-hidden rounded-lg border-0 p-0 pb-2 text-black dark:text-white-dark md:w-3/5">
+                  <Dialog.Panel as="div" className="panel my-24 w-5/6 overflow-hidden rounded-lg p-0 pb-2 text-black dark:text-white-dark md:w-3/5">
                     <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                       <div className="text-lg font-bold capitalize">Options & Settings</div>
                       <button
                         type="button"
-                        className="text-[16px] text-white-dark hover:text-dark"
+                        className="text-[16px] text-white-dark hover:text-dark-light"
                         onClick={() => {
                           closeModal();
                         }}
@@ -109,7 +109,7 @@ const SettingsModal = ({ open, closeModal }) => {
                               value={settings.privateUrlExpiration}
                               onChange={(e) => setSettings({ ...settings, privateUrlExpiration: e.currentTarget.value })}
                             />
-                            <div className="flex items-center justify-center rounded-none border border-white-light bg-[#eee] px-3 font-semibold dark:border-[#17263c] dark:bg-[#1b2e4b] ">days</div>
+                            <div className="flex items-center justify-center rounded-none border border-white-light bg-[#eee] px-3 font-semibold dark:border-[#17263c] dark:bg-[#1b2e4b]">days</div>
                           </div>
                         </form>
                       </p>
@@ -142,7 +142,7 @@ const SettingsModal = ({ open, closeModal }) => {
                       </div>
 
                       <div className="mt-8 flex items-center justify-end">
-                        <DefaultButton onClick={close}>Save</DefaultButton>
+                        <DefaultButton onClick={close} css='h-9'>Save</DefaultButton>
                       </div>
                     </div>
                   </Dialog.Panel>

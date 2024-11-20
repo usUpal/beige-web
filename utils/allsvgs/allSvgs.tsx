@@ -808,26 +808,21 @@ const dataLoadingLoader = (
   </svg>
 );
 
-const folderIcon = (
-  <svg className="stroke-gray-500" width="21px" height="21px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+const roundSpinIcon = (
+  <svg fill="#000000" className="animate-spin" height="40px" width="40px" viewBox="-100 -100 1200.00 1200.00" xmlns="http://www.w3.org/2000/svg">
     <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-    <g id="SVGRepo_tracerCarrier" stroke="#6B7280" strokeLinecap="round" strokeLinejoin="round"></g>
+    <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
     <g id="SVGRepo_iconCarrier">
-      {' '}
       <path
-        d="M4.24999 18.5001H2.74999V7.50005C2.74471 7.14333 2.80991 6.78907 2.94185 6.45761C3.0738 6.12614 3.2699 5.82399 3.51889 5.56849C3.76789 5.31299 4.06489 5.10917 4.39284 4.96872C4.72079 4.82828 5.07325 4.75396 5.42999 4.75005H7.83999C7.94894 4.74771 8.05712 4.76882 8.15719 4.81195C8.25727 4.85509 8.34689 4.91924 8.41999 5.00005L11.09 8.23005H16C16.3618 8.22863 16.7203 8.29968 17.0542 8.43901C17.3881 8.57834 17.6908 8.78313 17.9443 9.0413C18.1978 9.29948 18.397 9.6058 18.5303 9.94222C18.6635 10.2786 18.728 10.6383 18.72 11.0001V11.5001H17.22V11.0001C17.224 10.8373 17.1954 10.6755 17.1359 10.524C17.0764 10.3725 16.9871 10.2344 16.8734 10.1179C16.7598 10.0014 16.6239 9.90888 16.4739 9.84571C16.3239 9.78253 16.1628 9.75001 16 9.75005H10.73C10.621 9.74982 10.5133 9.7255 10.4148 9.67882C10.3162 9.63215 10.2292 9.56427 10.16 9.48005L7.48999 6.25005H5.42999C5.10815 6.26051 4.8035 6.39778 4.58245 6.63194C4.36141 6.8661 4.2419 7.17815 4.24999 7.50005V18.5001Z"
-        fill="#000000"
-      ></path>{' '}
-      <path
-        d="M17.12 19.25H3.49998C3.37158 19.2489 3.24553 19.2154 3.13362 19.1524C3.0217 19.0895 2.92756 18.9992 2.85998 18.89C2.79599 18.7772 2.76236 18.6497 2.76236 18.52C2.76236 18.3903 2.79599 18.2628 2.85998 18.15L6.23998 11.65C6.3059 11.5297 6.40276 11.4292 6.52056 11.3588C6.63835 11.2885 6.77279 11.2509 6.90998 11.25H20.5C20.6284 11.2511 20.7544 11.2846 20.8663 11.3476C20.9783 11.4105 21.0724 11.5008 21.14 11.61C21.204 11.7228 21.2376 11.8503 21.2376 11.98C21.2376 12.1097 21.204 12.2372 21.14 12.35L17.76 18.85C17.6966 18.966 17.6044 19.0637 17.4923 19.1338C17.3803 19.2038 17.252 19.2439 17.12 19.25ZM4.72998 17.75H16.67L19.27 12.75H7.32998L4.72998 17.75Z"
-        fill="#000000"
-      ></path>{' '}
+        className="fil0"
+        d="M854.569 841.338c-188.268 189.444 -519.825 171.223 -704.157 -13.109 -190.56 -190.56 -200.048 -493.728 -28.483 -695.516 10.739 -12.623 21.132 -25.234 34.585 -33.667 36.553 -22.89 85.347 -18.445 117.138 13.347 30.228 30.228 35.737 75.83 16.531 111.665 -4.893 9.117 -9.221 14.693 -16.299 22.289 -140.375 150.709 -144.886 378.867 -7.747 516.005 152.583 152.584 406.604 120.623 541.406 -34.133 106.781 -122.634 142.717 -297.392 77.857 -451.04 -83.615 -198.07 -305.207 -291.19 -510.476 -222.476l-.226 -.226c235.803 -82.501 492.218 23.489 588.42 251.384 70.374 166.699 36.667 355.204 -71.697 493.53 -11.48 14.653 -23.724 28.744 -36.852 41.948z"
+      ></path>
     </g>
   </svg>
 );
 
-const roundSpinIcon = (
-  <svg fill="#000000" className="animate-spin" height="40px" width="40px" viewBox="-100 -100 1200.00 1200.00" xmlns="http://www.w3.org/2000/svg">
+const roundSpinLightIcon = (
+  <svg fill="#94a3b8" className="animate-spin" height="40px" width="40px" viewBox="-100 -100 1200.00 1200.00" xmlns="http://www.w3.org/2000/svg">
     <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
     <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
     <g id="SVGRepo_iconCarrier">
@@ -1025,7 +1020,7 @@ const quesMarkIcon = (
 );
 
 const cloudIcon_Dropdown = (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 h-5 w-5 text-gray-600">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 h-5 w-5 text-slate-400">
     <path
       fillRule="evenodd"
       d="M10.5 3.75a6 6 0 0 0-5.98 6.496A5.25 5.25 0 0 0 6.75 20.25H18a4.5 4.5 0 0 0 2.206-8.423 3.75 3.75 0 0 0-4.133-4.303A6.001 6.001 0 0 0 10.5 3.75Zm2.25 6a.75.75 0 0 0-1.5 0v4.94l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V9.75Z"
@@ -1035,7 +1030,7 @@ const cloudIcon_Dropdown = (
 );
 
 const lockIcon_Dropdown = (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 h-5 w-5 text-gray-600">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 h-5 w-5 text-slate-400">
     <path d="M18 1.5c2.9 0 5.25 2.35 5.25 5.25v3.75a.75.75 0 0 1-1.5 0V6.75a3.75 3.75 0 1 0-7.5 0v3a3 3 0 0 1 3 3v6.75a3 3 0 0 1-3 3H3.75a3 3 0 0 1-3-3v-6.75a3 3 0 0 1 3-3h9v-3c0-2.9 2.35-5.25 5.25-5.25Z" />
   </svg>
 );
@@ -1050,21 +1045,25 @@ const arrowRight_dropdown = (
   </svg>
 );
 
-const pencilIcon_dropdown = (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 h-5 w-5 text-gray-600">
-    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
-    <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
-  </svg>
+export const pencilIconDropdown = (color: string) => (
+  <span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={color} stroke="currentColor" height="15px" width="15px">
+      <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
+      <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
+    </svg>
+  </span>
 );
 
-const trash_download = (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 h-5 w-5 text-gray-600">
-    <path
-      fillRule="evenodd"
-      d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
-      clipRule="evenodd"
-    />
-  </svg>
+export const trashDownloadIcon = (color: string) => (
+  <span>
+    <svg xmlns="http://www.w3.org/2000/svg" fill={color} viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" height="15px" width="15px">
+      <path
+        fillRule="evenodd"
+        d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  </span>
 );
 
 const roundedPlusIconMd = (
@@ -1660,9 +1659,14 @@ const uploadUpArrow = (
   </svg>
 );
 
-const addMorePlusIconSm = (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="white" className="h-3 w-3">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+const addMorePlusIconSmLight = (
+  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#fff">
+    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+    <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+    <g id="SVGRepo_iconCarrier">
+      {' '}
+      <path d="M6 12H18M12 6V18" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>{' '}
+    </g>
   </svg>
 );
 
@@ -1683,6 +1687,41 @@ const beigeLogoIcon = (
   </svg>
 );
 
+const darkModeIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M12 2V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M12 20V22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M4 12L2 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M22 12L20 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path opacity="0.5" d="M19.7778 4.22266L17.5558 6.25424" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path opacity="0.5" d="M4.22217 4.22266L6.44418 6.25424" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path opacity="0.5" d="M6.44434 17.5557L4.22211 19.7779" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path opacity="0.5" d="M19.7778 19.7773L17.5558 17.5551" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const lightModeIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M21.0672 11.8568L20.4253 11.469L21.0672 11.8568ZM12.1432 2.93276L11.7553 2.29085V2.29085L12.1432 2.93276ZM21.25 12C21.25 17.1086 17.1086 21.25 12 21.25V22.75C17.9371 22.75 22.75 17.9371 22.75 12H21.25ZM12 21.25C6.89137 21.25 2.75 17.1086 2.75 12H1.25C1.25 17.9371 6.06294 22.75 12 22.75V21.25ZM2.75 12C2.75 6.89137 6.89137 2.75 12 2.75V1.25C6.06294 1.25 1.25 6.06294 1.25 12H2.75ZM15.5 14.25C12.3244 14.25 9.75 11.6756 9.75 8.5H8.25C8.25 12.5041 11.4959 15.75 15.5 15.75V14.25ZM20.4253 11.469C19.4172 13.1373 17.5882 14.25 15.5 14.25V15.75C18.1349 15.75 20.4407 14.3439 21.7092 12.2447L20.4253 11.469ZM9.75 8.5C9.75 6.41182 10.8627 4.5828 12.531 3.57467L11.7553 2.29085C9.65609 3.5593 8.25 5.86509 8.25 8.5H9.75ZM12 2.75C11.9115 2.75 11.8077 2.71008 11.7324 2.63168C11.6686 2.56527 11.6538 2.50244 11.6503 2.47703C11.6461 2.44587 11.6482 2.35557 11.7553 2.29085L12.531 3.57467C13.0342 3.27065 13.196 2.71398 13.1368 2.27627C13.0754 1.82126 12.7166 1.25 12 1.25V2.75ZM21.7092 12.2447C21.6444 12.3518 21.5541 12.3539 21.523 12.3497C21.4976 12.3462 21.4347 12.3314 21.3683 12.2676C21.2899 12.1923 21.25 12.0885 21.25 12H22.75C22.75 11.2834 22.1787 10.9246 21.7237 10.8632C21.286 10.804 20.7293 10.9658 20.4253 11.469L21.7092 12.2447Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+const eyeIcon = (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M9 4.45962C9.91153 4.16968 10.9104 4 12 4C16.1819 4 19.028 6.49956 20.7251 8.70433C21.575 9.80853 22 10.3606 22 12C22 13.6394 21.575 14.1915 20.7251 15.2957C19.028 17.5004 16.1819 20 12 20C7.81811 20 4.97196 17.5004 3.27489 15.2957C2.42496 14.1915 2 13.6394 2 12C2 10.3606 2.42496 9.80853 3.27489 8.70433C3.75612 8.07914 4.32973 7.43025 5 6.82137"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+    <path d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+);
+
 export const correctionTikIcon = (classes: any) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className={classes}>
     <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -1694,7 +1733,23 @@ export const customizeCrossIcon = (classes: any) => (
   </svg>
 );
 
+export const folderIcon = (color: any) => (
+  <svg className="folder-icon" width="21px" height="21px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g id="SVGRepo_iconCarrier">
+      <path
+        d="M4.24999 18.5001H2.74999V7.50005C2.74471 7.14333 2.80991 6.78907 2.94185 6.45761C3.0738 6.12614 3.2699 5.82399 3.51889 5.56849C3.76789 5.31299 4.06489 5.10917 4.39284 4.96872C4.72079 4.82828 5.07325 4.75396 5.42999 4.75005H7.83999C7.94894 4.74771 8.05712 4.76882 8.15719 4.81195C8.25727 4.85509 8.34689 4.91924 8.41999 5.00005L11.09 8.23005H16C16.3618 8.22863 16.7203 8.29968 17.0542 8.43901C17.3881 8.57834 17.6908 8.78313 17.9443 9.0413C18.1978 9.29948 18.397 9.6058 18.5303 9.94222C18.6635 10.2786 18.728 10.6383 18.72 11.0001V11.5001H17.22V11.0001C17.224 10.8373 17.1954 10.6755 17.1359 10.524C17.0764 10.3725 16.9871 10.2344 16.8734 10.1179C16.7598 10.0014 16.6239 9.90888 16.4739 9.84571C16.3239 9.78253 16.1628 9.75001 16 9.75005H10.73C10.621 9.74982 10.5133 9.7255 10.4148 9.67882C10.3162 9.63215 10.2292 9.56427 10.16 9.48005L7.48999 6.25005H5.42999C5.10815 6.26051 4.8035 6.39778 4.58245 6.63194C4.36141 6.8661 4.2419 7.17815 4.24999 7.50005V18.5001Z"
+        fill={color}
+      ></path>
+      <path
+        d="M17.12 19.25H3.49998C3.37158 19.2489 3.24553 19.2154 3.13362 19.1524C3.0217 19.0895 2.92756 18.9992 2.85998 18.89C2.79599 18.7772 2.76236 18.6497 2.76236 18.52C2.76236 18.3903 2.79599 18.2628 2.85998 18.15L6.23998 11.65C6.3059 11.5297 6.40276 11.4292 6.52056 11.3588C6.63835 11.2885 6.77279 11.2509 6.90998 11.25H20.5C20.6284 11.2511 20.7544 11.2846 20.8663 11.3476C20.9783 11.4105 21.0724 11.5008 21.14 11.61C21.204 11.7228 21.2376 11.8503 21.2376 11.98C21.2376 12.1097 21.204 12.2372 21.14 12.35L17.76 18.85C17.6966 18.966 17.6044 19.0637 17.4923 19.1338C17.3803 19.2038 17.252 19.2439 17.12 19.25ZM4.72998 17.75H16.67L19.27 12.75H7.32998L4.72998 17.75Z"
+        fill={color}
+      ></path>
+    </g>
+  </svg>
+);
+
 export const allSvgs = {
+  lightModeIcon,
   toggleThemeIcon,
   moonIconForDarkTheme,
   lightThemeIcon,
@@ -1775,7 +1830,7 @@ export const allSvgs = {
   closeBtnCp,
   saveBtn,
   dataLoadingLoader,
-  folderIcon,
+  // folderIcon,
   roundSpinIcon,
   invalidIcon,
   trashIcon,
@@ -1793,8 +1848,6 @@ export const allSvgs = {
   cloudIcon_Dropdown,
   lockIcon_Dropdown,
   arrowRight_dropdown,
-  pencilIcon_dropdown,
-  trash_download,
   roundedPlusIconMd,
   downArrow,
   locationIcon,
@@ -1814,6 +1867,9 @@ export const allSvgs = {
   delIconDefault,
   htmlCodeIcon,
   uploadUpArrow,
-  addMorePlusIconSm,
   beigeLogoIcon,
+  eyeIcon,
+  darkModeIcon,
+  roundSpinLightIcon,
+  addMorePlusIconSmLight,
 };

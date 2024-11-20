@@ -10,6 +10,7 @@ import { setPageTitle } from '../../../store/themeConfigSlice';
 import { useRouter } from 'next/router';
 import AccessDenied from '@/components/errors/AccessDenied';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
+import SixRowSingleLineSkeleton from '@/components/SharedComponent/Skeletons/TransactionSkeleton';
 const CpUsers = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const { authPermissions } = useAuth();
@@ -20,7 +21,11 @@ const CpUsers = () => {
     page: currentPage,
     role: 'cp',
   };
-  const { data: allCpUsers } = useGetAllUserQuery(query, {
+  const {
+    data: allCpUsers,
+    isLoading: allCpIsLoading,
+    isFetching,
+  } = useGetAllUserQuery(query, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -35,37 +40,22 @@ const CpUsers = () => {
     setCurrentPage(page);
   };
 
-
   if (!isHavePermission) {
-    return (
-      <AccessDenied />
-    );
+    return <AccessDenied />;
   }
-
 
   return (
     <>
-      <div>
-        <ul className="flex space-x-2 rtl:space-x-reverse">
-          <li>
-            <Link href="/" className="text-warning hover:underline">
-              Dashboard
-            </Link>
-          </li>
-          <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-            <span>CP</span>
-          </li>
-        </ul>
-
+      <div className="h-[90vh]">
         <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
           <div className="panel">
             <div className="mb-5 flex items-center justify-between">
-              <h5 className="text-lg font-semibold dark:text-white-light">Content Provider</h5>
+              <h5 className="text-lg font-semibold dark:text-slate-400">Content Provider</h5>
             </div>
             <div className="mb-1">
               <div className="inline-block w-full">
                 <div>
-                  <div className="table-responsive">
+                  <div className="table-responsive h-[70vh]">
                     <table>
                       <thead>
                         <tr>
@@ -78,38 +68,45 @@ const CpUsers = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {allCpUsers?.results?.map((cpUser: any) => (
-                          <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                            <td className="min-w-[150px] font-sans text-black dark:text-white">
-                              <div className="flex items-center break-all ">{cpUser?.id}</div>
-                            </td>
-                            <td> {truncateLongText(cpUser?.name, 30)}</td>
-                            <td className="min-w-[150px] break-all">{truncateLongText(cpUser?.email, 40)}</td>
-                            <td className="font-sans text-success">{cpUser?.role}</td>
-
-                            <td>
-                              <span className={`badge text-md w-12 ${!cpUser?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
-                                {cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}
-                              </span>
-                            </td>
-
-                            {authPermissions?.includes('edit_content_provider') && (
-                              <td>
-                                <Link href={`cp/${cpUser?.id}`}>
-                                  <button type="button" className="p-0">
-                                    {allSvgs.editPen}
-                                  </button>
-                                </Link>
+                        {allCpIsLoading || isFetching ? (
+                          <>
+                            {Array.from({ length: 8 }).map((_, index) => (
+                              <SixRowSingleLineSkeleton key={index} />
+                            ))}
+                          </>
+                        ) : (
+                          allCpUsers?.results?.map((cpUser: any) => (
+                            <tr key={cpUser.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
+                              <td className="min-w-[150px] font-sans text-black dark:text-slate-300 group-hover:dark:text-dark-light">
+                                <div className="flex items-center break-all ">{cpUser?.id}</div>
                               </td>
-                            )}
-                          </tr>
-                        ))}
+                              <td> {truncateLongText(cpUser?.name, 30)}</td>
+                              <td className="min-w-[150px] break-all">{truncateLongText(cpUser?.email, 40)}</td>
+                              <td className="font-sans text-success">{cpUser?.role}</td>
+
+                              <td>
+                                <span className={`badge text-md w-12 ${!cpUser?.isEmailVerified ? 'bg-slate-300' : 'bg-success'} text-center`}>
+                                  {cpUser?.isEmailVerified === true ? 'Verified' : 'Unverified'}
+                                </span>
+                              </td>
+
+                              {authPermissions?.includes('edit_content_provider') && (
+                                <td>
+                                  <Link href={`cp/${cpUser?.id}`}>
+                                    <button type="button" className="p-0">
+                                      {allSvgs.editPen}
+                                    </button>
+                                  </Link>
+                                </td>
+                              )}
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
-
-                    <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-                      <ResponsivePagination current={currentPage} total={allCpUsers?.totalPages} onPageChange={handlePageChange} maxWidth={400} />
-                    </div>
+                  </div>
+                  <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+                    <ResponsivePagination current={currentPage} total={allCpUsers?.totalPages} onPageChange={handlePageChange} maxWidth={400} />
                   </div>
                 </div>
               </div>

@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-import PreLoader from '@/components/ProfileImage/PreLoader';
 import StatusBg from '@/components/Status/StatusBg';
 import { useAuth } from '@/contexts/authContext';
 import { useGetAllShootQuery } from '@/Redux/features/shoot/shootApi';
@@ -14,7 +13,8 @@ import api from '../../../FileManager/api/storage';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
 import AccessDenied from '@/components/errors/AccessDenied';
 import Image from 'next/image';
-import ShootSkeleton from '@/components/skeletons/shootSkeleton';
+import ShootSkeleton from '@/components/SharedComponent/Skeletons/ShootSkeleton';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 
 const Shoots = () => {
   const dispatch = useDispatch();
@@ -56,34 +56,35 @@ const Shoots = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
+      <div className="grid  grid-cols-1 gap-6 lg:grid-cols-1">
         {/* Recent Shoots */}
         <div className="panel h-full w-full">
           <div className="my-5 mb-5 items-center justify-between md:my-0 md:mb-4 md:flex">
-            <h5 className="text-xl font-bold dark:text-white-light">Recent Shoots</h5>
+            <h5 className="text-xl font-bold dark:text-slate-300">Recent Shoots</h5>
             <input
               type="text"
               onChange={(event) => setQuery(event.target.value)}
               value={query}
-              className="rounded border border-black px-3 py-1 focus:border-black focus:outline-none"
+              className="rounded border border-black px-3 py-1 focus:border-black focus:outline-slate-900 dark:bg-[#121e32]"
               placeholder="Search..."
             />
           </div>
 
-          <div className="table-responsive">
+          <div className="table-responsive h-[75vh]">
             <table>
               <thead>
-                <tr>
-                  <th className="text-[16px] font-semibold ltr:rounded-l-md rtl:rounded-r-md">Shoot Name</th>
+                <tr className="text-black dark:text-slate-400">
+                  <th className=" font-semibold ltr:rounded-l-md rtl:rounded-r-md">Shoot Name</th>
                   <th className="text-[16px] font-semibold">Shoot ID</th>
-                  <th className="text-[16px] font-semibold">Price</th>
+                  <th className="text-[16px] font-semibold ">Price</th>
                   {authPermissions?.includes('shoot_download') && <th className="text-[16px] font-semibold">Files</th>}
-                  <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
+                  <th className=" ltr:rounded-r-md rtl:rounded-l-md ">Status</th>
                   {authPermissions?.includes('shoot_show_details') && <th className="text-[16px] font-semibold">View</th>}
                 </tr>
               </thead>
+
               <tbody>
-                {isLoading ? (
+                {(isFetching && data) || isLoading ? (
                   <>
                     {Array.from({ length: 8 }).map((_, index) => (
                       <ShootSkeleton key={index} />
@@ -92,14 +93,10 @@ const Shoots = () => {
                 ) : data?.results?.length > 0 ? (
                   data.results.map((shoot: shootsData) => (
                     <tr key={shoot.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                      <td className="min-w-[150px] text-black dark:text-white">
+                      <td className="min-w-[150px] text-black group-hover:text-dark-light dark:text-slate-300">
                         <div className="flex items-center">
-                          {/* <img className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" /> */}
-
                           <Image className="h-8 w-8 rounded-md object-cover ltr:mr-3 rtl:ml-3" src="/assets/images/ps.svg" alt="avatar" width={32} height={32} />
-                          <p className="">
-                            {/* whitespace-nowrap */}
-                            {/* {shoot.order_name} */}
+                          <p>
                             {truncateLongText(shoot?.order_name, 33)}
                             <span className="block text-xs text-[#888EA8]">{new Date(shoot.shoot_datetimes[0]?.start_date_time).toDateString()}</span>
                           </p>
@@ -107,7 +104,7 @@ const Shoots = () => {
                       </td>
 
                       <td className="min-w-[140px]">
-                        <p className="break-all ">{shoot?.id}</p>
+                        <p className="break-all">{shoot?.id}</p>
                       </td>
 
                       <td>
@@ -119,9 +116,9 @@ const Shoots = () => {
                           {shoot?.file_path?.status ? (
                             <span
                               onClick={async () => {
-                                await api.downloadFolder(`${shoot?.file_path.dir_name}`);
+                                await api.downloadFolder(shoot?.file_path.dir_name);
                               }}
-                              className="badge text-md w-12 bg-success text-center"
+                              className="badge text-md w-12 cursor-pointer bg-success text-center"
                             >
                               Download
                             </span>
@@ -134,12 +131,14 @@ const Shoots = () => {
                       <td>
                         <StatusBg>{shoot.order_status}</StatusBg>
                       </td>
+
                       {authPermissions?.includes('shoot_show_details') && (
                         <td>
                           <Link href={`shoots/${shoot.id}`}>
-                            <button type="button" className="p-0">
+                            {/* <button type="button" className="p-0">
                               <Image className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" width={24} height={24} />
-                            </button>
+                            </button> */}
+                            {allSvgs.eyeIcon}
                           </Link>
                         </td>
                       )}
@@ -148,16 +147,19 @@ const Shoots = () => {
                 ) : (
                   <tr>
                     <td colSpan={6} className="text-center">
-                      <span className="flex justify-center font-semibold text-[red]">No shoots found</span>
+                      <span className="flex justify-center font-semibold text-red-500">No shoots found</span>
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
+          </div>
+          {/* <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <ResponsivePagination current={currentPage} total={data?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
+          </div> */}
 
-            <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-              <ResponsivePagination current={currentPage} total={data?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-            </div>
+          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+            <ResponsivePagination current={currentPage} total={data?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
           </div>
         </div>
       </div>

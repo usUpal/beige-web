@@ -18,6 +18,7 @@ import flatpickr from 'flatpickr';
 import { format, isValid, parseISO } from 'date-fns';
 import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
 import Image from 'next/image';
+import MeetingSkeleton from '@/components/SharedComponent/Skeletons/MeetingSkeleton';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -164,23 +165,25 @@ const Meeting = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
+    <div className="grid h-[90vh] grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
         <div className="mb-5 items-center justify-between md:flex ">
-          <h5 className="text-xl font-bold dark:text-white-light">Meeting List</h5>
+          <h5 className="text-xl font-bold dark:text-slate-300">Meeting List</h5>
           <input
             type="text"
             onChange={(event) => setQuery(event.target.value)}
             value={query}
-            className="mt-3 rounded border border-black px-3 py-1 focus:border-black focus:outline-none md:mt-0"
+            className={` rounded border border-solid border-[#dddddd] bg-white p-[10px] font-sans text-[14px]
+              font-medium leading-none text-black focus:border-[#888888] 
+              dark:border-[#2a2e3e] dark:bg-[#1b2e4b] dark:text-white dark:focus:border-[#4b5563]`}
             placeholder="Search..."
           />
         </div>
-        <div className="table-responsive">
+        <div className="table-responsive h-[75vh]">
           <table>
             <thead>
-              <tr className="">
+              <tr className="text-black dark:text-white-dark">
                 <th className="text-[16px] font-semibold">Shoot Name</th>
                 <th className="text-[16px] font-semibold">Meeting Date / Time</th>
                 <th className="text-[16px] font-semibold">Attendings</th>
@@ -192,7 +195,10 @@ const Meeting = () => {
             <tbody>
               {getAllMeetingLoading ? (
                 <>
-                  <PreLoader></PreLoader>
+                  {/* <PreLoader></PreLoader> */}
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <MeetingSkeleton key={index} />
+                  ))}
                 </>
               ) : (
                 <>
@@ -201,8 +207,8 @@ const Meeting = () => {
                       const { date, time } = formatDateAndTime(meeting?.meeting_date_time) || { date: '', time: '' };
 
                       return (
-                        <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                          <td className="min-w-[150px] text-black dark:text-white">
+                        <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-dark-light">
+                          <td className="min-w-[150px] text-black dark:text-slate-300 group-hover:dark:text-dark-light">
                             <div className="flex items-center">
                               <p>{truncateLongText(meeting?.order?.name, 30)}</p>
                             </div>
@@ -229,7 +235,8 @@ const Meeting = () => {
                           {authPermissions?.includes('meeting_details') && (
                             <td>
                               <button type="button" className="p-0" onClick={() => handelMeetingDetails(meeting?.id)}>
-                                <Image className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" width={24} height={24} />
+                                {/* <Image className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" width={24} height={24} /> */}
+                                {allSvgs.eyeIcon}
                               </button>
                             </td>
                           )}
@@ -247,9 +254,9 @@ const Meeting = () => {
               )}
             </tbody>
           </table>
-          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-            <ResponsivePagination current={currentPage} total={allMeetings?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-          </div>
+        </div>
+        <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+          <ResponsivePagination current={currentPage} total={allMeetings?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
         </div>
       </div>
 
@@ -259,8 +266,8 @@ const Meeting = () => {
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
               <Dialog.Panel as="div" className="panel my-32 w-5/6 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-4/6 lg:w-3/6 2xl:w-2/6">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
-                  <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
-                  <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setMeetingModal(false)}>
+                  <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000] dark:text-slate-300">Meeting Details</div>
+                  <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark-light " onClick={() => setMeetingModal(false)}>
                     {allSvgs.closeIconSvg}
                   </button>
                 </div>
@@ -269,33 +276,33 @@ const Meeting = () => {
                   <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  w-full justify-between space-y-6 pb-6 `}>
                     <div className="leftdata">
                       <p>
-                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] ">
-                          Shoot : <span className="text-[14px] font-normal text-[#000000]">{meetingInfo?.order?.name}</span>
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-slate-400 ">
+                          Shoot : <span className="text-[14px] font-normal text-[#000000] dark:text-slate-400">{meetingInfo?.order?.name}</span>
                         </span>
                       </p>
 
                       <p>
-                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-slate-400">
                           Meeting Link :{' '}
-                          <a href={meetingInfo?.meetLink || ''} target={0} className="text-[14px] font-normal text-blue-600 underline">
+                          <a href={meetingInfo?.meetLink || ''} target={0} className="text-[14px] font-normal text-blue-600 underline ">
                             {meetingInfo?.meetLink}
                           </a>
                         </span>
                       </p>
 
-                      <p className="mt-2">
-                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
-                          Time : <span className="text-[14px] font-normal leading-[28px] text-[#000000]"> {myFormattedDateTime?.time}</span>
+                      <p className="mt-2 ">
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-slate-400 ">
+                          Time : <span className="text-[14px] font-normal leading-[28px] text-[#000000] dark:text-slate-400"> {myFormattedDateTime?.time}</span>
                         </span>
                       </p>
 
                       <p>
-                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
-                          Date : <span className="text-[14px] font-normal leading-[28px] text-[#000000]"> {myFormattedDateTime?.date}</span>
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-slate-400">
+                          Date : <span className="text-[14px] font-normal leading-[28px] text-[#000000] dark:text-slate-400"> {myFormattedDateTime?.date}</span>
                         </span>
                       </p>
                       <div className="mt-3 flex justify-between">
-                        <span className=" text-[14px]  font-bold capitalize leading-none text-[#000000]">
+                        <span className=" text-[14px]  font-bold capitalize leading-none text-[#000000] dark:text-slate-400">
                           Status:{' '}
                           <span className="ps-2 font-normal text-[#0E1726]">
                             <StatusBg>{meetingInfo?.meeting_status}</StatusBg>
@@ -311,13 +318,14 @@ const Meeting = () => {
                         <>
                           {meetingInfo?.meeting_status === 'pending' && (userData?.role === 'cp' || 'admin') && (
                             <div className="ml-2 flex flex-col items-start">
-                              <h2 className="mb-3 text-[14px] font-semibold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
+                              <h2 className="mb-3 text-[14px] font-semibold capitalize leading-none text-[#000000] dark:text-slate-400">Reschedule Meeting</h2>
                               <div className="flex flex-col">
                                 <input
                                   type="text"
                                   id="meeting_time_shoot_details"
                                   ref={meetingDateTimeRef}
-                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white  p-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
+                                  // className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white  p-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
+                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white p-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#888888] dark:border-[#2a2e3e] dark:bg-[#1b2e4b] dark:text-slate-400 dark:focus:border-[#4b5563]`}
                                   placeholder="Meeting time"
                                   required={formattedMeetingTime}
                                 />
@@ -325,7 +333,7 @@ const Meeting = () => {
                                 {/* <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
                                   Reschedule Request
                                 </button> */}
-                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css="mt-2 w-64" type={'submit'}>
+                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css="mt-2 w-64 h-9" type={'submit'}>
                                   {' '}
                                   Reschedule Request
                                 </DefaultButton>
@@ -339,7 +347,9 @@ const Meeting = () => {
                     {/* Resheduling */}
                   </div>
                   <div className="me-7 flex justify-end pb-7 md:me-5">
-                    <DefaultButton onClick={() => setMeetingModal(false)}>Cancel</DefaultButton>
+                    <DefaultButton onClick={() => setMeetingModal(false)} css="h-9">
+                      Cancel
+                    </DefaultButton>
                   </div>
                 </div>
               </Dialog.Panel>

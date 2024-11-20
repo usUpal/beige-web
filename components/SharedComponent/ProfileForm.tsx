@@ -115,7 +115,7 @@ const ProfileForm = () => {
           {/* <button type="submit" className="btn btn-primary" disabled={isLoading}>
             {isLoading ? 'Saving...' : 'Save'}
           </button> */}
-          <DefaultButton css="font-semibold">{isLoading ? 'Saving...' : 'Save'}</DefaultButton>
+          <DefaultButton css="font-semibold h-9">{isLoading ? 'Saving...' : 'Save'}</DefaultButton>
         </div>
       </form>
     </div>
