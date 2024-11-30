@@ -9,10 +9,11 @@ import Dropdown from '../Dropdown';
 import { useAuth } from '@/contexts/authContext';
 import Cookies from 'js-cookie';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import Image from 'next/image';
 
 const Header = () => {
   const router = useRouter();
-  const { userData, setUserData, setAccessToken, setRefreshToken ,setAuthPermissions} = useAuth();
+  const { userData, setUserData, setAccessToken, setRefreshToken, setAuthPermissions } = useAuth();
 
   const handleLogout = async () => {
     //Remove cookies
@@ -59,6 +60,8 @@ const Header = () => {
   const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
   const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+  // console.log(themeConfig);
+
   const setLocale = (flag: string) => {
     setFlag(flag);
     if (flag.toLowerCase() === 'ae') {
@@ -148,7 +151,13 @@ const Header = () => {
   let userProfileImage;
   if (userData?.profile_picture) {
     userProfileImage = (
-      <img className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src={`${userData?.profile_picture || '/assets/images/user-profile.jpeg'}`} alt="userProfile" />
+      <Image
+        className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100"
+        src={userData?.profile_picture || '/assets/images/user-profile.jpeg'}
+        alt="userProfile"
+        width={36}
+        height={36}
+      />
     );
   } else {
     userProfileImage = <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-400 object-cover font-bold capitalize text-white">{userData?.name[0] ?? 'BE'}</span>;
@@ -160,7 +169,7 @@ const Header = () => {
         <div className="relative flex w-full items-center bg-white px-5 py-2.5 dark:bg-black">
           <div className="horizontal-logo flex items-center justify-between ltr:mr-2 rtl:ml-2 lg:hidden">
             <Link href="/" className="main-logo flex shrink-0 items-center">
-              <img className="inline w-8 ltr:-ml-1 rtl:-mr-1" src="/favicon.svg" alt="logo" />
+              <Image src="/favicon.svg" alt="logo" width={32} height={32} className="inline ltr:-ml-1 rtl:-mr-1" />
               <span className="hidden align-middle text-2xl  font-semibold  transition-all duration-300 ltr:ml-1.5 rtl:mr-1.5 dark:text-white-light md:inline">BEIGE</span>
             </Link>
             <button
@@ -173,14 +182,26 @@ const Header = () => {
           </div>
           <div className="flex items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
             <div className="sm:ltr:mr-auto sm:rtl:ml-auto"></div>
+
+            <>
+              <div className="theme-toggle flex items-center space-x-2">
+                {themeConfig.isDarkMode ? (
+                  <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('light'))}>
+                    {allSvgs.darkModeIcon}
+                  </button>
+                ) : (
+                  <button type="button" className="rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 dark:bg-dark/40 dark:hover:bg-dark/60" onClick={() => dispatch(toggleTheme('dark'))}>
+                    {allSvgs.lightModeIcon}
+                  </button>
+                )}
+              </div>
+            </>
             {/* <div className="dropdown shrink-0">
               <Dropdown
                 offset={[0, 8]}
                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
                 btnClassName="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60"
-                button={
-                  allSvgs.messageIconSvg
-                }
+                button={allSvgs.messageIconSvg}
               >
                 <ul className="w-[300px] !py-0 text-xs text-dark dark:text-white-dark sm:w-[375px]">
                   <li className="mb-5" onClick={(e) => e.stopPropagation()}>
@@ -222,9 +243,7 @@ const Header = () => {
                   ) : (
                     <li className="mb-5" onClick={(e) => e.stopPropagation()}>
                       <button type="button" className="!grid min-h-[200px] place-content-center text-lg hover:!bg-transparent">
-                        <div className="mx-auto mb-4 rounded-full text-white ring-4 ring-primary/30">
-                          {allSvgs.invalidSvg}
-                        </div>
+                        <div className="mx-auto mb-4 rounded-full text-white ring-4 ring-primary/30">{allSvgs.invalidSvg}</div>
                         No data available.
                       </button>
                     </li>
@@ -262,7 +281,7 @@ const Header = () => {
                             <div className="group flex items-center px-4 py-2">
                               <div className="grid place-content-center rounded">
                                 <div className="relative h-12 w-12">
-                                  <img className="h-12 w-12 rounded-full object-cover" alt="profile" src={`/assets/images/${notification.profile}`} />
+                                  <Image className="h-12 w-12 rounded-full object-cover" width={48} height={48} alt="profile" src={`/assets/images/${notification.profile}`} />
                                   <span className="absolute bottom-0 right-[6px] block h-2 w-2 rounded-full bg-success"></span>
                                 </div>
                               </div>
@@ -312,13 +331,12 @@ const Header = () => {
                       <Link href="/dashboard/profile">
                         {userProfileImage}
                         {/* <span className='w-9 h-9 rounded-full font-bold flex justify-center items-center object-cover bg-slate-400 text-white'>{userData?.name[0] ?? 'NA'}</span> */}
-                        {/* <img className="h-10 w-10 rounded-md object-cover"  src={'/assets/images/favicon.png'}  alt="userProfile" /> */}
                       </Link>
-                      <div className="truncate ltr:pl-4 rtl:pr-4">
-                        <Link href="/dashboard/profile" className="text-black">
+                      <div className="group truncate ltr:pl-4 rtl:pr-4">
+                        <Link href="/dashboard/profile" className="text-black dark:text-slate-300 group-hover:dark:text-dark-light">
                           <h4 className="text-base">{userData && userData?.name}</h4>
                         </Link>
-                        <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
+                        <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 group-hover:dark:text-dark-light">
                           {userData && userData?.email}
                         </button>
                       </div>
@@ -699,11 +717,7 @@ const Header = () => {
               <li className="relative">
                 <button type="button">
                   {t('error')}
-                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
+                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">{allSvgs.greaterThanArrowSvg}</div>
                 </button>
                 <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
                   <li>
@@ -726,11 +740,7 @@ const Header = () => {
               <li className="relative">
                 <button type="button">
                   {t('login')}
-                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
+                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">{allSvgs.greaterThanArrowSvg}</div>
                 </button>
                 <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
                   <li>
@@ -748,11 +758,7 @@ const Header = () => {
               <li className="relative">
                 <button type="button">
                   {t('register')}
-                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
+                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">{allSvgs.greaterThanArrowSvg}</div>
                 </button>
                 <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
                   <li>
@@ -770,11 +776,7 @@ const Header = () => {
               <li className="relative">
                 <button type="button">
                   {t('password_recovery')}
-                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
+                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">{allSvgs.greaterThanArrowSvg}</div>
                 </button>
                 <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
                   <li>
@@ -792,11 +794,7 @@ const Header = () => {
               <li className="relative">
                 <button type="button">
                   {t('lockscreen')}
-                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
+                  <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-180">{allSvgs.greaterThanArrowSvg}</div>
                 </button>
                 <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
                   <li>
@@ -816,13 +814,7 @@ const Header = () => {
           <li className="menu nav-item relative">
             <button type="button" className="nav-link">
               <div className="flex items-center">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-                  <path opacity="0.5" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="currentColor" />
-                  <path
-                    d="M12.75 9C12.75 8.58579 12.4142 8.25 12 8.25C11.5858 8.25 11.25 8.58579 11.25 9L11.25 11.25H9C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75H11.25V15C11.25 15.4142 11.5858 15.75 12 15.75C12.4142 15.75 12.75 15.4142 12.75 15L12.75 12.75H15C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25H12.75V9Z"
-                    fill="currentColor"
-                  />
-                </svg>
+                {allSvgs.roundedGrayPlusIcon}
                 <span className="px-1">{t('more')}</span>
               </div>
               <div className="right_arrow">{allSvgs.rightArrowSvg}</div>

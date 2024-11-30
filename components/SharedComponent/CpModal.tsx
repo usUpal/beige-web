@@ -19,7 +19,7 @@ const CpModal = () => {
 
                                     <div className="text-[22px] font-bold leading-none capitalize text-[#d64b4b]">CP Details</div>
                                     <button type="button" className="text-white-dark hover:text-dark" onClick={() => setCpModal(false)}>
-                                        {allSvgs.closeModalSvg}
+                                        {allSvgs.closeIconSvg}
                                     </button>
                                 </div>
                                 <div className="px-5 mt-5">

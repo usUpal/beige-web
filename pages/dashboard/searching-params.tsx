@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
-import 'tippy.js/dist/tippy.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
-import { toast } from 'react-toastify';
-import { API_ENDPOINT } from '@/config';
+/* eslint-disable react-hooks/exhaustive-deps */
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import { useGetAllSearchingParamsQuery, useUpdateSearchingParamsMutation } from '@/Redux/features/searchingParams/searchingApi';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import 'tippy.js/dist/tippy.css';
+import { setPageTitle } from '../../store/themeConfigSlice';
+import { useAuth } from '@/contexts/authContext';
+import AccessDenied from '@/components/errors/AccessDenied';
 
 interface FormData {
   content_type: number;
@@ -15,6 +18,8 @@ interface FormData {
 }
 const SearchingParams = () => {
   const dispatch = useDispatch();
+  const { authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('searching_params');
   useEffect(() => {
     dispatch(setPageTitle('Searching Params'));
   });
@@ -42,7 +47,13 @@ const SearchingParams = () => {
     travel_to_distant_shoots: { weight: '', score: '' },
     vst: { weight: '', score: '' },
   });
-
+  const { data, isSuccess } = useGetAllSearchingParamsQuery({});
+  useEffect(() => {
+    if (isSuccess) {
+      setParams(data);
+      setTableData(data);
+    }
+  }, [isSuccess]);
   // Event handler for form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -64,82 +75,47 @@ const SearchingParams = () => {
       });
     }
   };
-
+  const [updateSearchingParams, { isLoading }] = useUpdateSearchingParamsMutation();
   // Event handler for form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // You can perform actions with the form data here
-    console.log('Form submitted with data:', tableData);
-
-    handlePostSearchingParams(tableData);
+    const res = await updateSearchingParams(tableData);
+    toast.success('Info Updated Successfully', {
+      position: toast.POSITION.TOP_RIGHT,
+    });
   };
 
-  const fetchDataAndPopulateForm = () => {
-    fetch(`${API_ENDPOINT}settings/algo/search`)
-      .then((res) => res.json())
-      .then((data) => {
-        setParams(data);
-        setTableData(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
-  useEffect(() => {
-    fetchDataAndPopulateForm();
-  }, []);
+  if (!isHavePermission) {
+    return (
+      <AccessDenied />
+    );
+  }
 
-  const handlePostSearchingParams = (searchingParams: any) => {
-    // setIsLoading(true);
-    fetch(`${API_ENDPOINT}settings/algo/search`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(searchingParams),
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        if (data) {
-          if (data.code === 401 || data.code === 400) {
-            console.log('Error:', data);
-            return;
-          } else {
-            toast.success('Params Set Successfully.', {
-              position: toast.POSITION.TOP_CENTER,
-            });
-          }
-        }
-      })
-      .catch((error) => {
-        // console.log(error);
-        // setIsLoading(false);
-      });
-  };
 
   return (
     <>
       <form action="" onSubmit={handleSubmit}>
-        <div className="container mx-auto rounded-md p-2 dark:bg-gray-900 dark:text-gray-100 sm:p-4">
-          <h2 className="leadi mb-3 text-2xl font-semibold">Searching Params</h2>
+        <div className="container mx-auto rounded-md p-2 dark:bg-black dark:text-white-dark sm:p-4">
+          <h2 className="leading mb-3 text-xl font-semibold dark:text-slate-400">Searching Params</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full text-xs">
               <thead className="rounded-t-lg ">
-                <tr className="  text-right">
-                  <th title="Team name" className="text-left text-xl font-medium">
+                <tr className="  text-right text-black dark:text-slate-400">
+                  <th title="Team name" className="text-left text-lg font-medium">
                     Perams
                   </th>
-                  <th title="Losses" className="p-3 text-xl font-medium">
+                  <th title="Losses" className="p-3 text-lg font-medium capitalize">
                     weight
                   </th>
-                  <th title="Win percentage" className="p-3 text-xl font-medium">
+                  <th title="Win percentage" className="p-3 text-lg font-medium">
                     Score
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>accepted_shoots</span>
                   </td>
@@ -162,7 +138,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>average_rating</span>
                   </td>
@@ -175,7 +151,7 @@ const SearchingParams = () => {
                       className="form-input basis-[40%] font-sans text-[16px] leading-none"
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 dark:border-gray-700 dark:bg-black">
                     <input
                       onChange={handleInputChange}
                       name="average_rating.score"
@@ -185,7 +161,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-blac">
                   <td className="px-3 py-2 text-left">
                     <span>avg_response_time</span>
                   </td>
@@ -198,7 +174,7 @@ const SearchingParams = () => {
                       className="form-input basis-[40%] font-sans text-[16px] leading-none"
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 dark:border-gray-700 dark:bg-blac">
                     <input
                       onChange={handleInputChange}
                       name="avg_response_time.score"
@@ -208,7 +184,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>backup_footage</span>
                   </td>
@@ -221,7 +197,7 @@ const SearchingParams = () => {
                       className="form-input basis-[40%] font-sans text-[16px] leading-none"
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 dark:bg-black dark:border-gray-700">
                     <input
                       onChange={handleInputChange}
                       name="backup_footage.score"
@@ -231,7 +207,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>city</span>
                   </td>
@@ -242,7 +218,7 @@ const SearchingParams = () => {
                     <input onChange={handleInputChange} name="city.score" value={tableData.city.score} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>content_type</span>
                   </td>
@@ -265,7 +241,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>content_vertical</span>
                   </td>
@@ -278,7 +254,7 @@ const SearchingParams = () => {
                       className="form-input basis-[40%] font-sans text-[16px] leading-none"
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 dark:bg-black dark:border-gray-700">
                     <input
                       onChange={handleInputChange}
                       name="content_vertical.score"
@@ -288,7 +264,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>customer_service_experience</span>
                   </td>
@@ -301,7 +277,7 @@ const SearchingParams = () => {
                       className="form-input basis-[40%] font-sans text-[16px] leading-none"
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 dark:border-gray-700 dark:bg-black">
                     <input
                       onChange={handleInputChange}
                       name="customer_service_experience.score"
@@ -311,7 +287,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>declined_shoots</span>
                   </td>
@@ -334,7 +310,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>equipment</span>
                   </td>
@@ -351,7 +327,7 @@ const SearchingParams = () => {
                     <input onChange={handleInputChange} name="equipment.score" value={tableData.equipment.score} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>equipment_specific</span>
                   </td>
@@ -374,7 +350,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>experience_post_production</span>
                   </td>
@@ -397,7 +373,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>no_shows</span>
                   </td>
@@ -409,7 +385,7 @@ const SearchingParams = () => {
                   </td>
                 </tr>
 
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>portfolio</span>
                   </td>
@@ -426,11 +402,11 @@ const SearchingParams = () => {
                     <input onChange={handleInputChange} name="portfolio.score" value={tableData.portfolio.score} type="number" className="form-input basis-[40%] font-sans text-[16px] leading-none" />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>successful_beige_shoots</span>
                   </td>
-                  <td className="px-3 py-2 text-left">
+                  <td className="px-3 py-2 text-left dark:border-gray-700 dark:bg-black">
                     <input
                       onChange={handleInputChange}
                       name="successful_beige_shoots.weight"
@@ -449,7 +425,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>team_player</span>
                   </td>
@@ -472,7 +448,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>total_earnings</span>
                   </td>
@@ -495,7 +471,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>travel_to_distant_shoots</span>
                   </td>
@@ -518,7 +494,7 @@ const SearchingParams = () => {
                     />
                   </td>
                 </tr>
-                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-gray-800">
+                <tr className="border-b border-opacity-20 text-right dark:border-gray-700 dark:bg-black">
                   <td className="px-3 py-2 text-left">
                     <span>vst</span>
                   </td>
@@ -531,11 +507,10 @@ const SearchingParams = () => {
                 </tr>
               </tbody>
             </table>
-            <div className="flex w-full md:justify-end justify-center">
-              <DefaultButton css='mt-5 md:me-4 ' type='submit'>Save</DefaultButton>
-              {/* <button className="custom-button" type="submit">
-                Save
-              </button> */}
+            <div className="flex w-full justify-center md:justify-end">
+              <DefaultButton css="mt-5 md:me-4 h-9" type="submit">
+                {isLoading ? 'Saving...' : 'Save'}
+              </DefaultButton>
             </div>
           </div>
         </div>

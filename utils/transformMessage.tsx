@@ -6,6 +6,7 @@ function transformMessages(messages: any) {
       messageId: input.id,
       message: input.message,
       success: true,
+      profile_picture: input?.sent_by?.profile_picture,
     };
     return output;
   });

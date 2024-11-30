@@ -8,9 +8,12 @@ import api from '../api/storage';
 import config from '../../config';
 import Menu from '../Menu/Menu';
 import { useAuth } from '../../contexts/authContext';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import { allSvgs, folderIcon } from '@/utils/allsvgs/allSvgs';
 import { Dialog, Transition, Tab } from '@headlessui/react';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import Image from 'next/image';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
 
 const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFileUploadOpen, setFolderCreatorOpen, setSettingsOpen }) => {
   const { userData } = useAuth();
@@ -27,6 +30,8 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   const [modal, setModal] = useState(false);
 
   const [ignoringFileStructure, setIgnoringFileStructure] = useState(false);
+  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+
 
   const [deletionState, setDeletionState] = useState({
     open: false,
@@ -214,12 +219,11 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
               try {
                 await api.downloadFolder(file.path);
               } catch (error) {
-                console.error('There was an error downloading the folder:', error);
+                // console.error('There was an error downloading the folder:', error);
               }
             } else {
               // If it's a file, get the sharable URL and open it
               const { url } = await api.getSharableUrl(file.path, true);
-              console.log('🚀 ~ onDownload={ ~ url:', url);
               window.open(url, '_blank');
             }
           }
@@ -267,7 +271,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
   const handleCancelRename = () => {
     setFileToRename({});
     setRenameInputValue('');
-  }
+  };
 
   return (
     <div>
@@ -275,7 +279,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         <p className="my-8 text-2xl">Files</p>
       </div>
 
-      <div className="flex items-center  justify-between lg:justify-start gap-4">
+      <div className="flex items-center  justify-between gap-4 lg:justify-start">
         {/* <label className="flex cursor-pointer items-center">
           <input
             type="checkbox"
@@ -286,27 +290,26 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           <span className="ml-2 text-lg font-normal text-gray-900">Ignore Folder Structure</span>
         </label> */}
 
-        <div className="mb-0 flex cursor-pointer items-center gap-3 px-4 text-lg" onClick={getFiles}>
-
+        <div className="mb-0 flex cursor-pointer items-center gap-3 text-lg " onClick={getFiles}>
           <div className={`hidden md:block`}>
             <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
           </div>
-          <span className='flex gap-2 items-center border border-[#ddd] bg-[#000] px-6 py-1 rounded-md'>
-            <img src="/allSvg/refresh.svg" alt="refresh" className="size-6" />
+          <span className="flex items-center gap-2 rounded-md border border-[#ddd] text-black dark:text-black px-6 py-1 bg-[#] " style={{ backgroundColor: '#93c5fd' }}>
+            <Image src="/allSvg/refresh.svg" alt="refresh" className="size-6" width={24} height={24} />
             Refresh
           </span>
         </div>
 
         {/* Menu for mobile devices */}
-        <div className='block lg:hidden'>
-          <span className={`block md:hidden`} onClick={() => setShowMenus(!showMenus)}>{allSvgs.threeDotMenuIcon}</span>
+        <div className="block lg:hidden">
+          <span className={`block md:hidden`} onClick={() => setShowMenus(!showMenus)}>
+            {allSvgs.threeDotMenuIcon}
+          </span>
         </div>
       </div>
 
-      <div className={`md:hidden flex`}>
-        {showMenus &&
-          <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />
-        }
+      <div className={`mt-3 flex md:mt-0 md:hidden`}>
+        {showMenus && <Menu setFileUploadOpen={setFileUploadOpen} setFolderCreatorOpen={setFolderCreatorOpen} setSettingsOpen={setSettingsOpen} path={path} />}
       </div>
 
       {/* Folder breadcrumbs */}
@@ -314,11 +317,11 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
         <nav className="flex" aria-label="Breadcrumb">
           <ol className="mb-5 mt-3 flex items-center">
             <li className="mr-2">
-              <span className="text-gray-500">{allSvgs.folderIcon}</span>
+              <span className="">{ themeConfig.isDarkMode ? folderIcon('#94a3b8') : folderIcon('#94a3b8') }</span>
             </li>
 
             <li>
-              <a href="#" className={`text-gray-500 ${!path.length ? 'font-bold' : 'hover:text-blue-600'}`} onClick={() => setPath([])}>
+              <a href="#" className={`text-slate-400 ${!path.length ? 'font-bold' : 'hover:text-blue-600'}`} onClick={() => setPath([])}>
                 {state.bucketName ? 'Beige' : ''}
               </a>
             </li>
@@ -349,7 +352,9 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
           {state.loading && (
             <div className="  relative mb-10 flex items-center rounded border px-4 py-3" role="alert">
               <div className="h-12 w-20">
-                <div className="h-12 w-12">{allSvgs.roundSpinIcon}</div>
+                <div className="h-12 w-12">
+                  { themeConfig.isDarkMode ? allSvgs.roundSpinLightIcon : allSvgs.roundSpinIcon}
+                  </div>
               </div>
               <div className="mt-2">
                 <span className="block font-bold sm:inline">Please wait...</span>
@@ -440,7 +445,7 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                             setDeletionState({ ...deletionState, open: false, error: false, saving: false });
                           }}
                         >
-                          {allSvgs.closeModalSvg}
+                          {allSvgs.closeIconSvg}
                         </button>
                       </div>
                       <div className="p-5 ">
@@ -522,15 +527,13 @@ const FileExplorer = ({ idToken, setExplorerPath, doRefresh, didRefresh, setFile
                     </p>
 
                     <div className="mt-8 flex items-center justify-end">
-                      <button
-                        type="button"
-                        className="btn btn-danger text-[16px]"
-                        onClick={handleCancelRename}
-                      >
+                      <button type="button" className="btn btn-danger text-[16px]" onClick={handleCancelRename}>
                         Cancel
                       </button>
 
-                      <DefaultButton onClick={renameFile} css='ltr:ml-4 rtl:mr-4'>Rename</DefaultButton>
+                      <DefaultButton onClick={renameFile} css="ltr:ml-4 rtl:mr-4">
+                        Rename
+                      </DefaultButton>
                     </div>
                   </div>
                 </Dialog.Panel>

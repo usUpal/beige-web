@@ -7,7 +7,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
 
-let uploadCancelFunc = () => { };
+let uploadCancelFunc = () => {};
 
 const initialUploadState = {
   files: [],
@@ -39,7 +39,7 @@ function uploadStateReducer(state: any, action: any) {
     case 'setStatus':
       return { ...state, status: action.status };
     case 'uploadError':
-      console.error(action.error);
+      // console.error(action.error);
       return {
         ...state,
         error: true,
@@ -124,7 +124,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
 
         if (i === state.files.length - 1) {
           // If that was the last file
-          toast('🚀 All files uploaded!');
+          toast.success('Files uploaded successfully');
           dispatch({ type: 'reset' });
           setTimeout(onSuccess, 1000); // Wait one second before closing modal and refreshing explorer
         }
@@ -155,15 +155,11 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
     dispatch({ type: 'setFiles', files: fileArray });
   };
 
-  const fileList = state.files.map(
-    (file: any) => (
-      (
-        <li key={file.name}>
-          <span>{file.name}</span> - {formatBytes(file.size)}
-        </li>
-      )
-    )
-  );
+  const fileList = state.files.map((file: any) => (
+    <li key={file.name}>
+      <span>{file.name}</span> - {formatBytes(file.size)}
+    </li>
+  ));
 
   return (
     <div>
@@ -186,33 +182,25 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <Dialog.Panel as="div" className="panel my-24 w-5/6 md:w-3/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark">
+                    <Dialog.Panel as="div" className="panel my-24 w-5/6 overflow-hidden rounded-lg border-0 p-0 pb-6 text-black dark:text-white-dark md:w-3/6 2xl:w-2/5">
                       <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
-                        <div className="text-lg font-bold capitalize text-red-600">Upload {state.folderUpload ? 'a Folder' : 'Files'}</div>
+                        <div className="text-lg font-bold capitalize ">Upload {state.folderUpload ? 'a Folder' : 'Files'}</div>
                         <button
                           type="button"
-                          className="text-[16px] text-white-dark hover:text-dark"
+                          className="text-[16px] text-white-dark hover:text-dark-light"
                           onClick={() => {
                             dispatch({ type: 'reset' });
                             closeModal();
                           }}
                         >
-                          {allSvgs.closeModalSvg}
+                          {allSvgs.closeIconSvg}
                         </button>
                       </div>
 
                       <div className="px-5">
-                        <div onClick={() => dispatch({ type: 'switchFolderUpload' })} className="flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="form-checkbox border border-black"
-                            id="checkSwitchFolderUpload"
-                            checked={state.folderUpload}
-                            onChange={() => { }}
-                          />
-                          <span className="text-white-dark ml-2">
-                            Select {!state.folderUpload ? 'a Folder' : 'Files'}
-                          </span>
+                        <div onClick={() => dispatch({ type: 'switchFolderUpload' })} className="flex cursor-pointer items-center pt-5">
+                          <input type="checkbox" className="form-checkbox border border-black" id="checkSwitchFolderUpload" checked={state.folderUpload} onChange={() => {}} />
+                          <span className="ml-2 text-black dark:text-slate-400">Select {!state.folderUpload ? 'a Folder' : 'Files'}</span>
                         </div>
                         {/* <div className="">
                           <label className="relative h-6 w-12" onClick={() => dispatch({ type: 'switchFolderUpload' })}>
@@ -222,17 +210,15 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                           <span className="ms-3 ">Select {!state.folderUpload ? 'a Folder' : 'Files'}</span>
                         </div> */}
 
-
-
-                        <p className=" font-semibold">
+                        <div className=" font-semibold">
                           <p>
                             You can select multiple files or a single folder to upload. If you upload a folder, file structure will be preserved. Files will be uploaded to{' '}
                             {(path || []).join('/') + '/'}.
                           </p>
-                        </p>
+                        </div>
 
                         {/* <div className={styles.fileInputContainer}> */}
-                        <div className='w-full'>
+                        <div className="w-full">
                           <input
                             style={{ display: 'none' }}
                             multiple
@@ -246,20 +232,17 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             onChange={onFilesChange}
                           />
 
-                          <div className='flex justify-center my-5'>
-                            <button
-                              type="button"
-                              className="btn btn-dark text-[18px]"
-                              // style={{ display: 'block', margin: '15px auto' }}
+                          <div className="my-5 flex justify-center">
+                            <span
+                              className="rounded-lg border px-5 py-1 text-[18px] hover:shadow dark:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-dark-light"
                               onClick={() => fileInput.current.click()}
                               disabled={state.uploading}
                             >
                               Select {state.folderUpload ? 'a Folder' : 'Files'}
-                            </button>
+                            </span>
 
                             {/* <DefaultButton onClick={() => fileInput.current.click()} css='mx-auto' disabled={state.uploading}> Select {state.folderUpload ? 'a Folder' : 'Files'}</DefaultButton> */}
                           </div>
-
                         </div>
 
                         {/* <div className={styles.fileList}> */}
@@ -268,11 +251,23 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                         </div>
 
                         {state.status && (
-                          <div className="mb-5 space-y-5">
-                            <div className="h-4 w-full rounded-full bg-[#ebedf2] dark:bg-dark/40">
-                              <div className={`h-4 rounded-full text-right text-xs text-white`} style={{ width: `${state.progress}%`, backgroundColor: '#0096c7' }}>
+                          <div className="m-5 space-y-5">
+                            <div className="relative h-6 w-full rounded-xl bg-[#ebedf2] text-center" style={{ borderRadius: '5px', backgroundColor: '#dbd2c3' }}>
+                              {/* Progress bar */}
+
+                              <div
+                                className={`absolute left-0 top-0 h-6 rounded-xl`}
+                                style={{
+                                  // width: `60%`,
+                                  width: `${state.progress}%`,
+                                  backgroundColor: '#aa9b82',
+                                  borderRadius: '5px',
+                                }}
+                              />
+                              {/* Centered percentage text */}
+                              <span className="text-md relative z-10 flex h-full items-center justify-center font-medium text-white">
                                 {state.uploading ? `${state.progress}%` : state.error ? 'Error!' : `${state.progress}%`}
-                              </div>
+                              </span>
                             </div>
                           </div>
                         )}
@@ -288,7 +283,7 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                         </p>
 
                         <div className="mt-8 flex items-center justify-end">
-                          <button
+                          {/* <button
                             className="btn btn-danger mr-3 text-[16px] text-white"
                             color="black"
                             onClick={() => {
@@ -297,10 +292,10 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             }}
                           >
                             Cancel
-                          </button>
+                          </button> */}
 
-                          <DefaultButton onClick={startUpload} disabled={!state.files.length || state.uploading}>
-                            <span className="flex items-center justify-center duration-300 gap-1">
+                          <DefaultButton onClick={startUpload} disabled={!state.files.length || state.uploading} css="h-9">
+                            <span className="flex items-center justify-center gap-1 duration-300">
                               {allSvgs.uploadIcon}
                               {state.uploading ? 'Uploading...' : 'Start Upload'}
                             </span>
@@ -309,7 +304,6 @@ const FileUploadModal = ({ open, closeModal, path, onSuccess }) => {
                             <span className="flex items-center justify-center duration-300">{allSvgs.uploadIcon}</span>
                             {state.uploading ? 'Uploading...' : 'Start Upload'}
                           </button> */}
-
                         </div>
                       </div>
                     </Dialog.Panel>

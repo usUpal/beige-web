@@ -1,4 +1,4 @@
-export { };
+export {};
 declare global {
   interface ChatRoomTypes {
     order_id: OrderID;
@@ -153,12 +153,20 @@ declare global {
     title: string;
     rate: number;
     ExtendRate: number;
-    ExtendRateType: string;
-    status: boolean;
+    ExtendRateType: number;
+    status: string;
     category: string;
     info: string;
     hours: number;
   }
+  // interface addonTypes {
+  //   _id: string;
+  //   title: string;
+  //   rate: number;
+  //   ExtendRate: number;
+  //   status: string;
+  //   // Add other fields as necessary
+  // }
 
   interface UpdatedAddonRates {
     [key: string]: number;
@@ -228,5 +236,99 @@ declare global {
   interface TQueryParam {
     name: string;
     value: boolean | React.Key;
-  };
+  }
+
+  interface CpDataTypes {
+    id: {
+      name?: string;
+    };
+    decision?: string;
+    rateFlexibility?: string;
+    team_player?: string;
+    experience_with_post_production_edit?: string;
+    travel_to_distant_shoots?: string;
+    own_transportation_method?: string;
+    customer_service_skills_experience?: string;
+    trust_score?: number;
+
+    successful_beige_shoots?: number;
+    average_rating?: number;
+    total_earnings?: number;
+    avg_response_time?: number;
+    avg_response_time_to_new_shoot_inquiry?: number;
+    num_declined_shoots?: number;
+    num_accepted_shoots?: number;
+    date_of_birth?: Date;
+    review_status?: string;
+
+    reference: ?string;
+    rate?: number;
+    handle_co_worker_conflicts?: string;
+    initiative?: string;
+    additional_info?: string;
+    timezone?: string;
+    city?: string;
+    neighborhood?: string;
+    zip_code?: string;
+    inWorkPressure?: string;
+
+    equipment?: string[];
+    equipment_specific?: string[];
+    backup_footage?: string[];
+    vst?: string[];
+    shoot_availability?: string[];
+    portfolio?: string[];
+    content_verticals?: string[];
+    content_type?: string[];
+  }
+
+  interface FilePath {
+    status: boolean;
+    url?: string;
+    dir_name?: string;
+  }
+
+  interface ShootDatetime {
+    start: string;
+    end: string;
+  }
+
+  interface shootsData {
+    addOns: any[];
+    budget: {
+      min: number;
+      max: number;
+    };
+    chat_room_id: string;
+    client_id: string;
+    content_type: string[];
+    content_vertical: string;
+    cp_ids: string[];
+    createdAt: string;
+    description: string;
+    file_path: FilePath;
+    geo_location: {
+      type: 'Point';
+      coordinates: [number, number];
+    };
+    id: string;
+    location: string;
+    meeting_date_times: any[];
+    order_name: string;
+    order_status: 'pending' | 'completed' | 'in_progress' | 'canceled';
+    payment: {
+      payment_type: 'full' | 'partial';
+      payment_status: 'pending' | 'completed' | 'failed';
+      amount_paid: number;
+      payment_ids: string[];
+    };
+    references: string;
+    review_status: boolean;
+    shoot_cost: number;
+    shoot_datetimes: ShootDatetime[];
+    shoot_duration: number;
+    shoot_type: string;
+    updatedAt: string;
+    vst: any[];
+  }
 }

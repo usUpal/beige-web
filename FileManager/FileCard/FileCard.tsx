@@ -1,22 +1,39 @@
-import React, { useState } from 'react'; import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import React, { useState } from 'react';
+import { allSvgs, pencilIconDropdown, trash_downloadIcon, trashDownloadIcon } from '@/utils/allsvgs/allSvgs';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
 
-const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed, checkIsPublic, onDelete, onRename, onMove, onClickItem, onDownload, onSetPublic, path, id, handleDropDown, selectFileIds }) => {
-
+const FileCard = ({
+  cardType,
+  isFolder,
+  name,
+  size,
+  fileType,
+  lastMod,
+  isDimmed,
+  checkIsPublic,
+  onDelete,
+  onRename,
+  onMove,
+  onClickItem,
+  onDownload,
+  onSetPublic,
+  path,
+  id,
+  handleDropDown,
+  selectFileIds,
+}) => {
   const [isPublic, setIsPublic] = useState(false);
-
   const [fileId, setFileId] = useState([]);
-  // const [isOpen, setIsOpen] = useState(false);
 
+  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
-
-  // function for getting icons
+  // Function for getting icons
   const getFileIcon = (fileType: any, isFolder: any) => {
     const fileTypeIndex = fileType.split('/');
     if (isFolder) {
-      return (allSvgs.folderIconForFile);
-    }
-    else {
-      // Check if fileType is not defined or empty
+      return allSvgs.folderIconForFile;
+    } else {
       if (!fileType || fileTypeIndex.length < 1) {
         return allSvgs.quesMarkIcon;
       }
@@ -24,14 +41,11 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
 
       if (fileTypeCategory === 'image') {
         return allSvgs.imageIcon;
-      }
-      else if (fileTypeCategory === 'video') {
+      } else if (fileTypeCategory === 'video') {
         return allSvgs.vedio;
-      }
-      else if (fileTypeCategory === 'application' || fileTypeCategory === 'text') {
+      } else if (fileTypeCategory === 'application' || fileTypeCategory === 'text') {
         return allSvgs.docsIcon;
-      }
-      else {
+      } else {
         return allSvgs.quesMarkIcon;
       }
     }
@@ -47,101 +61,112 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
   if (cardType === 'list') {
     // File card for list view
     return (
-      <div className='border box-border p-2 mx-8 bg-gray-200  rounded-xl shadow  hover:shadow-none'>
-        <div className='icons_and_3dot flex justify-between items-center cursor-pointer'>
-          <div className={`flex justify-between items-center flex-1`} onClick={onClickItem}>
-            <p className=''>{icon}</p>
+      <div className="mx-8 box-border rounded border border-slate-600 bg-gray-200 p-2 shadow hover:shadow-none dark:bg-black dark:text-slate-400">
+        <div className="flex cursor-pointer items-center justify-between">
+          <div className={`flex flex-1 items-center justify-between`} onClick={onClickItem}>
+            <p className="">{icon}</p>
 
-            <p title={name} className='text-[16px] flex-1 ml-2' >
-              {/* Add a space before the name */}
+            <p title={name} className="ml-2 flex-1 text-[16px]">
               {name.length > 25 ? `${name.substring(0, 25)}... ${getFileExtension(name)}` : `${name}`}
             </p>
           </div>
 
-          <div className="threeDot" onClick={() => { handleDropDown(id) }}>
-            {allSvgs.threeDotMenuIcon}
-          </div>
-        </div>
+          <div
+            onClick={() => {
+              handleDropDown(id);
+            }}
+            className="relative"
+          >
+            {!themeConfig.isDarkMode ? (
+              <svg fill="#000000" height="15px" width="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32.055 32.055">
+                <g id="SVGRepo_iconCarrier">
+                  <g>
+                    <path
+                      d="M16.028,3.968c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,3.968,16.028,3.968z 
+                    M16.028,16.028c-2.192,0-3.967,1.774-3.967,3.967s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,16.028,16.028,16.028z 
+                    M16.028,28.09c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,28.09,16.028,28.09z"
+                    />
+                  </g>
+                </g>
+              </svg>
+            ) : (
+              <span>
+                <svg fill="#94a3b8" height="15px" width="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32.055 32.055">
+                  <g id="SVGRepo_iconCarrier">
+                    <g>
+                      <path
+                        d="M16.028,3.968c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,3.968,16.028,3.968z 
+                  M16.028,16.028c-2.192,0-3.967,1.774-3.967,3.967s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,16.028,16.028,16.028z 
+                  M16.028,28.09c-2.192,0-3.967,1.773-3.967,3.965s1.775,3.967,3.967,3.967s3.967-1.773,3.967-3.967S18.221,28.09,16.028,28.09z"
+                      />
+                    </g>
+                  </g>
+                </svg>
+              </span>
+            )}
 
-        {/* dropdown */}
-        <div className="dropdown" >
-          <div className="relative">
-            {selectFileIds.includes(id) && (
-              <div
-                className="origin-top-right absolute right-0 top-[-10px] z-10 mt-2  bg-white rounded-lg border-gray-300 ring-1 ring-gray-500 ring-opacity-5 "
-              >
-                <div className=" divide-y " role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+            {/* Dropdown menu */}
+            <div
+              className={`absolute right-0 top-[-10px] z-10 mt-2 origin-top-right rounded-lg border border-slate-600 bg-white ring-1 ring-gray-500 ring-opacity-5 dark:bg-black dark:text-slate-400 ${
+                selectFileIds.includes(id) ? 'block' : 'hidden'
+              }`}
+            >
+              <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                <a
+                  href="#"
+                  className="flex items-center rounded-lg px-4 py-2 text-sm capitalize hover:bg-gray-200 hover:text-gray-800 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                  role="menuitem"
+                  onClick={() => onDownload(isPublic)}
+                >
+                  <span className="">{allSvgs.cloudIcon_Dropdown}</span>
+                  <span className="ms-3 border-none"> Download</span>
+                </a>
+
+                <a
+                  href="#"
+                  className="flex items-center justify-start rounded-lg px-4 py-2 text-sm capitalize hover:bg-gray-200 hover:text-gray-800 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                  role="menuitem"
+                  onClick={() => {
+                    onSetPublic(!isPublic);
+                  }}
+                >
+                  <span className="">{allSvgs.lockIcon_Dropdown}</span>
+                  <span className="ms-3 border-none"> {isPublic ? 'Make private' : 'Make public'}</span>
+                </a>
+
+                {!isFolder && (
                   <a
                     href="#"
-                    className="px-4 py-2 text-sm hover:bg-gray-100 rounded-lg capitalize flex  items-center "
+                    className="flex items-center justify-start rounded-lg border-none px-4 py-2 text-sm capitalize text-gray-700 hover:bg-gray-200 hover:text-gray-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
                     role="menuitem"
-                    onClick={() => onDownload(isPublic)}
-                  >
-                    <span className=''>{allSvgs.cloudIcon_Dropdown}</span>
-                    <span className='ms-3 text-gray-600'> Download</span>
-                  </a>
-
-                  <a
-                    href="#"
-                    className="px-4 py-2 text-sm hover:bg-gray-100 rounded-lg capitalize flex justify-start items-center"
-                    role="menuitem"
-                    onClick={() => {
-                      onSetPublic(!isPublic);
-                    }}
-                  >
-                    <span className=''>{allSvgs.lockIcon_Dropdown}</span>
-                    <span className='ms-3 text-gray-600'> {isPublic ? 'Make private' : 'Make public'}</span>
-                  </a>
-
-                  {/* Move */}
-                  {/*  {!isFolder && (
-                    <a
-                      href="#"
-                      className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 capitalize flex justify-start items-center`}
-                      role="menuitem"
-                      onClick={(e) => {
-                        !isFolder ? onMove() : e.preventDefault()
-                      }
-                      }
-                    >
-                      <span className=''>{allSvgs.arrowRight_dropdown}</span>
-                      <span className='ms-3'> Move</span>
-                    </a>
-                  )} */}
-                  {/*  */}
-
-                  {!isFolder && <a
-                    href="#"
-                    className="px-4 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 capitalize flex justify-start items-center"
-                    role="menuitem"
-                    // disabled={isFolder}
                     onClick={onRename}
                   >
-                    <span className=''>{allSvgs.pencilIcon_dropdown}</span>
-                    <span className='ms-3 text-gray-600 '> Rename</span>
-                  </a>}
-                  <a
-                    href="#"
-                    className=" px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg capitalize flex justify-start items-center"
-                    role="menuitem"
-                    // disabled={path.length === 0}
-                    onClick={onDelete}
-                  >
-                    <span className=''>{allSvgs.trash_download}</span>
-                    <span className='ms-3 text-dark'> Delete</span>
+                    {/* <span className="">{allSvgs.pencilIcon_dropdown}</span> */}
+                    <span className="">{pencilIconDropdown('#94a3b8')}</span>
+                    <span className="ms-3 "> Rename</span>
                   </a>
-                </div>
+                )}
+
+                <a
+                  href="#"
+                  className="flex items-center justify-start rounded-lg border-none px-4 py-2 text-sm capitalize text-gray-700 hover:bg-gray-200 hover:text-gray-800 dark:bg-black dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                  role="menuitem"
+                  onClick={onDelete}
+                >
+                  {/* <span className="">{allSvgs.trash_download}</span> */}
+                  <span className="">{themeConfig.isDarkMode ? trashDownloadIcon('#94a3b8') : trashDownloadIcon('#94a3b8')}</span>
+                  <span className="ms-3 "> Delete</span>
+                </a>
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </div >
+      </div>
     );
-  }
-  else {
+  } else {
     // File card for card view
     return (
-      <div className="border box-border p-2 mx-8 bg-gray-200  rounded-xl shadow hover:bg-gray-300">
+      <div className="mx-8 box-border rounded-xl border bg-gray-200 p-2 shadow hover:bg-gray-300 dark:bg-black dark:text-slate-400">
         {!isDimmed && (
           <div className={`box-border ${isFolder ? 'folder-card' : ''}`}>
             <div className="flex justify-between">
@@ -151,69 +176,65 @@ const FileCard = ({ cardType, isFolder, name, size, fileType, lastMod, isDimmed,
                 </a>
               </div>
 
-              <div className="threeDot" onClick={() => { handleDropDown(id) }}>
-                {allSvgs.threeDotMenuIcon}
-                {/* dropdown */}
-                <div className="dropdown">
-                  <div className="relative">
-                    {selectFileIds.includes(id) && (
-                      <div className="origin-top-right absolute right-0 top-[-10px] z-10 mt-2  rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                        <div className="py-1 divide-y" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                          <a
-                            href="#"
-                            className="px-4 py-2 text-sm hover:bg-gray-100 capitalize flex justify-start items-center"
-                            role="menuitem"
-                            onClick={() => {
-                              onSetPublic(!isPublic);
-                            }}
-                          >
-                            <span className="">{allSvgs.lockIcon_Dropdown}</span>
-                            <span className="ms-3 text-gray-600">{isPublic ? 'Make private' : 'Make public'}</span>
-                          </a>
+              <div
+                className="threeDot"
+                onClick={() => {
+                  handleDropDown(id);
+                }}
+              >
+                <div className="relative">
+                  {/* Dropdown */}
+                  {selectFileIds.includes(id) && (
+                    <div className="absolute right-0 top-[-10px] z-10 mt-2 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-black dark:text-slate-400">
+                      <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                        <a
+                          href="#"
+                          className="flex items-center justify-start px-4 py-2 text-sm capitalize hover:bg-gray-200 hover:text-gray-800 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                          role="menuitem"
+                          onClick={() => {
+                            onSetPublic(!isPublic);
+                          }}
+                        >
+                          <span className="">{allSvgs.lockIcon_Dropdown}</span>
+                          <span className="ms-3 text-gray-600">{isPublic ? 'Make private' : 'Make public'}</span>
+                        </a>
 
-                          {/* Rename Option */}
-                          <a
-                            href="#"
-                            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 capitalize flex justify-start items-center"
-                            role="menuitem"
-                            // disabled={isFolder}
-                            onClick={onRename}
-                          >
-                            <span className="">{allSvgs.pencilIcon_dropdown}</span>
-                            <span className="ms-3 text-gray-600">Rename</span>
-                          </a>
-                        </div>
+                        {/* Rename Option */}
+                        <a
+                          href="#"
+                          className="flex items-center justify-start px-4 py-2 text-sm capitalize text-gray-700 hover:bg-gray-200 hover:text-gray-800 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                          role="menuitem"
+                          onClick={onRename}
+                        >
+                          <span className="">{allSvgs.pencilIcon_dropdown}</span>
+                          <span className="ms-3 text-gray-600">Rename</span>
+                        </a>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-
-            {/* Button Group (Download, Linkify, Delete) */}
-            <div className="btn-group flex justify-between cursor-pointer mt-2  border">
-
+            <div className="btn-group mt-2 flex cursor-pointer justify-between border dark:border-slate-600">
               {/* Download Icon */}
-              <div className="border rounded-l-lg flex-1 text-center flex justify-center items-center" onClick={() => onDownload(isPublic)}>
+              <div className="flex flex-1 items-center justify-center rounded-l-lg border text-center" onClick={() => onDownload(isPublic)}>
                 {allSvgs.downloadIcon}
               </div>
 
               {/* Linkify Icon */}
-              <div className="border flex-1  text-center flex justify-center items-center" onClick={onClickItem}>
+              <div className="flex flex-1 items-center justify-center border text-center" onClick={onClickItem}>
                 {allSvgs.linkify}
               </div>
 
               {/* Delete Icon */}
-              <div className="border rounded-r-lg flex-1  text-center flex justify-center items-center" onClick={() => onDownload(isPublic)}>
+              <div className="flex flex-1 items-center justify-center rounded-r-lg border text-center" onClick={() => onDownload(isPublic)}>
                 {allSvgs.trashIconSm}
               </div>
-
             </div>
           </div>
         )}
       </div>
-
     );
   }
 };

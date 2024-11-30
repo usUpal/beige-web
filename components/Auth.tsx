@@ -4,24 +4,23 @@ import { IRootState } from '@/store';
 import { useEffect, useState } from 'react';
 import { setPageTitle, toggleRTL } from '@/store/themeConfigSlice';
 import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
 import { API_ENDPOINT, HOSTNAME } from '@/config';
 import { useAuth } from '@/contexts/authContext';
 import Cookies from 'js-cookie';
 import Loader from './SharedComponent/Loader';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import Swal from 'sweetalert2';
-// import allauthSvg from '@/utils/allsvgs/allauthSvg';
+import Image from 'next/image';
 
 const Auth = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  // svg files
 
   const { setUserData, setAccessToken, setRefreshToken, setAuthPermissions } = useAuth();
 
   useEffect(() => {
     dispatch(setPageTitle('Login'));
+    router.push('/');
   });
 
   const router = useRouter();
@@ -59,11 +58,11 @@ const Auth = () => {
         setRefreshToken(refreshToken?.token);
         //Store user data to the cookie storage
         Cookies.set('userData', JSON.stringify(userData), {
-          expires: 7,
+          expires: new Date(refreshToken?.expires),
         });
 
         Cookies.set('authPermissions', JSON.stringify(authPermissions), {
-          expires: 7,
+          expires: new Date(refreshToken?.expires),
         });
 
         //Store access token to the cookie storage
@@ -90,9 +89,7 @@ const Auth = () => {
         coloredToast('danger', data.message);
         setIsLoading(false);
       }
-      // console.log(data);
     } catch (error) {
-      // console.error('Login error:', error);
       setIsLoading(false);
     }
   };
@@ -130,7 +127,8 @@ const Auth = () => {
   return (
     <div>
       <div className="absolute inset-0">
-        <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" />
+        {/* <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" /> */}
+        <Image src="/assets/images/auth/bg-gradient.png" alt="image" layout="fill" className="object-cover" />
       </div>
 
       <div className="relative flex min-h-screen items-center justify-center bg-[url(/assets/images/auth/map.png)] bg-cover bg-center bg-no-repeat px-6 py-10 dark:bg-[#060818] sm:px-16">

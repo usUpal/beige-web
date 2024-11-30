@@ -1,22 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setPageTitle } from '@/store/themeConfigSlice';
-import Link from 'next/link';
-import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
-import Swal from 'sweetalert2';
-import { API_ENDPOINT } from '@/config';
 import { useUpdatePriceMutation } from '@/Redux/features/algo/pricesApi';
+import { useGetAllPricingQuery } from '@/Redux/features/pricing/pricingApi';
+import AccessDenied from '@/components/errors/AccessDenied';
+import CommonSkeleton from '@/components/skeletons/CommonSkeleton';
+import { useAuth } from '@/contexts/authContext';
+import { setPageTitle } from '@/store/themeConfigSlice';
 import { allSvgs } from '@/utils/allsvgs/allSvgs';
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import Swal from 'sweetalert2';
 
 const PricingCalculation = () => {
   const dispatch = useDispatch();
+  const { authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('pricing_params');
+
   //Start theme functionality
   useEffect(() => {
     dispatch(setPageTitle('Pricing parameters'));
   });
 
-  const { isLoading, data, error, refetch } = useGetAllPricingQuery({});
+  const { isLoading: isLoadingPricingParams, data, error, refetch } = useGetAllPricingQuery({});
   const [updatePrice, { isLoading: isPatchLoading, isSuccess, isError }] = useUpdatePriceMutation();
   useEffect(() => {
     if (isSuccess) {
@@ -58,29 +63,22 @@ const PricingCalculation = () => {
     }
   };
 
+  if (!isHavePermission) {
+    return <AccessDenied />;
+  }
+
   return (
     <div>
-      <ul className="flex space-x-2 rtl:space-x-reverse">
-        <li>
-          <Link href="/" className="text-warning hover:underline">
-            Dashboard
-          </Link>
-        </li>
-        <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-          <span>Pricing Params</span>
-        </li>
-      </ul>
-
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-1">
         {/* icon only */}
         <div className="panel">
           <div className="mb-5 flex items-center justify-between">
-            <h5 className="text-lg font-semibold dark:text-white-light">Set Prices</h5>
+            <h5 className="leading mb-3 text-xl font-semibold dark:text-slate-400">Set Prices</h5>
           </div>
           <div className="table-responsive">
             <table>
               <thead>
-                <tr>
+                <tr className="text-black dark:text-white-dark">
                   <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
                   <th>Rate/Hour($)</th>
                   <th>Status</th>
@@ -88,65 +86,82 @@ const PricingCalculation = () => {
                 </tr>
               </thead>
 
-              <tbody>
-                {data?.results
-                  ?.filter((item) => item?.isHourly === true)
-                  .map((price, index) => {
-                    const { rate, status, title } = price;
-                    return (
-                      <tr key={index}>
-                        <td className="w-4/12 capitalize">{title}</td>
-                        <td>
-                          <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
-                        </td>
-                        <td>
-                          <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
-                        </td>
-                        <td onClick={() => handleRateEdit(price)}>
-                          {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>Edit</span> */}
-                          <button type="button">
-                            {allSvgs.editPen}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+              <tbody className="text-black dark:text-white-dark">
+                {isLoadingPricingParams ? (
+                  <>
+                    {Array.from({ length: 7 }).map((_, index) => (
+                      <CommonSkeleton key={index} col={5} />
+                    ))}
+                  </>
+                ) : (
+                  data?.results
+                    ?.filter((item: any) => item?.isHourly === true)
+                    .map((price: any, index: any) => {
+                      const { rate, status, title } = price;
+                      return (
+                        <tr key={index} className="group text-gray-600 dark:text-white-dark ">
+                          <td className="w-4/12 capitalize group-hover:text-black group-hover:dark:text-slate-300">{title}</td>
+                          <td>
+                            <input disabled name={title} type="number" value={rate} className="form-input w-3/6 group-hover:dark:text-slate-300" />
+                          </td>
+                          <td>
+                            <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
+                          </td>
+                          <td onClick={() => handleRateEdit(price)}>
+                            {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>Edit</span> */}
+                            <button type="button" className="text-white-dark hover:dark:text-dark-light group-hover:dark:text-dark-light">
+                              {allSvgs.editPen}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                )}
               </tbody>
             </table>
             <table>
               <thead>
-                <tr>
+                <tr className=" text-black dark:text-white-dark">
                   <th className="ltr:rounded-l-md rtl:rounded-r-md">Category</th>
-                  <th>Extra Rate($)</th>
+                  {/* <th>Extra Rate($)</th> */}
+                  <th className="overflow-hidden text-ellipsis whitespace-nowrap">Extra Rate($)</th>
                   <th>Status</th>
                   <th>Edit</th>
                 </tr>
               </thead>
 
               <tbody>
-                {data?.results
-                  ?.filter((item) => item?.isHourly === false)
-                  .map((price, index) => {
-                    const { rate, status, title } = price;
-                    return (
-                      <tr key={index}>
-                        <td className="w-4/12 capitalize">{title}</td>
-                        <td>
-                          <input disabled name={title} type="number" value={rate} className="form-input w-3/6" />
-                        </td>
-                        <td>
-                          <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
-                        </td>
-                        <td onClick={() => handleRateEdit(price)}>
-                          {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>{allSvgs.editPen} </span>
-                           */}
-                          <button type="button">
-                            {allSvgs.editPen}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                {isPatchLoading ? (
+                  <>
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <CommonSkeleton key={index} col={5} />
+                    ))}
+                  </>
+                ) : (
+                  data?.results
+                    ?.filter((item: any) => item?.isHourly === false)
+                    .map((price: any, index: any) => {
+                      const { rate, status, title } = price;
+                      return (
+                        <tr key={index} className="group text-white-dark">
+                          <td className="w-4/12 capitalize group-hover:dark:text-slate-300">{title}</td>
+                          <td>
+                            <input disabled name={title} type="number" value={rate} className="form-input w-3/6 group-hover:dark:text-slate-300" />
+                          </td>
+                          <td>
+                            <span className={`badge text-md w-12 ${status === 1 ? 'bg-success' : 'bg-danger'} text-center`}>{status === 1 ? 'Active' : 'Inactive'}</span>
+                          </td>
+                          <td onClick={() => handleRateEdit(price)}>
+                            {/* <span className={`badge text-md w-12 bg-dark text-center cursor-pointer`}>{allSvgs.editPen} </span>
+                             */}
+                            <button type="button" className="hover:text-slate-300 group-hover:dark:text-slate-300">
+                              {allSvgs.editPen}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                )}
               </tbody>
             </table>
           </div>

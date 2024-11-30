@@ -1,31 +1,38 @@
-import React, { useEffect, useState, Fragment, useRef, useMemo } from 'react';
-import 'tippy.js/dist/tippy.css';
-import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
-import { Dialog, Transition } from '@headlessui/react';
-import { useAuth } from '@/contexts/authContext';
-import StatusBg from '@/components/Status/StatusBg';
-import { allSvgs } from '@/utils/allsvgs/allSvgs';
-import useDateFormat from '@/hooks/useDateFormat';
-import ResponsivePagination from 'react-responsive-pagination';
-import 'flatpickr/dist/flatpickr.min.css';
-import Flatpickr from 'react-flatpickr';
-import { toast } from 'react-toastify';
-import PreLoader from '@/components/ProfileImage/PreLoader';
-import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
+import AccessDenied from '@/components/errors/AccessDenied';
 import DefaultButton from '@/components/SharedComponent/DefaultButton';
+import CommonSkeleton from '@/components/skeletons/CommonSkeleton';
+import StatusBg from '@/components/Status/StatusBg';
+import { useAuth } from '@/contexts/authContext';
+import { useGetAllMeetingsQuery, useLazyGetMeetingDetailsQuery, useUpdateRescheduleMutation } from '@/Redux/features/meeting/meetingApi';
+import { IRootState } from '@/store';
+import { allSvgs } from '@/utils/allsvgs/allSvgs';
 import { truncateLongText } from '@/utils/stringAssistant/truncateLongText';
+import formatDateAndTime from '@/utils/UiAssistMethods/formatDateTime';
+import { Dialog, Transition } from '@headlessui/react';
+import { format, isValid, parseISO } from 'date-fns';
+import flatpickr from 'flatpickr';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import ResponsivePagination from 'react-responsive-pagination';
+import { toast } from 'react-toastify';
+import 'tippy.js/dist/tippy.css';
+import { setPageTitle } from '../../store/themeConfigSlice';
 
 const Meeting = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [meetingInfo, setMeetingInfo] = useState<any>({});
   const [meetingModal, setMeetingModal] = useState(false);
   const { userData, authPermissions } = useAuth();
+  const isHavePermission = authPermissions?.includes('meeting_page');
   const dispatch = useDispatch();
-  const [metingDate, setMetingDate] = useState();
   const myInputDate = meetingInfo?.meeting_date_time;
-  const myFormattedDateTime = useDateFormat(myInputDate);
+
+  // formatted date times
+  const myFormattedDateTime = formatDateAndTime(myInputDate);
+
+  // const myFormattedDateTime = useDateFormat(myInputDate);
   const [query, setQuery] = useState('');
+  const [formattedMeetingTime, setFormattedMeetingTime] = useState('');
 
   const queryParams = useMemo(
     () => ({
@@ -89,9 +96,50 @@ const Meeting = () => {
       time: formattedTime,
     };
   }
+  //
+  const meetingDateTimeRef = useRef(null);
+  let flatpickrInstance = useRef(null);
 
+  useEffect(() => {
+    if (meetingDateTimeRef.current) {
+      // Initialize flatpickr and store the instance
+      flatpickrInstance.current = flatpickr(meetingDateTimeRef.current, {
+        altInput: true,
+        altFormat: 'F j, Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        time_24hr: false,
+        minDate: 'today',
+        onClose: (selectedDates, dateStr) => {
+          handleOnMeetingDateTimeChange(dateStr);
+        },
+      });
+    }
+
+    // Cleanup function to destroy flatpickr instance
+    return () => {
+      if (flatpickrInstance.current) {
+        flatpickrInstance.current.destroy();
+      }
+    };
+  });
+
+  const handleOnMeetingDateTimeChange = (dateStr) => {
+    try {
+      const e_time = parseISO(dateStr);
+      if (!isValid(e_time)) {
+        return;
+      }
+      const formattedTime = format(e_time, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      setFormattedMeetingTime(formattedTime);
+    } catch (error) {
+      // console.error('Date parsing error', error);
+    }
+  };
+  // ========
+  //
   const handelRescheduleMeeting = async (id: any) => {
-    if (!metingDate) {
+    if (!formattedMeetingTime) {
       toast.error('Please select Meting Date & Time...!');
       return;
     }
@@ -101,7 +149,7 @@ const Meeting = () => {
         id: id,
         requestBody: {
           requested_by: userData?.role,
-          requested_time: metingDate,
+          requested_time: formattedMeetingTime,
         },
       };
       const result = await updateReschedule(data);
@@ -110,24 +158,30 @@ const Meeting = () => {
     }
   };
 
+  if (!isHavePermission) {
+    return <AccessDenied />;
+  }
+
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
+    <div className="grid h-[90vh] grid-cols-1 gap-6 lg:grid-cols-1">
       {/* Recent Shoots */}
       <div className="panel h-full w-full">
-        <div className="mb-5 md:flex items-center justify-between ">
-          <h5 className="text-xl font-bold dark:text-white-light">Meeting List</h5>
+        <div className="mb-5 items-center justify-between md:flex ">
+          <h5 className="text-xl font-bold dark:text-slate-300">Meeting List</h5>
           <input
             type="text"
             onChange={(event) => setQuery(event.target.value)}
             value={query}
-            className="rounded border border-black px-3 py-1 mt-3 md:mt-0 focus:border-black focus:outline-none"
+            className={` rounded border border-solid border-[#dddddd] bg-white p-[10px] font-sans text-[14px]
+              font-medium leading-none text-black focus:border-[#888888] 
+              dark:border-[#2a2e3e] dark:bg-[#1b2e4b] dark:text-white dark:focus:border-[#4b5563]`}
             placeholder="Search..."
           />
         </div>
-        <div className="table-responsive">
+        <div className="table-responsive h-[75vh]">
           <table>
             <thead>
-              <tr className="">
+              <tr className="text-black dark:text-white-dark">
                 <th className="text-[16px] font-semibold">Shoot Name</th>
                 <th className="text-[16px] font-semibold">Meeting Date / Time</th>
                 <th className="text-[16px] font-semibold">Attendings</th>
@@ -139,58 +193,58 @@ const Meeting = () => {
             <tbody>
               {getAllMeetingLoading ? (
                 <>
-                  <PreLoader></PreLoader>
+                  {/* <PreLoader></PreLoader> */}
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <CommonSkeleton key={index} col={4} />
+                  ))}
                 </>
               ) : (
                 <>
-                  {allMeetings?.results && allMeetings?.results?.length > 0 ? (
-                    allMeetings?.results?.map((meeting: any) => (
-                      <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-white-light/90">
-                        <td className=" min-w-[150px] text-black dark:text-white">
-                          <div className="flex items-center">
-                            <p className="">
-                              {
-                                truncateLongText(meeting?.order?.name, 30)
-                              }
-                            </p>
+                  {allMeetings?.results && allMeetings.results.length > 0 ? (
+                    allMeetings.results.map((meeting: any) => {
+                      const { date, time } = formatDateAndTime(meeting?.meeting_date_time) || { date: '', time: '' };
 
-                          </div>
-                        </td>
-
-                        <td>
-                          <span className="">{makeDateFormat(meeting?.meeting_date_time)?.date}</span>
-                          <span className=""> {makeDateFormat(meeting?.meeting_date_time)?.time}</span>
-                        </td>
-
-                        <td>
-                          <p className="">
-                            {meeting?.client?.name} with
-                            <span className="ps-1"> {
-                              truncateLongText((meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name), 40)
-                            }
-                              {/* {meeting?.cps[1]?.name ? meeting?.cps[1]?.name : meeting?.cps[0]?.name}12345678901234567890 */}
-                            </span>
-                          </p>
-                        </td>
-
-                        <td>
-                          <div>
-                            <StatusBg>{meeting?.meeting_status}</StatusBg>
-                          </div>
-                        </td>
-                        {authPermissions?.includes('meeting_details') && (
-                          <td>
-                            <button type="button" className="p-0" onClick={() => handelMeetingDetails(meeting?.id)}>
-                              <img className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" />
-                            </button>
+                      return (
+                        <tr key={meeting.id} className="group text-white-dark hover:text-black dark:hover:text-dark-light">
+                          <td className="min-w-[150px] text-black dark:text-slate-300 group-hover:dark:text-dark-light">
+                            <div className="flex items-center">
+                              <p>{truncateLongText(meeting?.order?.name, 30)}</p>
+                            </div>
                           </td>
-                        )}
-                      </tr>
-                    ))
+
+                          <td>
+                            {date}
+                            <span> at {time}</span>
+                          </td>
+
+                          <td>
+                            <p>
+                              {meeting?.client?.name} with
+                              <span className="ps-1">{truncateLongText(meeting?.cps[1]?.name || meeting?.cps[0]?.name, 40)}</span>
+                            </p>
+                          </td>
+
+                          <td>
+                            <div>
+                              <StatusBg>{meeting?.meeting_status}</StatusBg>
+                            </div>
+                          </td>
+
+                          {authPermissions?.includes('meeting_details') && (
+                            <td>
+                              <button type="button" className="p-0" onClick={() => handelMeetingDetails(meeting?.id)}>
+                                {/* <Image className="ml-2 text-center" src="/assets/images/eye.svg" alt="view-icon" width={24} height={24} /> */}
+                                {allSvgs.eyeIcon}
+                              </button>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr>
                       <td colSpan={50} className="text-center">
-                        <span className="flex justify-center font-semibold text-[red]"> No meetings found </span>
+                        <span className="flex justify-center font-semibold text-[red]">No meetings found</span>
                       </td>
                     </tr>
                   )}
@@ -198,9 +252,9 @@ const Meeting = () => {
               )}
             </tbody>
           </table>
-          <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
-            <ResponsivePagination current={currentPage} total={allMeetings?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
-          </div>
+        </div>
+        <div className="mt-4 flex justify-center md:justify-end lg:mr-5 2xl:mr-16">
+          <ResponsivePagination current={currentPage} total={allMeetings?.totalPages || 1} onPageChange={handlePageChange} maxWidth={400} />
         </div>
       </div>
 
@@ -208,46 +262,45 @@ const Meeting = () => {
         <Dialog as="div" open={meetingModal} onClose={() => setMeetingModal(false)}>
           <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
             <div className="flex min-h-screen items-start justify-center md:px-4 ">
-              <Dialog.Panel as="div" className="panel my-32 w-4/5 md:w-4/5 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
+              <Dialog.Panel as="div" className="panel my-32 w-5/6 space-x-6 overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark md:w-4/6 lg:w-3/6 2xl:w-2/6">
                 <div className="my-2 flex items-center justify-between bg-[#fbfbfb]  py-3 dark:bg-[#121c2c]">
-                  <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000]">Meeting Details</div>
-                  <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark" onClick={() => setMeetingModal(false)}>
-                    {allSvgs.closeModalSvg}
+                  <div className="ms-6 text-[22px] font-bold capitalize leading-none text-[#000000] dark:text-slate-300">Meeting Details</div>
+                  <button type="button" className="me-4 text-[16px] text-white-dark hover:text-dark-light " onClick={() => setMeetingModal(false)}>
+                    {allSvgs.closeIconSvg}
                   </button>
                 </div>
 
                 <div className="basis-[100%]">
-
                   <div className={`${meetingInfo?.meeting_status === 'pending' && 'md:flex'}  w-full justify-between space-y-6 pb-6 `}>
                     <div className="leftdata">
                       <p>
-                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] ">
-                          Shoot : <span className="text-[14px] font-normal text-[#000000]">{meetingInfo?.order?.name}</span>
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-slate-400 ">
+                          Shoot : <span className="text-[14px] font-normal text-[#000000] dark:text-slate-400">{meetingInfo?.order?.name}</span>
                         </span>
                       </p>
 
                       <p>
-                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-slate-400">
                           Meeting Link :{' '}
-                          <a href={meetingInfo?.meetLink || ''} target={0} className="text-[14px] font-normal text-blue-600 underline">
+                          <a href={meetingInfo?.meetLink || ''} target={0} className="text-[14px] font-normal text-blue-600 underline ">
                             {meetingInfo?.meetLink}
                           </a>
                         </span>
                       </p>
 
-                      <p className="mt-2">
-                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
-                          Time : <span className="text-[14px] font-normal leading-[28px] text-[#000000]"> {myFormattedDateTime?.time}</span>
+                      <p className="mt-2 ">
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-slate-400 ">
+                          Time : <span className="text-[14px] font-normal leading-[28px] text-[#000000] dark:text-slate-400"> {myFormattedDateTime?.time}</span>
                         </span>
                       </p>
 
                       <p>
-                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000]">
-                          Date : <span className="text-[14px] font-normal leading-[28px] text-[#000000]"> {myFormattedDateTime?.date}</span>
+                        <span className="text-[14px] font-bold capitalize leading-none text-[#000000] dark:text-slate-400">
+                          Date : <span className="text-[14px] font-normal leading-[28px] text-[#000000] dark:text-slate-400"> {myFormattedDateTime?.date}</span>
                         </span>
                       </p>
                       <div className="mt-3 flex justify-between">
-                        <span className=" text-[14px]  font-bold capitalize leading-none text-[#000000]">
+                        <span className=" text-[14px]  font-bold capitalize leading-none text-[#000000] dark:text-slate-400">
                           Status:{' '}
                           <span className="ps-2 font-normal text-[#0E1726]">
                             <StatusBg>{meetingInfo?.meeting_status}</StatusBg>
@@ -261,30 +314,27 @@ const Meeting = () => {
                     <div className="mr-4">
                       {authPermissions?.includes('meeting_details_reschedule') && (
                         <>
-                          {meetingInfo?.meeting_status === 'pending' && userData?.role === 'cp' && (
-                            <div className="flex flex-col items-start">
-                              <h2 className="mb-3 text-[14px] font-semibold capitalize leading-none text-[#000000]">Reschedule Meeting</h2>
+                          {meetingInfo?.meeting_status === 'pending' && (userData?.role === 'cp' || 'admin') && (
+                            <div className="ml-2 flex flex-col items-start">
+                              <h2 className="mb-3 text-[14px] font-semibold capitalize leading-none text-[#000000] dark:text-slate-400">Reschedule Meeting</h2>
                               <div className="flex flex-col">
-                                <Flatpickr
-                                  id="meeting_time"
-                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white  py-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
-                                  value={metingDate}
-                                  placeholder="Meeting time ..."
-                                  options={{
-                                    altInput: true,
-                                    altFormat: 'F j, Y h:i K',
-                                    dateFormat: 'Y-m-d H:i',
-                                    enableTime: true,
-                                    time_24hr: false,
-                                    minDate: 'today',
-                                  }}
-                                  onChange={(date) => setMetingDate(date[0])}
+                                <input
+                                  type="text"
+                                  id="meeting_time_shoot_details"
+                                  ref={meetingDateTimeRef}
+                                  // className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white  p-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#dddddd]`}
+                                  className={`w-64 rounded-md border border-solid border-[#dddddd] bg-white p-[10px] font-sans text-[14px] font-medium leading-none text-[#000000] focus:border-[#888888] dark:border-[#2a2e3e] dark:bg-[#1b2e4b] dark:text-slate-400 dark:focus:border-[#4b5563]`}
+                                  placeholder="Meeting time"
+                                  required={formattedMeetingTime}
                                 />
 
                                 {/* <button onClick={() => handelRescheduleMeeting(meetingInfo?.id)} className="btn float-left my-5 w-60 bg-black font-sans text-sm font-bold  capitalize text-white">
                                   Reschedule Request
                                 </button> */}
-                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css='mt-2 w-64' type={"submit"}> Reschedule Request</DefaultButton>
+                                <DefaultButton onClick={() => handelRescheduleMeeting(meetingInfo?.id)} css="mt-2 w-64 h-9" type={'submit'}>
+                                  {' '}
+                                  Reschedule Request
+                                </DefaultButton>
                               </div>
                             </div>
                           )}
@@ -293,10 +343,11 @@ const Meeting = () => {
                     </div>
 
                     {/* Resheduling */}
-
                   </div>
-                  <div className='flex justify-end me-7 pb-7 md:me-5' >
-                    <DefaultButton onClick={() => setMeetingModal(false)}>Cancel</DefaultButton>
+                  <div className="me-7 flex justify-end pb-7 md:me-5">
+                    <DefaultButton onClick={() => setMeetingModal(false)} css="h-9">
+                      Cancel
+                    </DefaultButton>
                   </div>
                 </div>
               </Dialog.Panel>

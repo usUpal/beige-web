@@ -20,6 +20,9 @@ const nextConfig = {
     BucketUrl: process.env.BucketUrl,
     appName: process.env.appName,
   },
+  images: {
+    domains: ['storage.googleapis.com', 'cdn.vectorstock.com', 'via.placeholder.com'],
+  },
 };
 
 module.exports = nextConfig;

@@ -1,66 +1,72 @@
-.shootDate span{
-    margin-right: 15px;
-    font-size: 14px;
+.shootDate span {
+  margin-right: 15px;
+  font-size: 14px;
 }
 
-.cFont{
-    font-family: cursive;
+.cFont {
+  font-family: cursive;
 }
 
-.glass{
-    background: rgba( 255, 255, 255, 0.25 );
-    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-    backdrop-filter: blur( 4px );
-    -webkit-backdrop-filter: blur( 4px );
-    border-radius: 10px;
-    border: 1px solid rgba( 255, 255, 255, 0.18 );
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .ribbon {
-    position: absolute;
-    right: -5px; top: -5px;
-    z-index: 99;
-    overflow: hidden;
-    width: 75px; height: 75px;
-    text-align: right;
-  }
-  .ribbon span {
-    font-size: 10px;
-    font-weight: bold;
-    color: #ffffff;
-    text-transform: uppercase;
-    text-align: center;
-    line-height: 20px;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    width: 100px;
-    display: block;
-    background: #ACA686;
-    background: linear-gradient(#c7a276 0%, #ACA686 100%);
-    box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
-    position: absolute;
-    top: 19px; right: -21px;
-  }
-  .ribbon span::before {
-    content: "";
-    position: absolute; left: 0px; top: 100%;
-    z-index: -1;
-    border-left: 3px solid #ACA686;
-    border-right: 3px solid transparent;
-    border-bottom: 3px solid transparent;
-    border-top: 3px solid #ACA686;
-  }
-  .ribbon span::after {
-    content: "";
-    position: absolute; right: 0px; top: 100%;
-    z-index: -1;
-    border-left: 3px solid transparent;
-    border-right: 3px solid #ACA686;
-    border-bottom: 3px solid transparent;
-    border-top: 3px solid #ACA686;
-  }
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  z-index: 99;
+  overflow: hidden;
+  width: 75px;
+  height: 75px;
+  text-align: right;
+}
+.ribbon span {
+  font-size: 10px;
+  font-weight: bold;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 20px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  width: 100px;
+  display: block;
+  background: #aca686;
+  background: linear-gradient(#c7a276 0%, #aca686 100%);
+  box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+  position: absolute;
+  top: 19px;
+  right: -21px;
+}
+.ribbon span::before {
+  content: '';
+  position: absolute;
+  left: 0px;
+  top: 100%;
+  z-index: -1;
+  border-left: 3px solid #aca686;
+  border-right: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  border-top: 3px solid #aca686;
+}
+.ribbon span::after {
+  content: '';
+  position: absolute;
+  right: 0px;
+  top: 100%;
+  z-index: -1;
+  border-left: 3px solid transparent;
+  border-right: 3px solid #aca686;
+  border-bottom: 3px solid transparent;
+  border-top: 3px solid #aca686;
+}
 
 /* Media query codes here... */
-@media screen and (max-width: 575px){
-
+@media screen and (max-width: 575px) {
 }

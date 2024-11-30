@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "PORT=3050 next start",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -59,6 +59,7 @@
     "react-animate-height": "^3.1.0",
     "react-apexcharts": "^1.4.0",
     "react-click-away-listener": "^2.2.2",
+    "react-content-loader": "^7.0.2",
     "react-copy-to-clipboard": "^5.1.0",
     "react-countup": "^6.4.1",
     "react-dom": "18.2.0",
@@ -73,7 +74,7 @@
     "react-quill": "^0.0.2",
     "react-redux": "^9.1.2",
     "react-responsive-pagination": "^2.6.0",
-    "react-select": "^5.7.0",
+    "react-select": "^5.8.0",
     "react-simplemde-editor": "^5.2.0",
     "react-sortablejs": "^6.1.4",
     "react-text-mask": "^5.5.0",
@@ -97,7 +98,7 @@
     "@tailwindcss/typography": "^0.5.8",
     "@types/lodash": "^4.14.191",
     "@types/react-copy-to-clipboard": "^5.0.4",
-    "@types/react-flatpickr": "^3.8.8",
+    "@types/react-flatpickr": "^3.8.11",
     "@types/react-text-mask": "^5.4.11",
     "@types/sortablejs": "^1.15.0",
     "autoprefixer": "^10.4.13",

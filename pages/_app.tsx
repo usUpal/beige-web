@@ -13,6 +13,8 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import '../styles/tailwind.css';
 import '../styles/custom.css';
 import '../styles/pagination.css';
+import 'flatpickr/dist/flatpickr.css';
+import 'flatpickr/dist/flatpickr.min.css';
 //
 import '../FileManager/FileCard/FileCard';
 // import '../FileManager/FileExplorer/FileExplorer.css';
